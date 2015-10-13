@@ -53,12 +53,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.HomePostalCode = r.FormValue("HomePostalCode")
 	d.HomeCountry = r.FormValue("HomeCountry")
 	d.PrimaryEmail = r.FormValue("PrimaryEmail")
+	d.SecondaryEmail = r.FormValue("SecondaryEmail")
 	d.OfficePhone = r.FormValue("OfficePhone")
+	d.OfficeFax = r.FormValue("OfficeFax")
 	d.CellPhone = r.FormValue("CellPhone")
 	d.Department = r.FormValue("Department")
-	d.Status = r.FormValue("Status")
-	d.OfficeFax = r.FormValue("OfficeFax")
-	d.SecondaryEmail = r.FormValue("SecondaryEmail")
+	d.Status = strToInt(r.FormValue("Status"))
 	d.EligibleForRehire = r.FormValue("EligibleForRehire")
 	d.LastReview = r.FormValue("LastReview")
 	d.NextReview = r.FormValue("NextReview")
@@ -67,14 +67,15 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.MgrUID = strToInt(r.FormValue("MgrUID"))
 
 	fmt.Printf("d = %+v\n", d)
-	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=? where people.uid=?")
+	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=? where people.uid=?")
 	errcheck(err)
 	_, err = update.Exec(
 		d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName,
 		d.EmergencyContactName, d.EmergencyContactPhone,
-		d.PrimaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode,
+		d.PrimaryEmail, d.SecondaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode,
 		d.PositionControlNumber, d.DeptCode,
 		d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
+		d.Status,
 		uid)
 
 	if nil != err {

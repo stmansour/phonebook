@@ -20,7 +20,7 @@
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.JobCode}} &nbsp;({{.JobTitle}})</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Position Control No:</td><td>{{.PositionControlNumber}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.DeptCode}} &nbsp;({{.Department}})</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{.Status}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{if gt .Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Address:</td>
 	<td>
 		{{.HomeStreetAddress}}<br>

@@ -63,7 +63,7 @@ type personDetail struct {
 	Department            string
 	MiddleName            string
 	Salutation            string
-	Status                string
+	Status                int
 	PositionControlNumber string
 	OfficeFax             string
 	SecondaryEmail        string
