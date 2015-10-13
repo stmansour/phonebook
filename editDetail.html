@@ -1,0 +1,30 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="/phonebook.css" rel="stylesheet"  type="text/css">
+<title>Accord Directory - Edit Details for {{.FirstName}} {{.LastName}}</title>
+</head>
+<body>
+<p>&nbsp;</p>
+<p class="DetailPerson">{{.FirstName}} {{.LastName}}<br>
+<div class="Employer"><a href="/company/{{.Company.CoCode}}">{{.Company.Company}}</a></div><br>
+<div class="JobTitle">{{.JobTitle}}</div></p>
+<br>
+<br>
+<form action="/savePersonDetails/{{.UID}}" method="POST">
+<table border="0" >
+<tr><td width="50px"></td><td class="Attrib" align="right">email:</td>
+	<td><input type="text" name="PrimaryEmail" value="{{.PrimaryEmail}}" size="35"></td>
+</tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">phone:</td>
+	<td><input type="text" name="OfficePhone" value="{{.OfficePhone}}" size="35"></td>
+</tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">cell:</td>
+	<td><input type="text" name="CellPhone" value="{{.CellPhone}}" size="35"></td>
+</tr>
+</table>
+<hr>
+<input type="submit" name="action" value="Save">  <a href="/detail/{{.UID}}">Cancel</a>
+</form>
+</body>
+</html>

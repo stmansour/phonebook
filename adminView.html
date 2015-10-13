@@ -1,0 +1,53 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="/phonebook.css" rel="stylesheet"  type="text/css">
+<title>Accord Directory - Details  {{.FirstName}} {{.LastName}}</title>
+</head>
+<body>
+<h2>Accord Directory Administrator View</h2>
+<p>Authorized personnel only</p>
+<a href="/adminEdit/{{.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
+<table border="0" >
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Salutation:</td><td>{{.Salutation}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Last Name:</td><td>{{.LastName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Middle Name:</td><td>{{.MiddleName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">First Name:</td><td>{{.FirstName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Preferred Name:</td><td>{{.PreferredName}} &nbsp;(a preferred first name or nickname)</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Name:</td><td>{{.EmergencyContactName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Phone:</td><td>{{.EmergencyContactPhone}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">company code:</td><td>{{.Company.CoCode}} &nbsp;({{.Company.Company}})</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.JobCode}} &nbsp;({{.JobTitle}})</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Position Control No:</td><td>{{.PositionControlNumber}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.DeptCode}} &nbsp;({{.Department}})</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{.Status}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Address:</td>
+	<td>
+		{{.HomeStreetAddress}}<br>
+		{{if .HomeStreetAddress2}}{{.HomeStreetAddress2}}<br>{{end}}
+		{{.HomeCity}}, {{.HomeState}} {{.HomePostalCode}}, {{.HomeCountry}}
+	</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Primary email:</td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Secondary email:</td><td><a href="mailto:{{.SecondaryEmail}}">{{.SecondaryEmail}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Office phone:</td><td>{{.OfficePhone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Office fax:</td><td>{{.OfficeFax}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Cell:</td><td>{{.CellPhone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Cost Center:</td><td>{{.CostCenter}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Department:</td><td>{{.Department}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Manager:</td><td><a href="/detail/{{.MgrUID}}">{{.MgrName}}</a></td></tr>
+
+{{if .Reports | len}}
+<tr><td></td><td></td><td></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">direct reports:</td>
+    <td valign="top">
+        {{range .Reports}}
+        <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
+        {{end}}
+    </td>
+</tr>
+{{end}}
+</table>
+<hr>
+<a href="/search/">Search</a> <a  href="/adminEdit/{{.UID}}">Edit</a>
+</body>
+</html>

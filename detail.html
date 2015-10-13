@@ -1,0 +1,35 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="/phonebook.css" rel="stylesheet"  type="text/css">
+<title>Accord Directory - Details  {{.FirstName}} {{.LastName}}</title>
+</head>
+<body>
+<p>&nbsp;</p>
+<p class="DetailPerson">{{.FirstName}} {{.LastName}} <a href="/editDetail/{{.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
+<div class="Employer"><a href="/company/{{.Company.CoCode}}">{{.Company.Company}}</a></div><br>
+<div class="JobTitle">{{.JobTitle}}</div></p>
+<br>
+<br>
+<table border="0" >
+<tr><td width="50px"></td><td class="Attrib" align="right">email:</td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">phone:</td><td>{{.OfficePhone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">cell:</td><td>{{.CellPhone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">cost center:</td><td>{{.CostCenter}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">department:</td><td>{{.Department}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">manager:</td><td><a href="/detail/{{.MgrUID}}">{{.MgrName}}</a></td></tr>
+{{if .Reports | len}}
+<tr><td></td><td></td><td></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">direct reports:</td>
+    <td valign="top">
+        {{range .Reports}}
+        <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
+        {{end}}
+    </td>
+</tr>
+{{end}}
+</table>
+<hr>
+<a href="/search/">Search</a> <a  href="/editDetail/{{.UID}}">Edit</a>
+</body>
+</html>

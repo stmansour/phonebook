@@ -1,0 +1,28 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="/phonebook.css" rel="stylesheet"  type="text/css">
+<title>Accord Directory - Search</title>
+</head>
+<body>
+<h1>Accord Directory</h1>
+<form action="/search/" method="POST">
+	<div>Search: <input type="text" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
+</form>
+<hr>
+<p>{{if .Query}}{{.Matches | len}} results for "{{.Query}}"{{else}}Enter a search string{{end}}</p>
+{{if .Query}}
+<table cellpadding="2">
+<tr><th align="left">Last Name</th><th align="left">First Name</th><th align="left">Email</th>
+    <th align="left">Office Phone</th><th align="left">Cell Phone</th></tr>
+	{{range .Matches}}
+    	<tr>
+    	<td><a href="/detail/{{.UID}}">{{.LastName}}</a></td><td><a href="/detail/{{.UID}}">{{.FirstName}}</td><td><a href="mailto:{{.PrimaryEmail}}">
+    	{{.PrimaryEmail}}</a></td>
+    	<td>{{.OfficePhone}}</td><td>{{.CellPhone}}</td><td>{{.Employer}}</td>
+    	</tr>
+	{{end}}
+</table>
+{{end}}
+</body>
+</html>
