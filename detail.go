@@ -50,7 +50,7 @@ func getDepartmentFromDeptCode(deptcode int) string {
 }
 
 func getReports(uid int, d *personDetail) {
-	s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone,department from people where mgruid=%d AND status='Active' order by lastname, firstname", uid)
+	s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone,department from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)
 	defer rows.Close()

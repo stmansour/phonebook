@@ -10,7 +10,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	var d searchResults
 	d.Query = r.FormValue("searchstring")
 	if len(d.Query) > 0 {
-		s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone,department from people where status='Active' and (lastname like \"%%%s%%\" or firstname like \"%%%s%%\" or primaryemail like \"%%%s%%\") order by lastname,firstname", d.Query, d.Query, d.Query)
+		s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone,department from people where status>0 and (lastname like \"%%%s%%\" or firstname like \"%%%s%%\" or primaryemail like \"%%%s%%\") order by lastname,firstname", d.Query, d.Query, d.Query)
 		rows, err := Phonebook.db.Query(s)
 		errcheck(err)
 		defer rows.Close()
