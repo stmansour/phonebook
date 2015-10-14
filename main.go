@@ -53,47 +53,50 @@ type person struct {
 }
 
 type personDetail struct {
-	UID                   int
-	LastName              string
-	FirstName             string
-	PrimaryEmail          string
-	JobCode               int
-	OfficePhone           string
-	CellPhone             string
-	Department            string
-	MiddleName            string
-	Salutation            string
-	Status                int
-	PositionControlNumber string
-	OfficeFax             string
-	SecondaryEmail        string
-	EligibleForRehire     string
-	LastReview            string
-	NextReview            string
-	Birthdate             string
-	HomeStreetAddress     string
-	HomeStreetAddress2    string
-	HomeCity              string
-	HomeState             string
-	HomePostalCode        string
-	HomeCountry           string
-	StateOfEmployment     string
-	CountryOfEmployment   string
-	PreferredName         string
-	CompensationType      string
-	DeptCode              int
-	Company               company
-	CoCode                int
-	MgrUID                int
-	JobTitle              string
-	CostCenter            string
-	MgrName               string
-	Reports               []person
-	EmergencyContactName  string
-	EmergencyContactPhone string
-	// HealthInsuranceAccepted string
-	// DentalInsuranceAccepted string
-	// Accepted401K string
+	UID                     int
+	LastName                string
+	FirstName               string
+	PrimaryEmail            string
+	JobCode                 int
+	OfficePhone             string
+	CellPhone               string
+	Department              string
+	MiddleName              string
+	Salutation              string
+	Status                  int
+	PositionControlNumber   string
+	OfficeFax               string
+	SecondaryEmail          string
+	EligibleForRehire       int
+	LastReview              string
+	NextReview              string
+	Birthdate               string
+	HomeStreetAddress       string
+	HomeStreetAddress2      string
+	HomeCity                string
+	HomeState               string
+	HomePostalCode          string
+	HomeCountry             string
+	StateOfEmployment       string
+	CountryOfEmployment     string
+	PreferredName           string
+	Comps                   []int  // an array of CompensationType values (ints)
+	CompensationStr         string //used in the admin edit interface
+	DeptCode                int
+	Company                 company
+	CoCode                  int
+	MgrUID                  int
+	JobTitle                string
+	CostCenter              string
+	MgrName                 string
+	Reports                 []person
+	Deductions              []int
+	DeductionsStr           string
+	EmergencyContactName    string
+	EmergencyContactPhone   string
+	AcceptedHealthInsurance int
+	AcceptedDentalInsurance int
+	Accepted401K            int
 }
 
 type searchResults struct {

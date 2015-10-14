@@ -14,10 +14,15 @@
 <tr><td align="right">MiddleName:</td><td><input type=text name="MiddleName" value="{{.MiddleName}}" size="35"></td></tr>
 <tr><td align="right">First Name:</td><td><input type=text name="FirstName" value="{{.FirstName}}" size="35"></td></tr>
 <tr><td align="right">Preferred Name:</td><td><input type=text name="PreferredName" value="{{.PreferredName}}" size="35"></td><tr>
-<tr><td align="right">Emergency Contact Name:</td><td><input type=text name="EmergencyContactName" Value="{{.EmergencyContactName}}"></td><tr>
-<tr><td align="right">Emergency Contact Phone:</td><td><input type=text name="EmergencyContactPhone" Value="{{.EmergencyContactPhone}}"></td><tr>
+<tr><td align="right">Emergency Contact Name:</td><td><input type=text name="EmergencyContactName" Value="{{.EmergencyContactName}}" size="35"></td><tr>
+<tr><td align="right">Emergency Contact Phone:</td><td><input type=text name="EmergencyContactPhone" Value="{{.EmergencyContactPhone}}" size="35"></td><tr>
 <tr><td align="right">Employer Company Code:</td><td><input type=text name="CoCode" value="{{.CoCode}}" size="35"></td></tr>
-<tr><td align="right">Job Code:</td><td><input type=text name="JobCode" value="{{.JobCode}}" size="35"	></td></tr>
+<tr><td align="right">Job Code:</td><td><input type=text name="JobCode" value="{{.JobCode}}" size="35"></td></tr>
+<tr><td align="right">Compensation Type:</td><td><input type=text name="CompensationStr" value="{{.CompensationStr}}" size="35"></td></tr>
+<tr><td align="right">Deductions:</td><td><input type=text name="DeductionsStr" value="{{.DeductionsStr}}" size="35"></td></tr>
+<tr><td align="right">Accepted Health Insurance:</td><td><input type=text name="AcceptedHealthInsurance" value="{{acceptIntToString .AcceptedHealthInsurance}}" size="35"></td></tr>
+<tr><td align="right">Accepted Dental Insurance:</td><td><input type=text name="AcceptedDentalInsurance" value="{{acceptIntToString .AcceptedDentalInsurance}}" size="35"></td></tr>
+<tr><td align="right">Accepted 401K:</td><td><input type=text name="Accepted401K" value="{{acceptIntToString .Accepted401K}}" size="35"></td></tr>
 <tr><td align="right">Primary Email:</td><td><input type="text" name="PrimaryEmail" value="{{.PrimaryEmail}}" size="35"></td></tr>
 <tr><td align="right">SecondaryEmail:</td><td><input type=text name="SecondaryEmail" value="{{.SecondaryEmail}}" size="35"></td></tr>
 <tr><td align="right">Phone:</td><td><input type="text" name="OfficePhone" value="{{.OfficePhone}}" size="35"></td></tr>
@@ -25,23 +30,23 @@
 <tr><td align="right">Status:</td><td><input type=text name="Status" value="{{.Status}}" size="35"></td></tr>
 <tr><td align="right">PositionControlNumber:</td><td><input type=text name="PositionControlNumber" value="{{.PositionControlNumber}}" size="35"></td></tr>
 <tr><td align="right">OfficeFax:</td><td><input type=text name="OfficeFax" value="{{.OfficeFax}}" size="35"></td></tr>
-<tr><td align="right">EligibleForRehire:</td><td><input type=text name="EligibleForRehire" value="{{.EligibleForRehire}}" size="35"></td></tr>
-<tr><td align="right">LastReview:</td><td><input type=text name="LastReview" value="{{.LastReview}}" size="35"></td></tr>
-<tr><td align="right">NextReview:</td><td><input type=text name="NextReview" value="{{.NextReview}}" size="35"></td></tr>
+<tr><td align="right">Eligible For Rehire:</td><td><input type=text name="EligibleForRehire" value="{{.EligibleForRehire}}" size="35"></td></tr>
+<tr><td align="right">Last Review:</td><td><input type=text name="LastReview" value="{{.LastReview}}" size="35"></td></tr>
+<tr><td align="right">Next Review:</td><td><input type=text name="NextReview" value="{{.NextReview}}" size="35"></td></tr>
 <tr><td align="right">Birthdate:</td><td><input type=text name="Birthdate" value="{{.Birthdate}}" size="35"></td></tr>
-<tr><td align="right">HomeStreetAddress:</td><td><input type=text name="HomeStreetAddress" value="{{.HomeStreetAddress}}" size="35"></td></tr>
-<tr><td align="right">HomeStreetAddress2:</td><td><input type=text name="HomeStreetAddress2" value="{{.HomeStreetAddress2}}" size="35"></td></tr>
-<tr><td align="right">HomeCity:</td><td><input type=text name="HomeCity" value="{{.HomeCity}}" size="35"></td></tr>
-<tr><td align="right">HomeState:</td><td><input type=text name="HomeState" value="{{.HomeState}}" size="35"></td></tr>
-<tr><td align="right">HomePostalCode:</td><td><input type=text name="HomePostalCode" value="{{.HomePostalCode}}" size="35"></td></tr>
-<tr><td align="right">HomeCountry:</td><td><input type=text name="HomeCountry" value="{{.HomeCountry}}" size="35"></td></tr>
-<tr><td align="right">CompensationType:</td><td><input type=text name="CompensationType" value="{{.CompensationType}}" size="35"></td></tr>
+<tr><td align="right">Home Street Address:</td><td><input type=text name="HomeStreetAddress" value="{{.HomeStreetAddress}}" size="35"></td></tr>
+<tr><td align="right">Home Street Address2:</td><td><input type=text name="HomeStreetAddress2" value="{{.HomeStreetAddress2}}" size="35"></td></tr>
+<tr><td align="right">Home City:</td><td><input type=text name="HomeCity" value="{{.HomeCity}}" size="35"></td></tr>
+<tr><td align="right">Home State:</td><td><input type=text name="HomeState" value="{{.HomeState}}" size="35"></td></tr>
+<tr><td align="right">Home Postal Code:</td><td><input type=text name="HomePostalCode" value="{{.HomePostalCode}}" size="35"></td></tr>
+<tr><td align="right">Home Country:</td><td><input type=text name="HomeCountry" value="{{.HomeCountry}}" size="35"></td></tr>
 <tr><td align="right">Company:</td><td><input type=text name="Company" value="{{.Company.CoCode}}" size="35"></td></tr>
-<tr><td align="right">MgrUID:</td><td><input type=text name="MgrUID" value="{{.MgrUID}}" size="35"></td></tr>
-<tr><td align="right">CostCenter:</td><td><input type=text name="CostCenter" value="{{.CostCenter}}" size="35"></td></tr>
+<tr><td align="right">Mgr UID:</td><td><input type=text name="MgrUID" value="{{.MgrUID}}" size="35"></td></tr>
+<tr><td align="right">Cost Center:</td><td><input type=text name="CostCenter" value="{{.CostCenter}}" size="35"></td></tr>
+
 </table>
 <hr>
-<input type="submit" name="action" value="Update">  <a href="/adminDetail/{{.UID}}">Cancel</a>
+<input type="submit" name="action" value="Update">  <a href="/adminView/{{.UID}}">Cancel</a>
 </form>
 </body>
 </html>

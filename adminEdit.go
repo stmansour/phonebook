@@ -24,7 +24,12 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 
 	adminReadDetails(uid, &d)
 
-	t, _ := template.New("adminEdit.html").ParseFiles("adminEdit.html")
+	funcMap := template.FuncMap{
+		"compToString":      compensationTypeToString,
+		"acceptIntToString": acceptIntToString,
+	}
+
+	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	err = t.Execute(w, &d)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

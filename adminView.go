@@ -1,10 +1,57 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"text/template"
 )
+
+func getComps(uid int, d *personDetail) {
+	rows, err := Phonebook.db.Query("select type from compensation where uid=?", uid)
+	errcheck(err)
+	defer rows.Close()
+	var c int
+	for rows.Next() {
+		errcheck(rows.Scan(&c))
+		d.Comps = append(d.Comps, c)
+	}
+	errcheck(rows.Err())
+}
+
+func getCompensationStr(uid int, d *personDetail) {
+	getComps(uid, d)
+	d.CompensationStr = ""
+	for i := 0; i < len(d.Comps); i++ {
+		d.CompensationStr += fmt.Sprintf("%d", d.Comps[i])
+		if i+1 < len(d.Comps) {
+			d.CompensationStr += ", "
+		}
+	}
+}
+
+func getDeductions(d *personDetail) {
+	rows, err := Phonebook.db.Query("select deduction from deductions where uid=?", d.UID)
+	errcheck(err)
+	defer rows.Close()
+	var c int
+	for rows.Next() {
+		errcheck(rows.Scan(&c))
+		d.Deductions = append(d.Deductions, c)
+	}
+	errcheck(rows.Err())
+}
+
+func getDeductionsStr(d *personDetail) {
+	getDeductions(d)
+	d.DeductionsStr = ""
+	for i := 0; i < len(d.Deductions); i++ {
+		d.DeductionsStr += fmt.Sprintf("%d", d.Deductions[i])
+		if i+1 < len(d.Deductions) {
+			d.DeductionsStr += ", "
+		}
+	}
+}
 
 func adminReadDetails(uid int, d *personDetail) {
 	d.UID = uid
@@ -17,11 +64,12 @@ func adminReadDetails(uid int, d *personDetail) {
 			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+
 			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+
 			"Birthdate,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
-			"HomeState,HomePostalCode,HomeCountry,CompensationType,"+
+			"HomeState,HomePostalCode,HomeCountry,"+
+			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+
 			"jobcode,"+
 			"mgruid,deptcode,cocode,StateOfEmployment,"+
 			"CountryOfEmployment,PreferredName,"+
-			"EmergencyContactName,EmergencyContactPhone "+
+			"EmergencyContactName,EmergencyContactPhone,EligibleForRehire "+
 			"from people where uid=?",
 		uid)
 	errcheck(err)
@@ -33,12 +81,12 @@ func adminReadDetails(uid int, d *personDetail) {
 			&d.OfficePhone, &d.OfficeFax, &d.CellPhone, &d.PrimaryEmail,
 			&d.SecondaryEmail, &d.EligibleForRehire, &d.LastReview, &d.NextReview,
 			&d.Birthdate, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
-			&d.HomeState, &d.HomePostalCode, &d.HomeCountry, &d.CompensationType,
-			//&d.HealthInsuranceAccepted, &d.DentalInsuranceAccepted, &d.Accepted401K,
+			&d.HomeState, &d.HomePostalCode, &d.HomeCountry,
+			&d.AcceptedHealthInsurance, &d.AcceptedDentalInsurance, &d.Accepted401K,
 			&d.JobCode, /*&d.hire, &d.termination,*/
 			&d.MgrUID, &d.DeptCode, &d.CoCode, &d.StateOfEmployment,
 			&d.CountryOfEmployment, &d.PreferredName,
-			&d.EmergencyContactName, &d.EmergencyContactPhone))
+			&d.EmergencyContactName, &d.EmergencyContactPhone, &d.EligibleForRehire))
 	}
 	errcheck(rows.Err())
 	d.MgrName = getNameFromUID(d.MgrUID)
@@ -46,6 +94,8 @@ func adminReadDetails(uid int, d *personDetail) {
 	d.JobTitle = getJobTitle(d.JobCode)
 	getCompanyInfo(d.CoCode, &d.Company)
 	getReports(uid, d)
+	getCompensationStr(uid, d) // fills the d.Comps array too
+	getDeductionsStr(d)
 }
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +107,13 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		uid, _ := strconv.Atoi(uidstr)
 		adminReadDetails(uid, &d)
 	}
-	t, _ := template.New("adminView.html").ParseFiles("adminView.html")
+	funcMap := template.FuncMap{
+		"compToString":      compensationTypeToString,
+		"deductionToString": deductionToString,
+		"acceptIntToString": acceptIntToString,
+	}
+
+	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	err := t.Execute(w, &d)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

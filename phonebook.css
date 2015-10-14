@@ -20,6 +20,11 @@ th {
 	background-color:#EEE;
 }
 
+.Note {
+	font-style: italic;
+	font-size: 11px;
+}
+
 .JobTitle {
 	font-style: italic;
 	font-weight: lighter;
