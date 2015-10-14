@@ -3,7 +3,44 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 )
+
+// PBDateFmt specifies the format of dates for all user facing dates
+var PBDateFmt = string("2006-01-02")
+
+// PBDateSaveFmt specifies the format of dates for database write operations
+var PBDateSaveFmt = string("2006-01-02")
+
+func dateToString(d time.Time) string {
+	if d.Year() < 1900 {
+		return "N/A"
+	}
+	return d.Format(PBDateFmt)
+}
+
+func dateToDBStr(d time.Time) string {
+	if d.Year() < 1900 {
+		return "0000-00-00"
+	}
+	return d.Format(PBDateSaveFmt)
+}
+
+func stringToDate(s string) time.Time {
+	var d time.Time
+	var e error
+	s = strings.ToUpper(s)
+	if len(s) == 0 || s == "N/A" || s == "NA" {
+		d = time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)
+	} else {
+		d, e = time.Parse(PBDateFmt, s)
+		if e != nil {
+			fmt.Printf("input: %s  -- Date parse error: %v\n", s, e)
+			d = time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)
+		}
+	}
+	return d
+}
 
 // ACPTUNKNONW - x are general values for Yes, No, NotApplicable, Unknown
 const (

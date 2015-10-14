@@ -16,6 +16,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 import _ "github.com/go-sql-driver/mysql"
@@ -97,6 +98,8 @@ type personDetail struct {
 	AcceptedHealthInsurance int
 	AcceptedDentalInsurance int
 	Accepted401K            int
+	Hire                    time.Time
+	Termination             time.Time
 }
 
 type searchResults struct {
@@ -122,7 +125,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 var chttp = http.NewServeMux()
 
 func main() {
-	db, err := sql.Open("mysql", "sman:@/smtest")
+	db, err := sql.Open("mysql", "sman:@/smtest?charset=utf8&parseTime=True")
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)
 	}

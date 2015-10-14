@@ -66,7 +66,7 @@ func adminReadDetails(uid int, d *personDetail) {
 			"Birthdate,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
 			"HomeState,HomePostalCode,HomeCountry,"+
 			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+
-			"jobcode,"+
+			"jobcode,hire,termination,"+
 			"mgruid,deptcode,cocode,StateOfEmployment,"+
 			"CountryOfEmployment,PreferredName,"+
 			"EmergencyContactName,EmergencyContactPhone,EligibleForRehire "+
@@ -83,7 +83,7 @@ func adminReadDetails(uid int, d *personDetail) {
 			&d.Birthdate, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 			&d.HomeState, &d.HomePostalCode, &d.HomeCountry,
 			&d.AcceptedHealthInsurance, &d.AcceptedDentalInsurance, &d.Accepted401K,
-			&d.JobCode, /*&d.hire, &d.termination,*/
+			&d.JobCode, &d.Hire, &d.Termination,
 			&d.MgrUID, &d.DeptCode, &d.CoCode, &d.StateOfEmployment,
 			&d.CountryOfEmployment, &d.PreferredName,
 			&d.EmergencyContactName, &d.EmergencyContactPhone, &d.EligibleForRehire))
@@ -111,6 +111,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		"compToString":      compensationTypeToString,
 		"deductionToString": deductionToString,
 		"acceptIntToString": acceptIntToString,
+		"dateToString":      dateToString,
 	}
 
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")

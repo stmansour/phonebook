@@ -89,11 +89,13 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.Accepted401K = acceptTypeToInt(r.FormValue("Accepted401K"))
 	d.AcceptedDentalInsurance = acceptTypeToInt(r.FormValue("AcceptedDentalInsurance"))
 	d.AcceptedHealthInsurance = acceptTypeToInt(r.FormValue("AcceptedHealthInsurance"))
+	d.Hire = stringToDate(r.FormValue("Hire"))
+	d.Termination = stringToDate(r.FormValue("Termination"))
 
 	parseCompensation(&d)
 	parseDeductions(&d)
 
-	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=? where people.uid=?")
+	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?,Hire=?,Termination=? where people.uid=?")
 	errcheck(err)
 	_, err = update.Exec(
 		d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName,
@@ -102,6 +104,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.PositionControlNumber, d.DeptCode,
 		d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
 		d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance,
+		dateToDBStr(d.Hire), dateToDBStr(d.Termination),
 		uid)
 
 	if nil != err {

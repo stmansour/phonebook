@@ -18,6 +18,8 @@
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Phone:</td><td>{{.EmergencyContactPhone}}</td><tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Company Code:</td><td>{{.Company.CoCode}} &nbsp;<span class="Note">({{.Company.Company}})</span></a></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.JobCode}} &nbsp;<span class="Note">({{.JobTitle}})</span></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Hire Date:</td><td>{{dateToString .Hire}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Termination Date:</td><td>{{dateToString .Termination}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Compensation Type:</td>
 	<td>
 		{{range .Comps}}
