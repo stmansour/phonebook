@@ -19,7 +19,13 @@ th {
 	color:#000;
 	background-color:#EEE;
 }
-
+table { 
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.Space {
+	font-size: 5;
+}
 .Note {
 	font-style: italic;
 	font-size: 11px;
@@ -45,10 +51,17 @@ th {
 }
 .Attrib {
 	font-weight: lighter;
-	font-size: 14px;
+	font-size: 8px;
 	color:000;
 }
 
+input[type="text"], textarea {
+  background-color : #ffffd1; 
+}
+select,option {
+    background: #ffffd1;
+    color:#000;
+}
 a, u {
 	text-decoration: none;
 }
