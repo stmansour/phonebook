@@ -77,9 +77,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.OfficePhone = r.FormValue("OfficePhone")
 	d.OfficeFax = r.FormValue("OfficeFax")
 	d.CellPhone = r.FormValue("CellPhone")
-	d.Department = r.FormValue("Department")
-	d.Status = strToInt(r.FormValue("Status"))
-	d.EligibleForRehire = strToInt(r.FormValue("EligibleForRehire"))
+	d.DeptName = r.FormValue("DeptName")
+	d.Status = activeToInt(r.FormValue("Status")) // active or inactive, old values included "not-active"
+	d.EligibleForRehire = yesnoToInt(r.FormValue("EligibleForRehire"))
 	d.LastReview = r.FormValue("LastReview")
 	d.NextReview = r.FormValue("NextReview")
 	d.Birthdate = r.FormValue("Birthdate")

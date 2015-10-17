@@ -28,6 +28,7 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		"compToString":      compensationTypeToString,
 		"acceptIntToString": acceptIntToString,
 		"dateToString":      dateToString,
+		"dateYear":          dateYear,
 	}
 
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")

@@ -7,7 +7,7 @@
 <body>
 <p>&nbsp;</p>
 <p class="DetailPerson">{{.FirstName}} {{.LastName}} <a href="/editDetail/{{.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
-<div class="Employer"><a href="/company/{{.Company.CoCode}}">{{.Company.Company}}</a></div><br>
+<div class="Employer"><a href="/company/{{.Company.CoCode}}">{{.Company.Name}}</a></div><br>
 <div class="JobTitle">{{.JobTitle}}</div></p>
 <br>
 <br>
@@ -16,7 +16,7 @@
 <tr><td width="50px"></td><td class="Attrib" align="right">phone:</td><td>{{.OfficePhone}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">cell:</td><td>{{.CellPhone}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">cost center:</td><td>{{.CostCenter}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">department:</td><td>{{.Department}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">department:</td><td>{{.DeptName}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">manager:</td><td><a href="/detail/{{.MgrUID}}">{{.MgrName}}</a></td></tr>
 {{if .Reports | len}}
 <tr><td></td><td></td><td></td></tr>

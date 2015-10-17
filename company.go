@@ -8,12 +8,12 @@ import (
 )
 
 func getCompanyInfo(cocode int, c *company) {
-	s := fmt.Sprintf("select cocode,company,address,address2,city,state,postalcode,country,phone,fax,email from companies where cocode=%d", cocode)
+	s := fmt.Sprintf("select cocode,name,designation,address,address2,city,state,postalcode,country,phone,fax,email from companies where cocode=%d", cocode)
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		errcheck(rows.Scan(&c.CoCode, &c.Company, &c.Address, &c.Address2, &c.City, &c.State, &c.PostalCode, &c.Country, &c.Phone, &c.Fax, &c.Email))
+		errcheck(rows.Scan(&c.CoCode, &c.Name, &c.Designation, &c.Address, &c.Address2, &c.City, &c.State, &c.PostalCode, &c.Country, &c.Phone, &c.Fax, &c.Email))
 	}
 	errcheck(rows.Err())
 }

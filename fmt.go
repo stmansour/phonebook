@@ -6,6 +6,64 @@ import (
 	"time"
 )
 
+// Constant values for employment status as well as any yes/no value
+const (
+	INACTIVE = 0
+	ACTIVE   = 1
+	NO       = 0
+	YES      = 1
+)
+
+func yesnoToInt(s string) int {
+	s = strings.ToUpper(s)
+	switch {
+	case s == "Y" || s == "YES":
+		return YES
+	case s == "N" || s == "NO":
+		return NO
+	default:
+		fmt.Printf("Unrecognized yes/no response: %s. Returning default = No\n", s)
+		return NO
+	}
+}
+
+func yesnoToString(i int) string {
+	switch {
+	case i == NO:
+		return "No"
+	case i == YES:
+		return "Yes"
+	default:
+		fmt.Printf("Value for yes/no out of range: %d. Returning default = No\n", i)
+		return "No"
+	}
+}
+
+func activeToInt(s string) int {
+	s = strings.ToUpper(s)
+	switch {
+	case s == "ACTIVE":
+		return ACTIVE
+	case s == "INACTIVE" || s == "IN-ACTIVE" || s == "NOTACTIVE" || s == "NOT-ACTIVE":
+		return INACTIVE
+	default:
+		fmt.Printf("Unrecognized yes/no response: %s. Returning default = Inactive\n", s)
+		return NO
+	}
+}
+
+func activeToString(i int) string {
+	switch {
+	case i == INACTIVE:
+		return "Inactive"
+	case i == ACTIVE:
+		return "Active"
+	default:
+		fmt.Printf("Value for yes/no out of range: %d. Returning default = Inactive\n", i)
+		return "Inactive"
+	}
+}
+
 // PBDateFmt specifies the format of dates for all user facing dates
 var PBDateFmt = string("2006-01-02")
 
@@ -26,6 +84,10 @@ func dateToDBStr(d time.Time) string {
 	return d.Format(PBDateSaveFmt)
 }
 
+func dateYear(d time.Time) int {
+	return d.Year()
+}
+
 func stringToDate(s string) time.Time {
 	var d time.Time
 	var e error
@@ -42,12 +104,13 @@ func stringToDate(s string) time.Time {
 	return d
 }
 
-// ACPTUNKNONW - x are general values for Yes, No, NotApplicable, Unknown
+// ACPTUNKNOWN - x are general values for Yes, No, NotApplicable, Unknown
 const (
-	ACPTUNKNOWN = iota // no selection
-	ACPTYES            // Yes
-	ACPTNO             // No
-	ACPTNOTAPPL        // N/A
+	ACPTUNKNOWN = 0           // no selection
+	ACPTYES     = 1           // Yes
+	ACPTNO      = 2           // No
+	ACPTNOTAPPL = 3           // N/A
+	ACPTLAST    = ACPTNOTAPPL // loops go from ACPTUNKNOWN to ACPTLAST
 )
 
 func acceptTypeToInt(s string) int {
@@ -74,16 +137,16 @@ func acceptIntToString(i int) string {
 	var s string
 	switch {
 	case i == ACPTUNKNOWN:
-		s = "UNKNOWN"
+		s = "Unknown"
 	case i == ACPTYES:
-		s = "YES"
+		s = "Yes"
 	case i == ACPTNO:
-		s = "NO"
+		s = "No"
 	case i == ACPTNOTAPPL:
 		s = "N/A"
 	default:
 		fmt.Printf("Unknown acceptance value: %d\n", i)
-		s = "UNKNOWN"
+		s = "Unknown"
 	}
 	return s
 }

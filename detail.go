@@ -39,7 +39,7 @@ func getNameFromUID(uid int) string {
 
 func getDepartmentFromDeptCode(deptcode int) string {
 	var name string
-	rows, err := Phonebook.db.Query("select department from departments where deptcode=?", deptcode)
+	rows, err := Phonebook.db.Query("select name from departments where deptcode=?", deptcode)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -50,13 +50,13 @@ func getDepartmentFromDeptCode(deptcode int) string {
 }
 
 func getReports(uid int, d *personDetail) {
-	s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone,department from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
+	s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
 		var m person
-		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.Department))
+		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone))
 		d.Reports = append(d.Reports, m)
 	}
 	errcheck(rows.Err())
@@ -77,7 +77,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		errcheck(rows.Err())
 		d.MgrName = getNameFromUID(d.MgrUID)
-		d.Department = getDepartmentFromDeptCode(d.DeptCode)
+		d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
 		d.JobTitle = getJobTitle(d.JobCode)
 		getCompanyInfo(d.CoCode, &d.Company)
 		getReports(uid, &d)

@@ -51,18 +51,31 @@ table {
 }
 .Attrib {
 	font-weight: lighter;
-	font-size: 8px;
+	font-size: 10px;
 	color:000;
 }
-
-input[type="text"], textarea {
-  background-color : #ffffd1; 
+table {
+	border: 0;
 }
+input, textarea {
+  background-color : #ffffd1;
+  font-size: 14px;
+}
+
+input.HR {
+  background-color : #ddeeff;
+}
+
 select,option {
     background: #ffffd1;
     color:#000;
 }
-a, u {
+
+select.HR, option.HR {
+  background-color : #ddeeff;
+}
+
+a {
 	text-decoration: none;
 }
 

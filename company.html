@@ -2,11 +2,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - {{.Company}}</title>
+<title>Accord Directory - {{.Name}}</title>
 </head>
 <body>
 <p>&nbsp;</p>
-<p class="DetailPerson">{{.Company}}</p>
+<p class="DetailPerson">{{.Name}}</p>
 <table border="0" >
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">address:</td>
     <td>
@@ -15,6 +15,7 @@
         {{.City}}, {{.State}}&nbsp;&nbsp;{{.PostalCode}}, {{.Country}}
     </td>
 </tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">designation:</td><td>{{.Designation}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">phone:</td><td>{{.Phone}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">fax:</td><td>{{.Fax}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">email:</td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td></tr>

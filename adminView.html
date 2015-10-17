@@ -16,7 +16,7 @@
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Preferred Name:</td><td>{{.PreferredName}} <span class="Note">&nbsp;(a preferred first name or nickname)</span></td><tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Name:</td><td>{{.EmergencyContactName}}</td><tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Phone:</td><td>{{.EmergencyContactPhone}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Company Code:</td><td>{{.Company.CoCode}} &nbsp;<span class="Note">({{.Company.Company}})</span></a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Company Code:</td><td>{{.Company.CoCode}} &nbsp;<span class="Note">({{.Company.Name}})</span></a></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.JobCode}} &nbsp;<span class="Note">({{.JobTitle}})</span></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Hire Date:</td><td>{{dateToString .Hire}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Termination Date:</td><td>{{dateToString .Termination}}</td></tr>
@@ -38,7 +38,7 @@
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Dental Insurance:</td><td>{{acceptIntToString .AcceptedDentalInsurance}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted 401K:</td><td>{{acceptIntToString .Accepted401K}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Position Control No:</td><td>{{.PositionControlNumber}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.DeptCode}} &nbsp;<span class="Note">({{.Department}})</span>	</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.DeptCode}} &nbsp;<span class="Note">({{.DeptName}})</span>	</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{if gt .Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Address:</td>
 	<td>
@@ -52,7 +52,6 @@
 <tr><td width="50px"></td><td class="Attrib" align="right">Office fax:</td><td>{{.OfficeFax}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">Cell:</td><td>{{.CellPhone}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">Cost Center:</td><td>{{.CostCenter}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Department:</td><td>{{.Department}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">EligibleForRehire:</td><td>{{if gt .EligibleForRehire 0}}Yes{{else}}No{{end}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">Manager:</td><td><a href="/detail/{{.MgrUID}}">{{.MgrName}}</a></td></tr>
 

@@ -60,7 +60,7 @@ func adminReadDetails(uid int, d *personDetail) {
 	//-----------------------------------------------------------
 	rows, err := Phonebook.db.Query(
 		"select LastName,FirstName,MiddleName,Salutation,"+
-			"CostCenter,Status,Department,PositionControlNumber,"+
+			"CostCenter,Status,PositionControlNumber,"+
 			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+
 			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+
 			"Birthdate,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
@@ -77,7 +77,7 @@ func adminReadDetails(uid int, d *personDetail) {
 	for rows.Next() {
 		errcheck(rows.Scan(
 			&d.LastName, &d.FirstName, &d.MiddleName, &d.Salutation,
-			&d.CostCenter, &d.Status, &d.Department, &d.PositionControlNumber,
+			&d.CostCenter, &d.Status, &d.PositionControlNumber,
 			&d.OfficePhone, &d.OfficeFax, &d.CellPhone, &d.PrimaryEmail,
 			&d.SecondaryEmail, &d.EligibleForRehire, &d.LastReview, &d.NextReview,
 			&d.Birthdate, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
@@ -90,12 +90,15 @@ func adminReadDetails(uid int, d *personDetail) {
 	}
 	errcheck(rows.Err())
 	d.MgrName = getNameFromUID(d.MgrUID)
-	d.Department = getDepartmentFromDeptCode(d.DeptCode)
+	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
 	d.JobTitle = getJobTitle(d.JobCode)
 	getCompanyInfo(d.CoCode, &d.Company)
 	getReports(uid, d)
 	getCompensationStr(uid, d) // fills the d.Comps array too
 	getDeductionsStr(d)
+	d.NameToCoCode = Phonebook.NameToCoCode
+	d.NameToJobCode = Phonebook.NameToJobCode
+	d.AcceptCodeToName = Phonebook.AcceptCodeToName
 }
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,6 +115,8 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		"deductionToString": deductionToString,
 		"acceptIntToString": acceptIntToString,
 		"dateToString":      dateToString,
+		"activeToString":    activeToInt,
+		"yesnoToString":     yesnoToInt,
 	}
 
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")

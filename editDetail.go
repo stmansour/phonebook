@@ -30,7 +30,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	errcheck(rows.Err())
 	d.MgrName = getNameFromUID(d.MgrUID)
-	d.Department = getDepartmentFromDeptCode(d.DeptCode)
+	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
 	d.JobTitle = getJobTitle(d.JobCode)
 	getCompanyInfo(d.CoCode, &d.Company)
 	getReports(uid, &d)

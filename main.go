@@ -24,21 +24,27 @@ import _ "github.com/go-sql-driver/mysql"
 // Phonebook is the global application structure providing
 // information that any function might need.
 var Phonebook struct {
-	db *sql.DB
+	db               *sql.DB
+	CoCodeToName     map[int]string // map from company code to company name
+	NameToCoCode     map[string]int // map from company name to company code
+	NameToJobCode    map[string]int // jobtitle to jobcode
+	AcceptCodeToName map[int]string // Acceptance to jobcode
+	NameToDeptCode   map[string]int // department name to dept code
 }
 
 type company struct {
-	CoCode     int
-	Company    string
-	Address    string
-	Address2   string
-	City       string
-	State      string
-	PostalCode string
-	Country    string
-	Phone      string
-	Fax        string
-	Email      string
+	CoCode      int
+	Name        string
+	Designation string
+	Address     string
+	Address2    string
+	City        string
+	State       string
+	PostalCode  string
+	Country     string
+	Phone       string
+	Fax         string
+	Email       string
 }
 
 type person struct {
@@ -49,7 +55,8 @@ type person struct {
 	JobCode      int
 	OfficePhone  string
 	CellPhone    string
-	Department   string
+	DeptCode     int
+	DeptName     string
 	Employer     string
 }
 
@@ -61,7 +68,7 @@ type personDetail struct {
 	JobCode                 int
 	OfficePhone             string
 	CellPhone               string
-	Department              string
+	DeptName                string
 	MiddleName              string
 	Salutation              string
 	Status                  int
@@ -100,6 +107,10 @@ type personDetail struct {
 	Accepted401K            int
 	Hire                    time.Time
 	Termination             time.Time
+	NameToCoCode            map[string]int
+	NameToJobCode           map[string]int
+	AcceptCodeToName        map[int]string
+	NameToDeptCode          map[string]int // department name to dept code
 }
 
 type searchResults struct {
@@ -122,6 +133,49 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func loadMaps() {
+	var code int
+	var name string
+
+	Phonebook.CoCodeToName = make(map[int]string)
+	Phonebook.NameToCoCode = make(map[string]int)
+	Phonebook.AcceptCodeToName = make(map[int]string)
+
+	rows, err := Phonebook.db.Query("select cocode,name from companies")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		errcheck(rows.Scan(&code, &name))
+		Phonebook.CoCodeToName[code] = name
+		Phonebook.NameToCoCode[name] = code
+	}
+	errcheck(rows.Err())
+
+	Phonebook.NameToJobCode = make(map[string]int)
+	rows, err = Phonebook.db.Query("select jobcode,title from jobtitles")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		errcheck(rows.Scan(&code, &name))
+		Phonebook.NameToJobCode[name] = code
+	}
+	errcheck(rows.Err())
+
+	Phonebook.NameToDeptCode = make(map[string]int)
+	rows, err = Phonebook.db.Query("select deptcode,title from jobtitles")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		errcheck(rows.Scan(&code, &name))
+		Phonebook.NameToJobCode[name] = code
+	}
+	errcheck(rows.Err())
+
+	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {
+		Phonebook.AcceptCodeToName[i] = acceptIntToString(i)
+	}
+}
+
 var chttp = http.NewServeMux()
 
 func main() {
@@ -136,6 +190,7 @@ func main() {
 		fmt.Printf("db.Ping: Error = %v\n", err)
 	}
 	Phonebook.db = db
+	loadMaps()
 
 	chttp.Handle("/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/", HomeHandler)
