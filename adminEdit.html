@@ -102,24 +102,32 @@
 		{{$ahi := .AcceptedHealthInsurance}}
 		{{$adi := .AcceptedDentalInsurance}}
 		{{$a4K := .Accepted401K}}
+		{{$dept := .DeptCode}}
 		<p></p>
 
 		<table >
 			<tr>
-				<td class="Attrib">COMPANY <select class="HR" name="CoCode">{{range $name, $cocode := .NameToCoCode}}<option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="Attrib">COMPANY</td><td><select class="HR" name="CoCode">{{range $name, $cocode := .NameToCoCode}}<option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">JOB TITLE <select class="HR" name="JobCode">{{range $name, $jobcode := .NameToJobCode}}<option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="Attrib">JOB TITLE</td><td><select class="HR" name="JobCode">{{range $name, $jobcode := .NameToJobCode}}<option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+			</tr>
+		</table>
+		<p></p>
+		<table >
+			<tr>
+				<td class="Attrib">DEPARTMENT</td><td><select class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
 				<td class="Attrib">COST CENTER</td><td><input class="HR" type=text name="CostCenter" value="{{.CostCenter}}" size="15"></td>
 			</tr>
 		</table>
 		<p></p>
 		<table >
-			<tr><td class="Attrib">HIRE DATE</td><td><input class="HR" type=date name="Hire" value="{{dateToString .Hire}}" maxlength="2" size="10"></td>
-				<td width="20"></td>
-				<td class="Attrib">STATUS <select name="Status" class="HR"> <option value="Active" {{if eq .Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .Status 0}}selected{{end}}>Inactive</option> </select> </td>
-				<td width="20"></td>
-				<td class="Attrib">ELIGIBLE FOR REHIRE <select name="EligibleForRehire" class="HR"> <option value="No" {{if eq .Status 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .Status 1}}selected{{end}}>Yes</option> </select></td>
+			<tr>
+			    <td class="Attrib">HIRE DATE</td><td><input class="HR" type=date name="Hire" value="{{dateToString .Hire}}" maxlength="2" size="10"></td>
+				<td width="10"></td>
+				<td class="Attrib">STATUS</td><td><select name="Status" class="HR"> <option value="Active" {{if eq .Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .Status 0}}selected{{end}}>Inactive</option> </select></td>
+				<td width="10"></td>
+				<td class="Attrib">ELIGIBLE FOR REHIRE </span><select name="EligibleForRehire" class="HR"> <option value="No" {{if eq .Status 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .Status 1}}selected{{end}}>Yes</option> </select></td>
 			</tr>
 		</table>
 		<p></p>
@@ -140,18 +148,16 @@
 				<td class="Attrib">ACCEPTED 401K <select name="Accepted401K" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $a4K}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 			</tr>
 		</table>
-
-{{$termyear := dateYear .Termination}}
+		<p></p>
+		{{$termyear := dateYear .Termination}}
+		<p></p>
 		<table >
 			<tr><td class="Attrib">COMPENSATION TYPE</td> <td> <input class="HR" type=text name="CompensationStr" value="{{.CompensationStr}}" size="35"> </td></tr>
-			<tr><td class="Attrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination" {{if gt $termyear 1900}}value="{{dateToString .Termination}}"{{end}}size="10"></td></tr>
+			<tr><td class="Attrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination" {{if gt $termyear 1900}}value="{{dateToString .Termination}}"{{end}}size="10"><span class="Note"> Only active when Status is set to Inactive</span></td></tr>
 			<tr><td class="Attrib">Deductions:</td><td><input class="HR" type=text name="DeductionsStr" value="{{.DeductionsStr}}" size="35"></td></tr>
-			<tr><td class="Attrib">DeptCode:</td><td><input class="HR" type=text name="DeptCode" value="{{.DeptCode}}" size="35"></td></tr>
 			<tr><td class="Attrib">PositionControlNumber:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.PositionControlNumber}}" size="35"></td></tr>
 			<tr><td class="Attrib">Birthdate:</td><td><input class="HR" type=text name="Birthdate" value="{{.Birthdate}}" size="35"></td></tr>
 			<tr><td class="Attrib">Mgr UID:</td><td><input class="HR" type=text name="MgrUID" value="{{.MgrUID}}" size="35"></td></tr>
-
-
 		</table>
 
 		<hr>

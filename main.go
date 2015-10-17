@@ -162,12 +162,12 @@ func loadMaps() {
 	errcheck(rows.Err())
 
 	Phonebook.NameToDeptCode = make(map[string]int)
-	rows, err = Phonebook.db.Query("select deptcode,title from jobtitles")
+	rows, err = Phonebook.db.Query("select deptcode,name from departments")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
 		errcheck(rows.Scan(&code, &name))
-		Phonebook.NameToJobCode[name] = code
+		Phonebook.NameToDeptCode[name] = code
 	}
 	errcheck(rows.Err())
 

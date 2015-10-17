@@ -99,6 +99,7 @@ func adminReadDetails(uid int, d *personDetail) {
 	d.NameToCoCode = Phonebook.NameToCoCode
 	d.NameToJobCode = Phonebook.NameToJobCode
 	d.AcceptCodeToName = Phonebook.AcceptCodeToName
+	d.NameToDeptCode = Phonebook.NameToDeptCode
 }
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
