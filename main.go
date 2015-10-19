@@ -95,7 +95,7 @@ type personDetail struct {
 	CoCode                  int
 	MgrUID                  int
 	JobTitle                string
-	CostCenter              string
+	Class                   string
 	MgrName                 string
 	Reports                 []person
 	Deductions              []int

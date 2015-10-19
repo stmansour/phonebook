@@ -20,7 +20,7 @@
 			</tr>
 			<tr>
 				<td>
-					<select>
+					<select name="Salutation">
 						<option value="none">none</option>
 						<option value="Mr">Mr</option>
 						<option value="Ms">Ms</option>
@@ -117,7 +117,7 @@
 			<tr>
 				<td class="Attrib">DEPARTMENT</td><td><select class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">COST CENTER</td><td><input class="HR" type=text name="CostCenter" value="{{.CostCenter}}" size="15"></td>
+				<td class="Attrib">COST CENTER</td><td><input class="HR" type=text name="Class" value="{{.Class}}" size="15"></td>
 			</tr>
 		</table>
 		<p></p>

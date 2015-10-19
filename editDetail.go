@@ -22,11 +22,11 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d.UID = uid
-	rows, err := Phonebook.db.Query("select lastname,firstname,jobcode,primaryemail,officephone,cellphone,deptcode,cocode,mgruid,costcenter from people where uid=?", uid)
+	rows, err := Phonebook.db.Query("select lastname,firstname,jobcode,primaryemail,officephone,cellphone,deptcode,cocode,mgruid,Class from people where uid=?", uid)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.JobCode, &d.PrimaryEmail, &d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.CostCenter))
+		errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.JobCode, &d.PrimaryEmail, &d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.Class))
 	}
 	errcheck(rows.Err())
 	d.MgrName = getNameFromUID(d.MgrUID)

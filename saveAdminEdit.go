@@ -101,6 +101,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	if "none" == d.Salutation {
 		d.Salutation = ""
 	}
+	fmt.Printf("Salutation = %s\n", d.Salutation)
 
 	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?,Hire=?,Termination=? where people.uid=?")
 	errcheck(err)

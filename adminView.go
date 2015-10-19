@@ -60,7 +60,7 @@ func adminReadDetails(uid int, d *personDetail) {
 	//-----------------------------------------------------------
 	rows, err := Phonebook.db.Query(
 		"select LastName,FirstName,MiddleName,Salutation,"+
-			"CostCenter,Status,PositionControlNumber,"+
+			"Class,Status,PositionControlNumber,"+
 			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+
 			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+
 			"Birthdate,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
@@ -77,7 +77,7 @@ func adminReadDetails(uid int, d *personDetail) {
 	for rows.Next() {
 		errcheck(rows.Scan(
 			&d.LastName, &d.FirstName, &d.MiddleName, &d.Salutation,
-			&d.CostCenter, &d.Status, &d.PositionControlNumber,
+			&d.Class, &d.Status, &d.PositionControlNumber,
 			&d.OfficePhone, &d.OfficeFax, &d.CellPhone, &d.PrimaryEmail,
 			&d.SecondaryEmail, &d.EligibleForRehire, &d.LastReview, &d.NextReview,
 			&d.Birthdate, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
