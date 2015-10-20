@@ -21,13 +21,13 @@ func strToInt(s string) int {
 }
 
 // This is a short term function. Should be replaced by a multi instanced dropdown selector
-func parseCompensation(d *personDetail) {
-	ca := strings.Split(d.CompensationStr, ",")
-	d.Comps = d.Comps[:0] // clear it
-	for i := 0; i < len(ca); i++ {
-		d.Comps = append(d.Comps, strToInt(ca[i]))
-	}
-}
+// func parseCompensation(d *personDetail) {
+// 	ca := strings.Split(d.CompensationStr, ",")
+// 	d.Comps = d.Comps[:0] // clear it
+// 	for i := 0; i < len(ca); i++ {
+// 		d.Comps = append(d.Comps, strToInt(ca[i]))
+// 	}
+// }
 
 // This is a short term function. Should be replaced by a multi instanced dropdown selector
 func parseDeductions(d *personDetail) {
@@ -83,7 +83,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.LastReview = r.FormValue("LastReview")
 	d.NextReview = r.FormValue("NextReview")
 	d.Birthdate = r.FormValue("Birthdate")
-	d.CompensationStr = r.FormValue("CompensationStr")
+	// d.CompensationStr = r.FormValue("CompensationStr")
 	d.DeductionsStr = r.FormValue("DeductionsStr")
 	d.MgrUID = strToInt(r.FormValue("MgrUID"))
 	d.Accepted401K = acceptTypeToInt(r.FormValue("Accepted401K"))
@@ -92,7 +92,15 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.Hire = stringToDate(r.FormValue("Hire"))
 	d.Termination = stringToDate(r.FormValue("Termination"))
 
-	parseCompensation(&d)
+	initMyComps(&d)
+	d.Comps = d.Comps[:0] // clear it
+	for i := 0; i < len(d.MyComps); i++ {
+		if "" != r.FormValue(d.MyComps[i].Name) {
+			d.Comps = append(d.Comps, d.MyComps[i].CompCode)
+		}
+	}
+
+	// parseCompensation(&d)
 	parseDeductions(&d)
 
 	//----------------------
@@ -101,7 +109,6 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	if "none" == d.Salutation {
 		d.Salutation = ""
 	}
-	fmt.Printf("Salutation = %s\n", d.Salutation)
 
 	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?,Hire=?,Termination=? where people.uid=?")
 	errcheck(err)

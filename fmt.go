@@ -151,17 +151,6 @@ func acceptIntToString(i int) string {
 	return s
 }
 
-// CTUNSET through CTBYPRODUCTION are constants that
-// represent the compensation type. A person will have one or more
-// of these records in the compensation table
-const (
-	CTUNSET        = iota // compensation type is unknown
-	CTSALARY              // Salary
-	CTHOURLY              // Paid hourly
-	CTCOMMISSION          // Paid by commission
-	CTBYPRODUCTION        // Paid by production or by piecework
-)
-
 // DDUNKNOWN through DDTAXES are constants to represent
 // the enumerations for Deductions
 const (
@@ -246,9 +235,22 @@ func deductionToString(i int) string {
 	return s
 }
 
+// CTUNSET through CTBYPRODUCTION are constants that
+// represent the compensation type. A person will have one or more
+// of these records in the compensation table
+const (
+	CTUNSET        = iota // compensation type is unknown
+	CTSALARY              // Salary
+	CTHOURLY              // Paid hourly
+	CTCOMMISSION          // Paid by commission
+	CTBYPRODUCTION        // Paid by production or by piecework
+	CTEND                 // all compensation ids are less than this
+)
+
 func compensationTypeToInt(s string) int {
 	var i int
 	s = strings.ToUpper(s)
+	s = strings.Replace(s, " ", "", -1)
 	switch {
 	case s == "UNSET":
 		i = CTUNSET
@@ -271,17 +273,17 @@ func compensationTypeToString(i int) string {
 	var s string
 	switch {
 	case i == CTUNSET:
-		s = "UNSET"
+		s = "Unset"
 	case i == CTSALARY:
-		s = "SALARY"
+		s = "Salary"
 	case i == CTHOURLY:
-		s = "HOURLY"
+		s = "Hourly"
 	case i == CTCOMMISSION:
-		s = "COMMISSION"
+		s = "Commission"
 	case i == CTBYPRODUCTION:
-		s = "BYPRODUCTION"
+		s = "By Production"
 	default:
-		s = "UKNOWN COMPENSATION TYPE"
+		s = "Uknown compensation type"
 	}
 	return s
 }

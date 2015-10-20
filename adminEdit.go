@@ -21,8 +21,8 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
-
-	adminReadDetails(uid, &d)
+	d.UID = uid
+	adminReadDetails(&d)
 
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,

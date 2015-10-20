@@ -7,8 +7,8 @@ import (
 	"text/template"
 )
 
-func getComps(uid int, d *personDetail) {
-	rows, err := Phonebook.db.Query("select type from compensation where uid=?", uid)
+func getCompensations(d *personDetail) {
+	rows, err := Phonebook.db.Query("select type from compensation where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()
 	var c int
@@ -19,13 +19,36 @@ func getComps(uid int, d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func getCompensationStr(uid int, d *personDetail) {
-	getComps(uid, d)
+func getCompensationStr(d *personDetail) {
+	getCompensations(d)
 	d.CompensationStr = ""
 	for i := 0; i < len(d.Comps); i++ {
 		d.CompensationStr += fmt.Sprintf("%d", d.Comps[i])
 		if i+1 < len(d.Comps) {
 			d.CompensationStr += ", "
+		}
+	}
+}
+
+func initMyComps(d *personDetail) {
+	d.MyComps = make([]myComp, 0)
+	for i := CTUNSET + 1; i < CTEND; i++ {
+		var c myComp
+		c.CompCode = i
+		c.Name = compensationTypeToString(i)
+		c.HaveIt = 0
+		d.MyComps = append(d.MyComps, c)
+	}
+}
+
+func buildMyCompsMap(d *personDetail) {
+	getCompensations(d)
+	initMyComps(d)
+	for i := 0; i < len(d.MyComps); i++ {
+		for j := 0; j < len(d.Comps); j++ {
+			if d.Comps[j] == d.MyComps[i].CompCode {
+				d.MyComps[i].HaveIt = 1
+			}
 		}
 	}
 }
@@ -53,8 +76,8 @@ func getDeductionsStr(d *personDetail) {
 	}
 }
 
-func adminReadDetails(uid int, d *personDetail) {
-	d.UID = uid
+func adminReadDetails(d *personDetail) {
+
 	//-----------------------------------------------------------
 	// query for all the fields in table People
 	//-----------------------------------------------------------
@@ -71,7 +94,7 @@ func adminReadDetails(uid int, d *personDetail) {
 			"CountryOfEmployment,PreferredName,"+
 			"EmergencyContactName,EmergencyContactPhone,EligibleForRehire "+
 			"from people where uid=?",
-		uid)
+		d.UID)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -93,13 +116,14 @@ func adminReadDetails(uid int, d *personDetail) {
 	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
 	d.JobTitle = getJobTitle(d.JobCode)
 	getCompanyInfo(d.CoCode, &d.Company)
-	getReports(uid, d)
-	getCompensationStr(uid, d) // fills the d.Comps array too
+	getReports(d.UID, d)
+	buildMyCompsMap(d) // fills the d.MyCompsMap and d.Comps array too
 	getDeductionsStr(d)
 	d.NameToCoCode = Phonebook.NameToCoCode
 	d.NameToJobCode = Phonebook.NameToJobCode
 	d.AcceptCodeToName = Phonebook.AcceptCodeToName
 	d.NameToDeptCode = Phonebook.NameToDeptCode
+	//d.CompMap = Phonebook.CompMap
 }
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +133,8 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
-		adminReadDetails(uid, &d)
+		d.UID = uid
+		adminReadDetails(&d)
 	}
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,
@@ -119,7 +144,6 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		"activeToString":    activeToInt,
 		"yesnoToString":     yesnoToInt,
 	}
-
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	err := t.Execute(w, &d)
 	if nil != err {

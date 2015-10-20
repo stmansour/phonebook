@@ -60,7 +60,6 @@
 			</tr>
 		</table>
 
-
 		<table>
 			<tr>
 				<td class="Attrib">HOME STREET ADDRESS</td>
@@ -97,6 +96,7 @@
 				<td><input type=text name="EmergencyContactPhone" Value="{{.EmergencyContactPhone}}" size="13"></td>
 			</tr>
 		</table>
+
 		{{$comp := .CoCode}}
 		{{$job := .JobCode}}
 		{{$ahi := .AcceptedHealthInsurance}}
@@ -113,6 +113,7 @@
 			</tr>
 		</table>
 		<p></p>
+
 		<table >
 			<tr>
 				<td class="Attrib">DEPARTMENT</td><td><select class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
@@ -150,19 +151,26 @@
 		</table>
 		<p></p>
 		{{$termyear := dateYear .Termination}}
+	
+		<table>
+		<tr>
+		<td class="Attrib">COMPENSATION&nbsp;</td>
+		<td class="HRBoxed"> {{range .MyComps}}<input type="checkbox" name="{{.Name}}" value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
+		</tr>
+		</table>
 		<p></p>
-		<table >
-			<tr><td class="Attrib">COMPENSATION TYPE</td> <td> <input class="HR" type=text name="CompensationStr" value="{{.CompensationStr}}" size="35"> </td></tr>
+	
+		<table>
 			<tr><td class="Attrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination" {{if gt $termyear 1900}}value="{{dateToString .Termination}}"{{end}}size="10"><span class="Note"> Only active when Status is set to Inactive</span></td></tr>
 			<tr><td class="Attrib">Deductions:</td><td><input class="HR" type=text name="DeductionsStr" value="{{.DeductionsStr}}" size="35"></td></tr>
 			<tr><td class="Attrib">PositionControlNumber:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.PositionControlNumber}}" size="35"></td></tr>
 			<tr><td class="Attrib">Birthdate:</td><td><input class="HR" type=text name="Birthdate" value="{{.Birthdate}}" size="35"></td></tr>
 			<tr><td class="Attrib">Mgr UID:</td><td><input class="HR" type=text name="MgrUID" value="{{.MgrUID}}" size="35"></td></tr>
 		</table>
-
 		<hr>
 		<input type="submit" name="action" value="Update">  <a href="/adminView/{{.UID}}">Cancel</a>
-	</form>
 
+
+    </form>
 </body>
 </html>

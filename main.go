@@ -21,17 +21,6 @@ import (
 
 import _ "github.com/go-sql-driver/mysql"
 
-// Phonebook is the global application structure providing
-// information that any function might need.
-var Phonebook struct {
-	db               *sql.DB
-	CoCodeToName     map[int]string // map from company code to company name
-	NameToCoCode     map[string]int // map from company name to company code
-	NameToJobCode    map[string]int // jobtitle to jobcode
-	AcceptCodeToName map[int]string // Acceptance to jobcode
-	NameToDeptCode   map[string]int // department name to dept code
-}
-
 type company struct {
 	CoCode      int
 	Name        string
@@ -58,6 +47,12 @@ type person struct {
 	DeptCode     int
 	DeptName     string
 	Employer     string
+}
+
+type myComp struct {
+	CompCode int    // code for this comp type
+	Name     string // name for this code
+	HaveIt   int    // 0 = does not have it, 1 = has it
 }
 
 type personDetail struct {
@@ -111,11 +106,24 @@ type personDetail struct {
 	NameToJobCode           map[string]int
 	AcceptCodeToName        map[int]string
 	NameToDeptCode          map[string]int // department name to dept code
+	MyComps                 []myComp
 }
 
 type searchResults struct {
 	Query   string
 	Matches []person
+}
+
+// Phonebook is the global application structure providing
+// information that any function might need.
+var Phonebook struct {
+	db               *sql.DB
+	CoCodeToName     map[int]string // map from company code to company name
+	NameToCoCode     map[string]int // map from company name to company code
+	NameToJobCode    map[string]int // jobtitle to jobcode
+	AcceptCodeToName map[int]string // Acceptance to jobcode
+	NameToDeptCode   map[string]int // department name to dept code
+	// CompMap          map[int]string // compensation types
 }
 
 func errcheck(err error) {
@@ -174,6 +182,14 @@ func loadMaps() {
 	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {
 		Phonebook.AcceptCodeToName[i] = acceptIntToString(i)
 	}
+
+	// Phonebook.CompMap = map[int]string{
+	// 	CTSALARY:       "Salary",
+	// 	CTHOURLY:       "Hourly",
+	// 	CTCOMMISSION:   "Commission",
+	// 	CTBYPRODUCTION: "By Production",
+	// }
+
 }
 
 var chttp = http.NewServeMux()
