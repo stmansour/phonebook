@@ -71,14 +71,25 @@ var PBDateFmt = string("2006-01-02")
 var PBDateSaveFmt = string("2006-01-02")
 
 func dateToString(d time.Time) string {
-	if d.Year() < 1900 {
+	if d.Year() < 1970 {
 		return "N/A"
 	}
 	return d.Format(PBDateFmt)
 }
 
+// Returns 1(jan) thru 12() if the string matches
+// if not, it returns 0
+func monthStringToInt(s string) int {
+	for i := 0; i < len(PhonebookUI.Months); i++ {
+		if PhonebookUI.Months[i][0:3] == s[0:3] {
+			return i + 1
+		}
+	}
+	return 0
+}
+
 func dateToDBStr(d time.Time) string {
-	if d.Year() < 1900 {
+	if d.Year() < 1970 {
 		return "0000-00-00"
 	}
 	return d.Format(PBDateSaveFmt)
@@ -168,7 +179,7 @@ const (
 	DDTAXES               // taxes
 )
 
-func deductionTypeToInt(s string) int {
+func deductionStringToInt(s string) int {
 	var i int
 	s = strings.ToUpper(s)
 	s = strings.Replace(s, " ", "", -1)
@@ -202,7 +213,7 @@ func deductionTypeToInt(s string) int {
 	return i
 }
 
-func deductionToString(i int) string {
+func deductionIntToString(i int) string {
 	var s string
 	switch {
 	case i == DD401K:

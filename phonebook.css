@@ -65,7 +65,10 @@ table {
 table {
 	border: 0;
 }
-input, textarea {
+
+input[type="text"],
+input[type="email"], 
+input[type="number"], textarea {
   background-color : #ffffd1;
   font-size: 14px;
 }

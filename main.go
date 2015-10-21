@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -55,6 +56,12 @@ type myComp struct {
 	HaveIt   int    // 0 = does not have it, 1 = has it
 }
 
+type aDeduction struct {
+	DCode  int    // code for this deduction
+	Name   string // name for this deduction
+	HaveIt int    // 0 = does not have it, 1 = has it
+}
+
 type personDetail struct {
 	UID                     int
 	LastName                string
@@ -74,6 +81,8 @@ type personDetail struct {
 	LastReview              string
 	NextReview              string
 	Birthdate               string
+	BirthMonth              int
+	BirthDOM                int
 	HomeStreetAddress       string
 	HomeStreetAddress2      string
 	HomeCity                string
@@ -107,6 +116,7 @@ type personDetail struct {
 	AcceptCodeToName        map[int]string
 	NameToDeptCode          map[string]int // department name to dept code
 	MyComps                 []myComp
+	MyDeductions            []aDeduction
 }
 
 type searchResults struct {
@@ -114,16 +124,25 @@ type searchResults struct {
 	Matches []person
 }
 
-// Phonebook is the global application structure providing
-// information that any function might need.
-var Phonebook struct {
-	db               *sql.DB
+// uiSupport is an umbrella structure in which we can pass many useful
+// data objects to the UI
+type uiSupport struct {
 	CoCodeToName     map[int]string // map from company code to company name
 	NameToCoCode     map[string]int // map from company name to company code
 	NameToJobCode    map[string]int // jobtitle to jobcode
 	AcceptCodeToName map[int]string // Acceptance to jobcode
 	NameToDeptCode   map[string]int // department name to dept code
-	// CompMap          map[int]string // compensation types
+	Months           []string       // a map for month number to month name
+	D                *personDetail
+}
+
+// PhonebookUI is the instance of uiSupport used by this app
+var PhonebookUI uiSupport
+
+// Phonebook is the global application structure providing
+// information that any function might need.
+var Phonebook struct {
+	db *sql.DB
 }
 
 func errcheck(err error) {
@@ -145,57 +164,54 @@ func loadMaps() {
 	var code int
 	var name string
 
-	Phonebook.CoCodeToName = make(map[int]string)
-	Phonebook.NameToCoCode = make(map[string]int)
-	Phonebook.AcceptCodeToName = make(map[int]string)
+	PhonebookUI.CoCodeToName = make(map[int]string)
+	PhonebookUI.NameToCoCode = make(map[string]int)
+	PhonebookUI.AcceptCodeToName = make(map[int]string)
 
 	rows, err := Phonebook.db.Query("select cocode,name from companies")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
 		errcheck(rows.Scan(&code, &name))
-		Phonebook.CoCodeToName[code] = name
-		Phonebook.NameToCoCode[name] = code
+		PhonebookUI.CoCodeToName[code] = name
+		PhonebookUI.NameToCoCode[name] = code
 	}
 	errcheck(rows.Err())
 
-	Phonebook.NameToJobCode = make(map[string]int)
+	PhonebookUI.NameToJobCode = make(map[string]int)
 	rows, err = Phonebook.db.Query("select jobcode,title from jobtitles")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
 		errcheck(rows.Scan(&code, &name))
-		Phonebook.NameToJobCode[name] = code
+		PhonebookUI.NameToJobCode[name] = code
 	}
 	errcheck(rows.Err())
 
-	Phonebook.NameToDeptCode = make(map[string]int)
+	PhonebookUI.NameToDeptCode = make(map[string]int)
 	rows, err = Phonebook.db.Query("select deptcode,name from departments")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
 		errcheck(rows.Scan(&code, &name))
-		Phonebook.NameToDeptCode[name] = code
+		PhonebookUI.NameToDeptCode[name] = code
 	}
 	errcheck(rows.Err())
-
 	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {
-		Phonebook.AcceptCodeToName[i] = acceptIntToString(i)
+		PhonebookUI.AcceptCodeToName[i] = acceptIntToString(i)
 	}
 
-	// Phonebook.CompMap = map[int]string{
-	// 	CTSALARY:       "Salary",
-	// 	CTHOURLY:       "Hourly",
-	// 	CTCOMMISSION:   "Commission",
-	// 	CTBYPRODUCTION: "By Production",
-	// }
-
+	PhonebookUI.Months = []string{
+		"January", "February", "March", "April",
+		"May", "June", "July", "August",
+		"September", "October", "November", "December",
+	}
 }
 
 var chttp = http.NewServeMux()
 
 func main() {
-	db, err := sql.Open("mysql", "sman:@/smtest?charset=utf8&parseTime=True")
+	db, err := sql.Open("mysql", "sman:@/accord?charset=utf8&parseTime=True")
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)
 	}
@@ -219,5 +235,9 @@ func main() {
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/company/", companyHandler)
 
-	http.ListenAndServe(":8250", nil)
+	err = http.ListenAndServe(":8250", nil)
+	if nil != err {
+		fmt.Printf("*** Error on http.ListenAndServe: %v\n", err)
+		os.Exit(1)
+	}
 }

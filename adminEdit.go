@@ -29,10 +29,12 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		"acceptIntToString": acceptIntToString,
 		"dateToString":      dateToString,
 		"dateYear":          dateYear,
+		"monthStringToInt":  monthStringToInt,
 	}
 
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
-	err = t.Execute(w, &d)
+	PhonebookUI.D = &d
+	err = t.Execute(w, &PhonebookUI)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

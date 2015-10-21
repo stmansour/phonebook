@@ -21,15 +21,6 @@ func strToInt(s string) int {
 }
 
 // This is a short term function. Should be replaced by a multi instanced dropdown selector
-// func parseCompensation(d *personDetail) {
-// 	ca := strings.Split(d.CompensationStr, ",")
-// 	d.Comps = d.Comps[:0] // clear it
-// 	for i := 0; i < len(ca); i++ {
-// 		d.Comps = append(d.Comps, strToInt(ca[i]))
-// 	}
-// }
-
-// This is a short term function. Should be replaced by a multi instanced dropdown selector
 func parseDeductions(d *personDetail) {
 	ca := strings.Split(d.DeductionsStr, ",")
 	d.Deductions = d.Deductions[:0] // clear it
@@ -82,9 +73,8 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.EligibleForRehire = yesnoToInt(r.FormValue("EligibleForRehire"))
 	d.LastReview = r.FormValue("LastReview")
 	d.NextReview = r.FormValue("NextReview")
-	d.Birthdate = r.FormValue("Birthdate")
-	// d.CompensationStr = r.FormValue("CompensationStr")
-	d.DeductionsStr = r.FormValue("DeductionsStr")
+	d.BirthDOM = strToInt(r.FormValue("BirthDOM"))
+	d.BirthMonth = strToInt(r.FormValue("BirthMonth"))
 	d.MgrUID = strToInt(r.FormValue("MgrUID"))
 	d.Accepted401K = acceptTypeToInt(r.FormValue("Accepted401K"))
 	d.AcceptedDentalInsurance = acceptTypeToInt(r.FormValue("AcceptedDentalInsurance"))
@@ -92,16 +82,17 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.Hire = stringToDate(r.FormValue("Hire"))
 	d.Termination = stringToDate(r.FormValue("Termination"))
 
+	//fmt.Printf("r.FormValue(BirthMonth) = %s,  convert to num -> %d\n", r.FormValue("BirthMonth"), d.BirthMonth)
+
 	initMyComps(&d)
-	d.Comps = d.Comps[:0] // clear it
+	d.Comps = d.Comps[:0] // clear the compensation types list
 	for i := 0; i < len(d.MyComps); i++ {
 		if "" != r.FormValue(d.MyComps[i].Name) {
 			d.Comps = append(d.Comps, d.MyComps[i].CompCode)
 		}
 	}
 
-	// parseCompensation(&d)
-	parseDeductions(&d)
+	initMyDeductions(&d)
 
 	//----------------------
 	// Handle dropdowns...
@@ -110,7 +101,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.Salutation = ""
 	}
 
-	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?,Hire=?,Termination=? where people.uid=?")
+	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?,Hire=?,Termination=?,BirthMonth=?,BirthDOM=? where people.uid=?")
 	errcheck(err)
 	_, err = update.Exec(
 		d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName,
@@ -120,6 +111,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
 		d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance,
 		dateToDBStr(d.Hire), dateToDBStr(d.Termination),
+		d.BirthMonth, d.BirthDOM,
 		uid)
 
 	if nil != err {
@@ -149,9 +141,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	errcheck(err)
 	ct, err = Phonebook.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
 	errcheck(err)
-	for i := 0; i < len(d.Deductions); i++ {
-		_, err := ct.Exec(d.UID, d.Deductions[i])
-		errcheck(err)
+	for i := 0; i < len(d.MyDeductions); i++ {
+		//fmt.Printf("%s = %s\n", d.MyDeductions[i].Name, r.FormValue(d.MyDeductions[i].Name))
+		if r.FormValue(d.MyDeductions[i].Name) != "" {
+			_, err := ct.Exec(d.UID, d.MyDeductions[i].DCode)
+			errcheck(err)
+		}
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/adminView/%d", uid), http.StatusFound)

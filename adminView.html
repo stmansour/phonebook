@@ -2,64 +2,64 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - Details  {{.FirstName}} {{.LastName}}</title>
+<title>Accord Directory - Details  {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
 <body>
 <h2>Accord Directory Administrator View</h2>
 <p>Authorized personnel only</p>
-<a href="/adminEdit/{{.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
+<a href="/adminEdit/{{.D.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
 <table border="0" >
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Salutation:</td><td>{{.Salutation}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Last Name:</td><td>{{.LastName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Middle Name:</td><td>{{.MiddleName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">First Name:</td><td>{{.FirstName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Preferred Name:</td><td>{{.PreferredName}} <span class="Note">&nbsp;(a preferred first name or nickname)</span></td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Name:</td><td>{{.EmergencyContactName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Phone:</td><td>{{.EmergencyContactPhone}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Company Code:</td><td>{{.Company.CoCode}} &nbsp;<span class="Note">({{.Company.Name}})</span></a></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.JobCode}} &nbsp;<span class="Note">({{.JobTitle}})</span></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Hire Date:</td><td>{{dateToString .Hire}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Termination Date:</td><td>{{dateToString .Termination}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Salutation:</td><td>{{.D.Salutation}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Last Name:</td><td>{{.D.LastName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Middle Name:</td><td>{{.D.MiddleName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">First Name:</td><td>{{.D.FirstName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Preferred Name:</td><td>{{.D.PreferredName}} <span class="Note">&nbsp;(a preferred first name or nickname)</span></td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Name:</td><td>{{.D.EmergencyContactName}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Phone:</td><td>{{.D.EmergencyContactPhone}}</td><tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Company Code:</td><td>{{.D.Company.CoCode}} &nbsp;<span class="Note">({{.D.Company.Name}})</span></a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.D.JobCode}} &nbsp;<span class="Note">({{.D.JobTitle}})</span></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Hire Date:</td><td>{{dateToString .D.Hire}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Termination Date:</td><td>{{dateToString .D.Termination}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Compensation Type:</td>
 	<td>
-		{{range .Comps}}
+		{{range .D.Comps}}
 		    {{compToString .}}<br>
 		{{end}}
 	</td>
 </tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Deductions:</td>
 	<td>
-		{{range .Deductions}}
+		{{range .D.Deductions}}
 		    {{deductionToString .}}<br>
 		{{end}}
 	</td>
 </tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Health Insurance:</td><td>{{acceptIntToString .AcceptedHealthInsurance}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Dental Insurance:</td><td>{{acceptIntToString .AcceptedDentalInsurance}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted 401K:</td><td>{{acceptIntToString .Accepted401K}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Position Control No:</td><td>{{.PositionControlNumber}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.DeptCode}} &nbsp;<span class="Note">({{.DeptName}})</span>	</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{if gt .Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Health Insurance:</td><td>{{acceptIntToString .D.AcceptedHealthInsurance}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Dental Insurance:</td><td>{{acceptIntToString .D.AcceptedDentalInsurance}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted 401K:</td><td>{{acceptIntToString .D.Accepted401K}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Position Control No:</td><td>{{.D.PositionControlNumber}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.D.DeptCode}} &nbsp;<span class="Note">({{.D.DeptName}})</span>	</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{if gt .D.Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Address:</td>
 	<td>
-		{{.HomeStreetAddress}}<br>
-		{{if .HomeStreetAddress2}}{{.HomeStreetAddress2}}<br>{{end}}
-		{{.HomeCity}}, {{.HomeState}} {{.HomePostalCode}}, {{.HomeCountry}}
+		{{.D.HomeStreetAddress}}<br>
+		{{if .D.HomeStreetAddress2}}{{.D.HomeStreetAddress2}}<br>{{end}}
+		{{.D.HomeCity}}, {{.D.HomeState}} {{.D.HomePostalCode}}, {{.D.HomeCountry}}
 	</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Primary email:</td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Secondary email:</td><td><a href="mailto:{{.SecondaryEmail}}">{{.SecondaryEmail}}</a></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Office phone:</td><td>{{.OfficePhone}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Office fax:</td><td>{{.OfficeFax}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Cell:</td><td>{{.CellPhone}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Cost Center:</td><td>{{.Class}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">EligibleForRehire:</td><td>{{if gt .EligibleForRehire 0}}Yes{{else}}No{{end}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Manager:</td><td><a href="/detail/{{.MgrUID}}">{{.MgrName}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Primary email:</td><td><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Secondary email:</td><td><a href="mailto:{{.D.SecondaryEmail}}">{{.D.SecondaryEmail}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Office phone:</td><td>{{.D.OfficePhone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Office fax:</td><td>{{.D.OfficeFax}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Cell:</td><td>{{.D.CellPhone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Cost Center:</td><td>{{.D.Class}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EligibleForRehire:</td><td>{{if gt .D.EligibleForRehire 0}}Yes{{else}}No{{end}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">Manager:</td><td><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td></tr>
 
-{{if .Reports | len}}
+{{if .D.Reports | len}}
 <tr><td></td><td></td><td></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">direct reports:</td>
     <td valign="top">
-        {{range .Reports}}
+        {{range .D.Reports}}
         <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
         {{end}}
     </td>
@@ -67,6 +67,6 @@
 {{end}}
 </table>
 <hr>
-<a href="/search/">Search</a> &nbsp;&nbsp;&nbsp;<a  href="/detail/{{.UID}}">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEdit/{{.UID}}">AdminEdit</a>
+<a href="/search/">Search</a> &nbsp;&nbsp;&nbsp;<a  href="/detail/{{.D.UID}}">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEdit/{{.D.UID}}">AdminEdit</a>
 </body>
 </html>

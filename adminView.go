@@ -66,12 +66,40 @@ func getDeductions(d *personDetail) {
 }
 
 func getDeductionsStr(d *personDetail) {
-	getDeductions(d)
+	//getDeductions(d)
 	d.DeductionsStr = ""
 	for i := 0; i < len(d.Deductions); i++ {
 		d.DeductionsStr += fmt.Sprintf("%d", d.Deductions[i])
 		if i+1 < len(d.Deductions) {
 			d.DeductionsStr += ", "
+		}
+	}
+}
+
+func initMyDeductions(d *personDetail) {
+	rows, err := Phonebook.db.Query("select dcode,name from DeductionList")
+	errcheck(err)
+	defer rows.Close()
+	d.MyDeductions = make([]aDeduction, 0)
+	for rows.Next() {
+		var b aDeduction
+		errcheck(rows.Scan(&b.DCode, &b.Name))
+		if b.DCode == DDUNKNOWN {
+			continue
+		}
+		d.MyDeductions = append(d.MyDeductions, b)
+	}
+	errcheck(rows.Err())
+}
+
+func loadDeductionList(d *personDetail) {
+	getDeductions(d)
+	initMyDeductions(d)
+	for i := 0; i < len(d.MyDeductions); i++ {
+		for j := 0; j < len(d.Deductions); j++ {
+			if d.Deductions[j] == d.MyDeductions[i].DCode {
+				d.MyDeductions[i].HaveIt = 1
+			}
 		}
 	}
 }
@@ -86,7 +114,7 @@ func adminReadDetails(d *personDetail) {
 			"Class,Status,PositionControlNumber,"+
 			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+
 			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+
-			"Birthdate,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
+			"Birthdate,BirthMonth,BirthDOM,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
 			"HomeState,HomePostalCode,HomeCountry,"+
 			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+
 			"jobcode,hire,termination,"+
@@ -103,7 +131,7 @@ func adminReadDetails(d *personDetail) {
 			&d.Class, &d.Status, &d.PositionControlNumber,
 			&d.OfficePhone, &d.OfficeFax, &d.CellPhone, &d.PrimaryEmail,
 			&d.SecondaryEmail, &d.EligibleForRehire, &d.LastReview, &d.NextReview,
-			&d.Birthdate, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
+			&d.Birthdate, &d.BirthMonth, &d.BirthDOM, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 			&d.HomeState, &d.HomePostalCode, &d.HomeCountry,
 			&d.AcceptedHealthInsurance, &d.AcceptedDentalInsurance, &d.Accepted401K,
 			&d.JobCode, &d.Hire, &d.Termination,
@@ -118,12 +146,8 @@ func adminReadDetails(d *personDetail) {
 	getCompanyInfo(d.CoCode, &d.Company)
 	getReports(d.UID, d)
 	buildMyCompsMap(d) // fills the d.MyCompsMap and d.Comps array too
+	loadDeductionList(d)
 	getDeductionsStr(d)
-	d.NameToCoCode = Phonebook.NameToCoCode
-	d.NameToJobCode = Phonebook.NameToJobCode
-	d.AcceptCodeToName = Phonebook.AcceptCodeToName
-	d.NameToDeptCode = Phonebook.NameToDeptCode
-	//d.CompMap = Phonebook.CompMap
 }
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -138,15 +162,19 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,
-		"deductionToString": deductionToString,
+		"deductionToString": deductionIntToString,
 		"acceptIntToString": acceptIntToString,
 		"dateToString":      dateToString,
 		"activeToString":    activeToInt,
 		"yesnoToString":     yesnoToInt,
+		"monthStringToInt":  monthStringToInt,
 	}
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
-	err := t.Execute(w, &d)
+	PhonebookUI.D = &d
+	//fmt.Printf("PhonebookUI = %#v\n", PhonebookUI)
+	err := t.Execute(w, &PhonebookUI)
 	if nil != err {
+		fmt.Printf("Error executing template: %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
