@@ -30,6 +30,11 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		"dateToString":      dateToString,
 		"dateYear":          dateYear,
 		"monthStringToInt":  monthStringToInt,
+		"add":               add,
+		"sub":               sub,
+		"rmd":               rmd,
+		"mul":               mul,
+		"div":               div,
 	}
 
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")

@@ -14,6 +14,12 @@ const (
 	YES      = 1
 )
 
+func add(a, b int) int { return a + b }
+func sub(b, a int) int { return a - b }
+func mul(a, b int) int { return a * b }
+func div(b, a int) int { return a / b }
+func rmd(b, a int) int { return a - ((a / b) * b) }
+
 func yesnoToInt(s string) int {
 	s = strings.ToUpper(s)
 	switch {
