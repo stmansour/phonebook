@@ -16,4 +16,4 @@ package: phonebook
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
 
 publish: package
-	deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
+	cd tmp;deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
