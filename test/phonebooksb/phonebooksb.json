@@ -18,7 +18,7 @@
 	    	},
 	    	{
 	    		"UID": "pb01",
-	    		"Name": "ponebook",
+	    		"Name": "phonebook",
 	    		"Repo": "jenkins-snapshot/phonebook/latest",
 	    		"UPort": 8250,
 	    		"IsTest": false,
