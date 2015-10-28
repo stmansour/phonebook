@@ -14,12 +14,15 @@
 {{if .Query}}
 <table cellpadding="2">
 <tr><th align="left">Last Name</th><th align="left">First Name</th><th align="left">Email</th>
-    <th align="left">Office Phone</th><th align="left">Cell Phone</th></tr>
+    <th align="left">Office Phone</th><th align="left">Cell Phone</th><th>Department</th></tr>
 	{{range .Matches}}
     	<tr>
-    	<td><a href="/detail/{{.UID}}">{{.LastName}}</a></td><td><a href="/detail/{{.UID}}">{{.FirstName}}</td><td><a href="mailto:{{.PrimaryEmail}}">
-    	{{.PrimaryEmail}}</a></td>
-    	<td>{{.OfficePhone}}</td><td>{{.CellPhone}}</td><td>{{.Employer}}</td>
+    	<td><a href="/detail/{{.UID}}">{{.LastName}}</a></td>
+    	<td><a href="/detail/{{.UID}}">{{.FirstName}}</td>
+    	<td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
+    	<td>{{.OfficePhone}}</td>
+    	<td>{{.CellPhone}}</td>
+    	<td>{{.DeptName}}</td>
     	</tr>
 	{{end}}
 </table>

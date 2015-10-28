@@ -208,10 +208,22 @@ func loadMaps() {
 	}
 }
 
+func shutdownHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "<html><body><h1>shutting down in 5 seconds!</h1></body></html>")
+	go func() {
+		time.Sleep(time.Duration(5 * time.Second))
+		os.Exit(0)
+	}()
+}
+
+func statusHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "OK")
+}
+
 var chttp = http.NewServeMux()
 
 func main() {
-	db, err := sql.Open("mysql", "sman:@/accord?charset=utf8&parseTime=True")
+	db, err := sql.Open("mysql", "ec2-user:@/accord?charset=utf8&parseTime=True")
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)
 	}
@@ -234,6 +246,8 @@ func main() {
 	http.HandleFunc("/adminView/", adminViewHandler)
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/company/", companyHandler)
+	http.HandleFunc("/status/", statusHandler)
+	http.HandleFunc("/shutdown/", shutdownHandler)
 
 	err = http.ListenAndServe(":8250", nil)
 	if nil != err {
