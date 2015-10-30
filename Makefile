@@ -26,4 +26,4 @@ pkgimages:
 	tar cvf pbimages.tar images; gzip pbimages.tar
 
 pubimages:
-	deployfile.sh pbimages.tar.gz jenkins-snapshot/phonebook/latest
+	/usr/local/accord/bin/deployfile.sh pbimages.tar.gz jenkins-snapshot/phonebook/latest
