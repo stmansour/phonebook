@@ -153,6 +153,7 @@ func adminReadDetails(d *personDetail) {
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	var d personDetail
 	d.Reports = make([]person, 0)
+	d.Image = "/images/anon.png"
 	path := "/adminView/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {

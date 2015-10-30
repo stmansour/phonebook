@@ -65,6 +65,7 @@ func getReports(uid int, d *personDetail) {
 func detailHandler(w http.ResponseWriter, r *http.Request) {
 	var d personDetail
 	d.Reports = make([]person, 0)
+	d.Image = "/images/anon.png"
 	uidstr := r.RequestURI[8:]
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)

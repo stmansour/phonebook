@@ -4,25 +4,54 @@
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
 <title>Accord Directory - Search</title>
 </head>
-<body>
-<h1>Accord Directory</h1>
-<form action="/search/" method="POST">
-	<div>Search: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
-</form>
-<hr>
-<p>{{if .Query}}{{.Matches | len}} results for "{{.Query}}"{{else}}Enter a search string{{end}}</p>
-{{if .Query}}
-<table cellpadding="2">
-<tr><th align="left">Last Name</th><th align="left">First Name</th><th align="left">Email</th>
-    <th align="left">Office Phone</th><th align="left">Cell Phone</th><th>Department</th></tr>
+<body style='background-image: url("/images/NickBurbank.jpg")'>
+
+<table cellspacing="0" cellpadding="4" style="background-color:rgba(0, 0, 0, 0.8);" id="menuid">
+<tr>
+<td width=20></td>
+<td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
+<td width=5></td><td class="AppName">PHONEBOOK</td>
+<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
+<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td width=30></td><td class="MenuCmd">Companies</td>
+<td width=30></td>
+</tr>
+</table>
+
+<p></p>
+
+<table cellspacing="0" cellpadding="4" style="background-color:rgba(0, 0, 0, 0.8);" id="menuid">
+<tr>
+    <td width=20></td>
+    <td>
+    <form action="/search/" method="POST">
+    	<div>Search: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
+    </form>
+    </td>
+    <td width=20></td>
+</tr>
+    <td width=20></td>
+    <td>{{if .Query}}{{.Matches | len}} results for "{{.Query}}"{{else}}Enter a search string{{end}}</td>
+    <td width=20></td>
+</table>
+<p></p>
+{{if .Query}}    
+<table cellpadding="2" class="bd" id="personDetailText" >
+<tr>                 <th align="left">Last Name</th>
+    <th width=7></th><th align="left">First Name</th>
+    <th width=7></th><th align="left">Email</th>
+    <th width=7></th><th align="left">Office Phone</th>
+    <th width=7></th><th align="left">Cell Phone</th>
+    <th width=7></th><th>Department</th></tr>
+
 	{{range .Matches}}
     	<tr>
     	<td><a href="/detail/{{.UID}}">{{.LastName}}</a></td>
-    	<td><a href="/detail/{{.UID}}">{{.FirstName}}</td>
-    	<td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
-    	<td>{{.OfficePhone}}</td>
-    	<td>{{.CellPhone}}</td>
-    	<td>{{.DeptName}}</td>
+    	<td width=7></td><td><a href="/detail/{{.UID}}">{{.FirstName}}</td>
+    	<td width=7></td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
+    	<td width=7></td><td>{{.OfficePhone}}</td>
+    	<td width=7></td><td>{{.CellPhone}}</td>
+    	<td width=7></td><td>{{.DeptName}}</td>
     	</tr>
 	{{end}}
 </table>

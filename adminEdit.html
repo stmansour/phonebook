@@ -5,7 +5,21 @@
 	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
 	<title>Accord Directory - Admin - Directory Edit for {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
-<body>
+<body style='background-image: url("/images/AccordWatermark.png")'>
+
+<table cellspacing="0" cellpadding="4" class="bd" id="menuid">
+<tr>
+<td width=20></td>
+<td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
+<td width=5></td><td class="AppName">PHONEBOOK</td>
+<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
+<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td width=30></td><td class="MenuCmd">Companies</td>
+<td width=30></td>
+</tr>
+</table>
+
+
 	<h2>Admin Directory Edit - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</h2>
 
 	<form action="/saveAdminEdit/{{.D.UID}}" method="POST">
@@ -192,7 +206,7 @@
 			</tr>
 		</table>
 		<hr>
-		<input type="submit" name="action" value="Update">  <a href="/adminView/{{.D.UID}}">Cancel</a>
+		<input type="submit" name="action" value="Update">  <a href="/adminView/{{.D.UID}}" class="button">Cancel</a>
     </form>
 </body>
 </html>

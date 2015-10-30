@@ -4,7 +4,20 @@
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
 <title>Accord Directory - {{.Name}}</title>
 </head>
-<body>
+<body style='background-image: url("/images/AccordWatermark.png")'>
+
+<table cellspacing="0" cellpadding="4" class="bd" id="menuid">
+<tr>
+<td width=20></td>
+<td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
+<td width=5></td><td class="AppName">PHONEBOOK</td>
+<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
+<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td width=30></td><td class="MenuCmd">Companies</td>
+<td width=30></td>
+</tr>
+</table>
+
 <p>&nbsp;</p>
 <p class="DetailPerson">{{.Name}}</p>
 <table border="0" >

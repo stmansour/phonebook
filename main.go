@@ -101,6 +101,7 @@ type personDetail struct {
 	JobTitle                string
 	Class                   string
 	MgrName                 string
+	Image                   string // ptr to image -- URI
 	Reports                 []person
 	Deductions              []int
 	DeductionsStr           string

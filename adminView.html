@@ -4,60 +4,74 @@
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
 <title>Accord Directory - Details  {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
-<body>
+<body style='background-image: url("/images/AccordWatermark.png")'>
+
+<table cellspacing="0" cellpadding="4" class="bd" id="menuid">
+<tr>
+<td width=20></td>
+<td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
+<td width=5></td><td class="AppName">PHONEBOOK</td>
+<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
+<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td width=30></td><td class="MenuCmd">Companies</td>
+<td width=30></td>
+</tr>
+</table>
+
+
 <h2>Accord Directory Administrator View</h2>
 <p>Authorized personnel only</p>
 <a href="/adminEdit/{{.D.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
 <table border="0" >
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Salutation:</td><td>{{.D.Salutation}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Last Name:</td><td>{{.D.LastName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Middle Name:</td><td>{{.D.MiddleName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">First Name:</td><td>{{.D.FirstName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Preferred Name:</td><td>{{.D.PreferredName}} <span class="Note">&nbsp;(a preferred first name or nickname)</span></td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Name:</td><td>{{.D.EmergencyContactName}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Emergency Contact Phone:</td><td>{{.D.EmergencyContactPhone}}</td><tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Company Code:</td><td>{{.D.Company.CoCode}} &nbsp;<span class="Note">({{.D.Company.Name}})</span></a></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Job Code:</td><td>{{.D.JobCode}} &nbsp;<span class="Note">({{.D.JobTitle}})</span></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Hire Date:</td><td>{{dateToString .D.Hire}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Termination Date:</td><td>{{dateToString .D.Termination}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Compensation Type:</td>
+<tr><td class="Attrib">SALUTATION</td><td>{{.D.Salutation}}</td><tr>
+<tr><td class="Attrib">LAST NAME</td><td>{{.D.LastName}}</td><tr>
+<tr><td class="Attrib">MIDDLE NAME</td><td>{{.D.MiddleName}}</td><tr>
+<tr><td class="Attrib">FIRST NAME</td><td>{{.D.FirstName}}</td><tr>
+<tr><td class="Attrib">PREFERRED NAME</td><td>{{.D.PreferredName}} <span class="Note">&nbsp;(a preferred first name or nickname)</span></td><tr>
+<TR<td class="Attrib"  valign="top">EMERGENCY CONTACT NAME</td><td>{{.D.EmergencyContactName}}</td><tr>
+<tr><td class="Attrib">EMERGENCY CONTACT PHONE</td><td>{{.D.EmergencyContactPhone}}</td><tr>
+<tr><td class="Attrib">COMPANY CODE</td><td>{{.D.Company.CoCode}} &nbsp;<span class="Note">({{.D.Company.Name}})</span></a></td></tr>
+<TR<td class="Attrib">JOB CODE</td><td>{{.D.JobCode}} &nbsp;<span class="Note">({{.D.JobTitle}})</span></td></tr>
+<tr><td class="Attrib">HIRE DATE</td><td>{{dateToString .D.Hire}}</td></tr>
+<tr><td class="Attrib">TERMINATION DATE</td><td>{{dateToString .D.Termination}}</td></tr>
+<tr><td class="Attrib">COMPENSATION TYPE</td>
 	<td>
 		{{range .D.Comps}}
 		    {{compToString .}}<br>
 		{{end}}
 	</td>
 </tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Deductions:</td>
+<tr><td class="Attrib" align="right" valign="top">Deductions:</td>
 	<td>
 		{{range .D.Deductions}}
 		    {{deductionToString .}}<br>
 		{{end}}
 	</td>
 </tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Health Insurance:</td><td>{{acceptIntToString .D.AcceptedHealthInsurance}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted Dental Insurance:</td><td>{{acceptIntToString .D.AcceptedDentalInsurance}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Accepted 401K:</td><td>{{acceptIntToString .D.Accepted401K}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Position Control No:</td><td>{{.D.PositionControlNumber}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Department:</td><td>{{.D.DeptCode}} &nbsp;<span class="Note">({{.D.DeptName}})</span>	</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Status:</td><td>{{if gt .D.Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">Address:</td>
+<tr><td class="Attrib">ACCEPTED HEALTH INSURANCE</td><td>{{acceptIntToString .D.AcceptedHealthInsurance}}</td></tr>
+<tr><td class="Attrib">ACCEPTED DENTAL INSURANCE</td><td>{{acceptIntToString .D.AcceptedDentalInsurance}}</td></tr>
+<tr><td class="Attrib">ACCEPTED 401K</td><td>{{acceptIntToString .D.Accepted401K}}</td></tr>
+<tr><td class="Attrib">POSITION CONTROL NO</td><td>{{.D.PositionControlNumber}}</td></tr>
+<tr><td class="Attrib">DEPARTMENT</td><td>{{.D.DeptCode}} &nbsp;<span class="Note">({{.D.DeptName}})</span>	</td></tr>
+<tr><td class="Attrib">STATUS</td><td>{{if gt .D.Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
+<tr><td class="Attrib">ADDRESS</td>
 	<td>
 		{{.D.HomeStreetAddress}}<br>
 		{{if .D.HomeStreetAddress2}}{{.D.HomeStreetAddress2}}<br>{{end}}
 		{{.D.HomeCity}}, {{.D.HomeState}} {{.D.HomePostalCode}}, {{.D.HomeCountry}}
 	</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Primary email:</td><td><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Secondary email:</td><td><a href="mailto:{{.D.SecondaryEmail}}">{{.D.SecondaryEmail}}</a></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Office phone:</td><td>{{.D.OfficePhone}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Office fax:</td><td>{{.D.OfficeFax}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Cell:</td><td>{{.D.CellPhone}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Cost Center:</td><td>{{.D.Class}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">EligibleForRehire:</td><td>{{if gt .D.EligibleForRehire 0}}Yes{{else}}No{{end}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">Manager:</td><td><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td></tr>
+<tr><td class="Attrib">PRIMARY EMAIL</td><td><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td></tr>
+<tr><td class="Attrib">SECONDARY EMAIL</td><td><a href="mailto:{{.D.SecondaryEmail}}">{{.D.SecondaryEmail}}</a></td></tr>
+<tr><td class="Attrib">OFFICE PHONE</td><td>{{.D.OfficePhone}}</td></tr>
+<tr><td class="Attrib">OFFICE FAX</td><td>{{.D.OfficeFax}}</td></tr>
+<tr><td class="Attrib">CELL</td><td>{{.D.CellPhone}}</td></tr>
+<tr><td class="Attrib">CLASS</td><td>{{.D.Class}}</td></tr>
+<tr><td class="Attrib">ELIGIBLE FOR REHIRE</td><td>{{if gt .D.EligibleForRehire 0}}Yes{{else}}No{{end}}</td></tr>
+<tr><td class="Attrib">MANAGER</td><td><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td></tr>
 
 {{if .D.Reports | len}}
 <tr><td></td><td></td><td></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">direct reports:</td>
+<tr><td class="Attrib" align="right" valign="top">DIRECT REPORTS</td>
     <td valign="top">
         {{range .D.Reports}}
         <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
@@ -67,6 +81,6 @@
 {{end}}
 </table>
 <hr>
-<a href="/search/">Search</a> &nbsp;&nbsp;&nbsp;<a  href="/detail/{{.D.UID}}">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEdit/{{.D.UID}}">AdminEdit</a>
+<a href="/search/" class="button">Search</a> &nbsp;&nbsp;&nbsp;<a  href="/detail/{{.D.UID}}" class="button">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEdit/{{.D.UID}}" class="button">AdminEdit</a>
 </body>
 </html>

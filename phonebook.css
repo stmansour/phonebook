@@ -1,60 +1,171 @@
 @charset "ISO-8859-1";
 
-h1 {
- font-family: Georgia, "Arial Black", serif; 
- font-size: 36px; 
+.FirstName {
+    text-transform: uppercase;
+	font-weight: lighter;
+	font-size: 40px;
+	text-align: right;
+    font-weight:100;
+    -webkit-font-smoothing:antialiased;
+}
+.LastName {
+    text-transform: uppercase;
+	font-weight: bold;
+	font-size: 40px;
+	color: #B8B8B8;
+	text-align: right;
+}
+
+.Employer {
+    text-transform: uppercase;
+	font-size: 20px;
+	/*font-weight: lighter;*/
+	text-align: right;
+    -webkit-font-smoothing:antialiased;
+}
+
+.JobTitle {
+	/*font-weight: lighter;*/
+	font-size: 15px;
+	font-style: italic;
+	text-align: right;
+}
+
+.AttribVal {
+	font-weight: lighter;
+	background-color:rgba(0, 0, 0, 0.7);
+}
+.bd {
+	background-color:rgba(0, 0, 0, 0.7);
+}
+
+.Attribbd {
+	background-color:rgba(0, 0, 0, 0.7);
+}
+
+.Attrib, .Attribbd {
+	font-weight: lighter;
+	font-size: 9px;
+	text-align: right;
+	/*vertical-align: top;*/
+}
+#menuid {
+	color: white;
+}
+
+#personDetailText {
+	color: white;
+}
+
+#menuid a:link,
+#menuid a:visited, 
+#menuid a:hover, 
+#menuid a:active,
+#personDetailText a:link,
+#personDetailText a:visited, 
+#personDetailText a:hover, 
+#personDetailText a:active {
+  color:white;
+}
+
+.MenuCmd {
+	font-size: 20;
+	color: white;
+}
+
+.AppName {
+	font-size: 20;
+	color: #B8B8B8;
+}
+
+.button {
+  font: lighter 12px Arial;
+  border-radius: 9px;
+  text-decoration: none;
+  background-color: transparent;
+  padding: 4px 8px 4px 8px;
+  border-top: 1px solid white;
+  border-right: 1px solid white;
+  border-bottom: 1px solid white;
+  border-left: 1px solid white;
+}
+
+.blbutton {
+  font: lighter 12px Arial;
+  border-radius: 9px;
+  text-decoration: none;
+  background-color: transparent;
+  padding: 4px 8px 4px 8px;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+}
+
+.FirstName, .LastName, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, body, p, td, th {
+	font-family: "Kozuka Gothic Pro", "Helvetica Neue", "Letter Gothic Std", Helvetica, Arial, "Gill Sans", sans-serif;
+
 }
 
 body,p,td {
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	color:#000;
-	background-color:#FFF;
+	font-size: 12px;
+	background-color: transparent;
 }
 
 th {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 12px;
+    text-transform: uppercase;
+	font-size: 10px;
 	font-style: italic;
-	color:#000;
-	background-color:#EEE;
+	color: #aaa;
+	background-color: transparent;
 }
+
+th, td {
+    text-align: left;
+}
+
 table { 
     border-spacing: 0;
     border-collapse: collapse;
+    background-color:transparent;
+	border: 0;
+	background: transparent;
 }
+a {
+	text-decoration:none;
+}
+
+a:link { 
+	color: rgb(0, 0, 0) 
+} 
+a:visited { 
+	color: rgb(0,0,0)
+} 
+a:active { 
+	color: rgb(0,0,0) 
+}
+
+
+a:hover { 
+	text-decoration: underline;
+}
+
+
 .Space {
 	font-size: 5;
 }
+
 .Note {
 	font-style: italic;
 	font-size: 11px;
 }
 
-.JobTitle {
-	font-style: italic;
-	font-weight: lighter;
-	font-size: 12px;
-	color:000;
-    line-height: 50%;		
-}
 .DetailPerson {
 	font-size: 30px;
 	font-weight: bold;
     line-height: 3%;		
 }
-.Employer {
-	font-size: 16px;
-	font-family: Georgia, "Times New Roman", serif;
-	font-weight: lighter;
-    line-height: 50%;		
-}
-.Attrib {
-	font-weight: lighter;
-	font-size: 10px;
-	color:000;
-}
-
 .HRBoxed {
   border-color: #bbbbbb;
   border-style: solid;
@@ -62,15 +173,16 @@ table {
   background-color: #ddeeff;
 }
 
-table {
-	border: 0;
-}
 
 input[type="text"],
 input[type="email"], 
 input[type="number"], textarea {
   background-color : #ffffd1;
   font-size: 14px;
+}
+
+input[type="submit"] {
+	font-weight: bold;
 }
 
 input.HR {
@@ -86,17 +198,3 @@ select.HR, option.HR {
   background-color : #ddeeff;
 }
 
-a {
-	padding:4px 8px;
-	text-decoration:none;
-}
-
-a:link { color: rgb(0, 0, 0) } 
-a:visited { color: rgb(0,0,0) } 
-a:hover { 
-	color: rgb(90,90,90);
-	font-weight: bold;
-}
-
-		}
-a:active { color: rgb(0,0,0) }
