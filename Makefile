@@ -16,7 +16,7 @@ package: phonebook
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
 
 publish: package
-	cd tmp;deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
+	cd tmp;/usr/local/accord/bin/deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
 
 # Handling the images must be done from the development workstation.
 # make pkimages pubimages
