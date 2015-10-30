@@ -17,3 +17,13 @@ package: phonebook
 
 publish: package
 	cd tmp;deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
+
+# Handling the images must be done from the development workstation.
+# make pkimages pubimages
+# This will update artifactory with the images needed by phonebook
+# activate.sh will take care of downloading the images
+pkgimages:
+	tar cvf pbimages.tar images; gzip pbimages.tar
+
+pubimages:
+	deployfile.sh pbimages.tar.gz jenkins-snapshot/phonebook/latest

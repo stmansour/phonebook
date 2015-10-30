@@ -60,6 +60,11 @@ for arg do
 		# START
 		# Add the command to start your application...
 		#===============================================
+		if [ ! -d "./images" ]; then
+			/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
+			gunzip pbimages.tar.gz
+			tar xvf pbimages.tar
+		fi
 		./phonebook >phonebook.log 2>&1 &
 		echo "OK"
 		exit 0
