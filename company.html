@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - {{.Name}}</title>
+<title>Accord Directory - {{.CommonName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -19,21 +19,28 @@
 </table>
 
 <p>&nbsp;</p>
-<p class="DetailPerson">{{.Name}}</p>
+<p ><span class="LastName">{{.LegalName}}</span><br>
+<span class="FirstName">{{.CommonName}}</span></p>
 <table border="0" >
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">address:</td>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">ADDRESS</td>
     <td>
         {{.Address}}
         {{if .Address2}}<br>{{.Address2}}{{end}}<br>
         {{.City}}, {{.State}}&nbsp;&nbsp;{{.PostalCode}}, {{.Country}}
     </td>
 </tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">designation:</td><td>{{.Designation}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">phone:</td><td>{{.Phone}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">fax:</td><td>{{.Fax}}</td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">email:</td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.Designation}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td><td>{{.Phone}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">FAX</td><td>{{.Fax}}</td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">ACTIVE</td><td>{{if gt .Active 0}}Yes{{else}}No{{end}}</a></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EMPLOYS PEOPLE</td><td>{{if gt .EmploysPersonnel 0}}Yes{{else}}No{{end}}</a></td></tr>
+
 </table>
+
+ <p></p>
 <hr>
-<a href="/search/">Search</a>
+<p></p>
+<a href="/search/" class="blbutton">Search</a>
 </body>
 </html>

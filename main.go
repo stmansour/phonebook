@@ -23,18 +23,21 @@ import (
 import _ "github.com/go-sql-driver/mysql"
 
 type company struct {
-	CoCode      int
-	Name        string
-	Designation string
-	Address     string
-	Address2    string
-	City        string
-	State       string
-	PostalCode  string
-	Country     string
-	Phone       string
-	Fax         string
-	Email       string
+	CoCode           int
+	LegalName        string
+	CommonName       string
+	Address          string
+	Address2         string
+	City             string
+	State            string
+	PostalCode       string
+	Country          string
+	Phone            string
+	Fax              string
+	Email            string
+	Designation      string
+	Active           int
+	EmploysPersonnel int
 }
 
 type person struct {
@@ -169,7 +172,7 @@ func loadMaps() {
 	PhonebookUI.NameToCoCode = make(map[string]int)
 	PhonebookUI.AcceptCodeToName = make(map[int]string)
 
-	rows, err := Phonebook.db.Query("select cocode,name from companies")
+	rows, err := Phonebook.db.Query("select cocode,CommonName from companies")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
