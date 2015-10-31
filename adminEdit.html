@@ -20,25 +20,25 @@
 </table>
 
 
-	<h2>Admin Directory Edit - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</h2>
+	<h2>Admin Edit - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</h2>
 
 	<form action="/saveAdminEdit/{{.D.UID}}" method="POST">
 		<table >
 			<tr>
-				<td class="Attrib">TITLE</td>
-				<td class="Attrib">LAST NAME</td>
-				<td class="Attrib">MIDDLE</td>
-				<td class="Attrib">FIRST</td>
-				<td class="Attrib">PREFERRED</td>
+				<td class="edAttrib">TITLE</td>
+				<td class="edAttrib">LAST NAME</td>
+				<td class="edAttrib">MIDDLE</td>
+				<td class="edAttrib">FIRST</td>
+				<td class="edAttrib">PREFERRED</td>
 			</tr>
 			<tr>
 				<td>
 					<select name="Salutation">
 						<option value="none">none</option>
-						<option value="Mr">Mr</option>
-						<option value="Ms">Ms</option>
-						<option value="Mrs">Mrs</option>
-						<option value="Dr">Dr</option>
+						<option value="Mr" {{if eq .D.Salutation "Mr"}}selected{{end}}>Mr</option>
+						<option value="Ms" {{if eq .D.Salutation "Ms"}}selected{{end}}>Ms</option>
+						<option value="Mrs" {{if eq .D.Salutation "Mrs"}}selected{{end}}>Mrs</option>
+						<option value="Dr" {{if eq .D.Salutation "Dr"}}selected{{end}}>Dr</option>
 					</select>
 				</td>
 				<td><input type=text name="LastName" value="{{.D.LastName}}" size="20"></td>
@@ -50,9 +50,9 @@
 
 		<table>
 			<tr>
-				<td class="Attrib">OFFICE PHONE</td>
-				<td class="Attrib">OFFICE FAX</td>
-				<td class="Attrib">CELL</td>
+				<td class="edAttrib">OFFICE PHONE</td>
+				<td class="edAttrib">OFFICE FAX</td>
+				<td class="edAttrib">CELL</td>
 			</tr>
 			<tr>
 				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13"></td>
@@ -64,8 +64,8 @@
 
 		<table>
 			<tr>
-				<td class="Attrib">PRIMARY EMAIL</td>
-				<td class="Attrib">SECONDARYEMAIL</td>
+				<td class="edAttrib">PRIMARY EMAIL</td>
+				<td class="edAttrib">SECONDARYEMAIL</td>
 			</tr>
 			<tr>
 				<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35"></td>
@@ -75,8 +75,8 @@
 
 		<table>
 			<tr>
-				<td class="Attrib">HOME STREET ADDRESS</td>
-				<td class="Attrib">HOME STREET ADDRESS2</td>
+				<td class="edAttrib">HOME STREET ADDRESS</td>
+				<td class="edAttrib">HOME STREET ADDRESS2</td>
 			</tr>
 			<tr>
 				<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35"></td>
@@ -86,10 +86,10 @@
 
 		<table>
 			<tr>
-				<td class="Attrib">CITY</td>
-				<td class="Attrib">STATE</td>
-				<td class="Attrib">POSTAL CODE</td>
-				<td class="Attrib">COUNTRY</td>
+				<td class="edAttrib">CITY</td>
+				<td class="edAttrib">STATE</td>
+				<td class="edAttrib">POSTAL CODE</td>
+				<td class="edAttrib">COUNTRY</td>
 			</tr>
 			<tr>
 				<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25"></td>
@@ -101,8 +101,8 @@
 
 		<table>
 			<tr>
-				<td class="Attrib">EMERGENCY CONTACT NAME</td>
-				<td class="Attrib">PHONE</td>
+				<td class="edAttrib">EMERGENCY CONTACT NAME</td>
+				<td class="edAttrib">PHONE</td>
 			</tr>
 			<tr>
 				<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="25"></td>
@@ -120,53 +120,53 @@
 
 		<table >
 			<tr>
-				<td class="Attrib">COMPANY</td><td><select class="HR" name="CoCode">{{range $name, $cocode := .NameToCoCode}}<option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="edAttrib">COMPANY</td><td><select class="HR" name="CoCode">{{range $name, $cocode := .NameToCoCode}}<option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">JOB TITLE</td><td><select class="HR" name="JobCode">{{range $name, $jobcode := .NameToJobCode}}<option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="edAttrib">JOB TITLE</td><td><select class="HR" name="JobCode">{{range $name, $jobcode := .NameToJobCode}}<option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">MANAGER UID</td><td><input class="HR" type="number" name="MgrUID" value="{{.D.MgrUID}}" min="1" max="9999"></td>
+				<td class="edAttrib">MANAGER UID</td><td><input class="HR" type="number" name="MgrUID" value="{{.D.MgrUID}}" min="1" max="9999"></td>
 			</tr>
 		</table>
 		<p></p>
 
 		<table >
 			<tr>
-				<td class="Attrib">DEPARTMENT</td><td><select class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="edAttrib">DEPARTMENT</td><td><select class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">CLASS</td><td><input class="HR" type=text name="Class" value="{{.D.Class}}" size="15"></td>
+				<td class="edAttrib">CLASS</td><td><input class="HR" type=text name="Class" value="{{.D.Class}}" size="15"></td>
 				<td width=10></td>
-				<td class="Attrib">POSITION CONTROL NUMBER:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10"></td>
+				<td class="edAttrib">POSITION CONTROL NUMBER:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10"></td>
 			</tr>
 		</table>
 		<p></p>
 		<table >
 			<tr>
-			    <td class="Attrib">HIRE DATE</td><td><input class="HR" type=date name="Hire" value="{{dateToString .D.Hire}}" maxlength="2" size="10"></td>
+			    <td class="edAttrib">HIRE DATE</td><td><input class="HR" type=date name="Hire" value="{{dateToString .D.Hire}}" maxlength="2" size="10"></td>
 				<td width="10"></td>
-				<td class="Attrib">STATUS</td><td><select name="Status" class="HR"> <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option> </select></td>
+				<td class="edAttrib">STATUS</td><td><select name="Status" class="HR"> <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option> </select></td>
 				<td width="10"></td>
-				<td class="Attrib">ELIGIBLE FOR REHIRE </span><select name="EligibleForRehire" class="HR"> <option value="No" {{if eq .D.Status 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .D.Status 1}}selected{{end}}>Yes</option> </select></td>
+				<td class="edAttrib">ELIGIBLE FOR REHIRE </span><select name="EligibleForRehire" class="HR"> <option value="No" {{if eq .D.Status 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .D.Status 1}}selected{{end}}>Yes</option> </select></td>
 			</tr>
 		</table>
 		<p></p>
 		{{$termyear := dateYear .D.Termination}}
 		<table >
 			<tr>
-				<td class="Attrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview" value="{{.D.LastReview}}" maxlength="2" size="10"></td>
+				<td class="edAttrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview" value="{{.D.LastReview}}" maxlength="2" size="10"></td>
 				<td width="10"></td>
-				<td class="Attrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview" value="{{.D.NextReview}}" maxlength="2" size="10"></td>
+				<td class="edAttrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview" value="{{.D.NextReview}}" maxlength="2" size="10"></td>
 				<td width="10"></td>
-				<td class="Attrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination" {{if gt $termyear 1970}}value="{{dateToString .D.Termination}}"{{end}}size="10">
+				<td class="edAttrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination" {{if gt $termyear 1970}}value="{{dateToString .D.Termination}}"{{end}}size="10">
 			</tr>
 		</table>
 		<p></p>
 		<table >
 			<tr>
-				<td class="Attrib">ACCEPTED HEALTH INSURANCE <select name="AcceptedHealthInsurance" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $ahi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="edAttrib">ACCEPTED HEALTH INSURANCE <select name="AcceptedHealthInsurance" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $ahi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">ACCEPTED DENTAL INSURANCE <select name="AcceptedDentalInsurance" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $adi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="edAttrib">ACCEPTED DENTAL INSURANCE <select name="AcceptedDentalInsurance" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $adi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="Attrib">ACCEPTED 401K <select name="Accepted401K" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $a4K}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td class="edAttrib">ACCEPTED 401K <select name="Accepted401K" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $a4K}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 			</tr>
 		</table>
 		<p></p>
@@ -174,7 +174,7 @@
 		{{$bdayDom := .D.BirthDOM}}
 		<table>
 		<tr>
-		<td class="Attrib">COMPENSATION&nbsp;</td>
+		<td class="edAttrib">COMPENSATION&nbsp;</td>
 		<td class="HRBoxed"> {{range .D.MyComps}}<input type="checkbox" name="{{.Name}}" value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
 		</tr>
 		</table>
@@ -182,7 +182,7 @@
 		<table>
 			<tr>
 				{{$i := 0}}{{$cols := 4}}{{$col := sub 1 $cols}}{{$rows :=  len .D.MyDeductions | div $col | add 1}}
-				<td class="Attrib" rowspan="{{$rows}}">DEDUCTIONS</td>
+				<td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
 				{{range $i, $v := .D.MyDeductions}}
 				<td class="HRBoxed">
 				<input type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
@@ -195,7 +195,7 @@
 		<p></p>
 		<table>
 			<tr>
-			<td class="Attrib">BIRTHDAY</td>
+			<td class="edAttrib">BIRTHDAY</td>
 			<td>
 				<select name="BirthMonth" class="HR">
 				<option value="month">month</option>
@@ -205,8 +205,10 @@
 			</td>
 			</tr>
 		</table>
+		<p></p>
 		<hr>
-		<input type="submit" name="action" value="Update">  <a href="/adminView/{{.D.UID}}" class="button">Cancel</a>
+		<p></p>
+		<input type="submit" name="action" value="Update">  &nbsp;&nbsp;&nbsp;<a href="/adminView/{{.D.UID}}" class="blbutton">Cancel</a>
     </form>
 </body>
 </html>

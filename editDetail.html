@@ -10,7 +10,7 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td width=5></td><td class="AppName">PHONEBOOK</td>
+<td class="AppName">PHONEBOOK</td>
 <td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd">Org Chart</td>
 <td width=30></td><td class="MenuCmd">Companies</td>
@@ -19,6 +19,7 @@
 </table>
 
 <p>&nbsp;</p>
+
 <form action="/savePersonDetails/{{.UID}}" method="POST">
 <table>
 <tr><td colspan="3">
@@ -32,16 +33,25 @@
 	<td><input type="text" name="PrimaryEmail" value="{{.PrimaryEmail}}" size="35"></td>
 </tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td>
-	<td><input type="text" name="OfficePhone" value="{{.OfficePhone}}" size="35"></td>
+	<td><input type="text" name="OfficePhone" value="{{.OfficePhone}}" size="13"></td>
 </tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">CELL</td>
-	<td><input type="text" name="CellPhone" value="{{.CellPhone}}" size="35"></td>
+	<td><input type="text" name="CellPhone" value="{{.CellPhone}}" size="13"></td>
 </tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EMERGENCY CONTACT NAME</td>
+	<td><input type=text name="EmergencyContactName" Value="{{.EmergencyContactName}}" size="35"></td>
+</tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EMERGENCY CONTACT PHONE</td>
+	<td><input type=text name="EmergencyContactPhone" Value="{{.EmergencyContactPhone}}" size="13"></td>
+</tr>
+
 <tr><td colspan="3" height="30"></td></tr>
 <tr><td width="50px"></td><td colspan="2"><div align="center">
     <input type="submit" name="action" value="Save">
     &nbsp;&nbsp;&nbsp;&nbsp;<a href="/detail/{{.UID}}" class="blbutton">Cancel</a></div></td>
 </tr></table>
+
+
 
 </form>
 </body>

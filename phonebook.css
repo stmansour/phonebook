@@ -43,11 +43,23 @@
 	background-color:rgba(0, 0, 0, 0.7);
 }
 
-.Attrib, .Attribbd {
+.Attrib {
+	text-align: right;
+}
+
+.edAttrib {
+	text-align: left;
+}
+.adminval {
+  border-top: 1px solid #DDD;
+  border-right: 1px solid #DDD;
+  border-bottom: 1px solid #DDD;
+  border-left: 1px solid #DDD;
+
+}
+.Attrib, .edAttrib, .Attribbd {
 	font-weight: lighter;
 	font-size: 9px;
-	text-align: right;
-	/*vertical-align: top;*/
 }
 #menuid {
 	color: white;
@@ -84,10 +96,10 @@
   text-decoration: none;
   background-color: transparent;
   padding: 4px 8px 4px 8px;
-  border-top: 1px solid white;
-  border-right: 1px solid white;
-  border-bottom: 1px solid white;
-  border-left: 1px solid white;
+  border-top: 2px solid white;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
 }
 
 .blbutton {
@@ -96,10 +108,10 @@
   text-decoration: none;
   background-color: transparent;
   padding: 4px 8px 4px 8px;
-  border-top: 1px solid black;
-  border-right: 1px solid black;
-  border-bottom: 1px solid black;
-  border-left: 1px solid black;
+  border-top: 2px solid black;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+  border-left: 2px solid black;
 }
 
 .FirstName, .LastName, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, body, p, td, th {
@@ -109,7 +121,7 @@
 
 body,p,td {
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 12px;
+	font-size: 14px;
 	background-color: transparent;
 }
 
@@ -173,6 +185,13 @@ a:hover {
   background-color: #ddeeff;
 }
 
+.HRBoxedDisabled {
+  border-color: #aaaaaa;
+  border-style: solid;
+  border-width: 1px;
+  background-color: #E8E8E8;
+}
+
 
 input[type="text"],
 input[type="email"], 
@@ -181,9 +200,17 @@ input[type="number"], textarea {
   font-size: 14px;
 }
 
+/*
 input[type="submit"] {
-	font-weight: bold;
+  background-color: transparent;
+  border-radius: 9px;
+  font: lighter 12px Arial;
+  border-top: 2px solid black;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+  border-left: 2px solid black;
 }
+*/  
 
 input.HR {
   background-color : #ddeeff;
@@ -198,3 +225,11 @@ select.HR, option.HR {
   background-color : #ddeeff;
 }
 
+input[type="checkbox"]:disabled,
+input[type="email"]:disabled,
+input[type="number"]:disabled,
+input[type="date"]:disabled,
+input[type="text"]:disabled,
+select:disabled {
+	background-color:#DDD;
+}

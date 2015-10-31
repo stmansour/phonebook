@@ -1,8 +1,9 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - Details  {{.D.FirstName}} {{.D.LastName}}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="/phonebook.css" rel="stylesheet"  type="text/css">
+	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
+	<title>Accord Directory - Admin - View for {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -19,68 +20,192 @@
 </table>
 
 
-<h2>Accord Directory Administrator View</h2>
-<p>Authorized personnel only</p>
-<a href="/adminEdit/{{.D.UID}}"><img align="right" src="/images/edit.png" width="30"></a><br>
-<table border="0" >
-<tr><td class="Attrib">SALUTATION</td><td>{{.D.Salutation}}</td><tr>
-<tr><td class="Attrib">LAST NAME</td><td>{{.D.LastName}}</td><tr>
-<tr><td class="Attrib">MIDDLE NAME</td><td>{{.D.MiddleName}}</td><tr>
-<tr><td class="Attrib">FIRST NAME</td><td>{{.D.FirstName}}</td><tr>
-<tr><td class="Attrib">PREFERRED NAME</td><td>{{.D.PreferredName}} <span class="Note">&nbsp;(a preferred first name or nickname)</span></td><tr>
-<TR<td class="Attrib"  valign="top">EMERGENCY CONTACT NAME</td><td>{{.D.EmergencyContactName}}</td><tr>
-<tr><td class="Attrib">EMERGENCY CONTACT PHONE</td><td>{{.D.EmergencyContactPhone}}</td><tr>
-<tr><td class="Attrib">COMPANY CODE</td><td>{{.D.Company.CoCode}} &nbsp;<span class="Note">({{.D.Company.Name}})</span></a></td></tr>
-<TR<td class="Attrib">JOB CODE</td><td>{{.D.JobCode}} &nbsp;<span class="Note">({{.D.JobTitle}})</span></td></tr>
-<tr><td class="Attrib">HIRE DATE</td><td>{{dateToString .D.Hire}}</td></tr>
-<tr><td class="Attrib">TERMINATION DATE</td><td>{{dateToString .D.Termination}}</td></tr>
-<tr><td class="Attrib">COMPENSATION TYPE</td>
-	<td>
-		{{range .D.Comps}}
-		    {{compToString .}}<br>
-		{{end}}
-	</td>
-</tr>
-<tr><td class="Attrib" align="right" valign="top">Deductions:</td>
-	<td>
-		{{range .D.Deductions}}
-		    {{deductionToString .}}<br>
-		{{end}}
-	</td>
-</tr>
-<tr><td class="Attrib">ACCEPTED HEALTH INSURANCE</td><td>{{acceptIntToString .D.AcceptedHealthInsurance}}</td></tr>
-<tr><td class="Attrib">ACCEPTED DENTAL INSURANCE</td><td>{{acceptIntToString .D.AcceptedDentalInsurance}}</td></tr>
-<tr><td class="Attrib">ACCEPTED 401K</td><td>{{acceptIntToString .D.Accepted401K}}</td></tr>
-<tr><td class="Attrib">POSITION CONTROL NO</td><td>{{.D.PositionControlNumber}}</td></tr>
-<tr><td class="Attrib">DEPARTMENT</td><td>{{.D.DeptCode}} &nbsp;<span class="Note">({{.D.DeptName}})</span>	</td></tr>
-<tr><td class="Attrib">STATUS</td><td>{{if gt .D.Status 0}}Active{{else}}Not-Active{{end}}</td></tr>
-<tr><td class="Attrib">ADDRESS</td>
-	<td>
-		{{.D.HomeStreetAddress}}<br>
-		{{if .D.HomeStreetAddress2}}{{.D.HomeStreetAddress2}}<br>{{end}}
-		{{.D.HomeCity}}, {{.D.HomeState}} {{.D.HomePostalCode}}, {{.D.HomeCountry}}
-	</td></tr>
-<tr><td class="Attrib">PRIMARY EMAIL</td><td><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td></tr>
-<tr><td class="Attrib">SECONDARY EMAIL</td><td><a href="mailto:{{.D.SecondaryEmail}}">{{.D.SecondaryEmail}}</a></td></tr>
-<tr><td class="Attrib">OFFICE PHONE</td><td>{{.D.OfficePhone}}</td></tr>
-<tr><td class="Attrib">OFFICE FAX</td><td>{{.D.OfficeFax}}</td></tr>
-<tr><td class="Attrib">CELL</td><td>{{.D.CellPhone}}</td></tr>
-<tr><td class="Attrib">CLASS</td><td>{{.D.Class}}</td></tr>
-<tr><td class="Attrib">ELIGIBLE FOR REHIRE</td><td>{{if gt .D.EligibleForRehire 0}}Yes{{else}}No{{end}}</td></tr>
-<tr><td class="Attrib">MANAGER</td><td><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td></tr>
+	<h2>Admin View - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</h2>
 
-{{if .D.Reports | len}}
-<tr><td></td><td></td><td></td></tr>
-<tr><td class="Attrib" align="right" valign="top">DIRECT REPORTS</td>
-    <td valign="top">
-        {{range .D.Reports}}
-        <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
-        {{end}}
-    </td>
-</tr>
-{{end}}
-</table>
-<hr>
-<a href="/search/" class="button">Search</a> &nbsp;&nbsp;&nbsp;<a  href="/detail/{{.D.UID}}" class="button">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEdit/{{.D.UID}}" class="button">AdminEdit</a>
+		<table >
+			<tr>
+				<td class="edAttrib">TITLE</td>
+				<td class="edAttrib">LAST NAME</td>
+				<td class="edAttrib">MIDDLE</td>
+				<td class="edAttrib">FIRST</td>
+				<td class="edAttrib">PREFERRED</td>
+			</tr>
+			<tr>
+				<td>
+					<select name="Salutation" disabled>
+						<option value="none">none</option>
+						<option value="Mr" {{if eq .D.Salutation "Mr"}}selected{{end}}>Mr</option>
+						<option value="Ms" {{if eq .D.Salutation "Ms"}}selected{{end}}>Ms</option>
+						<option value="Mrs" {{if eq .D.Salutation "Mrs"}}selected{{end}}>Mrs</option>
+						<option value="Dr" {{if eq .D.Salutation "Dr"}}selected{{end}}>Dr</option>
+					</select>
+				</td>
+				<td><input type=text name="LastName" value="{{.D.LastName}}" size="20" disabled="disabled"></td>
+				<td><input type=text name="MiddleName" value="{{.D.MiddleName}}" size="10" disabled="disabled"></td>
+				<td><input type=text name="FirstName" value="{{.D.FirstName}}" size="20" disabled="disabled"></td>
+				<td><input type=text name="PreferredName" value="{{.D.PreferredName}}" size="15" disabled="disabled"></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td class="edAttrib">OFFICE PHONE</td>
+				<td class="edAttrib">OFFICE FAX</td>
+				<td class="edAttrib">CELL</td>
+			</tr>
+			<tr>
+				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13" disabled="disabled"></td>
+				<td><input type="text" name="OfficeFax" value="{{.D.OfficeFax}}" size="13" disabled="disabled"></td>
+				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13" disabled="disabled"></td>
+			</tr>
+		</table>
+
+
+		<table>
+			<tr>
+				<td class="edAttrib">PRIMARY EMAIL</td>
+				<td class="edAttrib">SECONDARYEMAIL</td>
+			</tr>
+			<tr>
+				<td><input disabled="disabled" type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35"></td>
+				<td><input disabled="disabled" type="email" name="SecondaryEmail" value="{{.D.SecondaryEmail}}" size="35"></td>
+			</tr>
+		</table>
+
+		<table>
+			<tr>
+				<td class="edAttrib">HOME STREET ADDRESS</td>
+				<td class="edAttrib">HOME STREET ADDRESS2</td>
+			</tr>
+			<tr>
+				<td><input disabled="disabled" type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35"></td>
+				<td><input disabled="disabled" type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35"></td>
+			</tr>
+		</table>
+
+		<table>
+			<tr>
+				<td class="edAttrib">CITY</td>
+				<td class="edAttrib">STATE</td>
+				<td class="edAttrib">POSTAL CODE</td>
+				<td class="edAttrib">COUNTRY</td>
+			</tr>
+			<tr>
+				<td><input disabled="disabled" type=text name="HomeCity" value="{{.D.HomeCity}}" size="25"></td>
+				<td><input disabled="disabled" type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"></td>
+				<td><input disabled="disabled" type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10"></td>
+				<td><input disabled="disabled" type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10"></td>
+			</tr>
+		</table>
+
+		<table>
+			<tr>
+				<td class="edAttrib">EMERGENCY CONTACT NAME</td>
+				<td class="edAttrib">PHONE</td>
+			</tr>
+			<tr>
+				<td><input disabled="disabled" type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="25"></td>
+				<td><input disabled="disabled" type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13"></td>
+			</tr>
+		</table>
+
+		{{$comp := .D.CoCode}}
+		{{$job := .D.JobCode}}
+		{{$ahi := .D.AcceptedHealthInsurance}}
+		{{$adi := .D.AcceptedDentalInsurance}}
+		{{$a4K := .D.Accepted401K}}
+		{{$dept := .D.DeptCode}}
+		<p></p>
+
+		<table >
+			<tr>
+				<td class="edAttrib">COMPANY</td><td><select disabled="disabled" class="HR" name="CoCode">{{range $name, $cocode := .NameToCoCode}}<option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td width=10></td>
+				<td class="edAttrib">JOB TITLE</td><td><select disabled="disabled" class="HR" name="JobCode">{{range $name, $jobcode := .NameToJobCode}}<option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td width=10></td>
+				<td class="edAttrib">MANAGER UID</td><td><input disabled="disabled" class="HR" type="number" name="MgrUID" value="{{.D.MgrUID}}" min="1" max="9999"></td>
+			</tr>
+		</table>
+		<p></p>
+
+		<table >
+			<tr>
+				<td class="edAttrib">DEPARTMENT</td><td><select disabled="disabled" class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td width=10></td>
+				<td class="edAttrib">CLASS</td><td><input disabled="disabled" class="HR" type=text name="Class" value="{{.D.Class}}" size="15"></td>
+				<td width=10></td>
+				<td class="edAttrib">POSITION CONTROL NUMBER:</td><td><input disabled="disabled" class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10"></td>
+			</tr>
+		</table>
+		<p></p>
+		<table >
+			<tr>
+			    <td class="edAttrib">HIRE DATE</td><td><input disabled="disabled" class="HR" type=date name="Hire" value="{{dateToString .D.Hire}}" maxlength="2" size="10"></td>
+				<td width="10"></td>
+				<td class="edAttrib">STATUS</td><td><select disabled="disabled" name="Status" class="HR"> <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option> </select></td>
+				<td width="10"></td>
+				<td class="edAttrib">ELIGIBLE FOR REHIRE </span><select disabled="disabled" name="EligibleForRehire" class="HR"> <option value="No" {{if eq .D.Status 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .D.Status 1}}selected{{end}}>Yes</option> </select></td>
+			</tr>
+		</table>
+		<p></p>
+		{{$termyear := dateYear .D.Termination}}
+		<table >
+			<tr>
+				<td class="edAttrib">LAST REVIEW</td><td><input disabled="disabled" class="HR" type=date name="LastReview" value="{{.D.LastReview}}" maxlength="2" size="10"></td>
+				<td width="10"></td>
+				<td class="edAttrib">NEXT REVIEW</td><td><input disabled="disabled" class="HR" type=date name="NextReview" value="{{.D.NextReview}}" maxlength="2" size="10"></td>
+				<td width="10"></td>
+				<td class="edAttrib">TERMINATION DATE</td><td><input disabled="disabled" class="HR" type=date name="Termination" {{if gt $termyear 1970}}value="{{dateToString .D.Termination}}"{{end}}size="10">
+			</tr>
+		</table>
+		<p></p>
+		<table >
+			<tr>
+				<td class="edAttrib">ACCEPTED HEALTH INSURANCE <select disabled="disabled" name="AcceptedHealthInsurance" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $ahi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td width=10></td>
+				<td class="edAttrib">ACCEPTED DENTAL INSURANCE <select disabled="disabled" name="AcceptedDentalInsurance" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $adi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				<td width=10></td>
+				<td class="edAttrib">ACCEPTED 401K <select disabled="disabled" name="Accepted401K" class="HR">{{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $a4K}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+			</tr>
+		</table>
+		<p></p>
+		{{$bdayMon := .D.BirthMonth}}
+		{{$bdayDom := .D.BirthDOM}}
+		<table>
+		<tr>
+		<td class="edAttrib">COMPENSATION&nbsp;</td>
+		<td class="HRBoxedDisabled"> {{range .D.MyComps}}<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
+		</tr>
+		</table>
+		<p></p>
+		<table>
+			<tr>
+				{{$i := 0}}{{$cols := 4}}{{$col := sub 1 $cols}}{{$rows :=  len .D.MyDeductions | div $col | add 1}}
+				<td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
+				{{range $i, $v := .D.MyDeductions}}
+				<td class="HRBoxedDisabled">
+				<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
+				{{.Name}} &nbsp;&nbsp;
+				</td>
+				{{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
+				{{end}}
+			</tr>
+		</table>
+	<p></p>
+		<table>
+			<tr>
+			<td class="edAttrib">BIRTHDAY</td>
+			<td>
+				<select disabled="disabled" name="BirthMonth" class="HR">
+				<option value="month">month</option>
+				{{range .Months}}<option {{$t := monthStringToInt .}}value="{{$t}}" {{if eq $t $bdayMon}}selected{{end}}>{{.}}</option>{{end}}
+				</select>
+				<input disabled="disabled" type="number" class="HR" name="BirthDOM" value="{{.D.BirthDOM}}" min="1" max="31">
+			</td>
+			</tr>
+		</table>
+		<p></p>
+		<hr>
+		<p></p>
+	<a href="/search/" class="blbutton">Search</a> &nbsp;&nbsp;&nbsp;<a  href="/detail/{{.D.UID}}" class="blbutton">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEdit/{{.D.UID}}" class="blbutton">AdminEdit</a>
 </body>
 </html>

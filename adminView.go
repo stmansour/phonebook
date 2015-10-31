@@ -163,12 +163,15 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,
-		"deductionToString": deductionIntToString,
 		"acceptIntToString": acceptIntToString,
 		"dateToString":      dateToString,
-		"activeToString":    activeToInt,
-		"yesnoToString":     yesnoToInt,
+		"dateYear":          dateYear,
 		"monthStringToInt":  monthStringToInt,
+		"add":               add,
+		"sub":               sub,
+		"rmd":               rmd,
+		"mul":               mul,
+		"div":               div,
 	}
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	PhonebookUI.D = &d
