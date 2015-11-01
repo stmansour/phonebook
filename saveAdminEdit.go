@@ -56,6 +56,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.CoCode = strToInt(r.FormValue("CoCode"))
 	d.JobCode = strToInt(r.FormValue("JobCode"))
 	d.DeptCode = strToInt(r.FormValue("DeptCode"))
+	d.Class = r.FormValue("Class")
 	d.PositionControlNumber = r.FormValue("PositionControlNumber")
 	d.HomeStreetAddress = r.FormValue("HomeStreetAddress")
 	d.HomeStreetAddress2 = r.FormValue("HomeStreetAddress2")
@@ -71,8 +72,8 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.DeptName = r.FormValue("DeptName")
 	d.Status = activeToInt(r.FormValue("Status")) // active or inactive, old values included "not-active"
 	d.EligibleForRehire = yesnoToInt(r.FormValue("EligibleForRehire"))
-	d.LastReview = r.FormValue("LastReview")
-	d.NextReview = r.FormValue("NextReview")
+	d.LastReview = stringToDate(r.FormValue("LastReview"))
+	d.NextReview = stringToDate(r.FormValue("NextReview"))
 	d.BirthDOM = strToInt(r.FormValue("BirthDOM"))
 	d.BirthMonth = strToInt(r.FormValue("BirthMonth"))
 	d.MgrUID = strToInt(r.FormValue("MgrUID"))
@@ -81,6 +82,8 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.AcceptedHealthInsurance = acceptTypeToInt(r.FormValue("AcceptedHealthInsurance"))
 	d.Hire = stringToDate(r.FormValue("Hire"))
 	d.Termination = stringToDate(r.FormValue("Termination"))
+	d.StateOfEmployment = r.FormValue("StateOfEmployment")
+	d.CountryOfEmployment = r.FormValue("CountryOfEmployment")
 
 	//fmt.Printf("r.FormValue(BirthMonth) = %s,  convert to num -> %d\n", r.FormValue("BirthMonth"), d.BirthMonth)
 
@@ -101,23 +104,76 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.Salutation = ""
 	}
 
-	update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?,EmergencyContactName=?,EmergencyContactPhone=?,PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?,PositionControlNumber=?,DeptCode=?,HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?,Hire=?,Termination=?,BirthMonth=?,BirthDOM=? where people.uid=?")
-	errcheck(err)
-	_, err = update.Exec(
-		d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName,
-		d.EmergencyContactName, d.EmergencyContactPhone,
-		d.PrimaryEmail, d.SecondaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode,
-		d.PositionControlNumber, d.DeptCode,
-		d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
-		d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance,
-		dateToDBStr(d.Hire), dateToDBStr(d.Termination),
-		d.BirthMonth, d.BirthDOM,
-		uid)
+	if uid == 0 {
+		insert, err := Phonebook.db.Prepare("INSERT INTO people (Salutation,FirstName,MiddleName,LastName,PreferredName," +
+			"EmergencyContactName,EmergencyContactPhone," +
+			"PrimaryEmail,SecondaryEmail,OfficePhone,OfficeFax,CellPhone,CoCode,JobCode," +
+			"PositionControlNumber,DeptCode," +
+			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry," +
+			"status,EligibleForRehire,Accepted401K,AcceptedDentalInsurance,AcceptedHealthInsurance," +
+			"Hire,Termination,Class," +
+			"BirthMonth,BirthDOM,mgruid,StateOfEmployment,CountryOfEmployment," +
+			"LastReview,NextReview) " +
+			//      1                 10                  20                  30
+			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+		errcheck(err)
+		_, err = insert.Exec(d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName, // 5
+			d.EmergencyContactName, d.EmergencyContactPhone, //7
+			d.PrimaryEmail, d.SecondaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode, //14
+			d.PositionControlNumber, d.DeptCode, //16
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, // 22
+			d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance, // 27
+			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.Class, // 30
+			d.BirthMonth, d.BirthDOM, d.MgrUID, d.StateOfEmployment, d.CountryOfEmployment, // 35
+			dateToDBStr(d.LastReview), dateToDBStr(d.NextReview)) // 37
+		errcheck(err)
 
-	if nil != err {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// read this record back to get the UID...
+		rows, err := Phonebook.db.Query("select uid from people where FirstName=? and LastName=? and PrimaryEmail=? and OfficePhone=? and CoCode=? and JobCode=?",
+			d.FirstName, d.LastName, d.PrimaryEmail, d.OfficePhone, d.CoCode, d.JobCode)
+		errcheck(err)
+		defer rows.Close()
+		nUID := 0 // quick way to handle multiple matches... in this case, largest UID wins, it hast to be the latest person added
+		for rows.Next() {
+			errcheck(rows.Scan(&uid))
+			if uid > nUID {
+				nUID = uid
+			}
+		}
+		errcheck(rows.Err())
+		uid = nUID
+		d.UID = uid
+	} else {
+		//--------------------------
+		// update existing record
+		//--------------------------
+		update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?," + // 5
+			"EmergencyContactName=?,EmergencyContactPhone=?," + // 7
+			"PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?," + // 14
+			"PositionControlNumber=?,DeptCode=?," + // 16
+			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?," + // 22
+			"status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?," + // 27
+			"Hire=?,Termination=?,Class=?," + // 30
+			"BirthMonth=?,BirthDOM=?,mgruid=?,StateOfEmployment=?,CountryOfEmployment=?," + // 35
+			"LastReview=?,NextReview=? " + // 37
+			"where people.uid=?")
+		errcheck(err)
+		_, err = update.Exec(
+			d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName,
+			d.EmergencyContactName, d.EmergencyContactPhone,
+			d.PrimaryEmail, d.SecondaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode,
+			d.PositionControlNumber, d.DeptCode,
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
+			d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance,
+			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.Class,
+			d.BirthMonth, d.BirthDOM, d.MgrUID, d.StateOfEmployment, d.CountryOfEmployment,
+			dateToDBStr(d.LastReview), dateToDBStr(d.NextReview),
+			uid)
+
+		if nil != err {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
-
 	//--------------------------------------------------------------------------
 	// Remove old compensation type(s) and Insert new compensation type(s)
 	//--------------------------------------------------------------------------

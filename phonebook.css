@@ -21,7 +21,7 @@
 	font-size: 20px;
 	/*font-weight: lighter;*/
 	text-align: right;
-    -webkit-font-smoothing:antialiased;
+  -webkit-font-smoothing:antialiased;
 }
 
 .JobTitle {
@@ -31,6 +31,9 @@
 	text-align: right;
 }
 
+.AppHeading {
+  font-size: 15px;
+}
 .AttribVal {
 	font-weight: lighter;
 	background-color:rgba(0, 0, 0, 0.7);
@@ -41,6 +44,7 @@
 
 .Attribbd {
 	background-color:rgba(0, 0, 0, 0.7);
+  text-align: right;
 }
 
 .Attrib {
@@ -114,7 +118,7 @@
   border-left: 2px solid black;
 }
 
-.FirstName, .LastName, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, body, p, td, th {
+.FirstName, .LastName, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, .AppHeading, body, p, td, th {
 	font-family: "Kozuka Gothic Pro", "Helvetica Neue", "Letter Gothic Std", Helvetica, Arial, "Gill Sans", sans-serif;
 
 }

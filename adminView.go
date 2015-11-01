@@ -110,19 +110,18 @@ func adminReadDetails(d *personDetail) {
 	// query for all the fields in table People
 	//-----------------------------------------------------------
 	rows, err := Phonebook.db.Query(
-		"select LastName,FirstName,MiddleName,Salutation,"+
-			"Class,Status,PositionControlNumber,"+
-			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+
-			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+
-			"Birthdate,BirthMonth,BirthDOM,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
-			"HomeState,HomePostalCode,HomeCountry,"+
-			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+
-			"jobcode,hire,termination,"+
-			"mgruid,deptcode,cocode,StateOfEmployment,"+
-			"CountryOfEmployment,PreferredName,"+
-			"EmergencyContactName,EmergencyContactPhone,EligibleForRehire "+
-			"from people where uid=?",
-		d.UID)
+		"select LastName,FirstName,MiddleName,Salutation,"+ // 4
+			"Class,Status,PositionControlNumber,"+ // 7
+			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+ // 11
+			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+ // 15
+			"BirthMonth,BirthDOM,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+ // 20
+			"HomeState,HomePostalCode,HomeCountry,"+ // 23
+			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+ // 27
+			"jobcode,hire,termination,"+ // 29
+			"mgruid,deptcode,cocode,StateOfEmployment,"+ // 33
+			"CountryOfEmployment,PreferredName,"+ // 35
+			"EmergencyContactName,EmergencyContactPhone "+ // 37
+			"from people where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -131,15 +130,16 @@ func adminReadDetails(d *personDetail) {
 			&d.Class, &d.Status, &d.PositionControlNumber,
 			&d.OfficePhone, &d.OfficeFax, &d.CellPhone, &d.PrimaryEmail,
 			&d.SecondaryEmail, &d.EligibleForRehire, &d.LastReview, &d.NextReview,
-			&d.Birthdate, &d.BirthMonth, &d.BirthDOM, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
+			&d.BirthMonth, &d.BirthDOM, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 			&d.HomeState, &d.HomePostalCode, &d.HomeCountry,
 			&d.AcceptedHealthInsurance, &d.AcceptedDentalInsurance, &d.Accepted401K,
 			&d.JobCode, &d.Hire, &d.Termination,
 			&d.MgrUID, &d.DeptCode, &d.CoCode, &d.StateOfEmployment,
 			&d.CountryOfEmployment, &d.PreferredName,
-			&d.EmergencyContactName, &d.EmergencyContactPhone, &d.EligibleForRehire))
+			&d.EmergencyContactName, &d.EmergencyContactPhone))
 	}
 	errcheck(rows.Err())
+
 	d.MgrName = getNameFromUID(d.MgrUID)
 	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
 	d.JobTitle = getJobTitle(d.JobCode)

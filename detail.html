@@ -6,27 +6,28 @@
 </head>
 <body style='background-image: url("/images/isolabella.jpg")'>
 
+
 <table cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td class="AppName">PHONEBOOK</td>
-<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
-<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd">Companies</td>
+<td width=50></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=30></td>
 </tr>
 </table>
 
-<br>
+
 
 <table border=0 id="personDetailText">
-<tr><td height=20 colspan="6"></td></tr>
+<tr><td height=30 colspan="6"></td></tr>
 <tr>
 	<td width=20 class="bd"></td>
 	<td id="personDetailText" class="bd" colspan="2">
 		<div align="right">
-		<span class="FirstName">{{.FirstName}}</span> <span class="LastName">{{.LastName}}</span><br>
+		<span class="FirstName">{{if .PreferredName}}{{.PreferredName}}{{else}}{{.FirstName}}{{end}}</span> <span class="LastName">{{.LastName}}</span><br>
 		<span class="Employer"><a href="/company/{{.Company.CoCode}}">{{.Company.CommonName}}</a></span><br>
 		<img width=30 src="/images/orgcharticon.png" align="left" alt="Organizational Chart">
 		<span class="JobTitle">{{.JobTitle}}</span>
@@ -37,6 +38,7 @@
 	<td width=30></td>
 	<td valign="center" rowspan="7" class="bd"><img width=300 src="{{.Image}}"></td>
 </tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td>     <td class="AttribVal">{{.FirstName}} {{.MiddleName}} {{.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td>     <td class="AttribVal"><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td>     <td class="AttribVal">{{.OfficePhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td>      <td class="AttribVal">{{.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
@@ -63,9 +65,8 @@
 <tr>
 	<td colspan="4" class="bd">
 	  <div align="center">
-	  <a href="/search/" class="button">Search</a> &nbsp;&nbsp;&nbsp;
-	  <a  href="/editDetail/{{.UID}}" class="button">Edit</a>  &nbsp;&nbsp;&nbsp;
-	  <a  href="/adminView/{{.UID}}" class="button">Admin</a>
+		<a  href="/editDetail/{{.UID}}" class="button">Edit</a> &nbsp;&nbsp;
+		<a  href="/adminView/{{.UID}}" class="button">Admin</a>
 	  </div>
 	</td>
 	<td colspan=2></td>

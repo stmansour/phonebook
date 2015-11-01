@@ -41,16 +41,17 @@ type company struct {
 }
 
 type person struct {
-	UID          int
-	LastName     string
-	FirstName    string
-	PrimaryEmail string
-	JobCode      int
-	OfficePhone  string
-	CellPhone    string
-	DeptCode     int
-	DeptName     string
-	Employer     string
+	UID           int
+	LastName      string
+	FirstName     string
+	PreferredName string
+	PrimaryEmail  string
+	JobCode       int
+	OfficePhone   string
+	CellPhone     string
+	DeptCode      int
+	DeptName      string
+	Employer      string
 }
 
 type myComp struct {
@@ -81,8 +82,8 @@ type personDetail struct {
 	OfficeFax               string
 	SecondaryEmail          string
 	EligibleForRehire       int
-	LastReview              string
-	NextReview              string
+	LastReview              time.Time
+	NextReview              time.Time
 	Birthdate               string
 	BirthMonth              int
 	BirthDOM                int
@@ -252,6 +253,8 @@ func main() {
 	http.HandleFunc("/company/", companyHandler)
 	http.HandleFunc("/status/", statusHandler)
 	http.HandleFunc("/shutdown/", shutdownHandler)
+	http.HandleFunc("/admin/", adminHandler)
+	http.HandleFunc("/adminAddPerson/", adminAddPersonHandler)
 
 	err = http.ListenAndServe(":8250", nil)
 	if nil != err {

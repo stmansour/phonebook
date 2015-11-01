@@ -7,20 +7,22 @@
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
+
 <table cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td width=5></td><td class="AppName">PHONEBOOK</td>
-<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
-<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd">Companies</td>
+<td width=50></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=30></td>
 </tr>
 </table>
 
 
-	<h2>Admin View - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</h2>
+
+	<p class="AppHeading">Admin View - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</p>
 
 		<table >
 			<tr>
@@ -123,6 +125,17 @@
 				<td class="edAttrib">JOB TITLE</td><td><select disabled="disabled" class="HR" name="JobCode">{{range $name, $jobcode := .NameToJobCode}}<option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
 				<td class="edAttrib">MANAGER UID</td><td><input disabled="disabled" class="HR" type="number" name="MgrUID" value="{{.D.MgrUID}}" min="1" max="9999"></td>
+			</tr>
+		</table>
+		<p></p>
+
+		<table >
+			<tr>
+				<td class="edAttrib">STATE OF EMPLOYMENT</td><td><input disabled="disabled" class="HR" type=text name="StateOfEmployement" value="{{.D.StateOfEmployment}}" size="15"></td>
+				<td width=10></td>
+				<td class="edAttrib">COUNTRY OF EMPLOYEMENT</td><td><input disabled="disabled" class="HR" type=text name="CountryOfEmployment" value="{{.D.CountryOfEmployment}}" size="15"></td>
+				<td width=10></td>
+				<td class="edAttrib"></td><td></td>
 			</tr>
 		</table>
 		<p></p>

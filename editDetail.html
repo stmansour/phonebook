@@ -6,17 +6,21 @@
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
+
+
 <table cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td class="AppName">PHONEBOOK</td>
-<td width=50></td><td class="MenuCmd" ><a href="/search/">People</a></td>
-<td width=30></td><td class="MenuCmd">Org Chart</td>
+<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd">Companies</td>
+<td width=50></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=30></td>
 </tr>
 </table>
+
+
 
 <p>&nbsp;</p>
 
@@ -29,8 +33,11 @@
 </td>
 </tr>
 <tr><td colspan="3" height="15"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">PREFERRED NAME</td>
+	<td><input type="text" name="PreferredName" value="{{.PreferredName}}" size="35"></td>
+</tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td>
-	<td><input type="text" name="PrimaryEmail" value="{{.PrimaryEmail}}" size="35"></td>
+	<td><input type="email" name="PrimaryEmail" value="{{.PrimaryEmail}}" size="35"></td>
 </tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td>
 	<td><input type="text" name="OfficePhone" value="{{.OfficePhone}}" size="13"></td>

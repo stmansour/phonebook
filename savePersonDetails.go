@@ -21,6 +21,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("UID = %d\n", uid)
 
+	d.PreferredName = r.FormValue("PreferredName")
 	d.PrimaryEmail = r.FormValue("PrimaryEmail")
 	d.OfficePhone = r.FormValue("OfficePhone")
 	d.CellPhone = r.FormValue("CellPhone")
@@ -29,9 +30,9 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Printf("email = %s, officephone = %s, cell = %s", d.PrimaryEmail, d.OfficePhone, d.CellPhone)
 
-	update, err := Phonebook.db.Prepare("update people set PrimaryEmail=?, OfficePhone=?, CellPhone=?, EmergencyContactName=?, EmergencyContactPhone=? where people.uid=?")
+	update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?, OfficePhone=?, CellPhone=?, EmergencyContactName=?, EmergencyContactPhone=? where people.uid=?")
 	errcheck(err)
-	_, err = update.Exec(d.PrimaryEmail, d.OfficePhone, d.CellPhone, d.EmergencyContactName, d.EmergencyContactPhone, uid)
+	_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone, d.EmergencyContactName, d.EmergencyContactPhone, uid)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
