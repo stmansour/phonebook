@@ -8,6 +8,10 @@ phonebook: *.go
 	golint
 	go build
 
+dbmake:
+	cd ../dir/obfuscate;./obfuscate
+	mysqldump accord > testdb.sql
+
 package: phonebook
 	rm -rf tmp
 	mkdir -p tmp/phonebook
