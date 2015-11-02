@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Phonebook - Search</title>
+<title>Accord Phonebook - Search Companies</title>
 </head>
 <body style='background-image: url("/images/NickBurbank.jpg")'>
 
@@ -24,12 +24,12 @@
 
 <p></p>
 
-<table cellspacing="0" cellpadding="4" class="bd" id="menuid">
+<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
     <td width=20></td>
     <td>
-    <form action="/search/" method="POST">
-    	<div>Search People: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
+    <form action="/searchco/" method="POST">
+    	<div>Search Companies: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
     </form>
     </td>
     <td width=20></td>
@@ -38,29 +38,34 @@
     <td>{{if .Query}}{{.Matches | len}} results for "{{.Query}}"{{else}}Enter a search string{{end}}</td>
     <td width=20></td>
 </table>
+
+
 <p></p>
+
+
 {{if .Query}}    
 <table cellpadding="2" class="bd" id="personDetailText" >
-<tr>                 <th align="left">First Name</th>
-    <th width=7></th><th align="left">Last Name</th>
-    <th width=7></th><th align="left">Preferred Name</th>
-    <th width=7></th><th align="left">Email</th>
-    <th width=7></th><th align="left">Office Phone</th>
-    <th width=7></th><th align="left">Cell Phone</th>
-    <th width=7></th><th>Department</th></tr>
-
+<tr><th width=7></th><th align="left">COMMON NAME</th>
+    <th width=7></th><th align="left">LEGAL NAME</th>
+    <th width=7></th><th align="left">DES</th>
+    <th width=7></th><th align="left">EMAIL</th>
+    <th width=7></th><th align="left">PHONE</th>
+    <th width=7></th><th align="left">FAX</th>
+    <th width=7></th>
 	{{range .Matches}}
     	<tr>
-    	<td><a href="/detail/{{.UID}}">{{.FirstName}}</a></td>
-    	<td width=7></td><td><a href="/detail/{{.UID}}">{{.LastName}}</td>
-        <td width=7></td><td><a href="/detail/{{.UID}}">{{.PreferredName}}</td>
-    	<td width=7></td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
-    	<td width=7></td><td>{{.OfficePhone}}</td>
-    	<td width=7></td><td>{{.CellPhone}}</td>
-    	<td width=7></td><td>{{.DeptName}}</td>
+    	<td></td><td><a href="/company/{{.CoCode}}">{{.CommonName}}</a></td>
+    	<td width=7></td><td><a href="/company/{{.CoCode}}">{{.LegalName}}</td>
+        <td width=7></td><td><a href="/company/{{.CoCode}}">{{.Designation}}</td>
+    	<td width=7></td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
+    	<td width=7></td><td>{{.Phone}}</td>
+    	<td width=7></td><td>{{.Fax}}</td>
+        <td width=7></td>
     	</tr>
 	{{end}}
 </table>
 {{end}}
+
+
 </body>
 </html>

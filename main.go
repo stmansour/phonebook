@@ -129,6 +129,11 @@ type searchResults struct {
 	Matches []person
 }
 
+type searchCoResults struct {
+	Query   string
+	Matches []company
+}
+
 // uiSupport is an umbrella structure in which we can pass many useful
 // data objects to the UI
 type uiSupport struct {
@@ -139,6 +144,7 @@ type uiSupport struct {
 	NameToDeptCode   map[string]int // department name to dept code
 	Months           []string       // a map for month number to month name
 	D                *personDetail
+	C                *company
 }
 
 // PhonebookUI is the instance of uiSupport used by this app
@@ -246,8 +252,11 @@ func main() {
 	http.HandleFunc("/search/", searchHandler)
 	http.HandleFunc("/detail/", detailHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)
+	http.HandleFunc("/saveAdminEditCo/", saveAdminEditCoHandler)
 	http.HandleFunc("/savePersonDetails/", savePersonDetailsHandler)
+	http.HandleFunc("/adminEditCo/", adminEditCompanyHandler)
 	http.HandleFunc("/adminEdit/", adminEditHandler)
+	http.HandleFunc("/adminViewCo/", adminViewCompanyHandler)
 	http.HandleFunc("/adminView/", adminViewHandler)
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/company/", companyHandler)
@@ -255,6 +264,8 @@ func main() {
 	http.HandleFunc("/shutdown/", shutdownHandler)
 	http.HandleFunc("/admin/", adminHandler)
 	http.HandleFunc("/adminAddPerson/", adminAddPersonHandler)
+	http.HandleFunc("/adminAddCompany/", adminAddCompanyHandler)
+	http.HandleFunc("/searchco/", searchCompaniesHandler)
 
 	err = http.ListenAndServe(":8250", nil)
 	if nil != err {

@@ -13,8 +13,8 @@
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
 <td class="AppName"><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
-<td width=30></td><td class="MenuCmd">Companies</td>
-<td width=50></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
+<td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=30></td>
 </tr>
 </table>
@@ -33,6 +33,7 @@
     </td><td width="50px"></td>
 </tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.Designation}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">COMPANY CODE</td><td>{{.CoCode}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td><td>{{.Phone}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">FAX</td><td>{{.Fax}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td><td width="50px"></td></tr>
@@ -43,7 +44,7 @@
 <tr><td width="50px"></td>
     <td colspan="2" >
     <p align="center">
-    <a href="javascript: history.go(-1)" class="button">Done</a> 
+    <a href="/adminViewCo/{{.CoCode}}" class="button">Admin View</a> 
     </p>
     <br><p></p>
     </td><td width="50px"></td></tr>

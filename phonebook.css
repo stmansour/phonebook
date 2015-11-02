@@ -1,15 +1,16 @@
 @charset "ISO-8859-1";
 
+
 .FirstName {
-    text-transform: uppercase;
+   text-transform: uppercase;
 	font-weight: lighter;
 	font-size: 40px;
 	text-align: right;
-    font-weight:100;
-    -webkit-font-smoothing:antialiased;
+  font-weight:100;
+  -webkit-font-smoothing:antialiased;
 }
 .LastName {
-    text-transform: uppercase;
+  text-transform: uppercase;
 	font-weight: bold;
 	font-size: 40px;
 	color: #B8B8B8;
@@ -17,7 +18,7 @@
 }
 
 .Employer {
-    text-transform: uppercase;
+  text-transform: uppercase;
 	font-size: 20px;
 	/*font-weight: lighter;*/
 	text-align: right;
