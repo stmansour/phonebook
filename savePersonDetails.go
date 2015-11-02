@@ -19,7 +19,6 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
-	fmt.Printf("UID = %d\n", uid)
 
 	d.PreferredName = r.FormValue("PreferredName")
 	d.PrimaryEmail = r.FormValue("PrimaryEmail")
