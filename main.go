@@ -153,7 +153,9 @@ var PhonebookUI uiSupport
 // Phonebook is the global application structure providing
 // information that any function might need.
 var Phonebook struct {
-	db *sql.DB
+	db        *sql.DB
+	ReqMem    chan int // request to access UI data memory
+	ReqMemAck chan int // done with memory
 }
 
 func errcheck(err error) {
@@ -168,6 +170,43 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		chttp.ServeHTTP(w, r)
 	} else {
 		http.Redirect(w, r, "/search/", http.StatusFound)
+	}
+}
+
+func initUIData(u *uiSupport) {
+
+	u.CoCodeToName = make(map[int]string, len(PhonebookUI.CoCodeToName))
+	u.NameToCoCode = make(map[string]int, len(PhonebookUI.NameToCoCode))
+	for k, v := range PhonebookUI.CoCodeToName {
+		u.CoCodeToName[k] = v
+		u.NameToCoCode[v] = k
+	}
+	u.AcceptCodeToName = make(map[int]string, len(PhonebookUI.AcceptCodeToName))
+	for k, v := range PhonebookUI.AcceptCodeToName {
+		u.AcceptCodeToName[k] = v
+	}
+	u.NameToDeptCode = make(map[string]int, len(PhonebookUI.NameToDeptCode))
+	for k, v := range PhonebookUI.NameToDeptCode {
+		u.NameToDeptCode[k] = v
+	}
+	u.NameToJobCode = make(map[string]int, len(PhonebookUI.NameToJobCode))
+	for k, v := range PhonebookUI.NameToJobCode {
+		u.NameToJobCode[k] = v
+	}
+	u.Months = make([]string, len(PhonebookUI.Months))
+	for i := 0; i < len(PhonebookUI.Months); i++ {
+		u.Months[i] = PhonebookUI.Months[i]
+	}
+}
+
+// Dispatcher controls access to shared resources.
+func Dispatcher() {
+	for {
+		select {
+		case <-Phonebook.ReqMem:
+			Phonebook.ReqMemAck <- 1 // tell caller go ahead
+			<-Phonebook.ReqMemAck    // block until caller is done with mem
+		}
 	}
 }
 
@@ -212,10 +251,10 @@ func loadMaps() {
 		PhonebookUI.AcceptCodeToName[i] = acceptIntToString(i)
 	}
 
-	PhonebookUI.Months = []string{
-		"January", "February", "March", "April",
-		"May", "June", "July", "August",
-		"September", "October", "November", "December",
+	PhonebookUI.Months = make([]string, len(fmtMonths))
+	for i := 0; i < len(fmtMonths); i++ {
+		PhonebookUI.Months[i] = fmtMonths[i]
+
 	}
 }
 
@@ -245,7 +284,11 @@ func main() {
 		fmt.Printf("db.Ping: Error = %v\n", err)
 	}
 	Phonebook.db = db
+	Phonebook.ReqMem = make(chan int)
+	Phonebook.ReqMemAck = make(chan int)
 	loadMaps()
+
+	go Dispatcher()
 
 	chttp.Handle("/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/", HomeHandler)

@@ -85,9 +85,15 @@ func dateToString(d time.Time) string {
 
 // Returns 1(jan) thru 12() if the string matches
 // if not, it returns 0
+var fmtMonths = []string{
+	"January", "February", "March", "April",
+	"May", "June", "July", "August",
+	"September", "October", "November", "December",
+}
+
 func monthStringToInt(s string) int {
-	for i := 0; i < len(PhonebookUI.Months); i++ {
-		if PhonebookUI.Months[i][0:3] == s[0:3] {
+	for i := 0; i < len(fmtMonths); i++ {
+		if fmtMonths[i][0:3] == s[0:3] {
 			return i + 1
 		}
 	}

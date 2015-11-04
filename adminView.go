@@ -174,9 +174,13 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		"div":               div,
 	}
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
-	PhonebookUI.D = &d
-	//fmt.Printf("PhonebookUI = %#v\n", PhonebookUI)
-	err := t.Execute(w, &PhonebookUI)
+	var ui uiSupport
+	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqMemAck    // make sure we got it
+	initUIData(&ui)          // initialize our data
+	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
+	ui.D = &d
+	err := t.Execute(w, &ui)
 	if nil != err {
 		fmt.Printf("Error executing template: %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

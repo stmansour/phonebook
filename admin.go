@@ -21,7 +21,12 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t, _ := template.New("admin.html").Funcs(funcMap).ParseFiles("admin.html")
-	err := t.Execute(w, &PhonebookUI)
+	var ui uiSupport
+	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqMemAck    // make sure we got it
+	initUIData(&ui)          // initialize our data
+	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
+	err := t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

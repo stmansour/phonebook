@@ -9,6 +9,12 @@ import (
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	var d searchResults
+	var ui uiSupport
+
+	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqMemAck    // make sure we got it
+	initUIData(&ui)          // initialize our data
+	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
 
 	d.Query = r.FormValue("searchstring")
 	if len(d.Query) > 0 {
@@ -16,7 +22,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		//  First, determine the deptcodes that match this query...
 		//===========================================================
 		var dca []int
-		for deptname, deptcode := range PhonebookUI.NameToDeptCode {
+		for deptname, deptcode := range ui.NameToDeptCode {
 			if strings.Contains(strings.ToLower(deptname), strings.ToLower(d.Query)) {
 				dca = append(dca, deptcode)
 			}
