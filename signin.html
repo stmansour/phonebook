@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Accord - Sign In</title>
+<link rel="stylesheet" type="text/css" href="/signin.css" />
+</head>
+<body style='background-image: url("/images/view11.jpg")'>
+<div class="container">
+	<section id="content">
+		<form action="/weblogin/" method="POST">
+		<img src="/images/AccordLogoVert.png" height="200">
+		<p><br><br></p>
+			<h1>Sign in to use Accord</h1>
+			<div>
+				<input type="text" name="username" placeholder="Username" required="" id="username" />
+			</div>
+			<div>
+				<input type="password" name="password" placeholder="Password" required="" id="password" />
+			</div>
+			{{if gt .S.ErrNo 0}}<br><p class="ErrMsg">{{.S.ErrMsg}}</p><br>{{end}}
+			<div>
+				<input type="submit" value="Sign In" />
+				<a href="#">Lost your password?</a>
+				<a href="#">Register</a>
+			</div>
+		</form><!-- form -->
+	</section><!-- content -->
+</div><!-- container -->
+</body>
+</html>

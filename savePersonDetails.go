@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha512"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -20,6 +21,10 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	password := []byte(r.FormValue("password"))
+	sha := sha512.Sum512(password)
+	passhash := fmt.Sprintf("%x", sha)
+
 	d.PreferredName = r.FormValue("PreferredName")
 	d.PrimaryEmail = r.FormValue("PrimaryEmail")
 	d.OfficePhone = r.FormValue("OfficePhone")
@@ -29,9 +34,9 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Printf("email = %s, officephone = %s, cell = %s", d.PrimaryEmail, d.OfficePhone, d.CellPhone)
 
-	update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?, OfficePhone=?, CellPhone=?, EmergencyContactName=?, EmergencyContactPhone=? where people.uid=?")
+	update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?,EmergencyContactName=?,EmergencyContactPhone=?,passhash=? where people.uid=?")
 	errcheck(err)
-	_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone, d.EmergencyContactName, d.EmergencyContactPhone, uid)
+	_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone, d.EmergencyContactName, d.EmergencyContactPhone, passhash, uid)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

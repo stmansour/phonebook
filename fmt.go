@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -13,6 +14,15 @@ const (
 	NO       = 0
 	YES      = 1
 )
+
+// This is Phonebooks's standard logger
+func ulog(format string, a ...interface{}) {
+	p := fmt.Sprintf(format, a...)
+	log.Print(p)
+	if Phonebook.DebugToScreen {
+		fmt.Print(p)
+	}
+}
 
 func add(a, b int) int { return a + b }
 func sub(b, a int) int { return a - b }

@@ -12,6 +12,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -134,6 +135,11 @@ type searchCoResults struct {
 	Matches []company
 }
 
+type signin struct {
+	ErrNo  int    // 0 = no error, otherwise signin error
+	ErrMsg string // err message string for user
+}
+
 // uiSupport is an umbrella structure in which we can pass many useful
 // data objects to the UI
 type uiSupport struct {
@@ -145,6 +151,7 @@ type uiSupport struct {
 	Months           []string       // a map for month number to month name
 	D                *personDetail
 	C                *company
+	S                *signin
 }
 
 // PhonebookUI is the instance of uiSupport used by this app
@@ -153,10 +160,16 @@ var PhonebookUI uiSupport
 // Phonebook is the global application structure providing
 // information that any function might need.
 var Phonebook struct {
-	db        *sql.DB
-	ReqMem    chan int // request to access UI data memory
-	ReqMemAck chan int // done with memory
+	Port          int // port on which we listen
+	db            *sql.DB
+	LogFile       *os.File
+	ReqMem        chan int // request to access UI data memory
+	ReqMemAck     chan int // done with memory
+	DebugToScreen bool
+	Debug         bool
 }
+
+var chttp = http.NewServeMux()
 
 func errcheck(err error) {
 	if err != nil {
@@ -169,7 +182,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.Contains(r.URL.Path, ".") {
 		chttp.ServeHTTP(w, r)
 	} else {
-		http.Redirect(w, r, "/search/", http.StatusFound)
+		http.Redirect(w, r, "/signin/", http.StatusFound)
 	}
 }
 
@@ -258,38 +271,7 @@ func loadMaps() {
 	}
 }
 
-func shutdownHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<html><body><h1>shutting down in 5 seconds!</h1></body></html>")
-	go func() {
-		time.Sleep(time.Duration(5 * time.Second))
-		os.Exit(0)
-	}()
-}
-
-func statusHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "OK")
-}
-
-var chttp = http.NewServeMux()
-
-func main() {
-	db, err := sql.Open("mysql", "ec2-user:@/accord?charset=utf8&parseTime=True")
-	if nil != err {
-		fmt.Printf("sql.Open: Error = %v\n", err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if nil != err {
-		fmt.Printf("db.Ping: Error = %v\n", err)
-	}
-	Phonebook.db = db
-	Phonebook.ReqMem = make(chan int)
-	Phonebook.ReqMemAck = make(chan int)
-	loadMaps()
-
-	go Dispatcher()
-
+func initHTTP() {
 	chttp.Handle("/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/", HomeHandler)
 	http.HandleFunc("/search/", searchHandler)
@@ -309,10 +291,72 @@ func main() {
 	http.HandleFunc("/adminAddPerson/", adminAddPersonHandler)
 	http.HandleFunc("/adminAddCompany/", adminAddCompanyHandler)
 	http.HandleFunc("/searchco/", searchCompaniesHandler)
+	http.HandleFunc("/signin/", signinHandler)
+	http.HandleFunc("/weblogin/", webloginHandler)
 
-	err = http.ListenAndServe(":8250", nil)
+}
+func shutdownHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "<html><body><h1>shutting down in 5 seconds!</h1></body></html>")
+	ulog("Shutdown initiated from web service\n")
+	go func() {
+		time.Sleep(time.Duration(5 * time.Second))
+		os.Exit(0)
+	}()
+}
+
+func statusHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "OK")
+}
+
+func readCommandLineArgs() {
+	portPtr := flag.Int("p", 8250, "port on which Phonebook listens")
+	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
+	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
+	flag.Parse()
+
+	Phonebook.Port = *portPtr
+	Phonebook.Debug = *dbugPtr
+	Phonebook.DebugToScreen = *dtscPtr
+}
+
+func main() {
+	var err error
+	Phonebook.LogFile, err = os.OpenFile("Phonebook.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer Phonebook.LogFile.Close()
+	log.SetOutput(Phonebook.LogFile)
+	ulog("*** Accord PHONEBOOK ***\n")
+
+	dbopenparms := "ec2-user:@/accord?charset=utf8&parseTime=True"
+	db, err := sql.Open("mysql", dbopenparms)
+	if nil != err {
+		ulog("sql.Open: Error = %v\n", err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if nil != err {
+		ulog("db.Ping: Error = %v\n", err)
+	}
+	ulog("MySQL database opened with \"%s\"\n", dbopenparms)
+
+	Phonebook.db = db
+	Phonebook.ReqMem = make(chan int)
+	Phonebook.ReqMemAck = make(chan int)
+	loadMaps()
+
+	readCommandLineArgs()
+
+	go Dispatcher()
+
+	initHTTP()
+	ulog("Phonebook initiating HTTP service on port %d\n", Phonebook.Port)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", Phonebook.Port), nil)
 	if nil != err {
 		fmt.Printf("*** Error on http.ListenAndServe: %v\n", err)
+		ulog("*** Error on http.ListenAndServe: %v\n", err)
 		os.Exit(1)
 	}
 }
