@@ -9,7 +9,7 @@ phonebook: *.go
 	go build
 
 dbmake:
-	cd ../dir/obfuscate;./obfuscate
+	#cd ../dir/obfuscate;./obfuscate
 	mysqldump accord > testdb.sql
 
 package: phonebook
