@@ -149,9 +149,12 @@ type uiSupport struct {
 	AcceptCodeToName map[int]string // Acceptance to jobcode
 	NameToDeptCode   map[string]int // department name to dept code
 	Months           []string       // a map for month number to month name
-	D                *personDetail
 	C                *company
+	D                *personDetail
+	R                *searchResults
 	S                *signin
+	T                *searchCoResults
+	X                *session
 }
 
 // PhonebookUI is the instance of uiSupport used by this app
@@ -352,6 +355,8 @@ func main() {
 	go Dispatcher()
 
 	initHTTP()
+	sessionInit()
+
 	ulog("Phonebook initiating HTTP service on port %d\n", Phonebook.Port)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", Phonebook.Port), nil)
 	if nil != err {

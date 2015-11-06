@@ -8,14 +8,15 @@ import (
 )
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
-	var d searchResults
+	w.Header().Set("Content-Type", "text/html")
+	var sess *session
 	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
 
-	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
-	<-Phonebook.ReqMemAck    // make sure we got it
-	initUIData(&ui)          // initialize our data
-	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
-
+	var d searchResults
 	d.Query = r.FormValue("searchstring")
 	if len(d.Query) > 0 {
 		//===========================================================
@@ -55,8 +56,10 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		errcheck(rows.Err())
 	}
+
+	ui.R = &d
 	t, _ := template.New("search.html").ParseFiles("search.html")
-	err := t.Execute(w, &d)
+	err := t.Execute(w, &ui)
 
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

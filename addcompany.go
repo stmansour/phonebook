@@ -6,6 +6,14 @@ import (
 )
 
 func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+
 	var c company
 	c.CoCode = 0
 	c.Active = YES
@@ -37,11 +45,7 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
-	var ui uiSupport
-	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
-	<-Phonebook.ReqMemAck    // make sure we got it
-	initUIData(&ui)          // initialize our data
-	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
+
 	ui.C = &c
 	err := t.Execute(w, &ui)
 	if nil != err {

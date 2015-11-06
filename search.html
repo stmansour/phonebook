@@ -12,10 +12,12 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td ><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=50></td>
+<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.X.UID}}">{{.X.Firstname}}</a></td>
 <td width=30></td>
 </tr>
 </table>
@@ -35,11 +37,11 @@
     <td width=20></td>
 </tr>
     <td width=20></td>
-    <td>{{if .Query}}{{.Matches | len}} results for "{{.Query}}"{{else}}Enter a search string{{end}}</td>
+    <td>{{if .R.Query}}{{.R.Matches | len}} results for "{{.R.Query}}"{{else}}Enter a search string{{end}}</td>
     <td width=20></td>
 </table>
 <p></p>
-{{if .Query}}    
+{{if .R.Query}}    
 <table cellpadding="2" class="bd" id="personDetailText" >
 <tr>                 <th align="left">First Name</th>
     <th width=7></th><th align="left">Last Name</th>
@@ -49,7 +51,7 @@
     <th width=7></th><th align="left">Cell Phone</th>
     <th width=7></th><th>Department</th></tr>
 
-	{{range .Matches}}
+	{{range .R.Matches}}
     	<tr>
     	<td><a href="/detail/{{.UID}}">{{.FirstName}}</a></td>
     	<td width=7></td><td><a href="/detail/{{.UID}}">{{.LastName}}</td>

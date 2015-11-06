@@ -19,13 +19,22 @@ func getCompanyInfo(cocode int, c *company) {
 }
 
 func companyHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+
 	var c company
 	costr := r.RequestURI[9:]
 	if len(costr) > 0 {
 		cocode, _ := strconv.Atoi(costr)
 		getCompanyInfo(cocode, &c)
 		t, _ := template.New("company.html").ParseFiles("company.html")
-		err := t.Execute(w, &c)
+		ui.C = &c
+		err := t.Execute(w, &ui)
 		if nil != err {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}

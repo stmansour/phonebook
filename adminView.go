@@ -151,6 +151,13 @@ func adminReadDetails(d *personDetail) {
 }
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
 	var d personDetail
 	d.Reports = make([]person, 0)
 	d.Image = "/images/anon.png"
@@ -174,11 +181,6 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		"div":               div,
 	}
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
-	var ui uiSupport
-	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
-	<-Phonebook.ReqMemAck    // make sure we got it
-	initUIData(&ui)          // initialize our data
-	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
 	ui.D = &d
 	err := t.Execute(w, &ui)
 	if nil != err {

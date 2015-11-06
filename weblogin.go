@@ -1,25 +1,48 @@
 package main
 
 import (
+	"crypto/md5"
 	"crypto/sha512"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
+
+// initHandlerSession validates the session cookie and redirects if necessary.
+// it also initializes the uiSession variable
+// RETURNS:  0 = no problems
+//           1 = redirected
+func initHandlerSession(sess *session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
+	cookie, err := r.Cookie("accord")
+	if nil != cookie && err == nil {
+		sess = sessionGet(cookie.Value)
+		sess.refresh(w, r)
+	} else {
+		fmt.Printf("REDIRECT to signin\n")
+		http.Redirect(w, r, "/signin/", http.StatusFound)
+		return 1
+	}
+	ui.X = sess
+	Phonebook.ReqMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqMemAck    // make sure we got it
+	initUIData(ui)           // initialize our data
+	Phonebook.ReqMemAck <- 1 // tell Dispatcher we're done with the data
+	return 0
+}
 
 func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	n := 0 //error number associated with this login attempt
 	loggedIn := false
-	fmt.Printf("webloginHandler\n")
 	myusername := strings.ToLower(r.FormValue("username"))
 	password := []byte(r.FormValue("password"))
 	sha := sha512.Sum512(password)
 	mypasshash := fmt.Sprintf("%x", sha)
 
-	var passhash string
+	var passhash, firstname string
 	var uid int
-	err := Phonebook.db.QueryRow("select uid,passhash from people where username=?", myusername).Scan(&uid, &passhash)
+	err := Phonebook.db.QueryRow("select uid,firstname,passhash from people where username=?", myusername).Scan(&uid, &firstname, &passhash)
 	switch {
 	case err == sql.ErrNoRows:
 		ulog("No user with username = %s\n", myusername)
@@ -34,6 +57,12 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	if passhash == mypasshash {
 		loggedIn = true
 		ulog("user %s logged in\n", myusername)
+		expiration := time.Now().Add(10 * time.Minute)
+		cval := fmt.Sprintf("%x", md5.Sum([]byte(myusername)))
+		s := sessionNew(cval, myusername, firstname, uid, "/images/anon.png")
+		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
+		cookie.Path = "/"
+		http.SetCookie(w, &cookie)
 	} else {
 		ulog("user name or password did not match for: %s\n", myusername)
 		n = 1

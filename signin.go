@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"text/template"
@@ -13,15 +14,36 @@ var ErrMsgs = []string{
 	"System error",                   // 2
 }
 
+// normal call:  http://host:8250/search/
+// login failed: http://host:8250/search/1     (the error number is in the filepath)
 func signinHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	cookie, _ := r.Cookie("accord")
+	if nil != cookie {
+		s := sessionGet(cookie.Value)
+		if nil != s {
+			if s.Token == cookie.Value {
+				fmt.Printf("FOUND session, redirecting\n")
+				http.Redirect(w, r, "/search/", http.StatusFound)
+			}
+		}
+	}
+
 	var err error
 	n := 0
 	path := "/signin/"
 	nstr := r.RequestURI[len(path):]
 	if len(nstr) > 0 {
-		n, err = strconv.Atoi(nstr)
-		if err != nil {
-			ulog("signinHandler: Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
+		if '0' <= nstr[0] && nstr[0] <= '9' {
+			// path == errno
+			n, err = strconv.Atoi(nstr)
+			if err != nil {
+				ulog("signinHandler: Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
+			}
+		} else {
+			// path == return to this path after login
+			// TODO: work out how to make it happen
 		}
 	}
 

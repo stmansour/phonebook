@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - Edit Details for {{.FirstName}} {{.LastName}}</title>
+<title>Accord Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -12,83 +12,126 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td ><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=50></td>
+<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.X.UID}}">{{.X.Firstname}}</a></td>
 <td width=30></td>
 </tr>
 </table>
 
-
+<table>
+	<tr><td height="50"></td></tr>
+	<tr><td width="50px"></td>
+		<td>
+		<div class="DetailPerson">{{.D.FirstName}} {{.D.LastName}}</div><br>
+		<div class="EmployerC"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></div>
+		<div class="JobTitleC">{{.D.JobTitle}}</div>
+		</td>
+	</tr>
+</table>
 
 <p>&nbsp;</p>
+
+
+<form action="/savePersonDetails/{{.D.UID}}" method="POST">
+
 <table>
-	<tr><td colspan="4">
-	<div class="DetailPerson" align=center>{{.FirstName}} {{.LastName}}</div><br>
-	<div class="EmployerC" align="center"><a href="/company/{{.Company.CoCode}}">{{.Company.CommonName}}</a></div>
-	<div class="JobTitleC"  align="center">{{.JobTitle}}</div>
-	</td>
-	</tr>
-
-	<tr><td colspan="4" height="30"></td></tr>
-
-
-	<tr><td width="50px">
-	      <form action="/savePersonDetails/{{.UID}}" method="POST">
-	    </td>
-
+	<tr>
+		<td width="50px"> </td>
 		<td class="Attrib" align="right">NEW PASSWORD</td>
 		<td><input type="password" name="password" value="" size="35"></td>
 		<td width="50px"></td>
 	</tr>
 	
-	<tr><td width="50px"></td>
+	<tr>
+		<td width="50px"></td>
 		<td class="Attrib" align="right">REPEAT NEW PASSWORD</td>
 		<td><input type="password" name="password2" value="" size="35"></td>
 		<td width="50px"></td>
 	</tr>
-
-
-	<tr><td colspan="4" height="10"></td></tr>
-
-	<tr>
-		<td width="50px">
-			
-		</td>
-		<td class="Attrib" align="right">PREFERRED NAME</td>
-		<td><input type="text" name="PreferredName" value="{{.PreferredName}}" size="35"></td>
-		<td width="50px"></td>
-	</tr>
-
-	<tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td>
-		<td><input type="email" name="PrimaryEmail" value="{{.PrimaryEmail}}" size="35"></td><td width="50px"></td>
-	</tr>
-	<tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td>
-		<td><input type="text" name="OfficePhone" value="{{.OfficePhone}}" size="13"></td><td width="50px"></td>
-	</tr>
-	<tr><td width="50px"></td><td class="Attrib" align="right">CELL</td>
-		<td><input type="text" name="CellPhone" value="{{.CellPhone}}" size="13"></td><td width="50px"></td>
-	</tr>
-	<tr><td width="50px"></td><td class="Attrib" align="right">EMERGENCY CONTACT NAME</td>
-		<td><input type=text name="EmergencyContactName" Value="{{.EmergencyContactName}}" size="35"></td><td width="50px"></td>
-	</tr>
-	<tr><td width="50px"></td><td class="Attrib" align="right">EMERGENCY CONTACT PHONE</td>
-		<td><input type=text name="EmergencyContactPhone" Value="{{.EmergencyContactPhone}}" size="13"></td>
-		<td width="50px"></td>
-	</tr>
-
-	<tr><td colspan="4" height="10"></td></tr>
-	<tr><td width="50px"></td>
-		<td></td>
-		<td><input type="submit" name="action" value="Save">
-	    &nbsp;&nbsp;&nbsp;&nbsp;<a href="/detail/{{.UID}}" class="blbutton">Cancel</a></td>
-	    <td width="50px">
-		</form>
-	    </td>
-	</tr>
-
+	<tr><td height="20" colspan="4"></td></tr>
 </table>
+
+		<table>
+			<tr>
+				<td width="50px"></td>
+				<td class="edAttrib">HOME STREET ADDRESS</td>
+				<td class="edAttrib">HOME STREET ADDRESS2</td>
+			</tr>
+			<tr>
+				<td width="50px"></td>
+				<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35"></td>
+				<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35"></td>
+			</tr>
+		</table>
+
+		<table>
+			<tr>
+				<td width="50px"></td>
+				<td class="edAttrib">CITY</td>
+				<td class="edAttrib">STATE</td>
+				<td class="edAttrib">POSTAL CODE</td>
+				<td class="edAttrib">COUNTRY</td>
+			</tr>
+			<tr>
+				<td width="50px"></td>
+				<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25"></td>
+				<td><input type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"></td>
+				<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10"></td>
+				<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10"></td>
+			</tr>
+		</table>
+
+
+<table>
+
+			<tr><td height="20" colspan="3"></td></tr>
+
+			<tr>
+				<td width="50px"></td>
+				<td class="edAttrib">PREFERRED NAME</td>
+				<td class="edAttrib">OFFICE PHONE</td>
+			</tr>
+			<tr>
+				<td width="50px"></td>
+				<td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35"></td>
+				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13"></td>
+			</tr>
+			<tr>
+				<td width="50px"></td>
+				<td class="edAttrib">EMAIL</td>
+				<td class="edAttrib">CELL PHONE</td>
+			</tr>
+			<tr>
+				<td width="50px"></td>
+				<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35"></td>
+				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13"></td>
+			</tr>
+
+			<tr>
+				<td width="50px"></td>
+				<td class="edAttrib">EMERGENCY CONTACT NAME</td>
+				<td class="edAttrib">CONTACT PHONE</td>
+			</tr>
+			<tr>
+				<td width="50px">
+				<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35"></td></td>
+				<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13"></td>
+			</tr>
+
+			<tr><td height="20" colspan="3"></td></tr>
+
+			<tr><td width="50px"></td>
+				<td colspan="2">
+				<input type="submit" name="action" value="Save">
+			    &nbsp;&nbsp;&nbsp;&nbsp;<a href="/detail/{{.D.UID}}" class="blbutton">Cancel</a></td>
+			</tr>
+</table>
+
+</form>
 
 </body>
 </html>

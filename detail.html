@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - Details  {{.FirstName}} {{.LastName}}</title>
+<title>Accord Directory - Details  {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
 <body style='background-image: url("/images/isolabella.jpg")'>
 
@@ -11,10 +11,12 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td ><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=50></td>
+<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.D.UID}}">{{.X.Firstname}}</a></td>
 <td width=30></td>
 </tr>
 </table>
@@ -27,32 +29,32 @@
 	<td width=20 class="bd"></td>
 	<td id="personDetailText" class="bd" colspan="2">
 		<div align="right">
-		<span class="FirstName">{{if .PreferredName}}{{.PreferredName}}{{else}}{{.FirstName}}{{end}}</span> <span class="LastName">{{.LastName}}</span><br>
-		<span class="Employer"><a href="/company/{{.Company.CoCode}}">{{.Company.CommonName}}</a></span><br>
+		<span class="FirstName">{{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}}</span> <span class="LastName">{{.D.LastName}}</span><br>
+		<span class="Employer"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></span><br>
 		<img width=30 src="/images/orgcharticon.png" align="left" alt="Organizational Chart">
-		<span class="JobTitle">{{.JobTitle}}</span>
+		<span class="JobTitle">{{.D.JobTitle}}</span>
 		</div>
 		<p></p>
 	</td>
 	<td width=20 class="bd"></td>
 	<td width=30></td>
-	<td valign="center" rowspan="7" class="bd"><img width=300 src="{{.Image}}"></td>
+	<td valign="center" rowspan="7" class="bd"><img width=300 src="{{.D.Image}}"></td>
 </tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td>     <td class="AttribVal">{{.FirstName}} {{.MiddleName}} {{.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td>     <td class="AttribVal"><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td>     <td class="AttribVal">{{.OfficePhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td>      <td class="AttribVal">{{.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">CLASS &nbsp;</td>     <td class="AttribVal">{{.Class}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">DEPARTMENT &nbsp;</td><td class="AttribVal">{{.DeptName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td>   <td class="AttribVal"><a href="/detail/{{.MgrUID}}">{{.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td>     <td class="AttribVal">{{.D.FirstName}} {{.D.MiddleName}} {{.D.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td>     <td class="AttribVal"><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td>     <td class="AttribVal">{{.D.OfficePhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td>      <td class="AttribVal">{{.D.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">CLASS &nbsp;</td>     <td class="AttribVal">{{.D.Class}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">DEPARTMENT &nbsp;</td><td class="AttribVal">{{.D.DeptName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td>   <td class="AttribVal"><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 
-{{if .Reports | len}}
+{{if .D.Reports | len}}
 	<tr><td colspan="4" height="10" class="bd"></td><td colspan="2"></td></tr>
 	<tr>
 		<td width=20 class="bd">
 		<td class="Attribbd" valign="top">DIRECT REPORTS &nbsp;</td>
 	    <td class="AttribVal">
-	        {{range .Reports}}
+	        {{range .D.Reports}}
 	        <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
 	        {{end}}
 	    </td>
@@ -65,8 +67,7 @@
 <tr>
 	<td colspan="4" class="bd">
 	  <div align="center">
-		<a  href="/editDetail/{{.UID}}" class="button">Edit</a> &nbsp;&nbsp;
-		<a  href="/adminView/{{.UID}}" class="button">Admin</a>
+		<a  href="/adminView/{{.D.UID}}" class="button">Admin</a>
 	  </div>
 	</td>
 	<td colspan=2></td>

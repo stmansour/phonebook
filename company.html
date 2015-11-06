@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - {{.CommonName}}</title>
+<title>Accord Directory - {{.C.CommonName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -11,10 +11,12 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td class="AppName"><a href="/search/">PHONEBOOK</a></td>
+<td ><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=50></td>
+<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.X.UID}}">{{.X.Firstname}}</a></td>
 <td width=30></td>
 </tr>
 </table>
@@ -23,28 +25,28 @@
 
 <p>&nbsp;</p>
 <table border="0" class="bd" id="personDetailText">
-<tr><td width="50px"></td><td colspan="2"><span class="LastName">{{.LegalName}}</span><br>
-<span class="FirstName">{{.CommonName}}</span></td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td colspan="2"><span class="LastName">{{.C.LegalName}}</span><br>
+<span class="FirstName">{{.C.CommonName}}</span></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">ADDRESS</td>
     <td>
-        {{.Address}}
-        {{if .Address2}}<br>{{.Address2}}{{end}}<br>
-        {{.City}}, {{.State}}&nbsp;&nbsp;{{.PostalCode}}, {{.Country}}
+        {{.C.Address}}
+        {{if .C.Address2}}<br>{{.C.Address2}}{{end}}<br>
+        {{.C.City}}, {{.C.State}}&nbsp;&nbsp;{{.C.PostalCode}}, {{.C.Country}}
     </td><td width="50px"></td>
 </tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.Designation}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">COMPANY CODE</td><td>{{.CoCode}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td><td>{{.Phone}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">FAX</td><td>{{.Fax}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">ACTIVE</td><td>{{if gt .Active 0}}Yes{{else}}No{{end}}</a></td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">EMPLOYS PEOPLE</td><td>{{if gt .EmploysPersonnel 0}}Yes{{else}}No{{end}}</a></td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.C.Designation}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">COMPANY CODE</td><td>{{.C.CoCode}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td><td>{{.C.Phone}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">FAX</td><td>{{.C.Fax}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td><td><a href="mailto:{{.C.Email}}">{{.C.Email}}</a></td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">ACTIVE</td><td>{{if gt .C.Active 0}}Yes{{else}}No{{end}}</a></td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">EMPLOYS PEOPLE</td><td>{{if gt .C.EmploysPersonnel 0}}Yes{{else}}No{{end}}</a></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td colspan="2"><p></p><hr><p></p></td><td width="50px"></td></tr>
 
 <tr><td width="50px"></td>
     <td colspan="2" >
     <p align="center">
-    <a href="/adminViewCo/{{.CoCode}}" class="button">Admin View</a> 
+    <a href="/adminViewCo/{{.C.CoCode}}" class="button">Admin View</a> 
     </p>
     <br><p></p>
     </td><td width="50px"></td></tr>

@@ -7,6 +7,14 @@ import (
 )
 
 func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+
 	var d searchCoResults
 
 	d.Query = r.FormValue("searchstring")
@@ -28,7 +36,8 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		errcheck(rows.Err())
 	}
 	t, _ := template.New("searchco.html").ParseFiles("searchco.html")
-	err := t.Execute(w, &d)
+	ui.T = &d
+	err := t.Execute(w, &ui)
 
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

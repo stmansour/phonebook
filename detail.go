@@ -63,6 +63,14 @@ func getReports(uid int, d *personDetail) {
 }
 
 func detailHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+
 	var d personDetail
 	d.Reports = make([]person, 0)
 	d.Image = "/images/anon.png"
@@ -70,11 +78,17 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
 		d.UID = uid
-		rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode,cocode,mgruid,Class from people where uid=?", uid)
+		rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
+			"officephone,cellphone,deptcode,cocode,mgruid,Class,"+
+			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
+			"from people where uid=?", uid)
 		errcheck(err)
 		defer rows.Close()
 		for rows.Next() {
-			errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail, &d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.Class))
+			errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
+				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.Class,
+				&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
+				&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
 		}
 		errcheck(rows.Err())
 		d.MgrName = getNameFromUID(d.MgrUID)
@@ -84,7 +98,8 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		getReports(uid, &d)
 	}
 	t, _ := template.New("detail.html").ParseFiles("detail.html")
-	err := t.Execute(w, &d)
+	ui.D = &d
+	err := t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
