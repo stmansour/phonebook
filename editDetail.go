@@ -31,7 +31,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 
 	d.UID = uid
 	rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
-		"officephone,cellphone,deptcode,cocode,mgruid,Class,EmergencyContactName,EmergencyContactPhone,"+
+		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,EmergencyContactName,EmergencyContactPhone,"+
 		"HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
 		"HomeState,HomePostalCode,HomeCountry "+
 		"from people where uid=?", uid)
@@ -40,19 +40,21 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
 			&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID,
-			&d.Class, &d.EmergencyContactName, &d.EmergencyContactPhone,
+			&d.ClassCode, &d.EmergencyContactName, &d.EmergencyContactPhone,
 			&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 			&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
 	}
 	errcheck(rows.Err())
+
 	d.MgrName = getNameFromUID(d.MgrUID)
 	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
 	d.JobTitle = getJobTitle(d.JobCode)
 	getCompanyInfo(d.CoCode, &d.Company)
 	getReports(uid, &d)
-	t, _ := template.New("editDetail.html").ParseFiles("editDetail.html")
-
+	d.Class = ui.ClassCodeToName[d.ClassCode]
 	ui.D = &d
+
+	t, _ := template.New("editDetail.html").ParseFiles("editDetail.html")
 	err = t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

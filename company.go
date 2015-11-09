@@ -28,7 +28,8 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var c company
-	costr := r.RequestURI[9:]
+	path := "/company/"
+	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		cocode, _ := strconv.Atoi(costr)
 		getCompanyInfo(cocode, &c)

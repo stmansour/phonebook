@@ -56,7 +56,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.CoCode = strToInt(r.FormValue("CoCode"))
 	d.JobCode = strToInt(r.FormValue("JobCode"))
 	d.DeptCode = strToInt(r.FormValue("DeptCode"))
-	d.Class = r.FormValue("Class")
+	d.ClassCode = strToInt(r.FormValue("ClassCode"))
 	d.PositionControlNumber = r.FormValue("PositionControlNumber")
 	d.HomeStreetAddress = r.FormValue("HomeStreetAddress")
 	d.HomeStreetAddress2 = r.FormValue("HomeStreetAddress2")
@@ -111,7 +111,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			"PositionControlNumber,DeptCode," +
 			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry," +
 			"status,EligibleForRehire,Accepted401K,AcceptedDentalInsurance,AcceptedHealthInsurance," +
-			"Hire,Termination,Class," +
+			"Hire,Termination,ClassCode," +
 			"BirthMonth,BirthDOM,mgruid,StateOfEmployment,CountryOfEmployment," +
 			"LastReview,NextReview) " +
 			//      1                 10                  20                  30
@@ -123,7 +123,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			d.PositionControlNumber, d.DeptCode, //16
 			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, // 22
 			d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance, // 27
-			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.Class, // 30
+			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.ClassCode, // 30
 			d.BirthMonth, d.BirthDOM, d.MgrUID, d.StateOfEmployment, d.CountryOfEmployment, // 35
 			dateToDBStr(d.LastReview), dateToDBStr(d.NextReview)) // 37
 		errcheck(err)
@@ -153,7 +153,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			"PositionControlNumber=?,DeptCode=?," + // 16
 			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?," + // 22
 			"status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?," + // 27
-			"Hire=?,Termination=?,Class=?," + // 30
+			"Hire=?,Termination=?,ClassCode=?," + // 30
 			"BirthMonth=?,BirthDOM=?,mgruid=?,StateOfEmployment=?,CountryOfEmployment=?," + // 35
 			"LastReview=?,NextReview=? " + // 37
 			"where people.uid=?")
@@ -165,7 +165,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			d.PositionControlNumber, d.DeptCode,
 			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
 			d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance,
-			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.Class,
+			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.ClassCode,
 			d.BirthMonth, d.BirthDOM, d.MgrUID, d.StateOfEmployment, d.CountryOfEmployment,
 			dateToDBStr(d.LastReview), dateToDBStr(d.NextReview),
 			uid)

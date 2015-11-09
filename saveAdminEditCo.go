@@ -72,5 +72,5 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
-	http.Redirect(w, r, fmt.Sprintf("/adminViewCo/%d", CoCode), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/company/%d", CoCode), http.StatusFound)
 }

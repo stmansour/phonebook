@@ -74,19 +74,20 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	var d personDetail
 	d.Reports = make([]person, 0)
 	d.Image = "/images/anon.png"
-	uidstr := r.RequestURI[8:]
+	path := "/detail/"
+	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
 		d.UID = uid
 		rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
-			"officephone,cellphone,deptcode,cocode,mgruid,Class,"+
+			"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
 			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
 			"from people where uid=?", uid)
 		errcheck(err)
 		defer rows.Close()
 		for rows.Next() {
 			errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
-				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.Class,
+				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
 				&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 				&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
 		}
@@ -96,6 +97,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		d.JobTitle = getJobTitle(d.JobCode)
 		getCompanyInfo(d.CoCode, &d.Company)
 		getReports(uid, &d)
+		d.Class = ui.ClassCodeToName[d.ClassCode]
 	}
 	t, _ := template.New("detail.html").ParseFiles("detail.html")
 	ui.D = &d

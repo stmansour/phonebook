@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Phonebook - Search Companies</title>
+<title>Accord Phonebook - Search Classes</title>
 </head>
 <body style='background-image: url("/images/NickBurbank.jpg")'>
 
@@ -31,14 +31,14 @@
 <tr>
     <td width=20></td>
     <td>
-    <form action="/searchco/" method="POST">
-    	<div>Search Companies: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
+    <form action="/searchcl/" method="POST">
+    	<div>Search Classes: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
     </form>
     </td>
     <td width=20></td>
 </tr>
     <td width=20></td>
-    <td>{{if .T.Query}}{{.T.Matches | len}} results for "{{.T.Query}}"{{else}}Enter a search string{{end}}</td>
+    <td>{{if .L.Query}}{{.L.Matches | len}} results for "{{.L.Query}}"{{else}}Enter a search string{{end}}</td>
     <td width=20></td>
 </table>
 
@@ -46,23 +46,17 @@
 <p></p>
 
 
-{{if .T.Query}}    
+{{if .L.Query}}    
 <table cellpadding="2" class="bd" id="personDetailText" >
-<tr><th width=7></th><th align="left">COMMON NAME</th>
-    <th width=7></th><th align="left">LEGAL NAME</th>
-    <th width=7></th><th align="left">DES</th>
-    <th width=7></th><th align="left">EMAIL</th>
-    <th width=7></th><th align="left">PHONE</th>
-    <th width=7></th><th align="left">FAX</th>
+<tr><th width=7></th><th align="left">NAME</th>
+    <th width=7></th><th align="left">DESIGNATION</th>
+    <th width=7></th><th align="left">DESCRIPTION</th>
     <th width=7></th>
-	{{range .T.Matches}}
+	{{range .L.Matches}}
     	<tr>
-    	<td></td><td><a href="/company/{{.CoCode}}">{{.CommonName}}</a></td>
-    	<td width=7></td><td><a href="/company/{{.CoCode}}">{{.LegalName}}</td>
-        <td width=7></td><td><a href="/company/{{.CoCode}}">{{.Designation}}</td>
-    	<td width=7></td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
-    	<td width=7></td><td>{{.Phone}}</td>
-    	<td width=7></td><td>{{.Fax}}</td>
+    	<td></td><td><a href="/class/{{.ClassCode}}">{{.Name}}</a></td>
+    	<td width=7></td><td><a href="/class/{{.ClassCode}}">{{.Designation}}</td>
+    	<td width=7></td><td>{{.Description}}</a></td>
         <td width=7></td>
     	</tr>
 	{{end}}

@@ -111,7 +111,7 @@ func adminReadDetails(d *personDetail) {
 	//-----------------------------------------------------------
 	rows, err := Phonebook.db.Query(
 		"select LastName,FirstName,MiddleName,Salutation,"+ // 4
-			"Class,Status,PositionControlNumber,"+ // 7
+			"ClassCode,Status,PositionControlNumber,"+ // 7
 			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+ // 11
 			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+ // 15
 			"BirthMonth,BirthDOM,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+ // 20
@@ -127,7 +127,7 @@ func adminReadDetails(d *personDetail) {
 	for rows.Next() {
 		errcheck(rows.Scan(
 			&d.LastName, &d.FirstName, &d.MiddleName, &d.Salutation,
-			&d.Class, &d.Status, &d.PositionControlNumber,
+			&d.ClassCode, &d.Status, &d.PositionControlNumber,
 			&d.OfficePhone, &d.OfficeFax, &d.CellPhone, &d.PrimaryEmail,
 			&d.SecondaryEmail, &d.EligibleForRehire, &d.LastReview, &d.NextReview,
 			&d.BirthMonth, &d.BirthDOM, &d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
@@ -182,6 +182,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d
+	//fmt.Printf("ui.D = %#v\n", ui.D)
 	err := t.Execute(w, &ui)
 	if nil != err {
 		fmt.Printf("Error executing template: %v\n", err)

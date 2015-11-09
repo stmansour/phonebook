@@ -14,9 +14,10 @@
 <td ><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
+<td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=50></td>
-<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.D.UID}}">{{.X.Firstname}}</a></td>
+<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.X.UID}}">{{.X.Firstname}}</a></td>
 <td width=30></td>
 </tr>
 </table>
@@ -41,6 +42,7 @@
 	<td valign="center" rowspan="7" class="bd"><img width=300 src="{{.D.Image}}"></td>
 </tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td>     <td class="AttribVal">{{.D.FirstName}} {{.D.MiddleName}} {{.D.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">PREFERRED NAME &nbsp;</td><td class="AttribVal">{{.D.PreferredName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td>     <td class="AttribVal"><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td>     <td class="AttribVal">{{.D.OfficePhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td>      <td class="AttribVal">{{.D.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>

@@ -16,6 +16,7 @@
 <td ><a href="/search/">PHONEBOOK</a></td>
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
+<td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=50></td>
 <td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.X.UID}}">{{.X.Firstname}}</a></td>
@@ -143,13 +144,19 @@
 				<td class="edAttrib"></td><td></td>
 			</tr>
 		</table>
+
 		<p></p>
+
+		{{$ccode := .D.ClassCode}}
 
 		<table >
 			<tr>
 				<td class="edAttrib">DEPARTMENT</td><td><select class="HR" name="DeptCode">{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="edAttrib">CLASS</td><td><input class="HR" type=text name="Class" value="{{.D.Class}}" size="15"></td>
+				<td class="edAttrib">CLASS</td><td>
+					<select class="HR" name="ClassCode">{{range $name, $classcode := .NameToClassCode}}
+					<option value="{{$classcode}}"{{if eq $classcode $ccode}}selected{{end}}>{{$name}}</option>{{end}}</select>
+				</td>
 				<td width=10></td>
 				<td class="edAttrib">POSITION CONTROL NUMBER:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10"></td>
 			</tr>

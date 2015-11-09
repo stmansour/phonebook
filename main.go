@@ -105,6 +105,7 @@ type personDetail struct {
 	MgrUID                  int
 	JobTitle                string
 	Class                   string
+	ClassCode               int
 	MgrName                 string
 	Image                   string // ptr to image -- URI
 	Reports                 []person
@@ -125,6 +126,13 @@ type personDetail struct {
 	MyDeductions            []aDeduction
 }
 
+type class struct {
+	ClassCode   int
+	Name        string
+	Designation string
+	Description string
+}
+
 type searchResults struct {
 	Query   string
 	Matches []person
@@ -133,6 +141,11 @@ type searchResults struct {
 type searchCoResults struct {
 	Query   string
 	Matches []company
+}
+
+type searchClassResults struct {
+	Query   string
+	Matches []class
 }
 
 type signin struct {
@@ -148,12 +161,16 @@ type uiSupport struct {
 	NameToJobCode    map[string]int // jobtitle to jobcode
 	AcceptCodeToName map[int]string // Acceptance to jobcode
 	NameToDeptCode   map[string]int // department name to dept code
+	NameToClassCode  map[string]int // class designation to classcode
+	ClassCodeToName  map[int]string // index by classcode to get the name
 	Months           []string       // a map for month number to month name
 	C                *company
+	A                *class
 	D                *personDetail
 	R                *searchResults
 	S                *signin
 	T                *searchCoResults
+	L                *searchClassResults
 	X                *session
 }
 
@@ -209,6 +226,12 @@ func initUIData(u *uiSupport) {
 	for k, v := range PhonebookUI.NameToJobCode {
 		u.NameToJobCode[k] = v
 	}
+	u.NameToClassCode = make(map[string]int, len(PhonebookUI.NameToClassCode))
+	u.ClassCodeToName = make(map[int]string, len(PhonebookUI.NameToClassCode))
+	for k, v := range PhonebookUI.NameToClassCode {
+		u.NameToClassCode[k] = v
+		u.ClassCodeToName[v] = k
+	}
 	u.Months = make([]string, len(PhonebookUI.Months))
 	for i := 0; i < len(PhonebookUI.Months); i++ {
 		u.Months[i] = PhonebookUI.Months[i]
@@ -263,6 +286,22 @@ func loadMaps() {
 		PhonebookUI.NameToDeptCode[name] = code
 	}
 	errcheck(rows.Err())
+
+	PhonebookUI.NameToClassCode = make(map[string]int)
+	PhonebookUI.ClassCodeToName = make(map[int]string)
+	rows, err = Phonebook.db.Query("select classcode,designation from classes")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		errcheck(rows.Scan(&code, &name))
+		PhonebookUI.NameToClassCode[name] = code
+		PhonebookUI.ClassCodeToName[code] = name
+	}
+	// for k, v := range PhonebookUI.NameToClassCode {
+	// 	fmt.Printf("%s %d\n", k, v)
+	// }
+	errcheck(rows.Err())
+
 	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {
 		PhonebookUI.AcceptCodeToName[i] = acceptIntToString(i)
 	}
@@ -281,10 +320,11 @@ func initHTTP() {
 	http.HandleFunc("/detail/", detailHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)
 	http.HandleFunc("/saveAdminEditCo/", saveAdminEditCoHandler)
+	http.HandleFunc("/saveAdminEditClass/", saveAdminEditClassHandler)
 	http.HandleFunc("/savePersonDetails/", savePersonDetailsHandler)
 	http.HandleFunc("/adminEditCo/", adminEditCompanyHandler)
 	http.HandleFunc("/adminEdit/", adminEditHandler)
-	http.HandleFunc("/adminViewCo/", adminViewCompanyHandler)
+	http.HandleFunc("/adminEditClass/", adminEditClassHandler)
 	http.HandleFunc("/adminView/", adminViewHandler)
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/company/", companyHandler)
@@ -293,11 +333,14 @@ func initHTTP() {
 	http.HandleFunc("/admin/", adminHandler)
 	http.HandleFunc("/adminAddPerson/", adminAddPersonHandler)
 	http.HandleFunc("/adminAddCompany/", adminAddCompanyHandler)
+	http.HandleFunc("/adminAddClass/", adminAddClassHandler)
 	http.HandleFunc("/searchco/", searchCompaniesHandler)
 	http.HandleFunc("/signin/", signinHandler)
 	http.HandleFunc("/weblogin/", webloginHandler)
-
+	http.HandleFunc("/searchcl/", searchClassHandler)
+	http.HandleFunc("/class/", classHandler)
 }
+
 func shutdownHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<html><body><h1>shutting down in 5 seconds!</h1></body></html>")
 	ulog("Shutdown initiated from web service\n")

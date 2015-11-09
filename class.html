@@ -2,10 +2,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Phonebook - Search</title>
+<title>Accord Directory - {{.A.Name}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
-
 
 
 <table cellspacing="0" cellpadding="4" class="bd" id="menuid">
@@ -25,14 +24,22 @@
 
 
 
+<p>&nbsp;</p>
+<table border="0" class="bd" id="personDetailText">
+<tr><td width="50px"></td><td class="Attrib" align="right">NAME</td><td>{{.A.Name}}</span></td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.A.Designation}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">DESCRIPTION</td><td>{{.A.Description}}</td><td width="50px"></td></tr>
 
-<p></p>
-<table>
-<tr><td width="50"></td><td><p class="AppHeading">Admin Page</p></td></tr>
-<tr><td height="30" colspan="2"></td></tr>
-<tr><td width="50" height="30"></td><td><p><a href="/adminAddPerson/" class="blbutton">Add Person</a></p></td></tr>
-<tr><td width="50" height="30"></td><td><p><a href="/adminAddCompany/" class="blbutton">Add Company</a></p></td></tr>
-<tr><td width="50" height="30"></td><td><p><a href="/adminAddClass/" class="blbutton">Add Class</a></p></td></tr>
+<tr><td width="50px"></td><td colspan="2"><p></p><hr><p></p></td><td width="50px"></td></tr>
+
+<tr><td width="50px"></td>
+    <td colspan="2" >
+    <p align="center">
+    <a href="/adminEditClass/{{.A.ClassCode}}" class="button">Admin Edit Class</a> 
+    </p>
+    <br><p></p>
+    </td><td width="50px"></td></tr>
+
 </table>
 
 </body>
