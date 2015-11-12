@@ -8,7 +8,7 @@
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
 
-<table cellspacing="0" cellpadding="4" class="bd" id="menuid">
+<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
@@ -18,7 +18,8 @@
 <td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
 <td width=50></td>
-<td valign="center"><img src="{{.X.ImageURL}}" height="25"> <a href="/editDetail/{{.X.UID}}">{{.X.Firstname}}</a></td>
+<td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
+<td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
 <td width=30></td>
 </tr>
 </table>
@@ -88,6 +89,6 @@
 <p></p>
 <hr>
 <p></p>
-<a  href="/company/{{.C.CoCode}}" class="blbutton">View</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEditCo/{{.C.CoCode}}" class="blbutton">AdminEdit</a>
+<a  href="javascript:history.back()" class="blbutton">Done</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEditCo/{{.C.CoCode}}" class="blbutton">AdminEdit</a>
 </body>
 </html>

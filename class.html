@@ -26,7 +26,7 @@
 
 <p>&nbsp;</p>
 <table border="0" class="bd" id="personDetailText">
-<tr><td width="50px"></td><td class="Attrib" align="right">NAME</td><td>{{.A.Name}}</span></td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td colspan="2"><span class="LastName">{{.A.Name}}</span></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.A.Designation}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">DESCRIPTION</td><td>{{.A.Description}}</td><td width="50px"></td></tr>
 
@@ -35,7 +35,8 @@
 <tr><td width="50px"></td>
     <td colspan="2" >
     <p align="center">
-    <a href="/adminEditClass/{{.A.ClassCode}}" class="button">Admin Edit Class</a> 
+    <a href="javascript:history.back()" class="button">Done</a> &nbsp;&nbsp;&nbsp;
+    <a href="/adminEditClass/{{.A.ClassCode}}" class="button">Admin Edit</a> 
     </p>
     <br><p></p>
     </td><td width="50px"></td></tr>

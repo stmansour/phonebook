@@ -20,7 +20,7 @@ func initHandlerSession(sess *session, ui *uiSupport, w http.ResponseWriter, r *
 		sess = sessionGet(cookie.Value)
 		sess.refresh(w, r)
 	} else {
-		fmt.Printf("REDIRECT to signin\n")
+		//fmt.Printf("REDIRECT to signin\n")
 		http.Redirect(w, r, "/signin/", http.StatusFound)
 		return 1
 	}
@@ -40,9 +40,9 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	sha := sha512.Sum512(password)
 	mypasshash := fmt.Sprintf("%x", sha)
 
-	var passhash, firstname string
+	var passhash, firstname, preferredname string
 	var uid int
-	err := Phonebook.db.QueryRow("select uid,firstname,passhash from people where username=?", myusername).Scan(&uid, &firstname, &passhash)
+	err := Phonebook.db.QueryRow("select uid,firstname,preferredname,passhash from people where username=?", myusername).Scan(&uid, &firstname, &preferredname, &passhash)
 	switch {
 	case err == sql.ErrNoRows:
 		ulog("No user with username = %s\n", myusername)
@@ -59,7 +59,11 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		ulog("user %s logged in\n", myusername)
 		expiration := time.Now().Add(10 * time.Minute)
 		cval := fmt.Sprintf("%x", md5.Sum([]byte(myusername)))
-		s := sessionNew(cval, myusername, firstname, uid, "/images/anon.png")
+		name := firstname
+		if len(preferredname) > 0 {
+			name = preferredname
+		}
+		s := sessionNew(cval, myusername, name, uid, "/images/anon.png")
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)

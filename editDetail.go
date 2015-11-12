@@ -18,7 +18,8 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 
 	var d personDetail
 	d.Reports = make([]person, 0)
-	uidstr := r.RequestURI[12:]
+	path := "/editDetail/"
+	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) == 0 {
 		fmt.Fprintf(w, "the RequestURI needs to know the person's uid. It was not found on the URI:  %s\n", r.RequestURI)
 		return
