@@ -193,6 +193,7 @@ var chttp = http.NewServeMux()
 
 func errcheck(err error) {
 	if err != nil {
+		fmt.Printf("error = %v\n", err)
 		log.Fatal(err)
 	}
 }
