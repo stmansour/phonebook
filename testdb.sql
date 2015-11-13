@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.45, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.26, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: accord
 -- ------------------------------------------------------
--- Server version	5.5.45
+-- Server version	5.6.26
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -158,7 +158,7 @@ CREATE TABLE `departments` (
   `deptcode` mediumint(9) NOT NULL AUTO_INCREMENT,
   `name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`deptcode`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +167,7 @@ CREATE TABLE `departments` (
 
 LOCK TABLES `departments` WRITE;
 /*!40000 ALTER TABLE `departments` DISABLE KEYS */;
-INSERT INTO `departments` VALUES (1,'Administrative'),(2,'Capital Improvements'),(3,'Courtesy Patrol'),(4,'Customer Service'),(5,'Fitness Center'),(6,'Food & Beverage'),(7,'Guest Services'),(8,'Housekeeping'),(9,'Landscaping'),(10,'Maintenance'),(11,'Product Development'),(12,'Product Sales'),(13,'Serviced Apt Sales'),(14,'Trad Apt Sales'),(15,'Unknown'),(16,'Warehouse');
+INSERT INTO `departments` VALUES (1,'Administrative'),(2,'Capital Improvements'),(3,'Courtesy Patrol'),(4,'Customer Service'),(5,'Fitness Center'),(6,'Food & Beverage'),(7,'Guest Services'),(8,'Housekeeping'),(9,'Landscaping'),(10,'Maintenance'),(11,'Product Development'),(12,'Product Sales'),(13,'Serviced Apt Sales'),(14,'Trad Apt Sales'),(15,'Unknown'),(16,'Warehouse'),(17,'Accounting');
 /*!40000 ALTER TABLE `departments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -268,4 +268,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-13  0:41:47
+-- Dump completed on 2015-11-12 21:00:31
