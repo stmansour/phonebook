@@ -30,6 +30,21 @@ func parseDeductions(d *personDetail) {
 }
 
 func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+	sess = ui.X
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
+		ulog("Permissions refuse saveAdminEdit page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+
 	var d personDetail
 	path := "/saveAdminEdit/"
 	uidstr := r.RequestURI[len(path):]
@@ -103,6 +118,13 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	if "none" == d.Salutation {
 		d.Salutation = ""
 	}
+	//-------------------------------
+	// SECURITY
+	//-------------------------------
+	var do personDetail
+	do.UID = uid
+	adminReadDetails(&do)
+	do.filterSecurityMerge(sess, PERMMOD, &d)
 
 	if uid == 0 {
 		insert, err := Phonebook.db.Prepare("INSERT INTO people (Salutation,FirstName,MiddleName,LastName,PreferredName," +
@@ -117,20 +139,20 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			//      1                 10                  20                  30
 			"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 		errcheck(err)
-		_, err = insert.Exec(d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName, // 5
-			d.EmergencyContactName, d.EmergencyContactPhone, //7
-			d.PrimaryEmail, d.SecondaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode, //14
-			d.PositionControlNumber, d.DeptCode, //16
-			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, // 22
-			d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance, // 27
-			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.ClassCode, // 30
-			d.BirthMonth, d.BirthDOM, d.MgrUID, d.StateOfEmployment, d.CountryOfEmployment, // 35
-			dateToDBStr(d.LastReview), dateToDBStr(d.NextReview)) // 37
+		_, err = insert.Exec(do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName, // 5
+			do.EmergencyContactName, do.EmergencyContactPhone, //7
+			do.PrimaryEmail, do.SecondaryEmail, do.OfficePhone, do.OfficeFax, do.CellPhone, do.CoCode, do.JobCode, //14
+			do.PositionControlNumber, do.DeptCode, //16
+			do.HomeStreetAddress, do.HomeStreetAddress2, do.HomeCity, do.HomeState, do.HomePostalCode, do.HomeCountry, // 22
+			do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance, // 27
+			dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode, // 30
+			do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment, // 35
+			dateToDBStr(do.LastReview), dateToDBStr(do.NextReview)) // 37
 		errcheck(err)
 
 		// read this record back to get the UID...
 		rows, err := Phonebook.db.Query("select uid from people where FirstName=? and LastName=? and PrimaryEmail=? and OfficePhone=? and CoCode=? and JobCode=?",
-			d.FirstName, d.LastName, d.PrimaryEmail, d.OfficePhone, d.CoCode, d.JobCode)
+			do.FirstName, do.LastName, do.PrimaryEmail, do.OfficePhone, do.CoCode, do.JobCode)
 		errcheck(err)
 		defer rows.Close()
 		nUID := 0 // quick way to handle multiple matches... in this case, largest UID wins, it hast to be the latest person added
@@ -142,7 +164,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		errcheck(rows.Err())
 		uid = nUID
-		d.UID = uid
+		do.UID = uid
 	} else {
 		//--------------------------
 		// update existing record
@@ -159,15 +181,15 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			"where people.uid=?")
 		errcheck(err)
 		_, err = update.Exec(
-			d.Salutation, d.FirstName, d.MiddleName, d.LastName, d.PreferredName,
-			d.EmergencyContactName, d.EmergencyContactPhone,
-			d.PrimaryEmail, d.SecondaryEmail, d.OfficePhone, d.OfficeFax, d.CellPhone, d.CoCode, d.JobCode,
-			d.PositionControlNumber, d.DeptCode,
-			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
-			d.Status, d.EligibleForRehire, d.Accepted401K, d.AcceptedDentalInsurance, d.AcceptedHealthInsurance,
-			dateToDBStr(d.Hire), dateToDBStr(d.Termination), d.ClassCode,
-			d.BirthMonth, d.BirthDOM, d.MgrUID, d.StateOfEmployment, d.CountryOfEmployment,
-			dateToDBStr(d.LastReview), dateToDBStr(d.NextReview),
+			do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName,
+			do.EmergencyContactName, do.EmergencyContactPhone,
+			do.PrimaryEmail, do.SecondaryEmail, do.OfficePhone, do.OfficeFax, do.CellPhone, do.CoCode, do.JobCode,
+			do.PositionControlNumber, do.DeptCode,
+			do.HomeStreetAddress, do.HomeStreetAddress2, do.HomeCity, do.HomeState, do.HomePostalCode, do.HomeCountry,
+			do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance,
+			dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode,
+			do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment,
+			dateToDBStr(do.LastReview), dateToDBStr(do.NextReview),
 			uid)
 
 		if nil != err {
@@ -179,12 +201,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	//--------------------------------------------------------------------------
 	ct, err := Phonebook.db.Prepare("DELETE FROM compensation WHERE uid=?")
 	errcheck(err)
-	_, err = ct.Exec(d.UID)
+	_, err = ct.Exec(do.UID)
 	errcheck(err)
 	ct, err = Phonebook.db.Prepare("INSERT INTO compensation (uid,type) VALUES(?,?)")
 	errcheck(err)
-	for i := 0; i < len(d.Comps); i++ {
-		_, err := ct.Exec(d.UID, d.Comps[i])
+	for i := 0; i < len(do.Comps); i++ {
+		_, err := ct.Exec(do.UID, do.Comps[i])
 		errcheck(err)
 	}
 
@@ -193,13 +215,13 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	//--------------------------------------------------------------------------
 	ct, err = Phonebook.db.Prepare("DELETE FROM deductions WHERE uid=?")
 	errcheck(err)
-	_, err = ct.Exec(d.UID)
+	_, err = ct.Exec(do.UID)
 	errcheck(err)
 	ct, err = Phonebook.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
 	errcheck(err)
-	for i := 0; i < len(d.MyDeductions); i++ {
-		//fmt.Printf("%s = %s\n", d.MyDeductions[i].Name, r.FormValue(d.MyDeductions[i].Name))
-		if r.FormValue(d.MyDeductions[i].Name) != "" {
+	for i := 0; i < len(do.MyDeductions); i++ {
+		//fmt.Printf("%s = %s\n", do.MyDeductions[i].Name, r.FormValue(do.MyDeductions[i].Name))
+		if r.FormValue(do.MyDeductions[i].Name) != "" {
 			_, err := ct.Exec(d.UID, d.MyDeductions[i].DCode)
 			errcheck(err)
 		}

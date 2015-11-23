@@ -10,6 +10,7 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
 		sess = sessionGet(cookie.Value)

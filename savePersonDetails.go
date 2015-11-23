@@ -8,6 +8,14 @@ import (
 )
 
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+	sess = ui.X
+
 	var d personDetail
 	path := "/savePersonDetails/"
 	uidstr := r.RequestURI[len(path):]
@@ -18,6 +26,20 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	uid, err := strconv.Atoi(uidstr)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
+		return
+	}
+
+	//=================================================================
+	// SECURITY
+	//=================================================================
+	if !sess.elemPermsAny(ELEMPERSON, PERMOWNERMOD) {
+		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+	if uid != sess.UID {
+		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", sess.UID, sess.Firstname, sess.Urole.Name, uid)
+		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 

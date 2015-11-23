@@ -15,10 +15,12 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 
 	var d searchResults
 	var s string
 	d.Query = strings.TrimSpace(r.FormValue("searchstring"))
+
 	//===========================================================
 	//  First, determine the deptcodes that match this query...
 	//===========================================================
@@ -62,6 +64,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		var m person
 		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 		m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
+		pm := &m
+		pm.filterSecurityRead(sess, PERMVIEW|PERMMOD)
 		d.Matches = append(d.Matches, m)
 	}
 	errcheck(rows.Err())

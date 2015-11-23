@@ -15,6 +15,7 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 
 	var d personDetail
 	d.Reports = make([]person, 0)
@@ -30,7 +31,20 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	d.UID = uid
+
 	adminReadDetails(&d)
+
+	//---------------------------------------------------------------------
+	// SECURITY
+	//		Access to the screen requires PERMMOD permission.  The data
+	//		in personDetail includes those fields with VIEW and MOD perms
+	//---------------------------------------------------------------------
+	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
+		fmt.Printf("sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMMOD) returned 0\n")
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
 
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,
@@ -43,12 +57,14 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		"rmd":               rmd,
 		"mul":               mul,
 		"div":               div,
+		"hasPERMMODaccess":  hasPERMMODaccess,
 	}
 
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 
 	ui.D = &d
 	initUIData(&ui)
+	// fmt.Printf("AdminEditHandler: d = %#v\n", d)
 	err = t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -166,7 +166,7 @@
 				<td width="10"></td>
 				<td class="edAttrib">STATUS</td><td><select disabled="disabled" name="Status" class="HR"> <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option> </select></td>
 				<td width="10"></td>
-				<td class="edAttrib">ELIGIBLE FOR REHIRE </span><select disabled="disabled" name="EligibleForRehire" class="HR"> <option value="No" {{if eq .D.Status 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .D.Status 1}}selected{{end}}>Yes</option> </select></td>
+				<td class="edAttrib">ELIGIBLE FOR REHIRE </span><select disabled="disabled" name="EligibleForRehire" class="HR"> <option value="No" {{if eq .D.EligibleForRehire 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .D.EligibleForRehire 1}}selected{{end}}>Yes</option> </select></td>
 			</tr>
 		</table>
 		<p></p>

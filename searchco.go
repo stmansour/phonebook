@@ -14,6 +14,7 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 
 	var s string
 	var d searchCoResults

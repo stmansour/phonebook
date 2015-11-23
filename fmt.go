@@ -24,6 +24,12 @@ func ulog(format string, a ...interface{}) {
 	}
 }
 
+func dulog(format string, a ...interface{}) {
+	if Phonebook.Debug {
+		ulog(format, a...)
+	}
+}
+
 func add(a, b int) int { return a + b }
 func sub(b, a int) int { return a - b }
 func mul(a, b int) int { return a * b }

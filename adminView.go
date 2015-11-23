@@ -53,6 +53,18 @@ func buildMyCompsMap(d *personDetail) {
 	}
 }
 
+// func getSecurityList(d *personDetail) {
+// 	rows, err := Phonebook.db.Query("select gid from security where uid=?", d.UID)
+// 	errcheck(err)
+// 	defer rows.Close()
+// 	var c int
+// 	for rows.Next() {
+// 		errcheck(rows.Scan(&c))
+// 		d.SecList = append(d.SecList, c)
+// 	}
+// 	errcheck(rows.Err())
+// }
+
 func getDeductions(d *personDetail) {
 	rows, err := Phonebook.db.Query("select deduction from deductions where uid=?", d.UID)
 	errcheck(err)
@@ -105,7 +117,6 @@ func loadDeductionList(d *personDetail) {
 }
 
 func adminReadDetails(d *personDetail) {
-
 	//-----------------------------------------------------------
 	// query for all the fields in table People
 	//-----------------------------------------------------------
@@ -120,7 +131,7 @@ func adminReadDetails(d *personDetail) {
 			"jobcode,hire,termination,"+ // 29
 			"mgruid,deptcode,cocode,StateOfEmployment,"+ // 33
 			"CountryOfEmployment,PreferredName,"+ // 35
-			"EmergencyContactName,EmergencyContactPhone "+ // 37
+			"EmergencyContactName,EmergencyContactPhone "+ // 38
 			"from people where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()
@@ -150,6 +161,15 @@ func adminReadDetails(d *personDetail) {
 	getDeductionsStr(d)
 }
 
+// func getPersonDetailsForRead(d *personDetail, sess *session) {
+// 	adminReadDetails(d)
+// 	d.filterSecurityRead(sess)
+// }
+// func getPersonDetailsForWrite(d *personDetail, sess *session) {
+// 	adminReadDetails(d)
+// 	d.filterSecurityWrite(sess)
+// }
+
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	var sess *session
@@ -158,6 +178,8 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
+
 	var d personDetail
 	d.Reports = make([]person, 0)
 	d.Image = "/images/anon.png"
@@ -168,6 +190,19 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 		d.UID = uid
 		adminReadDetails(&d)
 	}
+
+	//============================================================
+	// SECURITY
+	//============================================================
+	if !sess.elemPermsAll(ELEMPERSON, PERMVIEW|PERMMOD) {
+		fmt.Printf("sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMMOD) returned 0\n")
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+	// Ensure that the user has permissions to view everything we're about
+	// to display.
+	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
+
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,
 		"acceptIntToString": acceptIntToString,
@@ -185,7 +220,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("ui.D = %#v\n", ui.D)
 	err := t.Execute(w, &ui)
 	if nil != err {
-		fmt.Printf("Error executing template: %v\n", err)
+		ulog("Error executing template: %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

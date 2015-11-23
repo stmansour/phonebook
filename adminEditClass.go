@@ -15,6 +15,14 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMCLASS, PERMMOD) {
+		ulog("Permissions refuse adminEditClass page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
 
 	var d class
 	path := "/adminEditClass/"

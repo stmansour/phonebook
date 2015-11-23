@@ -13,6 +13,14 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMPERSON, PERMCREATE) {
+		ulog("Permissions refuse AddPerson page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
 
 	var d personDetail
 	d.Reports = make([]person, 0)
@@ -32,7 +40,7 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	d.PreferredName = ""
 	d.EmergencyContactName = ""
 	d.EmergencyContactPhone = ""
-	d.CoCode = 0
+	d.CoCode = sess.CoCode // if this is done by an HR, the person should default to the same company
 	d.JobCode = 0
 	d.DeptCode = 0
 	d.PositionControlNumber = ""

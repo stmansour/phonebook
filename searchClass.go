@@ -15,6 +15,7 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 
 	var d searchClassResults
 

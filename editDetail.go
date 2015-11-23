@@ -15,6 +15,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 
 	var d personDetail
 	d.Reports = make([]person, 0)
@@ -31,6 +32,18 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d.UID = uid
+
+	//=================================================================================
+	// SECURITY
+	//=================================================================================
+	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
+		if !(sess.elemPermsAny(ELEMPERSON, PERMOWNERMOD) && sess.UID == uid) {
+			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+			http.Redirect(w, r, "/search/", http.StatusFound)
+			return
+		}
+	}
+
 	rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
 		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,EmergencyContactName,EmergencyContactPhone,"+
 		"HomeStreetAddress,HomeStreetAddress2,HomeCity,"+
@@ -46,6 +59,18 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 			&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
 	}
 	errcheck(rows.Err())
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMPERSON, PERMMOD|PERMOWNERMOD) {
+		ulog("Permissions refuse editDetail page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+	// if uid != sess.UID {
+	// 	ulog("Permissions refuse view editDetail page on userid=%d (%s), role=%s trying to view UID=%d\n", sess.UID, sess.Firstname, sess.Urole.Name, uid)
+	// 	http.Redirect(w, r, "/search/", http.StatusFound)
+	// 	return
+	// }
 
 	d.MgrName = getNameFromUID(d.MgrUID)
 	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)

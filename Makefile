@@ -1,6 +1,8 @@
 all: clean phonebook
 
 clean:
+	cd roleinit;make clean
+	cd admintools;make clean
 	rm -rf phonebook tmp
 
 phonebook: *.go

@@ -1,13 +1,5 @@
 // Phonebook - a temporary directory interface
-//  TODO:
-//    change Status to a boolean
-//    add employers addresses - add google maps insert
-//    no one uses middle name?
-//    Salutation ... needed, but no data
-//    Preferred name  (ex: Joe rather than Joseph, Steve rather than Steven)
-//    Email - delete?  just use PrimaryEmail and secondaryEmail
-//    LastReviewDate, NextReviewDate ??  maybe just multivalued table of review dates?
-//    Birthday -- maybe
+
 package main
 
 import (
@@ -23,6 +15,9 @@ import (
 
 import _ "github.com/go-sql-driver/mysql"
 
+//--------------------------------------------------------------------
+//  FINANCE
+//--------------------------------------------------------------------
 type company struct {
 	CoCode           int
 	LegalName        string
@@ -41,6 +36,55 @@ type company struct {
 	EmploysPersonnel int
 }
 
+type myComp struct {
+	CompCode int    // code for this comp type
+	Name     string // name for this code
+	HaveIt   int    // 0 = does not have it, 1 = has it
+}
+
+type aDeduction struct {
+	DCode  int    // code for this deduction
+	Name   string // name for this deduction
+	HaveIt int    // 0 = does not have it, 1 = has it
+}
+
+//--------------------------------------------------------------------
+//  ROLE SECURITY
+//--------------------------------------------------------------------
+const (
+	PERMNONE      = 0      // no permissions to see, view, modify, delete, print, or anything to this field
+	PERMVIEW      = 1 << 0 // OK to view   this field for any element (Person, Company, Class)
+	PERMCREATE    = 1 << 1 // OK to create   "
+	PERMMOD       = 1 << 2 // OK to modify   "
+	PERMDEL       = 1 << 3 // OK to delete   "
+	PERMPRINT     = 1 << 4 // OK to print    "
+	PERMOWNERVIEW = 1 << 5 // OK for the owner to view this field  (applies to Person elements)
+	PERMOWNERMOD  = 1 << 6 // OK for the owner to modify this field
+
+	ELEMPERSON  = 1
+	ELEMCOMPANY = 2
+	ELEMCLASS   = 3
+)
+
+// FieldPerm defines how a specific element field can be accessed
+type FieldPerm struct {
+	Elem  int    // Element: Person, Company, or Class
+	Field string // field within the Element
+	Perm  int    // 'logical or' of all permissions on this field
+	Descr string // description of the field
+}
+
+// Role defines a collection of FieldPerms that can be assigned to a person
+type Role struct {
+	RID   int         // assigned by DB
+	Name  string      // role name
+	Descr string      // role description
+	Perms []FieldPerm // permissions for all fields, all entities
+}
+
+//--------------------------------------------------------------------
+//  PEOPLE-RELATED STRUCTURES
+//--------------------------------------------------------------------
 type person struct {
 	UID           int
 	LastName      string
@@ -53,18 +97,6 @@ type person struct {
 	DeptCode      int
 	DeptName      string
 	Employer      string
-}
-
-type myComp struct {
-	CompCode int    // code for this comp type
-	Name     string // name for this code
-	HaveIt   int    // 0 = does not have it, 1 = has it
-}
-
-type aDeduction struct {
-	DCode  int    // code for this deduction
-	Name   string // name for this deduction
-	HaveIt int    // 0 = does not have it, 1 = has it
 }
 
 type personDetail struct {
@@ -98,6 +130,7 @@ type personDetail struct {
 	CountryOfEmployment     string
 	PreferredName           string
 	Comps                   []int  // an array of CompensationType values (ints)
+	role                    Role   // security role assigned to this person
 	CompensationStr         string //used in the admin edit interface
 	DeptCode                int
 	Company                 company
@@ -153,8 +186,10 @@ type signin struct {
 	ErrMsg string // err message string for user
 }
 
+//--------------------------------------------------------------------
 // uiSupport is an umbrella structure in which we can pass many useful
 // data objects to the UI
+//--------------------------------------------------------------------
 type uiSupport struct {
 	CoCodeToName     map[int]string // map from company code to company name
 	NameToCoCode     map[string]int // map from company name to company code
@@ -174,7 +209,9 @@ type uiSupport struct {
 	X                *session
 }
 
+//--------------------------------------------------------------------
 // PhonebookUI is the instance of uiSupport used by this app
+//--------------------------------------------------------------------
 var PhonebookUI uiSupport
 
 // Phonebook is the global application structure providing
@@ -183,6 +220,7 @@ var Phonebook struct {
 	Port          int // port on which we listen
 	db            *sql.DB
 	LogFile       *os.File
+	Roles         []Role   // the roles saved in the database
 	ReqMem        chan int // request to access UI data memory
 	ReqMemAck     chan int // done with memory
 	DebugToScreen bool
@@ -344,6 +382,7 @@ func initHTTP() {
 }
 
 func shutdownHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO: grab session, check for admin rights
 	fmt.Fprintf(w, "<html><body><h1>shutting down in 5 seconds!</h1></body></html>")
 	ulog("Shutdown initiated from web service\n")
 	go func() {
@@ -393,7 +432,13 @@ func main() {
 	Phonebook.db = db
 	Phonebook.ReqMem = make(chan int)
 	Phonebook.ReqMemAck = make(chan int)
+	Phonebook.Roles = make([]Role, 0)
 	loadMaps()
+	readAccessRoles()
+
+	if Phonebook.Debug {
+		dumpAccessRoles()
+	}
 
 	readCommandLineArgs()
 

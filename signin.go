@@ -26,6 +26,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 			if s.Token == cookie.Value {
 				fmt.Printf("FOUND session, redirecting\n")
 				http.Redirect(w, r, "/search/", http.StatusFound)
+				return
 			}
 		}
 	}

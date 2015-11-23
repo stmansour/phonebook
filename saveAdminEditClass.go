@@ -7,6 +7,21 @@ import (
 )
 
 func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+	sess = ui.X
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMCLASS, PERMMOD) {
+		ulog("Permissions refuse saveAdminEditClass page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+
 	var c class
 	path := "/saveAdminEditClass/"
 	ClassCodestr := r.RequestURI[len(path):]

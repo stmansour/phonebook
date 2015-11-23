@@ -70,15 +70,29 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
 
 	var d personDetail
 	d.Reports = make([]person, 0)
 	d.Image = "/images/anon.png"
 	path := "/detail/"
 	uidstr := r.RequestURI[len(path):]
+	uid := 0
 	if len(uidstr) > 0 {
-		uid, _ := strconv.Atoi(uidstr)
+		uid, _ = strconv.Atoi(uidstr)
 		d.UID = uid
+	}
+
+	//=================================================================
+	// SECURITY
+	//=================================================================
+	if !sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMOWNERVIEW) {
+		ulog("ViewPersonDetail: Permission refusal on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+
+	if uid > 0 {
 		rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
 			"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
 			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
@@ -101,6 +115,8 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	t, _ := template.New("detail.html").ParseFiles("detail.html")
 	ui.D = &d
+
+	d.filterSecurityRead(sess, PERMVIEW)
 	err := t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

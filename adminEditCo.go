@@ -15,6 +15,14 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMCOMPANY, PERMMOD) {
+		ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
 
 	var c company
 	path := "/adminEditCo/"

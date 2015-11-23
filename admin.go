@@ -13,6 +13,16 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+	sess = ui.X
+
+	// SECURITY
+	if !(sess.elemPermsAny(ELEMPERSON, PERMCREATE) ||
+		sess.elemPermsAny(ELEMCOMPANY, PERMCREATE) ||
+		sess.elemPermsAny(ELEMCLASS, PERMCREATE)) {
+		ulog("Permissions refuse admin page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
 
 	funcMap := template.FuncMap{
 		"compToString":      compensationTypeToString,

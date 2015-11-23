@@ -7,6 +7,21 @@ import (
 )
 
 func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+	sess = ui.X
+
+	// SECURITY
+	if !sess.elemPermsAny(ELEMCOMPANY, PERMMOD) {
+		ulog("Permissions refuse saveAdminEditCo page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+		return
+	}
+
 	var c company
 	path := "/saveAdminEditCo/"
 	CoCodestr := r.RequestURI[len(path):]
