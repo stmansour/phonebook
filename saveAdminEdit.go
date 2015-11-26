@@ -118,13 +118,14 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	if "none" == d.Salutation {
 		d.Salutation = ""
 	}
+
 	//-------------------------------
 	// SECURITY
 	//-------------------------------
-	var do personDetail
-	do.UID = uid
-	adminReadDetails(&do)
-	do.filterSecurityMerge(sess, PERMMOD, &d)
+	var do personDetail                       // container for current info
+	do.UID = uid                              // init
+	adminReadDetails(&do)                     //read current data
+	do.filterSecurityMerge(sess, PERMMOD, &d) // merge in new data
 
 	if uid == 0 {
 		insert, err := Phonebook.db.Prepare("INSERT INTO people (Salutation,FirstName,MiddleName,LastName,PreferredName," +

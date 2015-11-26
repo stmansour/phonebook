@@ -52,6 +52,14 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 	c.PostalCode = r.FormValue("PostalCode")
 	c.Country = r.FormValue("Country")
 
+	//-------------------------------
+	// SECURITY
+	//-------------------------------
+	var co company                            // container for current information
+	co.CoCode = CoCode                        // initialize
+	getCompanyInfo(CoCode, &co)               // fetch all its data
+	co.filterSecurityMerge(sess, PERMMOD, &c) // merge
+
 	if 0 == CoCode {
 		insert, err := Phonebook.db.Prepare("INSERT INTO companies (LegalName,CommonName,Designation," +
 			"Email,Phone,Fax,Active,EmploysPersonnel,Address,Address2,City,State,PostalCode,Country) " +

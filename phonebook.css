@@ -254,6 +254,7 @@ input[type="email"]:disabled,
 input[type="number"]:disabled,
 input[type="date"]:disabled,
 input[type="text"]:disabled,
+textarea:disabled,
 select:disabled {
 	background-color:#DDD;
 }

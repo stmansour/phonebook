@@ -80,7 +80,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	d.Class = ui.ClassCodeToName[d.ClassCode]
 	ui.D = &d
 
-	t, _ := template.New("editDetail.html").ParseFiles("editDetail.html")
+	t, _ := template.New("editDetail.html").Funcs(funcMap).ParseFiles("editDetail.html")
 	err = t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

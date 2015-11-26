@@ -16,7 +16,9 @@
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+{{if showAdminButton .X.Token}}
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+{{end}}
 <td width=50></td>
 <td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
@@ -36,9 +38,12 @@
 			<td class="edAttrib">DESIGNATION</td>
 		</tr>
 		<tr>
-			<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35" required="required"></td>
-			<td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35"></td>
-			<td><input type=text name="Designation" value="{{.C.Designation}}" size="7"  required="required"></td>
+			<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35" required="required"
+				{{if hasPERMMODaccess .X.Token 2 "LegalName"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35"
+				{{if hasPERMMODaccess .X.Token 2 "CommonName"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="Designation" value="{{.C.Designation}}" size="7"  required="required"
+				{{if hasPERMMODaccess .X.Token 2 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
 	<table>
@@ -48,9 +53,12 @@
 			<td class="edAttrib">EMAIL</td>
 		</tr>
 		<tr>
-			<td><input type="text" name="Phone" value="{{.C.Phone}}" size="13"></td>
-			<td><input type="text" name="Fax" value="{{.C.Fax}}" size="13"></td>
-			<td><input type="email" name="Email" value="{{.C.Email}}" size="35"></td>
+			<td><input type="text" name="Phone" value="{{.C.Phone}}" size="13"
+				{{if hasPERMMODaccess .X.Token 2 "Phone"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type="text" name="Fax" value="{{.C.Fax}}" size="13"
+				{{if hasPERMMODaccess .X.Token 2 "Fax"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type="email" name="Email" value="{{.C.Email}}" size="35"
+				{{if hasPERMMODaccess .X.Token 2 "Email"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
 
@@ -60,8 +68,10 @@
 			<td class="edAttrib">ADDRESS2</td>
 		</tr>
 		<tr>
-			<td><input type=text name="Address" value="{{.C.Address}}" size="35"></td>
-			<td><input type=text name="Address2" value="{{.C.Address2}}" size="35"></td>
+			<td><input type=text name="Address" value="{{.C.Address}}" size="35"
+				{{if hasPERMMODaccess .X.Token 2 "Address"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="Address2" value="{{.C.Address2}}" size="35"
+				{{if hasPERMMODaccess .X.Token 2 "Address2"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
 
@@ -73,18 +83,30 @@
 			<td class="edAttrib">COUNTRY</td>
 		</tr>
 		<tr>
-			<td><input type=text name="City" value="{{.C.City}}" size="25"></td>
-			<td><input type=text name="State" value="{{.C.State}}" size="3" maxlength="2"></td>
-			<td><input type=text name="PostalCode" value="{{.C.PostalCode}}" size="10"></td>
-			<td><input type=text name="Country" value="{{.C.Country}}" size="10"></td>
+			<td><input type=text name="City" value="{{.C.City}}" size="25"
+				{{if hasPERMMODaccess .X.Token 2 "City"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="State" value="{{.C.State}}" size="3" maxlength="2"
+				{{if hasPERMMODaccess .X.Token 2 "State"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="PostalCode" value="{{.C.PostalCode}}" size="10"
+				{{if hasPERMMODaccess .X.Token 2 "PostalCode"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="Country" value="{{.C.Country}}" size="10"
+				{{if hasPERMMODaccess .X.Token 2 "Country"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
 
 	<table>
 		<tr>
-			<td class="edAttrib">STATUS</td><td><select name="Active" class="HR"> <option value="Active" {{if eq .C.Active 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .C.Active 0}}selected{{end}}>Inactive</option> </select></td>
+			<td class="edAttrib">STATUS</td><td><select name="Active" class="HR"
+				{{if hasPERMMODaccess .X.Token 2 "Active"}}{{else}}disabled="disabled"{{end}}>
+				<option value="Active" {{if eq .C.Active 1}}selected{{end}}>Active</option>
+				<option value="Inactive" {{if eq .C.Active 0}}selected{{end}}>Inactive</option>
+				</select></td>
 			<td width="10"></td>
-			<td class="edAttrib">EMPLOYS PERSONNEL </span><select name="EmploysPersonnel" class="HR"> <option value="No" {{if eq .C.EmploysPersonnel 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .C.EmploysPersonnel 1}}selected{{end}}>Yes</option> </select></td>
+			<td class="edAttrib">EMPLOYS PERSONNEL </span><select name="EmploysPersonnel" class="HR"
+				{{if hasPERMMODaccess .X.Token 2 "EmploysPersonnel"}}{{else}}disabled="disabled"{{end}}>
+				<option value="No" {{if eq .C.EmploysPersonnel 0}}selected{{end}}>No</option>
+				<option value="Yes" {{if eq .C.EmploysPersonnel 1}}selected{{end}}>Yes</option>
+				</select></td>
 		</tr>
 	</table>
 	<p></p>

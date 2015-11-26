@@ -45,25 +45,100 @@ func dumpSessions() {
 	}
 }
 
-func hasPERMMODaccess(token string, fieldName string) bool {
-	fmt.Printf("hasPERMMODaccess: token = %s, looking for fieldName = %s  PERMMOD = ", token, fieldName)
-	s := sessions[token]
+func hasPERMMODaccess(token string, el int, fieldName string) bool {
+	var perm int
+	//fmt.Printf("hasPERMMODaccess: token = %s, looking for fieldName = %s, elem = %d, PERMMOD = ", token, fieldName, el)
 	s, ok := sessions[token]
 	if !ok {
-		fmt.Println("false (session not found)")
 		fmt.Printf("hasPERMMODaccess:  Could not find session for %s\n", token)
 		return false
 	}
 
-	for i := 0; i < len(s.Urole.Perms); i++ {
-		dulog("hasPERMMODaccess: field = %s\n", s.Urole.Perms[i].Field)
-		if s.Urole.Perms[i].Field == fieldName {
-			ok = (0 != s.Urole.Perms[i].Perm&PERMMOD)
-			dulog("%v\n", ok)
-			return ok // could be true or false
+	switch el {
+	case ELEMPERSON:
+		perm, ok = s.Pp[fieldName] // here's the permission we have
+	case ELEMCOMPANY:
+		perm, ok = s.Pco[fieldName] // here's the permission we have
+	case ELEMCLASS:
+		perm, ok = s.Pcl[fieldName] // here's the permission we have
+	}
+	ok = (0 != perm&PERMMOD)
+	dulog("%v\n", ok)
+	return ok // could be true or false
+}
+
+//=====================================================================================
+// SYNOPSIS:
+// 		hasAdminScreenAccess scans the permissions of the supplied element's fields
+// 		in the session associated with the logged in user. If the at least one of the
+// 		fields has the requested permission, this function returns true. Otherwise it
+// 		returns false
+// PARAMS:
+//		token - session token
+//		el - check data fields for this element type. One of ELEMPERSON, ELEMCOMPANY,
+//			 ELEMCLASS
+//      perm - logical OR of the required permissions
+// RETURNS:
+//		true  - if the user with this session has the required permissions to see the
+//			    admin screen
+//      false - if the user does not have the required permissions
+//=====================================================================================
+func hasAdminScreenAccess(token string, el int, perm int) bool {
+	// fmt.Printf("el: %d, perm: 0x%02x\n", el, perm)
+	s, ok := sessions[token]
+	if !ok {
+		fmt.Printf("hasAdminScreenAccess:  Could not find session for %s\n", token)
+		return false
+	}
+	// fmt.Printf("session found: %+v\n", s)
+	var p int
+	for i := 0; i < len(adminScreenFields); i++ {
+		if adminScreenFields[i].Elem == el {
+			if (el == ELEMPERSON && adminScreenFields[i].AdminScreen) || (el != ELEMPERSON) {
+				switch el {
+				case ELEMPERSON:
+					p, ok = s.Pp[adminScreenFields[i].FieldName] // here's the permission we have
+				case ELEMCOMPANY:
+					p, ok = s.Pco[adminScreenFields[i].FieldName] // here's the permission we have
+				case ELEMCLASS:
+					p, ok = s.Pcl[adminScreenFields[i].FieldName] // here's the permission we have
+				}
+				if ok { // if we have a permission for the field name
+					// fmt.Printf("p = 0x%02x\n", p)
+					pcheck := p & perm // AND it with the required permission
+					if 0 != pcheck {   // if the result is non-zero...
+						// fmt.Printf("granted\n")
+						return true // ... we have the permission to view the screen
+					}
+				}
+			}
 		}
 	}
-	dulog("false (field not found)")
+	// fmt.Printf("not granted\n")
+	return false
+}
+
+//=====================================================================================
+// SYNOPSIS:
+// 		showAdminButton determines whether or not the Admin button needs to appear
+// 		on the menu.
+// PARAMS:
+//		token - session token
+// RETURNS:
+//		true  - if the admin button should be shown
+//      false - if it should not
+//=====================================================================================
+func showAdminButton(token string) bool {
+	s, ok := sessions[token]
+	if !ok {
+		fmt.Printf("showAdminButton:  Could not find session for %s\n", token)
+		return false
+	}
+	for i := 0; i < len(s.Urole.Perms); i++ {
+		if s.Urole.Perms[i].Perm&PERMCREATE != 0 {
+			return true
+		}
+	}
 	return false
 }
 
@@ -72,10 +147,10 @@ func getRoleInfo(rid int, s *session) {
 	idx := -1
 
 	// try to find the requested index
-	dulog("len(Phonebook.Roles)=%d\n", len(Phonebook.Roles))
-	dulog("getRoleInfo - looking for rid=%d\n", rid)
+	sulog("len(Phonebook.Roles)=%d\n", len(Phonebook.Roles))
+	sulog("getRoleInfo - looking for rid=%d\n", rid)
 	for i := 0; i < len(Phonebook.Roles); i++ {
-		dulog("Phonebook.Roles[%d] = %+v\n", i, Phonebook.Roles[i])
+		sulog("Phonebook.Roles[%d] = %+v\n", i, Phonebook.Roles[i])
 		if rid == Phonebook.Roles[i].RID {
 			found = i
 			idx = i
@@ -87,11 +162,10 @@ func getRoleInfo(rid int, s *session) {
 
 	if found < 0 {
 		idx = 0
-		dulog("Did not find rid == %d, all permissions set to read-only\n", rid)
+		ulog("Did not find rid == %d, all permissions set to read-only\n", rid)
 	}
 
 	r := Phonebook.Roles[idx]
-	//s.Urole.Perms = make([]FieldPerm, len(r.Perms))
 	s.Pp = make(map[string]int)
 	s.Pco = make(map[string]int)
 	s.Pcl = make(map[string]int)
@@ -129,7 +203,7 @@ func sessionNew(token, username, firstname string, uid int, rid int, image strin
 	s.ImageURL = image
 	getRoleInfo(rid, s)
 
-	if Phonebook.Debug {
+	if Phonebook.SecurityDebug {
 		for i := 0; i < len(s.Urole.Perms); i++ {
 			ulog("f: %s,  perm: %02x\n", s.Urole.Perms[i].Field, s.Urole.Perms[i].Perm)
 		}
@@ -144,8 +218,8 @@ func sessionNew(token, username, firstname string, uid int, rid int, image strin
 	}
 
 	sessions[token] = s
-	dulog("New Session: %s\n", s.ToString())
-	dulog("session.Urole.perms = %+v\n", s.Urole.Perms)
+	sulog("New Session: %s\n", s.ToString())
+	sulog("session.Urole.perms = %+v\n", s.Urole.Perms)
 	return s
 }
 
@@ -175,20 +249,20 @@ func (s *session) refresh(w http.ResponseWriter, r *http.Request) int {
 //   with the requested permission.
 //=====================================================================================
 func (s *session) elemPermsAny(elem int, perm int) bool {
-	dulog("elemPermsAny:  elem=%d, perm = 0x%02x\n", elem, perm)
+	sulog("elemPermsAny:  elem=%d, perm = 0x%02x\n", elem, perm)
 	for i := 0; i < len(s.Urole.Perms); i++ {
-		dulog("s.Urole.Perms[%d].Elem = %d\n", i, s.Urole.Perms[i].Elem)
+		sulog("s.Urole.Perms[%d].Elem = %d\n", i, s.Urole.Perms[i].Elem)
 		if s.Urole.Perms[i].Elem == elem {
 			res := s.Urole.Perms[i].Perm & perm
-			dulog("fieldname: %s  s.Urole.Perms[%d].Perm = 0x%02x, s.Urole.Perms[%d].Perm & perm = 0x%02x\n",
+			sulog("fieldname: %s  s.Urole.Perms[%d].Perm = 0x%02x, s.Urole.Perms[%d].Perm & perm = 0x%02x\n",
 				s.Urole.Perms[i].Field, i, s.Urole.Perms[i].Elem, i, res)
 			if res != 0 { // if any of the permissions exist
-				dulog("return true") // we're good to go for this check
+				sulog("return true") // we're good to go for this check
 				return true
 			}
 		}
 	}
-	dulog("return false")
+	sulog("return false")
 	return false
 }
 
@@ -205,20 +279,20 @@ func (s *session) elemPermsAny(elem int, perm int) bool {
 //   true if ALL permission fields for the specified element are present
 //=====================================================================================
 func (s *session) elemPermsAll(elem int, perm int) bool {
-	dulog("elemPermsAll:  elem=%d, perm = 0x%02x\n", elem, perm)
+	sulog("elemPermsAll:  elem=%d, perm = 0x%02x\n", elem, perm)
 	for i := 0; i < len(s.Urole.Perms); i++ {
-		dulog("s.Urole.Perms[%d].Elem = %d\n", i, s.Urole.Perms[i].Elem)
+		sulog("s.Urole.Perms[%d].Elem = %d\n", i, s.Urole.Perms[i].Elem)
 		if s.Urole.Perms[i].Elem == elem {
 			res := s.Urole.Perms[i].Perm & perm
-			dulog("fieldname: %s  s.Urole.Perms[%d].Perm = 0x%02x, s.Urole.Perms[%d].Perm & perm = 0x%02x\n",
+			sulog("fieldname: %s  s.Urole.Perms[%d].Perm = 0x%02x, s.Urole.Perms[%d].Perm & perm = 0x%02x\n",
 				s.Urole.Perms[i].Field, i, s.Urole.Perms[i].Elem, i, res)
 			if res == perm { // if all bits are present, res will match perm
-				dulog("return true") // we're good to go for this check
+				sulog("return true") // we're good to go for this check
 				return true
 			}
 		}
 	}
-	dulog("return false")
+	sulog("return false")
 	return false
 }
 

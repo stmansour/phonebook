@@ -23,6 +23,10 @@ func companyInit(c *company) {
 	c.Active = 0
 }
 
+func (c *company) filterSecurityRead(sess *session, permRequired int) {
+	filterSecurityRead(c, ELEMCOMPANY, sess, permRequired, 0)
+}
+
 func getCompanyInfo(cocode int, c *company) {
 	s := fmt.Sprintf("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies where cocode=%d", cocode)
 	rows, err := Phonebook.db.Query(s)
@@ -57,8 +61,9 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 	if len(costr) > 0 {
 		cocode, _ := strconv.Atoi(costr)
 		getCompanyInfo(cocode, &c)
-		t, _ := template.New("company.html").ParseFiles("company.html")
+		t, _ := template.New("company.html").Funcs(funcMap).ParseFiles("company.html")
 		ui.C = &c
+		ui.C.filterSecurityRead(sess, PERMVIEW)
 		err := t.Execute(w, &ui)
 		if nil != err {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

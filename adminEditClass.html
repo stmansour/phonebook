@@ -16,7 +16,9 @@
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+{{if showAdminButton .X.Token}}
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+{{end}}
 <td width=50></td>
 <td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
@@ -35,8 +37,10 @@
 			<td class="edAttrib">DESIGNATION</td>
 		</tr>
 		<tr>
-			<td><input type=text name="Name" value="{{.A.Name}}" size="35"></td>
-			<td><input type=text name="Designation" value="{{.A.Designation}}" size="7"  required="required"></td>
+			<td><input type=text name="Name" value="{{.A.Name}}" size="35"
+				{{if hasPERMMODaccess .X.Token 3 "Name"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required"
+				{{if hasPERMMODaccess .X.Token 3 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
 	<table>
@@ -44,7 +48,10 @@
 			<td class="edAttrib" colspan="2">DESCRIPTION</td>
 		</tr>
 		<tr>
-			<td colspan="2"><textarea rows=5 cols=60 name="Description" maxlength=256>{{.A.Description}}</textarea></td>
+			<td colspan="2"><textarea rows=5 cols=60 name="Description" maxlength=256
+				{{if hasPERMMODaccess .X.Token 3 "Description"}}{{else}}disabled="disabled"{{end}}>{{.A.Description}}
+				</textarea>
+			</td>
 		</tr>
 		<tr><td colspan="2">
 			<p></p>

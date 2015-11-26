@@ -15,7 +15,9 @@
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+{{if showAdminButton .X.Token}}
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+{{end}}
 <td width=50></td>
 <td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
@@ -36,8 +38,11 @@
 <tr><td width="50px"></td>
     <td colspan="2" >
     <p align="center">
-    <a href="javascript:history.back()" class="button">Done</a> &nbsp;&nbsp;&nbsp;
+    <a href="javascript:history.back()" class="button">Done</a>
+    {{if hasAdminScreenAccess .X.Token 3 4}}
+    &nbsp;&nbsp;&nbsp;
     <a href="/adminEditClass/{{.A.ClassCode}}" class="button">Admin Edit</a> 
+    {{end}}
     </p>
     <br><p></p>
     </td><td width="50px"></td></tr>

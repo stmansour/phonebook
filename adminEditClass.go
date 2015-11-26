@@ -38,23 +38,10 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	d.ClassCode = ClassCode
 	getClassInfo(ClassCode, &d)
-
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	ui.A = &d
+	ui.A.filterSecurityRead(sess, PERMVIEW|PERMMOD)
 
 	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
-
-	ui.A = &d
 	initUIData(&ui)
 	//fmt.Printf("ui.A = %#v\n", ui.A)
 	err = t.Execute(w, &ui)

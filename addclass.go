@@ -27,18 +27,18 @@ func adminAddClassHandler(w http.ResponseWriter, r *http.Request) {
 	c.Designation = ""
 	c.Description = ""
 
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	// funcMap := template.FuncMap{
+	// 	"compToString":      compensationTypeToString,
+	// 	"acceptIntToString": acceptIntToString,
+	// 	"dateToString":      dateToString,
+	// 	"dateYear":          dateYear,
+	// 	"monthStringToInt":  monthStringToInt,
+	// 	"add":               add,
+	// 	"sub":               sub,
+	// 	"rmd":               rmd,
+	// 	"mul":               mul,
+	// 	"div":               div,
+	// }
 
 	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 

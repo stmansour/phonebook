@@ -39,18 +39,18 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	c.Email = ""
 	c.Designation = ""
 
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	// funcMap := template.FuncMap{
+	// 	"compToString":      compensationTypeToString,
+	// 	"acceptIntToString": acceptIntToString,
+	// 	"dateToString":      dateToString,
+	// 	"dateYear":          dateYear,
+	// 	"monthStringToInt":  monthStringToInt,
+	// 	"add":               add,
+	// 	"sub":               sub,
+	// 	"rmd":               rmd,
+	// 	"mul":               mul,
+	// 	"div":               div,
+	// }
 
 	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
 

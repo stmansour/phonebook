@@ -16,7 +16,9 @@
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+{{if showAdminButton .X.Token}}
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+{{end}}
 <td width=50></td>
 <td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
@@ -31,9 +33,15 @@
 <table>
 <tr><td width="50"></td><td><p class="AppHeading">Admin Page</p></td></tr>
 <tr><td height="30" colspan="2"></td></tr>
+{{if hasAdminScreenAccess .X.Token 1 2}}
 <tr><td width="50" height="30"></td><td><p><a href="/adminAddPerson/" class="blbutton">Add Person</a></p></td></tr>
+{{end}}
+{{if hasAdminScreenAccess .X.Token 2 2}}
 <tr><td width="50" height="30"></td><td><p><a href="/adminAddCompany/" class="blbutton">Add Company</a></p></td></tr>
+{{end}}
+{{if hasAdminScreenAccess .X.Token 3 2}}
 <tr><td width="50" height="30"></td><td><p><a href="/adminAddClass/" class="blbutton">Add Class</a></p></td></tr>
+{{end}}
 </table>
 
 </body>

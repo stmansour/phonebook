@@ -45,24 +45,8 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
-
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-		"hasPERMMODaccess":  hasPERMMODaccess,
-	}
-
-	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
-
 	ui.D = &d
+	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	initUIData(&ui)
 	// fmt.Printf("AdminEditHandler: d = %#v\n", d)
 	err = t.Execute(w, &ui)

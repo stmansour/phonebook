@@ -41,7 +41,8 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	errcheck(rows.Err())
 
-	t, _ := template.New("searchClass.html").ParseFiles("searchClass.html")
+	t, _ := template.New("searchClass.html").Funcs(funcMap).ParseFiles("searchClass.html")
+
 	ui.L = &d
 	err = t.Execute(w, &ui)
 

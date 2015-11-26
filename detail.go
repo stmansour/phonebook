@@ -113,7 +113,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		getReports(uid, &d)
 		d.Class = ui.ClassCodeToName[d.ClassCode]
 	}
-	t, _ := template.New("detail.html").ParseFiles("detail.html")
+	t, _ := template.New("detail.html").Funcs(funcMap).ParseFiles("detail.html")
 	ui.D = &d
 
 	d.filterSecurityRead(sess, PERMVIEW)

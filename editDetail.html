@@ -16,7 +16,9 @@
 <td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
 <td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+{{if showAdminButton .X.Token}}
 <td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+{{end}}
 <td width=50></td>
 <td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>

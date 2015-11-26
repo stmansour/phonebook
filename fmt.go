@@ -30,6 +30,14 @@ func dulog(format string, a ...interface{}) {
 	}
 }
 
+// The security debug logger.  If Phonebook was started with the
+// -s option, these statements will be logged.
+func sulog(format string, a ...interface{}) {
+	if Phonebook.Debug {
+		ulog(format, a...)
+	}
+}
+
 func add(a, b int) int { return a + b }
 func sub(b, a int) int { return a - b }
 func mul(a, b int) int { return a * b }

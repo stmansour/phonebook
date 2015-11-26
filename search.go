@@ -73,7 +73,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		d.Query = " "
 	}
 	ui.R = &d
-	t, _ := template.New("search.html").ParseFiles("search.html")
+	t, _ := template.New("search.html").Funcs(funcMap).ParseFiles("search.html")
 	err = t.Execute(w, &ui)
 
 	if nil != err {

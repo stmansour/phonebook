@@ -48,18 +48,18 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	// funcMap := template.FuncMap{
+	// 	"compToString":      compensationTypeToString,
+	// 	"acceptIntToString": acceptIntToString,
+	// 	"dateToString":      dateToString,
+	// 	"dateYear":          dateYear,
+	// 	"monthStringToInt":  monthStringToInt,
+	// 	"add":               add,
+	// 	"sub":               sub,
+	// 	"rmd":               rmd,
+	// 	"mul":               mul,
+	// 	"div":               div,
+	// }
 
 	t, _ := template.New("signin.html").Funcs(funcMap).ParseFiles("signin.html")
 	var ui uiSupport

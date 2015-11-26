@@ -37,23 +37,10 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	getCompanyInfo(CoCode, &c)
-
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	ui.C = &c
+	ui.C.filterSecurityRead(sess, PERMMOD)
 
 	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
-
-	ui.C = &c
 	err = t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -7,6 +7,10 @@ import (
 	"strconv"
 )
 
+func (c *class) filterSecurityRead(sess *session, permRequired int) {
+	filterSecurityRead(c, ELEMCLASS, sess, permRequired, 0)
+}
+
 func getClassInfo(classcode int, c *class) {
 	s := fmt.Sprintf("select classcode,Name,Designation,Description from classes where classcode=%d", classcode)
 	rows, err := Phonebook.db.Query(s)
@@ -41,8 +45,9 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 	if len(costr) > 0 {
 		classcode, _ := strconv.Atoi(costr)
 		getClassInfo(classcode, &c)
-		t, _ := template.New("class.html").ParseFiles("class.html")
 		ui.A = &c
+		ui.A.filterSecurityRead(sess, PERMVIEW)
+		t, _ := template.New("class.html").Funcs(funcMap).ParseFiles("class.html")
 		err := t.Execute(w, &ui)
 		if nil != err {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

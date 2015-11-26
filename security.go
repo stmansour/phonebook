@@ -68,48 +68,70 @@ func readAccessRoles() {
 //      perm.  If the result is non-zero, the condition is met.
 // ARGS:
 //   	sess         = session of the logged in user
+//		el			 = type of element: ELEMPERSON, ELEMCOMPANY, ELEMCLASS
 //   	permRequired = logical or of the required permissions.  Example PERMVIEW | PERMOWNERVIEW
+//		dataUID      = only used if el == PERSON
 // RETURNS:
-//   	the data elements for this struct filtered based on the supplied perm value
+//      ret val = the permissions found logically ANDed with permRequired.  This can be
+//				  useful for determining whether or not to check the OWNER uid to that of
+//				  the data being accessed. For example, if the data is accessable because of
+//				  PERMOWNERMOD, the caller can compare the return value to PERMOWNERMOD. If
+//				  equal, it needs to further check that the session uid matches the uid of the
+//				  data being edited before it allows the edit to proceed.
+//   	the data elements for this struct filtered based on the permissions associated
+//				  with the logged in user's session
 //=========================================================================================
-func (d *personDetail) filterSecurityRead(sess *session, permRequired int) {
+func filterSecurityRead(d interface{}, el int, sess *session, permRequired int, dataUID int) int {
+	var perm int
+	var ok bool
+
+	sulog("filterSecurityRead: d, permRequired=0x%02x, session: %+v\n", permRequired, sess)
+	pcheck := 0
 	val := reflect.ValueOf(d).Elem()
-
-	fmt.Printf("\n\nBEFORE security filter d = %+v\n", d)
-	fmt.Printf("session security being applied: %s - %+v\n", sess.Urole.Name, sess.Urole.Perms)
-
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)         // this is the struct (Foo)
 		n := val.Type().Field(i).Name // variable name for field(i)
 		t := field.Type().String()    // the variable type
 
-		// fmt.Printf("%d. %s\n", i, n)
-
+		sulog("%d. %s\n", i, n)
 		// Does this field have the required permissions?
-		perm, ok := sess.Pp[n] // here's the permission we have
-		if !ok {               // this means that the variable was not found in the access list
+		switch el {
+		case ELEMPERSON:
+			perm, ok = sess.Pp[n] // here's the permission we have
+		case ELEMCOMPANY:
+			perm, ok = sess.Pco[n] // here's the permission we have
+		case ELEMCLASS:
+			perm, ok = sess.Pcl[n] // here's the permission we have
+		}
+		sulog("    permission found: 0x%02x\n", perm)
+
+		if !ok { // this means that the variable was not found in the access list
+			sulog("    field not found, will ignore.\n")
 			continue // if it's not there, we can ignore it
 		}
-		pcheck := permRequired & perm      // and it with the required permissions
-		ok = 0 != pcheck                   // if the result is non-zero, the first test passes
-		if ok && pcheck == PERMOWNERVIEW { // if this was an ownerView result...
-			ok = d.UID == sess.UID // the session uid needs to match the data uid
+		sulog("    field found, checking permissions...\n")
+		pcheck = permRequired & perm                           // and it with the required permissions
+		ok = 0 != pcheck                                       // if the result is non-zero, the first test passes
+		if el == ELEMPERSON && ok && pcheck == PERMOWNERVIEW { // if this was an ownerView result...
+			ok = dataUID == sess.UID // the session uid needs to match the data uid
 		}
-
-		if !ok && field.IsValid() {
+		if ok {
+			sulog("    requested permission granted\n")
+		} else if field.IsValid() {
 			if field.CanSet() {
+				sulog("    no permissions for this field - will zero out...\n")
 				switch t {
 				case "int":
-					// fmt.Printf("No access to %s, type int, setting to 0\n", n)
+					sulog("No access to %s, type int, setting to 0\n", n)
 					field.SetInt(0)
 				case "string":
-					// fmt.Printf("No access to %s, type string, setting to 0 length string\n", n)
+					sulog("No access to %s, type string, setting to 0 length string\n", n)
 					field.SetString("")
 				case "time.Time":
-					// fmt.Printf("No access to %s, type time.Time, setting to 0\n", n)
+					sulog("No access to %s, type time.Time, setting to 0\n", n)
 					field.Set(reflect.ValueOf(time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)))
 				case "[]int":
-					// fmt.Printf("No access to %s, type []int, setting to 0\n", n)
+					sulog("No access to %s, type []int, setting to 0\n", n)
 					field.Set(reflect.ValueOf([]int{}))
 				default:
 					fmt.Printf("filterSecurityRead: unhandled variable type. Name = %s, type = %s\n", n, t)
@@ -117,48 +139,19 @@ func (d *personDetail) filterSecurityRead(sess *session, permRequired int) {
 			}
 		}
 	}
+	return pcheck
+}
+
+func (d *personDetail) filterSecurityRead(sess *session, permRequired int) {
+	filterSecurityRead(d, ELEMPERSON, sess, permRequired, d.UID)
 	if d.CoCode == 0 {
 		companyInit(&d.Company)
 	}
-	fmt.Printf("AFTER security filter d = %+v\n\n", d)
+	// fmt.Printf("AFTER security filter d = %+v\n\n", d)
 }
 
 func (d *person) filterSecurityRead(sess *session, permRequired int) {
-	val := reflect.ValueOf(d).Elem()
-
-	for i := 0; i < val.NumField(); i++ {
-		field := val.Field(i)         // this is the struct (Foo)
-		n := val.Type().Field(i).Name // variable name for field(i)
-		t := field.Type().String()    // the variable type
-
-		// Does this field have the required permissions?
-		perm, ok := sess.Pp[n] // here's the permission we have
-		if !ok {               // this means that the variable was not found in the access list
-			continue // if it's not there, we can ignore it
-		}
-		pcheck := permRequired & perm      // and it with the required permissions
-		ok = 0 != pcheck                   // if the result is non-zero, the first test passes
-		if ok && pcheck == PERMOWNERVIEW { // if this was an ownerView result...
-			ok = d.UID == sess.UID // the session uid needs to match the data uid
-		}
-
-		if !ok && field.IsValid() {
-			if field.CanSet() {
-				switch t {
-				case "int":
-					field.SetInt(0)
-				case "string":
-					field.SetString("")
-				case "time.Time":
-					field.Set(reflect.ValueOf(time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)))
-				case "[]int":
-					field.Set(reflect.ValueOf([]int{}))
-				default:
-					fmt.Printf("filterSecurityRead: unhandled variable type. Name = %s, type = %s\n", n, t)
-				}
-			}
-		}
-	}
+	filterSecurityRead(d, ELEMPERSON, sess, permRequired, d.UID)
 }
 
 //=========================================================================================
@@ -175,9 +168,11 @@ func (d *person) filterSecurityRead(sess *session, permRequired int) {
 // RETURNS:
 // 		the data elements for this struct filtered based on the supplied perm value
 //=========================================================================================
-func (d *personDetail) filterSecurityMerge(sess *session, permRequired int, dNew *personDetail) {
+func filterSecurityMerge(d interface{}, sess *session, el int, permRequired int, dNew interface{}, UID int) {
 	val := reflect.ValueOf(d).Elem()
 	valNew := reflect.ValueOf(dNew).Elem()
+	var perm int
+	var ok bool
 
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)         // the next field in the structure
@@ -186,15 +181,22 @@ func (d *personDetail) filterSecurityMerge(sess *session, permRequired int, dNew
 		t := field.Type().String()    // the variable type
 
 		// Do we have the required permissions to update this field?
-		perm, ok := sess.Pp[n] // here's the permission we have
-		if !ok {               // !ok here means that the variable was not found in the access list
+		switch el {
+		case ELEMPERSON:
+			perm, ok = sess.Pp[n] // here's the permission we have
+		case ELEMCOMPANY:
+			perm, ok = sess.Pco[n] // here's the permission we have
+		case ELEMCLASS:
+			perm, ok = sess.Pcl[n] // here's the permission we have
+		}
+		if !ok { // !ok here means that the variable was not found in the access list
 			fmt.Printf("filterSecurityMerge: field %s not covered, skipping\n", n)
 			continue // if it's not there, we can ignore it
 		}
-		pcheck := permRequired & perm     // AND it with the required permissions
-		ok = 0 != pcheck                  // if the result is non-zero, the first test passes
-		if ok && pcheck == PERMOWNERMOD { // if we passed it still may be an ownerMOD result...
-			ok = d.UID == sess.UID // if so, the session uid needs to match the data uid to proceed
+		pcheck := permRequired & perm                         // AND it with the required permissions
+		ok = 0 != pcheck                                      // if the result is non-zero, the first test passes
+		if el == ELEMPERSON && ok && pcheck == PERMOWNERMOD { // if we passed it still may be an ownerMOD result...
+			ok = UID == sess.UID // if so, the session uid needs to match the data uid to proceed
 		}
 
 		if ok && field.IsValid() {
@@ -214,4 +216,16 @@ func (d *personDetail) filterSecurityMerge(sess *session, permRequired int, dNew
 			}
 		}
 	}
+}
+
+func (d *personDetail) filterSecurityMerge(sess *session, permRequired int, dNew *personDetail) {
+	filterSecurityMerge(d, sess, ELEMPERSON, permRequired, dNew, d.UID)
+}
+
+func (c *company) filterSecurityMerge(sess *session, permRequired int, cNew *company) {
+	filterSecurityMerge(c, sess, ELEMCOMPANY, permRequired, cNew, 0)
+}
+
+func (c *class) filterSecurityMerge(sess *session, permRequired int, cNew *class) {
+	filterSecurityMerge(c, sess, ELEMCLASS, permRequired, cNew, 0)
 }

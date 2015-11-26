@@ -24,19 +24,6 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
-
 	t, _ := template.New("admin.html").Funcs(funcMap).ParseFiles("admin.html")
 
 	err := t.Execute(w, &ui)

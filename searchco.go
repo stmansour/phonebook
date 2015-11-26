@@ -37,10 +37,12 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var c company
 		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Phone, &c.Fax, &c.Email, &c.Designation))
+		pc := &c
+		pc.filterSecurityRead(sess, PERMVIEW)
 		d.Matches = append(d.Matches, c)
 	}
 	errcheck(rows.Err())
-	t, _ := template.New("searchco.html").ParseFiles("searchco.html")
+	t, _ := template.New("searchco.html").Funcs(funcMap).ParseFiles("searchco.html")
 	ui.T = &d
 	err = t.Execute(w, &ui)
 

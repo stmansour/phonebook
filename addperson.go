@@ -69,19 +69,6 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	d.StateOfEmployment = ""
 	d.CountryOfEmployment = "USA"
 
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
-
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	ui.D = &d
 	err := t.Execute(w, &ui)

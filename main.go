@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"text/template"
 	"time"
 )
 
@@ -159,6 +160,82 @@ type personDetail struct {
 	MyDeductions            []aDeduction
 }
 
+// dataFields lists all the field names and other information
+// about the field:
+// 		- its description
+//		- whether the field is only accessible via an Administration screen
+type dataFields struct {
+	Elem        int
+	FieldName   string
+	AdminScreen bool
+	Description string
+}
+
+var adminScreenFields = []dataFields{
+	{ELEMPERSON, "Status", false, "Indicates whether the person is an active employee."},
+	{ELEMPERSON, "EligibleForRehire", false, "Indicates whether a past employee can be rehired."},
+	{ELEMPERSON, "UID", false, "A unique identifier associated with the employee. Once created, it never changes."},
+	{ELEMPERSON, "Salutation", false, "'Mr.', 'Mrs.', 'Ms.', etc."},
+	{ELEMPERSON, "FirstName", false, "The person's common name."},
+	{ELEMPERSON, "MiddleName", false, "The person's middle name."},
+	{ELEMPERSON, "LastName", false, "The person's surname or last name."},
+	{ELEMPERSON, "PreferredName", false, "Less formal name but more commonly used, for example 'Mike' rather than 'Michael'."},
+	{ELEMPERSON, "PrimaryEmail", false, "The primary email address to use for this person."},
+	{ELEMPERSON, "OfficePhone", false, "This person's office telephone number."},
+	{ELEMPERSON, "CellPhone", false, "This person's cellphone number."},
+	{ELEMPERSON, "EmergencyContactName", true, "Name of someone to contact in the event of an emergency."},
+	{ELEMPERSON, "EmergencyContactPhone", true, "Phone number for the emergency contact."},
+	{ELEMPERSON, "HomeStreetAddress", true, "def"},
+	{ELEMPERSON, "HomeStreetAddress2", true, "def"},
+	{ELEMPERSON, "HomeCity", true, "def"},
+	{ELEMPERSON, "HomeState", true, "def"},
+	{ELEMPERSON, "HomePostalCode", true, "def"},
+	{ELEMPERSON, "HomeCountry", true, "def"},
+	{ELEMPERSON, "PrimaryEmail", true, "def"},
+	{ELEMPERSON, "SecondaryEmail", true, "def"},
+	{ELEMPERSON, "OfficePhone", true, "def"},
+	{ELEMPERSON, "OfficeFax", true, "def"},
+	{ELEMPERSON, "CellPhone", true, "def"},
+	{ELEMPERSON, "BirthDOM", true, "def"},
+	{ELEMPERSON, "BirthMonth", true, "def"},
+	{ELEMPERSON, "CoCode", true, "The company code associated with this user."},
+	{ELEMPERSON, "JobCode", true, "def"},
+	{ELEMPERSON, "ClassCode", true, "def"},
+	{ELEMPERSON, "DeptCode", true, "def"},
+	{ELEMPERSON, "PositionControlNumber", true, "def"},
+	{ELEMPERSON, "MgrUID", true, "def"},
+	{ELEMPERSON, "Accepted401K", true, "def"},
+	{ELEMPERSON, "AcceptedDentalInsurance", true, "def"},
+	{ELEMPERSON, "AcceptedHealthInsurance", true, "def"},
+	{ELEMPERSON, "Hire", true, "def"},
+	{ELEMPERSON, "Termination", true, "def"},
+	{ELEMPERSON, "LastReview", true, "def"},
+	{ELEMPERSON, "NextReview", true, "def"},
+	{ELEMPERSON, "StateOfEmployment", false, "def"},
+	{ELEMPERSON, "CountryOfEmployment", false, "def"},
+	{ELEMPERSON, "Comps", true, "def"},
+	{ELEMPERSON, "MyDeductions", true, "def"},
+	{ELEMCOMPANY, "CoCode", false, "def"},
+	{ELEMCOMPANY, "LegalName", false, "def"},
+	{ELEMCOMPANY, "CommonName", false, "def"},
+	{ELEMCOMPANY, "Address", false, "def"},
+	{ELEMCOMPANY, "Address2", false, "def"},
+	{ELEMCOMPANY, "City", false, "def"},
+	{ELEMCOMPANY, "State", false, "def"},
+	{ELEMCOMPANY, "PostalCode", false, "def"},
+	{ELEMCOMPANY, "Country", false, "def"},
+	{ELEMCOMPANY, "Phone", false, "def"},
+	{ELEMCOMPANY, "Fax", false, "def"},
+	{ELEMCOMPANY, "Email", false, "def"},
+	{ELEMCOMPANY, "Designation", false, "def"},
+	{ELEMCOMPANY, "Active", false, "def"},
+	{ELEMCOMPANY, "EmploysPersonnel", false, "def"},
+	{ELEMCLASS, "ClassCode", false, "def"},
+	{ELEMCLASS, "Name", false, "def"},
+	{ELEMCLASS, "Designation", false, "def"},
+	{ELEMCLASS, "Description", false, "def"},
+}
+
 type class struct {
 	ClassCode   int
 	Name        string
@@ -225,7 +302,10 @@ var Phonebook struct {
 	ReqMemAck     chan int // done with memory
 	DebugToScreen bool
 	Debug         bool
+	SecurityDebug bool
 }
+
+var funcMap map[string]interface{}
 
 var chttp = http.NewServeMux()
 
@@ -291,6 +371,22 @@ func Dispatcher() {
 func loadMaps() {
 	var code int
 	var name string
+
+	funcMap = template.FuncMap{
+		"compToString":         compensationTypeToString,
+		"acceptIntToString":    acceptIntToString,
+		"dateToString":         dateToString,
+		"dateYear":             dateYear,
+		"monthStringToInt":     monthStringToInt,
+		"add":                  add,
+		"sub":                  sub,
+		"rmd":                  rmd,
+		"mul":                  mul,
+		"div":                  div,
+		"hasPERMMODaccess":     hasPERMMODaccess,
+		"hasAdminScreenAccess": hasAdminScreenAccess,
+		"showAdminButton":      showAdminButton,
+	}
 
 	PhonebookUI.CoCodeToName = make(map[int]string)
 	PhonebookUI.NameToCoCode = make(map[string]int)
@@ -398,11 +494,14 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 func readCommandLineArgs() {
 	portPtr := flag.Int("p", 8250, "port on which Phonebook listens")
 	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
+	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
 	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
+
 	flag.Parse()
 
 	Phonebook.Port = *portPtr
 	Phonebook.Debug = *dbugPtr
+	Phonebook.SecurityDebug = *sbugPtr
 	Phonebook.DebugToScreen = *dtscPtr
 }
 

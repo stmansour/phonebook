@@ -53,18 +53,6 @@ func buildMyCompsMap(d *personDetail) {
 	}
 }
 
-// func getSecurityList(d *personDetail) {
-// 	rows, err := Phonebook.db.Query("select gid from security where uid=?", d.UID)
-// 	errcheck(err)
-// 	defer rows.Close()
-// 	var c int
-// 	for rows.Next() {
-// 		errcheck(rows.Scan(&c))
-// 		d.SecList = append(d.SecList, c)
-// 	}
-// 	errcheck(rows.Err())
-// }
-
 func getDeductions(d *personDetail) {
 	rows, err := Phonebook.db.Query("select deduction from deductions where uid=?", d.UID)
 	errcheck(err)
@@ -161,15 +149,6 @@ func adminReadDetails(d *personDetail) {
 	getDeductionsStr(d)
 }
 
-// func getPersonDetailsForRead(d *personDetail, sess *session) {
-// 	adminReadDetails(d)
-// 	d.filterSecurityRead(sess)
-// }
-// func getPersonDetailsForWrite(d *personDetail, sess *session) {
-// 	adminReadDetails(d)
-// 	d.filterSecurityWrite(sess)
-// }
-
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	var sess *session
@@ -203,18 +182,18 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	// to display.
 	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
 
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	// funcMap := template.FuncMap{
+	// 	"compToString":      compensationTypeToString,
+	// 	"acceptIntToString": acceptIntToString,
+	// 	"dateToString":      dateToString,
+	// 	"dateYear":          dateYear,
+	// 	"monthStringToInt":  monthStringToInt,
+	// 	"add":               add,
+	// 	"sub":               sub,
+	// 	"rmd":               rmd,
+	// 	"mul":               mul,
+	// 	"div":               div,
+	// }
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d
 	//fmt.Printf("ui.D = %#v\n", ui.D)

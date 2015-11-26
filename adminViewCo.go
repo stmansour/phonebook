@@ -38,24 +38,10 @@ func adminViewCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	getCompanyInfo(CoCode, &c)
-
-	fmt.Printf("adminViewCompanyHandler:  A\n")
-	funcMap := template.FuncMap{
-		"compToString":      compensationTypeToString,
-		"acceptIntToString": acceptIntToString,
-		"dateToString":      dateToString,
-		"dateYear":          dateYear,
-		"monthStringToInt":  monthStringToInt,
-		"add":               add,
-		"sub":               sub,
-		"rmd":               rmd,
-		"mul":               mul,
-		"div":               div,
-	}
+	ui.C = &c
+	ui.C.filterSecurityRead(sess, PERMVIEW)
 
 	t, _ := template.New("adminViewCo.html").Funcs(funcMap).ParseFiles("adminViewCo.html")
-	ui.C = &c
-	fmt.Printf("adminViewCompanyHandler:  Z\n")
 	err = t.Execute(w, &ui)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -469,7 +469,7 @@ func makeDefaultRoles(db *sql.DB) {
 	TesterPerms := []FieldPerm{
 		{ELEMPERSON, "Status", PERMVIEW | PERMCREATE | PERMMOD | PERMPRINT, "Indicates whether the person is an active employee."},
 		{ELEMPERSON, "EligibleForRehire", PERMVIEW, "Indicates whether a past employee can be rehired."},
-		{ELEMPERSON, "UID", PERMCREATE, "A unique identifier associated with the employee. Once created, it never changes."},
+		{ELEMPERSON, "UID", PERMVIEW | PERMCREATE, "A unique identifier associated with the employee. Once created, it never changes."},
 		{ELEMPERSON, "Salutation", PERMMOD, "'Mr.', 'Mrs.', 'Ms.', etc."},
 		{ELEMPERSON, "FirstName", PERMDEL, "The person's common name."},
 		{ELEMPERSON, "MiddleName", PERMPRINT, "The person's middle name."},
@@ -509,7 +509,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "StateOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "CountryOfEmployment", PERMNONE, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
-		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMNONE, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
