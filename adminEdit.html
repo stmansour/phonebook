@@ -30,6 +30,12 @@
 
 
 	<p class="AppHeading">Admin Edit - {{if gt .D.UID 0}}{{.D.FirstName}} {{.D.LastName}} ({{.D.UID}}){{else}}add new person{{end}}
+	{{$er := .D.RID}}
+	<br>
+	<select name="Role"
+		{{if hasPERMMODaccess .X.Token 1 "Role"}}{{else}}disabled="disabled"{{end}}>
+		{{range $r := .Roles}}<option value="{{$r.RID}}" {{if eq $r.RID $er}}selected{{end}}>{{$r.Name}}</option>{{end}}
+	</select>
 	</p>
 
 	<form action="/saveAdminEdit/{{.D.UID}}" method="POST">

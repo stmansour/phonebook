@@ -119,7 +119,7 @@ func adminReadDetails(d *personDetail) {
 			"jobcode,hire,termination,"+ // 29
 			"mgruid,deptcode,cocode,StateOfEmployment,"+ // 33
 			"CountryOfEmployment,PreferredName,"+ // 35
-			"EmergencyContactName,EmergencyContactPhone "+ // 38
+			"EmergencyContactName,EmergencyContactPhone,RID "+ // 39
 			"from people where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()
@@ -135,7 +135,7 @@ func adminReadDetails(d *personDetail) {
 			&d.JobCode, &d.Hire, &d.Termination,
 			&d.MgrUID, &d.DeptCode, &d.CoCode, &d.StateOfEmployment,
 			&d.CountryOfEmployment, &d.PreferredName,
-			&d.EmergencyContactName, &d.EmergencyContactPhone))
+			&d.EmergencyContactName, &d.EmergencyContactPhone, &d.RID))
 	}
 	errcheck(rows.Err())
 
@@ -182,18 +182,6 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	// to display.
 	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
 
-	// funcMap := template.FuncMap{
-	// 	"compToString":      compensationTypeToString,
-	// 	"acceptIntToString": acceptIntToString,
-	// 	"dateToString":      dateToString,
-	// 	"dateYear":          dateYear,
-	// 	"monthStringToInt":  monthStringToInt,
-	// 	"add":               add,
-	// 	"sub":               sub,
-	// 	"rmd":               rmd,
-	// 	"mul":               mul,
-	// 	"div":               div,
-	// }
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d
 	//fmt.Printf("ui.D = %#v\n", ui.D)

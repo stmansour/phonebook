@@ -41,8 +41,8 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	mypasshash := fmt.Sprintf("%x", sha)
 
 	var passhash, firstname, preferredname string
-	var uid, role int
-	err := Phonebook.db.QueryRow("select uid,firstname,preferredname,passhash,role from people where username=?", myusername).Scan(&uid, &firstname, &preferredname, &passhash, &role)
+	var uid, RID int
+	err := Phonebook.db.QueryRow("select uid,firstname,preferredname,passhash,rid from people where username=?", myusername).Scan(&uid, &firstname, &preferredname, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
 		ulog("No user with username = %s\n", myusername)
@@ -64,7 +64,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 			name = preferredname
 		}
 
-		s := sessionNew(cval, myusername, name, uid, role, "/images/anon.png")
+		s := sessionNew(cval, myusername, name, uid, RID, "/images/anon.png")
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)

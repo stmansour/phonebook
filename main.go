@@ -131,7 +131,7 @@ type personDetail struct {
 	CountryOfEmployment     string
 	PreferredName           string
 	Comps                   []int  // an array of CompensationType values (ints)
-	role                    Role   // security role assigned to this person
+	RID                     int    // security role assigned to this person
 	CompensationStr         string //used in the admin edit interface
 	DeptCode                int
 	Company                 company
@@ -215,6 +215,7 @@ var adminScreenFields = []dataFields{
 	{ELEMPERSON, "CountryOfEmployment", false, "def"},
 	{ELEMPERSON, "Comps", true, "def"},
 	{ELEMPERSON, "MyDeductions", true, "def"},
+	{ELEMPERSON, "RID", true, "role identifier"},
 	{ELEMCOMPANY, "CoCode", false, "def"},
 	{ELEMCOMPANY, "LegalName", false, "def"},
 	{ELEMCOMPANY, "CommonName", false, "def"},
@@ -276,6 +277,7 @@ type uiSupport struct {
 	NameToClassCode  map[string]int // class designation to classcode
 	ClassCodeToName  map[int]string // index by classcode to get the name
 	Months           []string       // a map for month number to month name
+	Roles            []Role         // list of roles -- fields are not initialized
 	C                *company
 	A                *class
 	D                *personDetail
@@ -326,7 +328,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initUIData(u *uiSupport) {
-
 	u.CoCodeToName = make(map[int]string, len(PhonebookUI.CoCodeToName))
 	u.NameToCoCode = make(map[string]int, len(PhonebookUI.NameToCoCode))
 	for k, v := range PhonebookUI.CoCodeToName {
@@ -354,6 +355,12 @@ func initUIData(u *uiSupport) {
 	u.Months = make([]string, len(PhonebookUI.Months))
 	for i := 0; i < len(PhonebookUI.Months); i++ {
 		u.Months[i] = PhonebookUI.Months[i]
+	}
+	u.Roles = make([]Role, len(Phonebook.Roles))
+	for i := 0; i < len(Phonebook.Roles); i++ {
+		u.Roles[i] = Role{}
+		u.Roles[i].Name = Phonebook.Roles[i].Name
+		u.Roles[i].RID = Phonebook.Roles[i].RID
 	}
 }
 

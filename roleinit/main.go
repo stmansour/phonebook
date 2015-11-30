@@ -242,6 +242,8 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "RID", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Role", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "Permissions role"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -309,6 +311,8 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Role", PERMVIEW, "Permissions Rol"},
+		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMPRINT, "def"},
@@ -376,6 +380,8 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPERSON, "RID", PERMNONE, "def"},
+		{ELEMPERSON, "Role", PERMNONE, "Permissions Rol"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -443,6 +449,8 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "CountryOfEmployment", PERMOWNERVIEW | PERMOWNERPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMOWNERVIEW | PERMOWNERPRINT, "Compensation type(s) for this person."},
 		{ELEMPERSON, "MyDeductions", PERMOWNERVIEW | PERMOWNERPRINT, "The deductions for this person."},
+		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPERSON, "Role", PERMNONE, "Permissions Rol"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW, "def"},
@@ -510,6 +518,8 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "CountryOfEmployment", PERMNONE, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPERSON, "Role", PERMNONE, "Permissions Rol"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMNONE, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -532,37 +542,42 @@ func makeDefaultRoles(db *sql.DB) {
 	}
 	r = Role{5, "Tester", "This role is for testing", TesterPerms}
 	makeNewRole(db, &r)
-
 }
 
 func addRoleToPeople(db *sql.DB) {
-	alter, err := db.Prepare("ALTER TABLE people add column role MEDIUMINT")
+	alter, err := db.Prepare("ALTER TABLE people drop column RID")
 	_, err = alter.Exec()
 	if err != nil {
-		fmt.Printf("Note: could not add column 'role'. It may already exist.\n")
+		fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
 	}
 
-	update, err := db.Prepare("Update people set role=4") // everyone starts with ReadOnly
+	alter, err = db.Prepare("ALTER TABLE people add column RID MEDIUMINT")
+	_, err = alter.Exec()
+	if err != nil {
+		fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
+	}
+
+	update, err := db.Prepare("Update people set RID=4") // everyone starts with ReadOnly
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set role=1 where UID=211") // Steve gets Admin
+	update, err = db.Prepare("Update people set RID=1 where UID=211") // Steve gets Admin
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set role=1 where UID=198") // Joe gets Admin
+	update, err = db.Prepare("Update people set RID=1 where UID=198") // Joe gets Admin
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set role=2 where UID=202") // Stacey gets HR
+	update, err = db.Prepare("Update people set RID=2 where UID=202") // Stacey gets HR
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set role=3 where UID=200") // Darla gets Finance
+	update, err = db.Prepare("Update people set RID=3 where UID=200") // Darla gets Finance
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set role=5 where UID=3") //  vagers gets Finance
+	update, err = db.Prepare("Update people set RID=5 where UID=3") //  vagers gets Finance
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)

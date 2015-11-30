@@ -28,7 +28,15 @@
 
 
 
-	<p class="AppHeading">Admin View - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})</p>
+	<p class="AppHeading">Admin View - {{.D.FirstName}} {{.D.LastName}} ({{.D.UID}})
+	<br>
+	{{if hasPERMMODaccess .X.Token 1 "Role"}}
+	{{$er := .D.RID}}
+	<select name="Role" disabled="disabled">
+		{{range $r := .Roles}}<option value="{{$r.RID}}" {{if eq $r.RID $er}}selected{{end}}>{{$r.Name}}</option>{{end}}
+	</select>
+	{{end}}
+	</p>
 
 		<table >
 			<tr>

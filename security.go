@@ -190,7 +190,7 @@ func filterSecurityMerge(d interface{}, sess *session, el int, permRequired int,
 			perm, ok = sess.Pcl[n] // here's the permission we have
 		}
 		if !ok { // !ok here means that the variable was not found in the access list
-			fmt.Printf("filterSecurityMerge: field %s not covered, skipping\n", n)
+			// fmt.Printf("filterSecurityMerge: field %s not covered, skipping\n", n)
 			continue // if it's not there, we can ignore it
 		}
 		pcheck := permRequired & perm                         // AND it with the required permissions
