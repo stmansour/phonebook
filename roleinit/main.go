@@ -584,7 +584,7 @@ func addRoleToPeople(db *sql.DB) {
 }
 
 func readFieldPerms(db *sql.DB, r *Role) {
-	rows, err := db.Query("select Elem,Field,Perm,Descr from fieldPerms where RID=?", r.RID)
+	rows, err := db.Query("select Elem,Field,Perm,Descr from FieldPerms where RID=?", r.RID)
 	errcheck(err)
 	defer rows.Close()
 
