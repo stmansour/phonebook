@@ -16,6 +16,7 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	breadcrumbReset(sess, "Search Classes", "/searchcl/")
 
 	var d searchClassResults
 

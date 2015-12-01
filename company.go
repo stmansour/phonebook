@@ -60,6 +60,7 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		cocode, _ := strconv.Atoi(costr)
+		breadcrumbAdd(sess, "Company", fmt.Sprintf("/company/%d", cocode))
 		getCompanyInfo(cocode, &c)
 		t, _ := template.New("company.html").Funcs(funcMap).ParseFiles("company.html")
 		ui.C = &c

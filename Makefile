@@ -4,6 +4,7 @@ clean:
 	cd roleinit;make clean
 	cd admintools;make clean
 	rm -rf phonebook tmp Phonebook.log pbimages.tar*
+	go clean
 
 phonebook: *.go
 	go vet

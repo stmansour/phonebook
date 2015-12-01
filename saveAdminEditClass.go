@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,45 +37,48 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.ClassCode = ClassCode
-	c.Name = r.FormValue("Name")
-	c.Designation = r.FormValue("Designation")
-	c.Description = r.FormValue("Description")
+	action := strings.ToLower(r.FormValue("action"))
+	if "save" == action {
+		c.Name = r.FormValue("Name")
+		c.Designation = r.FormValue("Designation")
+		c.Description = r.FormValue("Description")
 
-	//-------------------------------
-	// SECURITY
-	//-------------------------------
-	var co class                              // container for current information
-	co.ClassCode = ClassCode                  // initialize
-	getClassInfo(ClassCode, &co)              // get the rest of the info
-	co.filterSecurityMerge(sess, PERMMOD, &c) // merge new info based on permissions
+		//-------------------------------
+		// SECURITY
+		//-------------------------------
+		var co class                              // container for current information
+		co.ClassCode = ClassCode                  // initialize
+		getClassInfo(ClassCode, &co)              // get the rest of the info
+		co.filterSecurityMerge(sess, PERMMOD, &c) // merge new info based on permissions
 
-	if 0 == ClassCode {
-		insert, err := Phonebook.db.Prepare("INSERT INTO classes (Name,Designation,Description) VALUES(?,?,?)")
-		errcheck(err)
-		_, err = insert.Exec(co.Name, co.Designation, co.Description)
-		errcheck(err)
+		if 0 == ClassCode {
+			insert, err := Phonebook.db.Prepare("INSERT INTO classes (Name,Designation,Description) VALUES(?,?,?)")
+			errcheck(err)
+			_, err = insert.Exec(co.Name, co.Designation, co.Description)
+			errcheck(err)
 
-		// read this record back to get the ClassCode...
-		rows, err := Phonebook.db.Query("select ClassCode from classes where Name=? and Designation=?", co.Name, co.Designation)
-		errcheck(err)
-		defer rows.Close()
-		nClassCode := 0 // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest class added
-		for rows.Next() {
-			errcheck(rows.Scan(&ClassCode))
-			if ClassCode > nClassCode {
-				nClassCode = ClassCode
+			// read this record back to get the ClassCode...
+			rows, err := Phonebook.db.Query("select ClassCode from classes where Name=? and Designation=?", co.Name, co.Designation)
+			errcheck(err)
+			defer rows.Close()
+			nClassCode := 0 // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest class added
+			for rows.Next() {
+				errcheck(rows.Scan(&ClassCode))
+				if ClassCode > nClassCode {
+					nClassCode = ClassCode
+				}
+			}
+			errcheck(rows.Err())
+			ClassCode = nClassCode
+			c.ClassCode = ClassCode
+		} else {
+			update, err := Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=? where ClassCode=?")
+			errcheck(err)
+			_, err = update.Exec(co.Name, co.Designation, co.Description, ClassCode)
+			if nil != err {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}
-		errcheck(rows.Err())
-		ClassCode = nClassCode
-		c.ClassCode = ClassCode
-	} else {
-		update, err := Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=? where ClassCode=?")
-		errcheck(err)
-		_, err = update.Exec(co.Name, co.Designation, co.Description, ClassCode)
-		if nil != err {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
 	}
-	http.Redirect(w, r, fmt.Sprintf("/class/%d", ClassCode), http.StatusFound)
+	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
 }

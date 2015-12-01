@@ -393,6 +393,7 @@ func loadMaps() {
 		"hasPERMMODaccess":     hasPERMMODaccess,
 		"hasAdminScreenAccess": hasAdminScreenAccess,
 		"showAdminButton":      showAdminButton,
+		"getBreadcrumb":        getBreadcrumb,
 	}
 
 	PhonebookUI.CoCodeToName = make(map[int]string)
@@ -466,6 +467,7 @@ func initHTTP() {
 	http.HandleFunc("/adminEditClass/", adminEditClassHandler)
 	http.HandleFunc("/adminEditCo/", adminEditCompanyHandler)
 	http.HandleFunc("/adminView/", adminViewHandler)
+	http.HandleFunc("/adminViewBtn/", adminViewBtnHandler)
 	http.HandleFunc("/class/", classHandler)
 	http.HandleFunc("/company/", companyHandler)
 	http.HandleFunc("/detail/", detailHandler)

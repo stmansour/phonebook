@@ -167,6 +167,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
 		d.UID = uid
+		breadcrumbAdd(sess, "AdminView Person", fmt.Sprintf("/adminView/%d", uid))
 		adminReadDetails(&d)
 	}
 

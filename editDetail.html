@@ -12,17 +12,21 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td ><a href="/search/">PHONEBOOK</a></td>
-<td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
-<td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
-<td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+<td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
+<td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
+<td width=30></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
+<td width=30></td><td><a href="/searchcl/"><span class="MenuCmd">Classes</span></a></td>
 {{if showAdminButton .X.Token}}
-<td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=30></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
 <td width=50></td>
-<td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
-<td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</span></a></p></td>
+<td width=4></td><td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</span></a></td>
 <td width=30></td>
+</tr>
+<tr>
+<td width=20></td>
+<td colspan="9">{{getBreadcrumb .X.Token}}</td>
 </tr>
 </table>
 
@@ -134,7 +138,8 @@
 			<tr><td width="50px"></td>
 				<td colspan="2">
 				<input type="submit" name="action" value="Save">
-			    &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:history.back()" class="blbutton">Cancel</a></td>
+			    &nbsp;&nbsp;&nbsp;&nbsp;
+			    <input type="submit" name="action" value="Cancel">
 			</tr>
 </table>
 

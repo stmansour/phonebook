@@ -15,6 +15,7 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	breadcrumbReset(sess, "Search Companies", "/searchco/")
 
 	var s string
 	var d searchCoResults

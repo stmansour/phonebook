@@ -7,17 +7,18 @@ import (
 )
 
 type session struct {
-	Token     string         // this is the md5 hash, unique id
-	Username  string         // associated username
-	Firstname string         // user's first name
-	UID       int            // user's db uid
-	Urole     Role           // user's role for permissions
-	CoCode    int            // logged in user's company
-	ImageURL  string         // user's picture
-	Expire    time.Time      // when does the cookie expire
-	Pp        map[string]int // quick way to reference person permissions based on field name
-	Pco       map[string]int // quick way to reference company permissions based on field name
-	Pcl       map[string]int // quick way to reference class permissions based on field name
+	Token       string         // this is the md5 hash, unique id
+	Username    string         // associated username
+	Firstname   string         // user's first name
+	UID         int            // user's db uid
+	Urole       Role           // user's role for permissions
+	CoCode      int            // logged in user's company
+	ImageURL    string         // user's picture
+	Expire      time.Time      // when does the cookie expire
+	Pp          map[string]int // quick way to reference person permissions based on field name
+	Pco         map[string]int // quick way to reference company permissions based on field name
+	Pcl         map[string]int // quick way to reference class permissions based on field name
+	Breadcrumbs []Crumb        // where is the user in the screen hierarchy
 }
 
 var sessions map[string]*session
@@ -201,6 +202,7 @@ func sessionNew(token, username, firstname string, uid int, rid int, image strin
 	s.Firstname = firstname
 	s.UID = uid
 	s.ImageURL = image
+	s.Breadcrumbs = make([]Crumb, 0)
 	getRoleInfo(rid, s)
 
 	if Phonebook.SecurityDebug {

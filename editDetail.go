@@ -32,6 +32,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d.UID = uid
+	breadcrumbAdd(sess, "Personal Edit", fmt.Sprintf("/editDetail/%d", uid))
 
 	//=================================================================================
 	// SECURITY

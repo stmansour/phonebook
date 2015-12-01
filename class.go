@@ -44,6 +44,7 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		classcode, _ := strconv.Atoi(costr)
+		breadcrumbAdd(sess, "Class", fmt.Sprintf("/class/%d", classcode))
 		getClassInfo(classcode, &c)
 		ui.A = &c
 		ui.A.filterSecurityRead(sess, PERMVIEW)

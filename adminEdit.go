@@ -33,6 +33,7 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.UID = uid
 
 	adminReadDetails(&d)
+	breadcrumbAdd(sess, "AdminEdit Person", fmt.Sprintf("/adminEdit/%d", uid))
 
 	//---------------------------------------------------------------------
 	// SECURITY

@@ -21,6 +21,7 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
+	breadcrumbAdd(sess, "Add Company", "/adminAddCompany/")
 
 	var c company
 	c.CoCode = 0

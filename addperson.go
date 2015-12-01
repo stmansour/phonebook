@@ -21,6 +21,7 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
+	breadcrumbAdd(sess, "Add Person", "/adminAddPerson/")
 
 	var d personDetail
 	d.Reports = make([]person, 0)

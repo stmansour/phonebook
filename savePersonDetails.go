@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,46 +44,48 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d.PreferredName = r.FormValue("PreferredName")
-	d.PrimaryEmail = r.FormValue("PrimaryEmail")
-	d.OfficePhone = r.FormValue("OfficePhone")
-	d.CellPhone = r.FormValue("CellPhone")
-	d.EmergencyContactPhone = r.FormValue("EmergencyContactPhone")
-	d.EmergencyContactName = r.FormValue("EmergencyContactName")
-	d.HomeStreetAddress = r.FormValue("HomeStreetAddress")
-	d.HomeStreetAddress2 = r.FormValue("HomeStreetAddress2")
-	d.HomeCity = r.FormValue("HomeCity")
-	d.HomeState = r.FormValue("HomeState")
-	d.HomePostalCode = r.FormValue("HomePostalCode")
-	d.HomeCountry = r.FormValue("HomeCountry")
+	action := strings.ToLower(r.FormValue("action"))
+	if "save" == action {
+		d.PreferredName = r.FormValue("PreferredName")
+		d.PrimaryEmail = r.FormValue("PrimaryEmail")
+		d.OfficePhone = r.FormValue("OfficePhone")
+		d.CellPhone = r.FormValue("CellPhone")
+		d.EmergencyContactPhone = r.FormValue("EmergencyContactPhone")
+		d.EmergencyContactName = r.FormValue("EmergencyContactName")
+		d.HomeStreetAddress = r.FormValue("HomeStreetAddress")
+		d.HomeStreetAddress2 = r.FormValue("HomeStreetAddress2")
+		d.HomeCity = r.FormValue("HomeCity")
+		d.HomeState = r.FormValue("HomeState")
+		d.HomePostalCode = r.FormValue("HomePostalCode")
+		d.HomeCountry = r.FormValue("HomeCountry")
 
-	// fmt.Printf("email = %s, officephone = %s, cell = %s", d.PrimaryEmail, d.OfficePhone, d.CellPhone)
+		// fmt.Printf("email = %s, officephone = %s, cell = %s", d.PrimaryEmail, d.OfficePhone, d.CellPhone)
 
-	update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?," +
-		"EmergencyContactName=?,EmergencyContactPhone=?," +
-		"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=? " +
-		"where people.uid=?")
-	errcheck(err)
-
-	_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
-		d.EmergencyContactName, d.EmergencyContactPhone,
-		d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
-		uid)
-	if nil != err {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	password := r.FormValue("password")
-	if "" != password {
-		sha := sha512.Sum512([]byte(password))
-		passhash := fmt.Sprintf("%x", sha)
-		update, err = Phonebook.db.Prepare("update people set passhash=? where uid=?")
+		update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?," +
+			"EmergencyContactName=?,EmergencyContactPhone=?," +
+			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=? " +
+			"where people.uid=?")
 		errcheck(err)
-		_, err = update.Exec(passhash, uid)
+
+		_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
+			d.EmergencyContactName, d.EmergencyContactPhone,
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
+			uid)
 		if nil != err {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-	}
 
-	http.Redirect(w, r, fmt.Sprintf("/detail/%d", uid), http.StatusFound)
+		password := r.FormValue("password")
+		if "" != password {
+			sha := sha512.Sum512([]byte(password))
+			passhash := fmt.Sprintf("%x", sha)
+			update, err = Phonebook.db.Prepare("update people set passhash=? where uid=?")
+			errcheck(err)
+			_, err = update.Exec(passhash, uid)
+			if nil != err {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+		}
+	}
+	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
 }

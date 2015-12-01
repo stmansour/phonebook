@@ -36,6 +36,7 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting Company Code to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
+	breadcrumbAdd(sess, "AdminEdit Company", fmt.Sprintf("/adminEditCo/%d", CoCode))
 	getCompanyInfo(CoCode, &c)
 	ui.C = &c
 	ui.C.filterSecurityRead(sess, PERMMOD)

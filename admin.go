@@ -14,6 +14,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	breadcrumbReset(sess, "Admin", "/admin/")
 
 	// SECURITY
 	if !(sess.elemPermsAny(ELEMPERSON, PERMCREATE) ||

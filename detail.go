@@ -82,6 +82,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		uid, _ = strconv.Atoi(uidstr)
 		d.UID = uid
 	}
+	breadcrumbAdd(sess, "Person", fmt.Sprintf("/detail/%d", uid))
 
 	//=================================================================
 	// SECURITY

@@ -1,5 +1,6 @@
 @charset "ISO-8859-1";
-
+@import url(http://fonts.googleapis.com/css?family=Roboto);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
 
 .FirstName {
    text-transform: uppercase;
@@ -64,13 +65,7 @@
 .edAttrib {
 	text-align: left;
 }
-.adminval {
-  border-top: 1px solid #DDD;
-  border-right: 1px solid #DDD;
-  border-bottom: 1px solid #DDD;
-  border-left: 1px solid #DDD;
 
-}
 .Attrib, .edAttrib, .Attribbd {
 	font-weight: lighter;
 	font-size: 9px;
@@ -95,13 +90,19 @@
 }
 
 .MenuCmd {
-	font-size: 20;
-	color: white;
+  font-size: 20;
+}
+.MenuUserName {
+  font-size: 15;
+}
+.MenuCmd, .MenuUserName {
+	color: #BBB;
+  text-align: center;
 }
 
 .AppName {
 	font-size: 20;
-	color: #B8B8B8;
+	color: #BBB;
 }
 
 .button {
@@ -129,7 +130,7 @@
 }
 
 .FirstName, .LastName, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, .AppHeading, body, p, td, th {
-	font-family: "Kozuka Gothic Pro", "Helvetica Neue", "Letter Gothic Std", Helvetica, Arial, "Gill Sans", sans-serif;
+	font-family:  "Roboto" "Open Sans", "Kozuka Gothic Pro", "Helvetica Neue", "Letter Gothic Std", Helvetica, Arial, "Gill Sans", sans-serif;
 
 }
 
@@ -141,10 +142,10 @@ body,p,td {
 
 th {
     text-transform: uppercase;
-	font-size: 10px;
-	font-style: italic;
-	color: #aaa;
-	background-color: transparent;
+    font-size: 10px;
+    font-style: italic;
+    color: #aaa;
+    background-color: transparent;
 }
 
 th, td {

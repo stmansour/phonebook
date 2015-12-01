@@ -36,6 +36,7 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting classcode to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
+	breadcrumbAdd(sess, "AdminEdit Class", fmt.Sprintf("/adminEditClass/%d", ClassCode))
 	d.ClassCode = ClassCode
 	getClassInfo(ClassCode, &d)
 	ui.A = &d

@@ -12,17 +12,21 @@
 <tr>
 <td width=20></td>
 <td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
-<td ><a href="/search/">PHONEBOOK</a></td>
-<td width=50></td><td class="MenuCmd"><a href="/search/">People</a></td>
-<td width=30></td><td class="MenuCmd"><a href="/searchco/">Companies</a></td>
-<td width=30></td><td class="MenuCmd"><a href="/searchcl/">Classes</a></td>
+<td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
+<td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
+<td width=30></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
+<td width=30></td><td><a href="/searchcl/"><span class="MenuCmd">Classes</span></a></td>
 {{if showAdminButton .X.Token}}
-<td width=30></td><td class="MenuCmd"><a href="/admin/">Admin</a></td>
+<td width=30></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
 <td width=50></td>
-<td><a href="/editDetail/{{.X.UID}}"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</a></td>
-<td width=4></td><td><a href="/logoff/{{.X.UID}}">Logoff</a></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</span></a></p></td>
+<td width=4></td><td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</span></a></td>
 <td width=30></td>
+</tr>
+<tr>
+<td width=20></td>
+<td colspan="9">{{getBreadcrumb .X.Token}}</td>
 </tr>
 </table>
 
@@ -38,7 +42,7 @@
 			<td class="edAttrib">DESIGNATION</td>
 		</tr>
 		<tr>
-			<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35" required="required"
+			<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35"  required="required"
 				{{if hasPERMMODaccess .X.Token 2 "LegalName"}}{{else}}disabled="disabled"{{end}}></td>
 			<td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35"
 				{{if hasPERMMODaccess .X.Token 2 "CommonName"}}{{else}}disabled="disabled"{{end}}></td>
@@ -112,7 +116,8 @@
 	<p></p>
 	<hr>
 	<p></p>
-	<input type="submit" name="action" value="Save">  &nbsp;&nbsp;&nbsp;<a  href="javascript:history.back()" class="blbutton">Cancel</a>
+	<input type="submit" name="action" value="Save">  &nbsp;&nbsp;&nbsp;
+	<input type="submit" name="action" value="Cancel" formnovalidate>
 </form>
 
 </body>
