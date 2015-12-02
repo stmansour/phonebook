@@ -39,7 +39,10 @@
     <td width=20></td>
     <td>
     <form action="/search/" method="POST">
-    	<div>Search People: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search"></div>
+    	<div>Search People: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search">
+        {{if hasPERMMODaccess .X.Token 1 "Termination"}}
+        <label><input type="checkbox" name="inclterms" value="yes">Include non-active employees</label>
+        {{end}}</div>
     </form>
     </td>
     <td width=20></td>

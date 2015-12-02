@@ -21,6 +21,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	var d searchResults
 	var s string
 	d.Query = strings.TrimSpace(r.FormValue("searchstring"))
+	inclterms := "" != r.FormValue("inclterms")
+	fmt.Printf("inclterms = %v,  r.FormValue = %s\n", inclterms, r.FormValue("inclterms"))
 
 	//===========================================================
 	//  First, determine the deptcodes that match this query...
@@ -37,11 +39,22 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	s = "select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where status>0 and ("
+	// Here are the major search fields
+	s = "select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where "
+
+	// if the user has access and wants to include terminated employees...
+	if !inclterms {
+		s += "status>0 and "
+	}
+
+	// here are the general conditions
+	s += "("
 	if l > 0 {
 		s += fmt.Sprintf("(lastname like \"%%%s%%\" or firstname like \"%%%s%%\" or PreferredName like \"%%%s%%\" or primaryemail like \"%%%s%%\" or cellphone like \"%%%s%%\" or OfficePhone like \"%%%s%%\" or OfficeFax like \"%%%s%%\") ",
 			d.Query, d.Query, d.Query, d.Query, d.Query, d.Query, d.Query)
 	}
+
+	// include departments...
 	if len(dca) > 0 {
 		if l > 0 {
 			s += "or "
@@ -56,6 +69,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		s += ") "
 	}
 	s += fmt.Sprintf(") order by lastname,firstname")
+
 	//fmt.Printf("query = %s\n", s)
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)

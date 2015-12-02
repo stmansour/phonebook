@@ -430,7 +430,7 @@ func loadMaps() {
 	errcheck(rows.Err())
 
 	PhonebookUI.NameToDeptCode = make(map[string]int)
-	rows, err = Phonebook.db.Query("select deptcode,name from departments")
+	rows, err = Phonebook.db.Query("select deptcode,name from departments order by name")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -543,8 +543,8 @@ func main() {
 	Phonebook.ReqSessionMem = make(chan int)
 	Phonebook.ReqSessionMemAck = make(chan int)
 	Phonebook.Roles = make([]Role, 0)
-	Phonebook.SessionTimeout = 10    // minutes
-	Phonebook.SessionCleanupTime = 5 // minutes
+	Phonebook.SessionTimeout = 10      // minutes
+	Phonebook.SessionCleanupTime = 120 // minutes
 	loadMaps()
 	readAccessRoles()
 

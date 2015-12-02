@@ -48,15 +48,13 @@ func SessionCleanup() {
 			for k, v := range sessions {       // look at every session
 				if time.Now().After(v.Expire) { // if it's still active...
 					n++ // removed another
-					fmt.Printf("v.Expire = %s, t.Now() = %s\n",
-						v.Expire.Format(time.RFC3339), time.Now().Format(time.RFC3339))
 				} else {
 					ss[k] = v // ...copy it to the new list
 				}
 			}
 			sessions = ss                   // set the new list
 			Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
-			fmt.Printf("SessionCleanup completed. %d removed. Current session list size = %d\n", n, len(sessions))
+			//fmt.Printf("SessionCleanup completed. %d removed. Current session list size = %d\n", n, len(sessions))
 		}
 	}
 }

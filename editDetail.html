@@ -3,6 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
 <title>Accord Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}</title>
+
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -49,18 +50,44 @@
 
 <form action="/savePersonDetails/{{.D.UID}}" method="POST">
 
+<script type="text/javascript">
+function checkPasswd(){
+  var pw1 = document.getElementById('idpw1');
+  var pw2 = document.getElementById('idpw2');
+  var fb = document.getElementById('feedbackArea');
+  var colorMatch = "#8D8";
+  var colorMismatch = "#F44";
+  var colorEmpty = "#ffffd1"
+  // if both fields are empty, erase everything
+  if (0 === pw1.value.length && 0 === pw2.value.length){
+  	fb.innerHTML = '';
+  	pw2.style.backgroundColor = colorEmpty;
+  } else if(pw1.value == pw2.value){
+    //The passwords match. 
+    pw2.style.backgroundColor = colorMatch;
+    fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="30" alt="Passwords Match">';
+  }else{
+    //The passwords do not match.
+    pw2.style.backgroundColor = colorMismatch;
+    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="30" alt="Passwords Do Not Match">';
+  }
+}  
+</script>
 <table>
 	<tr>
 		<td width="50px"> </td>
 		<td class="Attrib" align="right">NEW PASSWORD</td>
-		<td><input type="password" name="password" value="" size="35"></td>
+		<td><input type="password" id="idpw1" name="password" value=""
+			onkeyup="checkPasswd(); return false;" size="35"></td>
+		<td rowspan="2"><span id="feedbackArea"></span></td>
 		<td width="50px"></td>
 	</tr>
 	
 	<tr>
 		<td width="50px"></td>
 		<td class="Attrib" align="right">REPEAT NEW PASSWORD</td>
-		<td><input type="password" name="password2" value="" size="35"></td>
+		<td><input type="password" id="idpw2" name="password2" value=""
+			size="35" onkeyup="checkPasswd(); return false;"></td>
 		<td width="50px"></td>
 	</tr>
 	<tr><td height="20" colspan="4"></td></tr>
