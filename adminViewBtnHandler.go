@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -28,6 +29,24 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, url, http.StatusFound)
 	} else {
 		ulog("adminViewBtnHandler: unrecognized action: %s\n", action)
+		http.Redirect(w, r, "/search/", http.StatusFound)
+	}
+}
+
+func popHandler(w http.ResponseWriter, r *http.Request) {
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+	sess = ui.X
+	path := "/pop/"
+	uidstr := r.RequestURI[len(path):]
+	if len(uidstr) > 0 {
+		n, _ := strconv.Atoi(uidstr)
+		http.Redirect(w, r, breadcrumbBack(sess, n), http.StatusFound)
+	} else {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 	}
 }

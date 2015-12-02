@@ -33,6 +33,27 @@ func breadcrumbToString(sess *session) string {
 	return s
 }
 
+func breadcrumbToHTMLString(sess *session) string {
+	var s string
+	L := len(sess.Breadcrumbs)
+	if L < 1 {
+		return ""
+	}
+	if L == 1 {
+		s = sess.Breadcrumbs[0].Name
+	} else {
+		s = fmt.Sprintf("<a href=\"/pop/%d\">%s</a>", L, sess.Breadcrumbs[0].Name)
+	}
+	for i := 1; i < L; i++ {
+		if i == L-1 {
+			s += " / " + sess.Breadcrumbs[i].Name
+		} else {
+			s += fmt.Sprintf(" / <a href=\"/pop/%d\">%s</a>", L-i, sess.Breadcrumbs[i].Name)
+		}
+	}
+	return s
+}
+
 func breadcrumbAdd(sess *session, name string, url string) {
 	c := Crumb{url, name}
 	sess.Breadcrumbs = append(sess.Breadcrumbs, c)
@@ -50,4 +71,13 @@ func getBreadcrumb(token string) string {
 		return "-/-"
 	}
 	return breadcrumbToString(s)
+}
+
+func getHTMLBreadcrumb(token string) string {
+	s, ok := sessions[token]
+	if !ok {
+		fmt.Printf("getBreadcrumb:  Could not find session for %s\n", token)
+		return "-/-"
+	}
+	return breadcrumbToHTMLString(s)
 }

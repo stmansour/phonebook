@@ -25,7 +25,7 @@
 </tr>
 <tr>
 <td width=20></td>
-<td colspan="9">{{getBreadcrumb .X.Token}}</td>
+<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
 </tr>
 </table>
 
@@ -50,14 +50,15 @@
 </tr>
 
 
-<tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td>     <td class="AttribVal">{{.D.FirstName}} {{.D.MiddleName}} {{.D.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td><td class="AttribVal">{{.D.FirstName}} {{.D.MiddleName}} {{.D.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">PREFERRED NAME &nbsp;</td><td class="AttribVal">{{.D.PreferredName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td>     <td class="AttribVal"><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td>     <td class="AttribVal">{{.D.OfficePhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td>      <td class="AttribVal">{{.D.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">CLASS &nbsp;</td>     <td class="AttribVal">{{.D.Class}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td><td class="AttribVal"><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td><td class="AttribVal">{{.D.OfficePhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td><td class="AttribVal">{{.D.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">CLASS &nbsp;</td>
+	<td class="AttribVal"><a href="/class/{{.D.ClassCode}}">{{.D.Class}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">DEPARTMENT &nbsp;</td><td class="AttribVal">{{.D.DeptName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td>   <td class="AttribVal"><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td><td class="AttribVal"><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 
 {{if .D.Reports | len}}
 	<tr><td colspan="4" height="10" class="bd"></td><td colspan="2"></td></tr>

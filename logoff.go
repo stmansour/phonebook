@@ -3,6 +3,7 @@ package main
 import "net/http"
 
 func logoffHandler(w http.ResponseWriter, r *http.Request) {
+	var ok bool
 	w.Header().Set("Content-Type", "text/html")
 	var sess *session
 	var ui uiSupport
@@ -13,8 +14,10 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 	sess = ui.X
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
-		sess = sessionGet(cookie.Value)
-		sessionDelete(sess)
+		sess, ok = sessionGet(cookie.Value)
+		if ok {
+			sessionDelete(sess)
+		}
 	}
 	http.Redirect(w, r, "/signin/", http.StatusFound)
 }

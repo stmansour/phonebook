@@ -296,15 +296,19 @@ var PhonebookUI uiSupport
 // Phonebook is the global application structure providing
 // information that any function might need.
 var Phonebook struct {
-	Port          int // port on which we listen
-	db            *sql.DB
-	LogFile       *os.File
-	Roles         []Role   // the roles saved in the database
-	ReqMem        chan int // request to access UI data memory
-	ReqMemAck     chan int // done with memory
-	DebugToScreen bool
-	Debug         bool
-	SecurityDebug bool
+	Port               int // port on which we listen
+	db                 *sql.DB
+	LogFile            *os.File
+	Roles              []Role        // the roles saved in the database
+	ReqMem             chan int      // request to access UI data memory
+	ReqMemAck          chan int      // done with memory
+	ReqSessionMem      chan int      // request to access Session data memory
+	ReqSessionMemAck   chan int      // done with Session datamemory
+	DebugToScreen      bool          // show logged messages to screen
+	Debug              bool          // push debug log messages to the logfile
+	SecurityDebug      bool          // push security debug messages to the logfile
+	SessionTimeout     time.Duration // timeout in minutes
+	SessionCleanupTime time.Duration // time in minutes
 }
 
 var funcMap map[string]interface{}
@@ -394,6 +398,7 @@ func loadMaps() {
 		"hasAdminScreenAccess": hasAdminScreenAccess,
 		"showAdminButton":      showAdminButton,
 		"getBreadcrumb":        getBreadcrumb,
+		"getHTMLBreadcrumb":    getHTMLBreadcrumb,
 	}
 
 	PhonebookUI.CoCodeToName = make(map[int]string)
@@ -473,6 +478,7 @@ func initHTTP() {
 	http.HandleFunc("/detail/", detailHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)
 	http.HandleFunc("/logoff/", logoffHandler)
+	http.HandleFunc("/pop/", popHandler)
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/saveAdminEditClass/", saveAdminEditClassHandler)
 	http.HandleFunc("/saveAdminEditCo/", saveAdminEditCoHandler)
@@ -540,7 +546,11 @@ func main() {
 	Phonebook.db = db
 	Phonebook.ReqMem = make(chan int)
 	Phonebook.ReqMemAck = make(chan int)
+	Phonebook.ReqSessionMem = make(chan int)
+	Phonebook.ReqSessionMemAck = make(chan int)
 	Phonebook.Roles = make([]Role, 0)
+	Phonebook.SessionTimeout = 10    // minutes
+	Phonebook.SessionCleanupTime = 5 // minutes
 	loadMaps()
 	readAccessRoles()
 
@@ -551,6 +561,8 @@ func main() {
 	readCommandLineArgs()
 
 	go Dispatcher()
+	go SessionDispatcher()
+	go SessionCleanup()
 
 	initHTTP()
 	sessionInit()

@@ -15,9 +15,14 @@ import (
 // RETURNS:  0 = no problems
 //           1 = redirected
 func initHandlerSession(sess *session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
+	var ok bool
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
-		sess = sessionGet(cookie.Value)
+		sess, ok = sessionGet(cookie.Value)
+		if !ok || sess == nil {
+			http.Redirect(w, r, "/signin/", http.StatusFound)
+			return 1
+		}
 		sess.refresh(w, r)
 	} else {
 		//fmt.Printf("REDIRECT to signin\n")
@@ -58,11 +63,22 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		loggedIn = true
 		ulog("user %s logged in\n", myusername)
 		expiration := time.Now().Add(10 * time.Minute)
-		cval := fmt.Sprintf("%x", md5.Sum([]byte(myusername)))
+		//=================================================================================
+		// There could be multiple sessions from the same user on different browsers.
+		// These could be on the same or separate machines. We need the IP and the browser
+		// to guarantee uniqueness...
+		//=================================================================================
+		key := myusername + r.Header.Get("User-Agent") + r.RemoteAddr
+		cval := fmt.Sprintf("%x", md5.Sum([]byte(key)))
 		name := firstname
 		if len(preferredname) > 0 {
 			name = preferredname
 		}
+
+		// browser := r.Header.Get("User-Agent")
+		// for k, v := range r.Header {
+		// 	fmt.Println("key:", k, "value:", v)
+		// }
 
 		s := sessionNew(cval, myusername, name, uid, RID, "/images/anon.png")
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}

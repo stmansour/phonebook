@@ -21,8 +21,8 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	cookie, _ := r.Cookie("accord")
 	if nil != cookie {
-		s := sessionGet(cookie.Value)
-		if nil != s {
+		s, ok := sessionGet(cookie.Value)
+		if ok {
 			if s.Token == cookie.Value {
 				fmt.Printf("FOUND session, redirecting\n")
 				http.Redirect(w, r, "/search/", http.StatusFound)
@@ -47,19 +47,6 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 			// TODO: work out how to make it happen
 		}
 	}
-
-	// funcMap := template.FuncMap{
-	// 	"compToString":      compensationTypeToString,
-	// 	"acceptIntToString": acceptIntToString,
-	// 	"dateToString":      dateToString,
-	// 	"dateYear":          dateYear,
-	// 	"monthStringToInt":  monthStringToInt,
-	// 	"add":               add,
-	// 	"sub":               sub,
-	// 	"rmd":               rmd,
-	// 	"mul":               mul,
-	// 	"div":               div,
-	// }
 
 	t, _ := template.New("signin.html").Funcs(funcMap).ParseFiles("signin.html")
 	var ui uiSupport

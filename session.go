@@ -23,11 +23,49 @@ type session struct {
 
 var sessions map[string]*session
 
+// SessionDispatcher controls access to shared memory.
+func SessionDispatcher() {
+	for {
+		select {
+		case <-Phonebook.ReqSessionMem:
+			Phonebook.ReqSessionMemAck <- 1 // tell caller go ahead
+			<-Phonebook.ReqSessionMemAck    // block until caller is done with mem
+		}
+	}
+}
+
+// SessionCleanup periodically spins through the list of sessions
+// and removes any which have timed out.
+func SessionCleanup() {
+	for {
+		select {
+		case <-time.After(Phonebook.SessionCleanupTime * time.Minute):
+			Phonebook.ReqSessionMem <- 1       // ask to access the shared mem, blocks until granted
+			<-Phonebook.ReqSessionMemAck       // make sure we got it
+			ss := make(map[string]*session, 0) // here's the new session list
+			n := 0                             // total number removed
+			for k, v := range sessions {       // look at every session
+				if time.Now().After(v.Expire) { // if it's still active...
+					n++ // removed another
+					fmt.Printf("v.Expire = %s, t.Now() = %s\n",
+						v.Expire.Format(time.RFC3339), time.Now().Format(time.RFC3339))
+				} else {
+					ss[k] = v // ...copy it to the new list
+				}
+			}
+			sessions = ss                   // set the new list
+			Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+			fmt.Printf("SessionCleanup completed. %d removed. Current session list size = %d\n", n, len(sessions))
+		}
+	}
+}
+
 func sessionInit() {
 	sessions = make(map[string]*session)
 }
-func sessionGet(token string) *session {
-	return sessions[token]
+func sessionGet(token string) (*session, bool) {
+	s, ok := sessions[token]
+	return s, ok
 }
 
 func (s *session) ToString() string {
@@ -48,13 +86,14 @@ func dumpSessions() {
 
 func hasPERMMODaccess(token string, el int, fieldName string) bool {
 	var perm int
-	//fmt.Printf("hasPERMMODaccess: token = %s, looking for fieldName = %s, elem = %d, PERMMOD = ", token, fieldName, el)
 	s, ok := sessions[token]
 	if !ok {
 		fmt.Printf("hasPERMMODaccess:  Could not find session for %s\n", token)
 		return false
 	}
 
+	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck // make sure we got it
 	switch el {
 	case ELEMPERSON:
 		perm, ok = s.Pp[fieldName] // here's the permission we have
@@ -63,6 +102,7 @@ func hasPERMMODaccess(token string, el int, fieldName string) bool {
 	case ELEMCLASS:
 		perm, ok = s.Pcl[fieldName] // here's the permission we have
 	}
+	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 	ok = (0 != perm&PERMMOD)
 	dulog("%v\n", ok)
 	return ok // could be true or false
@@ -84,15 +124,9 @@ func hasPERMMODaccess(token string, el int, fieldName string) bool {
 //			    admin screen
 //      false - if the user does not have the required permissions
 //=====================================================================================
-func hasAdminScreenAccess(token string, el int, perm int) bool {
-	// fmt.Printf("el: %d, perm: 0x%02x\n", el, perm)
-	s, ok := sessions[token]
-	if !ok {
-		fmt.Printf("hasAdminScreenAccess:  Could not find session for %s\n", token)
-		return false
-	}
-	// fmt.Printf("session found: %+v\n", s)
+func pvtHasAdminScreenAccess(s *session, el int, perm int) bool {
 	var p int
+	var ok bool
 	for i := 0; i < len(adminScreenFields); i++ {
 		if adminScreenFields[i].Elem == el {
 			if (el == ELEMPERSON && adminScreenFields[i].AdminScreen) || (el != ELEMPERSON) {
@@ -119,6 +153,19 @@ func hasAdminScreenAccess(token string, el int, perm int) bool {
 	return false
 }
 
+func hasAdminScreenAccess(token string, el int, perm int) bool {
+	s, ok := sessions[token]
+	if !ok {
+		fmt.Printf("hasAdminScreenAccess:  Could not find session for %s\n", token)
+		return false
+	}
+	Phonebook.ReqSessionMem <- 1              // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck              // make sure we got it
+	ok = pvtHasAdminScreenAccess(s, el, perm) //we have the memory, do the work
+	Phonebook.ReqSessionMemAck <- 1           // tell SessionDispatcher we're done with the data
+	return ok
+}
+
 //=====================================================================================
 // SYNOPSIS:
 // 		showAdminButton determines whether or not the Admin button needs to appear
@@ -129,18 +176,25 @@ func hasAdminScreenAccess(token string, el int, perm int) bool {
 //		true  - if the admin button should be shown
 //      false - if it should not
 //=====================================================================================
-func showAdminButton(token string) bool {
-	s, ok := sessions[token]
-	if !ok {
-		fmt.Printf("showAdminButton:  Could not find session for %s\n", token)
-		return false
-	}
+func pvtShowAdminButton(s *session) bool {
 	for i := 0; i < len(s.Urole.Perms); i++ {
 		if s.Urole.Perms[i].Perm&PERMCREATE != 0 {
 			return true
 		}
 	}
 	return false
+}
+func showAdminButton(token string) bool {
+	s, ok := sessions[token]
+	if !ok {
+		fmt.Printf("showAdminButton:  Could not find session for %s\n", token)
+		return false
+	}
+	Phonebook.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck    // make sure we got it
+	ok = pvtShowAdminButton(s)      //we have the memory, do the work
+	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+	return ok
 }
 
 func getRoleInfo(rid int, s *session) {
@@ -219,17 +273,26 @@ func sessionNew(token, username, firstname string, uid int, rid int, image strin
 		ulog("Unable to read CoCode for userid=%d,  err = %v\n", uid, err)
 	}
 
+	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck // make sure we got it
 	sessions[token] = s
+	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 	sulog("New Session: %s\n", s.ToString())
 	sulog("session.Urole.perms = %+v\n", s.Urole.Perms)
 	return s
 }
 
+//=====================================================================================
+// refresh updates the cookie and session with a new expire time.
+//=====================================================================================
 func (s *session) refresh(w http.ResponseWriter, r *http.Request) int {
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
-		cookie.Expires = time.Now().Add(10 * time.Minute)
-		s.Expire = cookie.Expires
+		cookie.Expires = time.Now().Add(Phonebook.SessionTimeout * time.Minute)
+		Phonebook.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
+		<-Phonebook.ReqSessionMemAck    // make sure we got it
+		s.Expire = cookie.Expires       // update the session information
+		Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 		cookie.Path = "/"
 		http.SetCookie(w, cookie)
 		return 0
@@ -250,7 +313,7 @@ func (s *session) refresh(w http.ResponseWriter, r *http.Request) int {
 //   true if there are ANY fields for the specified element for
 //   with the requested permission.
 //=====================================================================================
-func (s *session) elemPermsAny(elem int, perm int) bool {
+func pvtElemPermsAny(s *session, elem int, perm int) bool {
 	sulog("elemPermsAny:  elem=%d, perm = 0x%02x\n", elem, perm)
 	for i := 0; i < len(s.Urole.Perms); i++ {
 		sulog("s.Urole.Perms[%d].Elem = %d\n", i, s.Urole.Perms[i].Elem)
@@ -268,8 +331,16 @@ func (s *session) elemPermsAny(elem int, perm int) bool {
 	return false
 }
 
+func (s *session) elemPermsAny(elem int, perm int) bool {
+	Phonebook.ReqSessionMem <- 1         // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck         // make sure we got it
+	ok := pvtElemPermsAny(s, elem, perm) // look for perms
+	Phonebook.ReqSessionMemAck <- 1      // tell SessionDispatcher we're done with the data
+	return ok
+}
+
 //=====================================================================================
-// elemPermsAll determines whether or not the session has permissions to perform the
+// elemPermsAll determines whether or not the session has permissions to perform all
 // requested operations.  NOTE: This interface does check the UID to fully cover
 // permissions PERMOWNERVIEW or PERMOWNERMOD. This must be done at a higher level.
 //
@@ -280,7 +351,7 @@ func (s *session) elemPermsAny(elem int, perm int) bool {
 // RETURNS:
 //   true if ALL permission fields for the specified element are present
 //=====================================================================================
-func (s *session) elemPermsAll(elem int, perm int) bool {
+func pvtElemPermsAll(s *session, elem int, perm int) bool {
 	sulog("elemPermsAll:  elem=%d, perm = 0x%02x\n", elem, perm)
 	for i := 0; i < len(s.Urole.Perms); i++ {
 		sulog("s.Urole.Perms[%d].Elem = %d\n", i, s.Urole.Perms[i].Elem)
@@ -297,6 +368,13 @@ func (s *session) elemPermsAll(elem int, perm int) bool {
 	sulog("return false")
 	return false
 }
+func (s *session) elemPermsAll(elem int, perm int) bool {
+	Phonebook.ReqSessionMem <- 1         // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck         // make sure we got it
+	ok := pvtElemPermsAll(s, elem, perm) // look for perms
+	Phonebook.ReqSessionMemAck <- 1      // tell SessionDispatcher we're done with the data
+	return ok
+}
 
 // remove the supplied session.
 // if there is a better idiomatic way to do this, please let me know.
@@ -306,12 +384,16 @@ func sessionDelete(s *session) {
 	// dumpSessions()
 
 	ss := make(map[string]*session, 0)
+
+	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck // make sure we got it
 	for k, v := range sessions {
 		if s.Token != k {
 			ss[k] = v
 		}
 	}
 	sessions = ss
+	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 	// fmt.Printf("sessions after delete:\n")
 	// dumpSessions()
 }
