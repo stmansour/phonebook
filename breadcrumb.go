@@ -51,6 +51,7 @@ func breadcrumbToHTMLString(sess *session) string {
 			s += fmt.Sprintf(" / <a href=\"/pop/%d\">%s</a>", L-i, sess.Breadcrumbs[i].Name)
 		}
 	}
+	fmt.Println(s)
 	return s
 }
 

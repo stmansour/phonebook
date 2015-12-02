@@ -18,7 +18,8 @@ type session struct {
 	Pp          map[string]int // quick way to reference person permissions based on field name
 	Pco         map[string]int // quick way to reference company permissions based on field name
 	Pcl         map[string]int // quick way to reference class permissions based on field name
-	Breadcrumbs []Crumb        // where is the user in the screen hierarchy
+	Ppr         map[string]int
+	Breadcrumbs []Crumb // where is the user in the screen hierarchy
 }
 
 var sessions map[string]*session
@@ -63,6 +64,7 @@ func SessionCleanup() {
 func sessionInit() {
 	sessions = make(map[string]*session)
 }
+
 func sessionGet(token string) (*session, bool) {
 	s, ok := sessions[token]
 	return s, ok
@@ -101,6 +103,8 @@ func hasPERMMODaccess(token string, el int, fieldName string) bool {
 		perm, ok = s.Pco[fieldName] // here's the permission we have
 	case ELEMCLASS:
 		perm, ok = s.Pcl[fieldName] // here's the permission we have
+	case ELEMPBSVC:
+		perm, ok = s.Ppr[fieldName] // here's the permission we have
 	}
 	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 	ok = (0 != perm&PERMMOD)
@@ -137,6 +141,8 @@ func pvtHasAdminScreenAccess(s *session, el int, perm int) bool {
 					p, ok = s.Pco[adminScreenFields[i].FieldName] // here's the permission we have
 				case ELEMCLASS:
 					p, ok = s.Pcl[adminScreenFields[i].FieldName] // here's the permission we have
+				case ELEMPBSVC:
+					p, ok = s.Ppr[adminScreenFields[i].FieldName] // here's the permission we have
 				}
 				if ok { // if we have a permission for the field name
 					// fmt.Printf("p = 0x%02x\n", p)
@@ -224,6 +230,7 @@ func getRoleInfo(rid int, s *session) {
 	s.Pp = make(map[string]int)
 	s.Pco = make(map[string]int)
 	s.Pcl = make(map[string]int)
+	s.Ppr = make(map[string]int)
 
 	for i := 0; i < len(r.Perms); i++ {
 		var f FieldPerm
@@ -244,9 +251,10 @@ func getRoleInfo(rid int, s *session) {
 			s.Pco[f.Field] = f.Perm
 		case ELEMCLASS:
 			s.Pcl[f.Field] = f.Perm
+		case ELEMPBSVC:
+			s.Ppr[f.Field] = f.Perm
 		}
 	}
-
 }
 
 func sessionNew(token, username, firstname string, uid int, rid int, image string) *session {

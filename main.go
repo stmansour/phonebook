@@ -53,18 +53,21 @@ type aDeduction struct {
 //  ROLE SECURITY
 //--------------------------------------------------------------------
 const (
-	PERMNONE      = 0      // no permissions to see, view, modify, delete, print, or anything to this field
-	PERMVIEW      = 1 << 0 // OK to view   this field for any element (Person, Company, Class)
-	PERMCREATE    = 1 << 1 // OK to create   "
-	PERMMOD       = 1 << 2 // OK to modify   "
-	PERMDEL       = 1 << 3 // OK to delete   "
-	PERMPRINT     = 1 << 4 // OK to print    "
-	PERMOWNERVIEW = 1 << 5 // OK for the owner to view this field  (applies to Person elements)
-	PERMOWNERMOD  = 1 << 6 // OK for the owner to modify this field
+	PERMNONE       = 0      // no permissions to see, view, modify, delete, print, or anything to this field
+	PERMVIEW       = 1 << 0 // OK to view   this field for any element (Person, Company, Class)
+	PERMCREATE     = 1 << 1 // OK to create   "
+	PERMMOD        = 1 << 2 // OK to modify   "
+	PERMDEL        = 1 << 3 // OK to delete   "
+	PERMPRINT      = 1 << 4 // OK to print    "
+	PERMOWNERVIEW  = 1 << 5 // OK for the owner to view this field  (applies to Person elements)
+	PERMOWNERMOD   = 1 << 6 // OK for the owner to modify this field
+	PERMOWNERPRINT = 1 << 7 // OK for the owner to modify this field
+	PERMEXEC       = 1 << 8 // OK to execute
 
-	ELEMPERSON  = 1
-	ELEMCOMPANY = 2
-	ELEMCLASS   = 3
+	ELEMPERSON  = 1 // people
+	ELEMCOMPANY = 2 // companies
+	ELEMCLASS   = 3 // classes
+	ELEMPBSVC   = 4 // the executable service
 )
 
 // FieldPerm defines how a specific element field can be accessed
@@ -235,6 +238,7 @@ var adminScreenFields = []dataFields{
 	{ELEMCLASS, "Name", false, "def"},
 	{ELEMCLASS, "Designation", false, "def"},
 	{ELEMCLASS, "Description", false, "def"},
+	{ELEMPBSVC, "Shutdown", true, "Shut down or restart the running Phonebook service"},
 }
 
 type class struct {
@@ -490,16 +494,6 @@ func initHTTP() {
 	http.HandleFunc("/signin/", signinHandler)
 	http.HandleFunc("/status/", statusHandler)
 	http.HandleFunc("/weblogin/", webloginHandler)
-}
-
-func shutdownHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: grab session, check for admin rights
-	fmt.Fprintf(w, "<html><body><h1>shutting down in 5 seconds!</h1></body></html>")
-	ulog("Shutdown initiated from web service\n")
-	go func() {
-		time.Sleep(time.Duration(5 * time.Second))
-		os.Exit(0)
-	}()
 }
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {

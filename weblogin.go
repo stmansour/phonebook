@@ -75,11 +75,6 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 			name = preferredname
 		}
 
-		// browser := r.Header.Get("User-Agent")
-		// for k, v := range r.Header {
-		// 	fmt.Println("key:", k, "value:", v)
-		// }
-
 		s := sessionNew(cval, myusername, name, uid, RID, "/images/anon.png")
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
 		cookie.Path = "/"

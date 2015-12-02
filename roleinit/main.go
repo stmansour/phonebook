@@ -128,11 +128,13 @@ const (
 	PERMPRINT      = 1 << 4 // OK to print    "
 	PERMOWNERVIEW  = 1 << 5 // OK for the owner to view this field  (applies to Person elements)
 	PERMOWNERMOD   = 1 << 6 // OK for the owner to modify this field
-	PERMOWNERPRINT = 1 << 7 // OK for the owner to print this
+	PERMOWNERPRINT = 1 << 7 // OK for the owner to modify this field
+	PERMEXEC       = 1 << 8 // OK to execute
 
-	ELEMPERSON  = 1
-	ELEMCOMPANY = 2
-	ELEMCLASS   = 3
+	ELEMPERSON  = 1 // people
+	ELEMCOMPANY = 2 // companies
+	ELEMCLASS   = 3 // classes
+	ELEMPBSVC   = 4 // the executable service
 )
 
 type FieldPerm struct {
@@ -263,6 +265,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPBSVC, "Shutdown", PERMEXEC, "Permission to shutdown the service"},
 	}
 	r := Role{1, "Administrator", "This role has permission to do everything", AdministratorPerms}
 	makeNewRole(db, &r)
@@ -332,6 +335,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Name", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
 	}
 	r = Role{2, "Human Resources", "This role has full permissions on people, read and print permissions for Companies and Classes.", HRPerms}
 	makeNewRole(db, &r)
@@ -381,7 +385,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "Comps", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "RID", PERMNONE, "def"},
-		{ELEMPERSON, "Role", PERMNONE, "Permissions Rol"},
+		{ELEMPERSON, "Role", PERMNONE, "Permissions Role"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -401,6 +405,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
 	}
 	r = Role{3, "Finance", "This role has full permissions on Companies and Classes, read and print permissions on People.", FinancePerms}
 	makeNewRole(db, &r)
@@ -470,6 +475,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Name", PERMVIEW, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW, "def"},
 		{ELEMCLASS, "Description", PERMVIEW, "def"},
+		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
 	}
 	r = Role{4, "Viewer", "This role has read-only permissions on everything. Viewers can modify their own information.", ROPerms}
 	makeNewRole(db, &r)
@@ -539,6 +545,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMNONE, "def"},
+		{ELEMPBSVC, "Shutdown", PERMEXEC, "Permission to shutdown the service"},
 	}
 	r = Role{5, "Tester", "This role is for testing", TesterPerms}
 	makeNewRole(db, &r)

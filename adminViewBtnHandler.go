@@ -27,6 +27,8 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 		url := r.FormValue("url")
 		// fmt.Printf("action = %s,  url = %s\n", action, url)
 		http.Redirect(w, r, url, http.StatusFound)
+	} else if action == "shutdown" {
+		http.Redirect(w, r, r.FormValue("url"), http.StatusFound)
 	} else {
 		ulog("adminViewBtnHandler: unrecognized action: %s\n", action)
 		http.Redirect(w, r, "/search/", http.StatusFound)

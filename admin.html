@@ -59,6 +59,13 @@
 	<input type="hidden" name="url" value="/adminAddClass/"></form></td>
 </tr>
 {{end}}
+{{if hasAdminScreenAccess .X.Token 4 256}}
+<tr><td width="50" height="30"></td>
+	<td><form action="/adminViewBtn/" method="POST">
+	<input type="submit" name="action" value="Shutdown">
+	<input type="hidden" name="url" value="/shutdown/"></form></td>
+</tr>
+{{end}}
 </table>
 
 </body>
