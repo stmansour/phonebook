@@ -238,7 +238,8 @@ var adminScreenFields = []dataFields{
 	{ELEMCLASS, "Name", false, "def"},
 	{ELEMCLASS, "Designation", false, "def"},
 	{ELEMCLASS, "Description", false, "def"},
-	{ELEMPBSVC, "Shutdown", true, "Shut down or restart the running Phonebook service"},
+	{ELEMPBSVC, "Shutdown", true, "Shut down the running Phonebook service"},
+	{ELEMPBSVC, "Restart", true, "Restart the running Phonebook service"},
 }
 
 type class struct {
@@ -481,8 +482,10 @@ func initHTTP() {
 	http.HandleFunc("/company/", companyHandler)
 	http.HandleFunc("/detail/", detailHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)
+	http.HandleFunc("/extAdminShutdown/", extAdminShutdown)
 	http.HandleFunc("/logoff/", logoffHandler)
 	http.HandleFunc("/pop/", popHandler)
+	http.HandleFunc("/restart/", restartHandler)
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/saveAdminEditClass/", saveAdminEditClassHandler)
 	http.HandleFunc("/saveAdminEditCo/", saveAdminEditCoHandler)

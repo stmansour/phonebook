@@ -22,7 +22,6 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	var s string
 	d.Query = strings.TrimSpace(r.FormValue("searchstring"))
 	inclterms := "" != r.FormValue("inclterms")
-	fmt.Printf("inclterms = %v,  r.FormValue = %s\n", inclterms, r.FormValue("inclterms"))
 
 	//===========================================================
 	//  First, determine the deptcodes that match this query...

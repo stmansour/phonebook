@@ -266,6 +266,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPBSVC, "Shutdown", PERMEXEC, "Permission to shutdown the service"},
+		{ELEMPBSVC, "Restart", PERMEXEC, "Permission to restart the service"},
 	}
 	r := Role{1, "Administrator", "This role has permission to do everything", AdministratorPerms}
 	makeNewRole(db, &r)
@@ -336,6 +337,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Designation", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
+		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
 	}
 	r = Role{2, "Human Resources", "This role has full permissions on people, read and print permissions for Companies and Classes.", HRPerms}
 	makeNewRole(db, &r)
@@ -406,6 +408,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
+		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
 	}
 	r = Role{3, "Finance", "This role has full permissions on Companies and Classes, read and print permissions on People.", FinancePerms}
 	makeNewRole(db, &r)
@@ -476,6 +479,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Designation", PERMVIEW, "def"},
 		{ELEMCLASS, "Description", PERMVIEW, "def"},
 		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
+		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
 	}
 	r = Role{4, "Viewer", "This role has read-only permissions on everything. Viewers can modify their own information.", ROPerms}
 	makeNewRole(db, &r)
@@ -546,6 +550,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMNONE, "def"},
 		{ELEMPBSVC, "Shutdown", PERMEXEC, "Permission to shutdown the service"},
+		{ELEMPBSVC, "Restart", PERMEXEC, "Permission to restart the service"},
 	}
 	r = Role{5, "Tester", "This role is for testing", TesterPerms}
 	makeNewRole(db, &r)

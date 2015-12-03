@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,7 +17,7 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 	sess = ui.X
 
 	action := strings.ToLower(r.FormValue("action"))
-	// fmt.Printf("action = %s\n", action)
+	fmt.Printf("action = %s\n", action)
 
 	if action == "done" {
 		s := breadcrumbBack(sess, 2)
@@ -28,6 +29,8 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Printf("action = %s,  url = %s\n", action, url)
 		http.Redirect(w, r, url, http.StatusFound)
 	} else if action == "shutdown" {
+		http.Redirect(w, r, r.FormValue("url"), http.StatusFound)
+	} else if action == "restart" {
 		http.Redirect(w, r, r.FormValue("url"), http.StatusFound)
 	} else {
 		ulog("adminViewBtnHandler: unrecognized action: %s\n", action)

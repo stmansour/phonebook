@@ -12,7 +12,7 @@
 <table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
-<td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
+<td><a href="/search/"><img src="/images/hlogo.png" height="50"></a></td>
 <td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
 <td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
 <td width=30></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
@@ -45,41 +45,77 @@
 	</tr>
 </table>
 
-<p>&nbsp;</p>
+<br>
 
 
 <form action="/savePersonDetails/{{.D.UID}}" method="POST">
 
 <script type="text/javascript">
-function checkPasswd(){
+  function checkPasswd(){
   var pw1 = document.getElementById('idpw1');
   var pw2 = document.getElementById('idpw2');
   var fb = document.getElementById('feedbackArea');
-  var colorMatch = "#8D8";
+  var r1 = document.getElementById('length');
+  var r2 = document.getElementById('lowercase');
+  var r3 = document.getElementById('uppercase');
+  var r4 = document.getElementById('numeric');
+  var r5 = document.getElementById('special');
+  var colorMatch = "#4C4";
   var colorMismatch = "#F44";
-  var colorEmpty = "#ffffd1"
+  var colorEmpty = "#ffffd1";
+  var LCregex  = /^(?=.*[a-z]).+$/;
+  var UCregex  = /^(?=.*[A-Z]).+$/;
+  var NUMregex = /^(?=.*[0-9]).+$/;
+  var SPregex  = /^(?=.*[_\W]).+$/;
+
   // if both fields are empty, erase everything
   if (0 === pw1.value.length && 0 === pw2.value.length){
   	fb.innerHTML = '';
   	pw2.style.backgroundColor = colorEmpty;
-  } else if(pw1.value == pw2.value){
-    //The passwords match. 
-    pw2.style.backgroundColor = colorMatch;
-    fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="30" alt="Passwords Match">';
-  }else{
-    //The passwords do not match.
-    pw2.style.backgroundColor = colorMismatch;
-    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="30" alt="Passwords Do Not Match">';
+    r1.style.color = "black";
+    r2.style.color = "black";
+    r3.style.color = "black";
+    r4.style.color = "black";
+    r5.style.color = "black";
+  } else {
+    //  Check for matching passwords
+  	if(pw1.value == pw2.value){
+      //The passwords match. 
+      pw2.style.backgroundColor = colorMatch;
+      fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="30" alt="Passwords Match">';
+    } else {
+	    //The passwords do not match.
+	    pw2.style.backgroundColor = colorMismatch;
+	    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="30" alt="Passwords Do Not Match">';
+    }
+    //=========================
+    // check rules
+    //=========================
+    r1.style.color =  (pw1.value.length >= 8) ? colorMatch : colorMismatch;
+    r2.style.color =  LCregex.test(pw1.value) ? colorMatch : colorMismatch;
+    r3.style.color =  UCregex.test(pw1.value) ? colorMatch : colorMismatch;
+    r4.style.color = NUMregex.test(pw1.value) ? colorMatch : colorMismatch;
+    r5.style.color =  SPregex.test(pw1.value) ? colorMatch : colorMismatch;
   }
 }  
 </script>
+
 <table>
 	<tr>
 		<td width="50px"> </td>
 		<td class="Attrib" align="right">NEW PASSWORD</td>
 		<td><input type="password" id="idpw1" name="password" value=""
 			onkeyup="checkPasswd(); return false;" size="35"></td>
-		<td rowspan="2"><span id="feedbackArea"></span></td>
+		<td rowspan="2" width="30"><span id="feedbackArea"></span></td>
+		<td rowspan="2">Good passwords should:
+		<ul class="helper-text">
+			<li id="length">be at least 8 characters long</li>
+			<li id="lowercase">contain at least one lowercase letter</li>
+			<li id="uppercase">contain at least one uppercase letter</li>
+			<li id="numeric">contain at least one number</li>
+			<li id="special">contain at least one special character</li>
+		</ul>
+		</td>
 		<td width="50px"></td>
 	</tr>
 	

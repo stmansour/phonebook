@@ -74,7 +74,7 @@ for arg do
 		# STOP
 		# Add the command to terminate your application...
 		#===============================================
-		curl -s http://${HOST}:${PORT}/shutdown/
+		curl -s http://${HOST}:${PORT}/extAdminShutdown/
 		echo "OK"
 		exit 0
 		;;
@@ -84,8 +84,25 @@ for arg do
 		# Is your application ready to receive commands?
 		#===============================================
 		ST=$(curl -s http://${HOST}:${PORT}/status/)
-			echo "${ST}"
-			exit 0
+		echo "${ST}"
+		exit 0
+		;;
+	"restart")
+		#===============================================
+		# RESTART
+		# Restart your application...
+		#===============================================
+cat >x.sh << ZZEOF1
+curl -s http://${HOST}:${PORT}/extAdminShutdown/ 
+echo "sleeping 10 seconds before restart..."
+sleep 10
+echo "starting phonebook"
+./phonebook >phonebook.log 2>&1 &
+ZZEOF1
+		chmod +x x.sh
+		./x.sh >x.sh.log 2>&1 &
+		echo "OK"
+		exit 0
 		;;
 	*)
 		echo "Unrecognized command: $arg"

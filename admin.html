@@ -11,7 +11,7 @@
 <table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
-<td><a href="/search/"><img src="/images/AccordLogoBlackHorz.png" height="50"></a></td>
+<td><a href="/search/"><img src="/images/hlogo.png" height="50"></a></td>
 <td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
 <td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
 <td width=30></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
@@ -62,8 +62,13 @@
 {{if hasAdminScreenAccess .X.Token 4 256}}
 <tr><td width="50" height="30"></td>
 	<td><form action="/adminViewBtn/" method="POST">
-	<input type="submit" name="action" value="Shutdown">
+	<input type="submit" name="action" value="Shutdown"> Stops the phonebook server
 	<input type="hidden" name="url" value="/shutdown/"></form></td>
+</tr>
+<tr><td width="50" height="30"></td>
+	<td><form action="/adminViewBtn/" method="POST">
+	<input type="submit" name="action" value="Restart"> Restarts the phonebook server
+	<input type="hidden" name="url" value="/restart/"></form></td>
 </tr>
 {{end}}
 </table>
