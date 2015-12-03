@@ -111,7 +111,7 @@ CREATE TABLE `classes` (
 
 LOCK TABLES `classes` WRITE;
 /*!40000 ALTER TABLE `classes` DISABLE KEYS */;
-INSERT INTO `classes` VALUES (1,'','USA',''),(2,'','TUC',''),(3,'','NYR',''),(4,'','OKC',''),(5,'Accord Interests','AII','Bla, bling bling bling blee'),(6,'Billy Bob\'s Bungee Empori','BBB','Greatest bungee emporium west of the Mississippi');
+INSERT INTO `classes` VALUES (1,'','USA',''),(2,'','TUC',''),(3,'','NYR',''),(4,'','OKC',''),(5,'Accord Interests','AII','\r\n				'),(6,'Billy Bob\'s Bungee Empori','BBB','Greatest bungee emporium west of the Mississippi');
 /*!40000 ALTER TABLE `classes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,4 +320,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-12-02 22:01:44
+-- Dump completed on 2015-12-02 22:39:47
