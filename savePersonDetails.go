@@ -3,7 +3,10 @@ package main
 import (
 	"crypto/sha512"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -59,8 +62,32 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		d.HomePostalCode = r.FormValue("HomePostalCode")
 		d.HomeCountry = r.FormValue("HomeCountry")
 
-		// fmt.Printf("email = %s, officephone = %s, cell = %s", d.PrimaryEmail, d.OfficePhone, d.CellPhone)
+		//=================================================================
+		// handle image
+		//=================================================================
+		file, header, err := r.FormFile("picturefile")
+		// fmt.Printf("file: %v, header: %v, err: %v\n", file, header, err)
+		if nil == err {
+			defer file.Close()
+			ftype := filepath.Ext(header.Filename)
+			picturefilename := fmt.Sprintf("pictures/%d%s", uid, ftype)
+			out, err := os.Create(picturefilename)
+			if err != nil {
+				ulog("savePersonDetailsHandler: Unable to create the file for writing. err=%v\n", err)
+			} else {
+				defer out.Close()
+				_, err = io.Copy(out, file)
+				if err != nil {
+					ulog("savePersonDetailsHandler: Error writing picture file: %v\n", err)
+				} else {
+					ulog("Picture file %s uploaded successfully to %s\n", header.Filename, picturefilename)
+				}
+			}
+		}
 
+		//=================================================================
+		// handle image
+		//=================================================================
 		update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?," +
 			"EmergencyContactName=?,EmergencyContactPhone=?," +
 			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=? " +

@@ -25,10 +25,10 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		s = "select CoCode,LegalName,CommonName,Phone,Fax,Email,Designation from companies where "
 		s += fmt.Sprintf("LegalName like \"%%%s%%\" or CommonName like \"%%%s%%\" or Phone like \"%%%s%%\" or Fax like \"%%%s%%\" or email like \"%%%s%%\" or designation like \"%%%s%%\" ",
 			d.Query, d.Query, d.Query, d.Query, d.Query, d.Query)
-		s += fmt.Sprintf("order by CommonName,LegalName")
+		s += fmt.Sprintf("order by Designation")
 		// fmt.Printf("query = %s\n", s)
 	} else {
-		s = "select CoCode,LegalName,CommonName,Phone,Fax,Email,Designation from companies order by CommonName,LegalName"
+		s = "select CoCode,LegalName,CommonName,Phone,Fax,Email,Designation from companies order by Designation"
 		d.Query = " "
 	}
 	rows, err := Phonebook.db.Query(s)

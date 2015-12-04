@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -17,7 +16,7 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 	sess = ui.X
 
 	action := strings.ToLower(r.FormValue("action"))
-	fmt.Printf("action = %s\n", action)
+	// fmt.Printf("action = %s\n", action)
 
 	if action == "done" {
 		s := breadcrumbBack(sess, 2)

@@ -21,7 +21,7 @@
 <td width=30></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
 <td width=50></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</span></a></p></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</span></a></td>
 <td width=30></td>
 </tr>
@@ -48,7 +48,7 @@
 <br>
 
 
-<form action="/savePersonDetails/{{.D.UID}}" method="POST">
+<form action="/savePersonDetails/{{.D.UID}}" method="POST" enctype="multipart/form-data">
 
 <script type="text/javascript">
   function checkPasswd(){
@@ -100,6 +100,7 @@
 }  
 </script>
 
+
 <table>
 	<tr>
 		<td width="50px"> </td>
@@ -129,81 +130,93 @@
 	<tr><td height="20" colspan="4"></td></tr>
 </table>
 
-		<table>
-			<tr>
-				<td width="50px"></td>
-				<td class="edAttrib">HOME STREET ADDRESS</td>
-				<td class="edAttrib">HOME STREET ADDRESS2</td>
-			</tr>
-			<tr>
-				<td width="50px"></td>
-				<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35"></td>
-				<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35"></td>
-			</tr>
-		</table>
+<table>
+	<tr>
+		<td width="50px"></td>
+		<td><img src="{{.X.ImageURL}}" height="75
+		"></td>
+		<td>Update your picture: </td>
+		<td><input type="file" name="picturefile" id="file"></td>
+	</tr>
+</table>
 
-		<table>
-			<tr>
-				<td width="50px"></td>
-				<td class="edAttrib">CITY</td>
-				<td class="edAttrib">STATE</td>
-				<td class="edAttrib">POSTAL CODE</td>
-				<td class="edAttrib">COUNTRY</td>
-			</tr>
-			<tr>
-				<td width="50px"></td>
-				<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25"></td>
-				<td><input type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"></td>
-				<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10"></td>
-				<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10"></td>
-			</tr>
-		</table>
+<br><br>
+
+<table>
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">HOME STREET ADDRESS</td>
+		<td class="edAttrib">HOME STREET ADDRESS-2</td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35"></td>
+		<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35"></td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">CITY</td>
+		<td class="edAttrib">STATE</td>
+		<td class="edAttrib">POSTAL CODE</td>
+		<td class="edAttrib">COUNTRY</td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25"></td>
+		<td><input type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"></td>
+		<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10"></td>
+		<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10"></td>
+	</tr>
+</table>
 
 
 <table>
 
-			<tr><td height="20" colspan="3"></td></tr>
+	<tr><td height="20" colspan="3"></td></tr>
 
-			<tr>
-				<td width="50px"></td>
-				<td class="edAttrib">PREFERRED NAME</td>
-				<td class="edAttrib">OFFICE PHONE</td>
-			</tr>
-			<tr>
-				<td width="50px"></td>
-				<td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35"></td>
-				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13"></td>
-			</tr>
-			<tr>
-				<td width="50px"></td>
-				<td class="edAttrib">EMAIL</td>
-				<td class="edAttrib">CELL PHONE</td>
-			</tr>
-			<tr>
-				<td width="50px"></td>
-				<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35"></td>
-				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13"></td>
-			</tr>
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">PREFERRED NAME</td>
+		<td class="edAttrib">OFFICE PHONE</td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35"></td>
+		<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13"></td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">EMAIL</td>
+		<td class="edAttrib">CELL PHONE</td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35"></td>
+		<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13"></td>
+	</tr>
 
-			<tr>
-				<td width="50px"></td>
-				<td class="edAttrib">EMERGENCY CONTACT NAME</td>
-				<td class="edAttrib">CONTACT PHONE</td>
-			</tr>
-			<tr>
-				<td width="50px">
-				<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35"></td></td>
-				<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13"></td>
-			</tr>
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">EMERGENCY CONTACT NAME</td>
+		<td class="edAttrib">CONTACT PHONE</td>
+	</tr>
+	<tr>
+		<td width="50px">
+		<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35"></td></td>
+		<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13"></td>
+	</tr>
 
-			<tr><td height="20" colspan="3"></td></tr>
+	<tr><td height="20" colspan="3"></td></tr>
 
-			<tr><td width="50px"></td>
-				<td colspan="2">
-				<input type="submit" name="action" value="Save">
-			    &nbsp;&nbsp;&nbsp;&nbsp;
-			    <input type="submit" name="action" value="Cancel">
-			</tr>
+	<tr><td width="50px"></td>
+		<td colspan="2">
+		<input type="submit" name="action" value="Save">
+	    &nbsp;&nbsp;&nbsp;&nbsp;
+	    <input type="submit" name="action" value="Cancel">
+	</tr>
 </table>
 
 </form>

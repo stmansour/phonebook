@@ -19,7 +19,7 @@
 <td width=30></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
 <td width=50></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</span></a></p></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</span></a></td>
 <td width=30></td>
 </tr>
@@ -46,7 +46,7 @@
 	</td>
 	<td width=20 class="bd"></td>
 	<td width=30></td>
-	<td valign="center" rowspan="7" class="bd"><img width=300 src="{{.D.Image}}"></td>
+	<td width=400 height=400 valign="center" rowspan="7" class="bd"><p align="center"><img width=300 src="{{.D.Image}}"></p></td>
 </tr>
 
 
@@ -58,7 +58,7 @@
 <tr><td width=20 class="bd"></td><td class="Attribbd">CLASS &nbsp;</td>
 	<td class="AttribVal"><a href="/class/{{.D.ClassCode}}">{{.D.Class}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">DEPARTMENT &nbsp;</td><td class="AttribVal">{{.D.DeptName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td><td class="AttribVal"><a href="/detail/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
+<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td><td class="AttribVal"><a href="/detailpop/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 
 {{if .D.Reports | len}}
 	<tr><td colspan="4" height="10" class="bd"></td><td colspan="2"></td></tr>
@@ -67,7 +67,7 @@
 		<td class="Attribbd" valign="top">DIRECT REPORTS &nbsp;</td>
 	    <td class="AttribVal">
 	        {{range .D.Reports}}
-	        <a href="/detail/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
+	        <a href="/detailpop/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
 	        {{end}}
 	    </td>
 	    <td width=20 class="bd">

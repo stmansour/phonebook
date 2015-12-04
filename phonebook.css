@@ -3,7 +3,7 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 
 .FirstName {
-   text-transform: uppercase;
+  text-transform: uppercase;
 	font-weight: lighter;
 	font-size: 40px;
 	text-align: right;
@@ -30,6 +30,9 @@
   text-align: right;
 }
 
+.Breadcrumb {
+  font-size: 10px;
+}
 
 .JobTitle,
 .JobTitleC {
@@ -129,7 +132,7 @@
   border-left: 2px solid black;
 }
 
-.FirstName, .LastName, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, .AppHeading, body, p, td, th {
+.FirstName, .LastName, .Breadcrumb, .Employer, .JobTitle, .AttribVal, .Attrib, .MenuCmd, .AppName, .button, .AppHeading, body, p, td, th {
 	font-family:  "Roboto" "Open Sans", "Kozuka Gothic Pro", "Helvetica Neue", "Letter Gothic Std", Helvetica, Arial, "Gill Sans", sans-serif;
 
 }
@@ -153,9 +156,9 @@ th, td {
 }
 
 table { 
-    border-spacing: 0;
-    border-collapse: collapse;
-    background-color:transparent;
+  border-spacing: 0;
+  border-collapse: collapse;
+  background-color:transparent;
 	border: 0;
 	background: transparent;
 }
@@ -218,6 +221,7 @@ a:hover {
 input[type="text"],
 input[type="password"],
 input[type="email"], 
+input[type="file"], 
 input[type="number"], textarea {
   background-color : #ffffd1;
   font-size: 14px;

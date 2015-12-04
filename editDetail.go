@@ -67,11 +67,6 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	// if uid != sess.UID {
-	// 	ulog("Permissions refuse view editDetail page on userid=%d (%s), role=%s trying to view UID=%d\n", sess.UID, sess.Firstname, sess.Urole.Name, uid)
-	// 	http.Redirect(w, r, "/search/", http.StatusFound)
-	// 	return
-	// }
 
 	d.MgrName = getNameFromUID(d.MgrUID)
 	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)

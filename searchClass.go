@@ -25,11 +25,11 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 		s = "select ClassCode,Name,Designation,Description from classes where "
 		s += fmt.Sprintf("Name like \"%%%s%%\" or Designation like \"%%%s%%\" or Description like \"%%%s%%\"",
 			d.Query, d.Query, d.Query)
-		s += fmt.Sprintf("order by Name,Designation")
+		s += fmt.Sprintf("order by Designation")
 		// fmt.Printf("query = %s\n", s)
 	} else {
 		d.Query = "  "
-		s = "select ClassCode,Name,Designation,Description from classes order by Name,Designation"
+		s = "select ClassCode,Name,Designation,Description from classes order by Designation"
 	}
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)

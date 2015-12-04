@@ -481,6 +481,7 @@ func initHTTP() {
 	http.HandleFunc("/class/", classHandler)
 	http.HandleFunc("/company/", companyHandler)
 	http.HandleFunc("/detail/", detailHandler)
+	http.HandleFunc("/detailpop/", detailpopHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)
 	http.HandleFunc("/extAdminShutdown/", extAdminShutdown)
 	http.HandleFunc("/logoff/", logoffHandler)

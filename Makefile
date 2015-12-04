@@ -3,7 +3,7 @@ all: clean phonebook
 clean:
 	cd roleinit;make clean
 	cd admintools;make clean
-	rm -rf phonebook tmp Phonebook.log pbimages.tar*
+	rm -rf phonebook tmp Phonebook.log pbimages.tar* x.sh*
 	go clean
 
 phonebook: *.go

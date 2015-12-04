@@ -255,13 +255,13 @@ func getRoleInfo(rid int, s *session) {
 	}
 }
 
-func sessionNew(token, username, firstname string, uid int, rid int, image string) *session {
+func sessionNew(token, username, firstname string, uid int, rid int) *session {
 	s := new(session)
 	s.Token = token
 	s.Username = username
 	s.Firstname = firstname
 	s.UID = uid
-	s.ImageURL = image
+	s.ImageURL = getImageFilename(uid)
 	s.Breadcrumbs = make([]Crumb, 0)
 	getRoleInfo(rid, s)
 

@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"text/template"
 )
 
@@ -62,6 +64,31 @@ func getReports(uid int, d *personDetail) {
 	errcheck(rows.Err())
 }
 
+func getImageFilename(uid int) string {
+	pat := fmt.Sprintf("pictures/%d.*", uid)
+	matches, err := filepath.Glob(pat)
+	if err != nil {
+		fmt.Printf("filepath.Glob(%s) returned error: %v\n", pat, err)
+		return "/images/anon.png"
+	}
+	if len(matches) > 0 {
+		return "/" + matches[0]
+	}
+	return "/images/anon.png"
+}
+
+func detailpopHandler(w http.ResponseWriter, r *http.Request) {
+	var sess *session
+	var ui uiSupport
+	sess = nil
+	if 0 < initHandlerSession(sess, &ui, w, r) {
+		return
+	}
+	sess = ui.X
+	breadcrumbBack(sess, 1)
+	detailHandler(w, r)
+}
+
 func detailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	var sess *session
@@ -74,8 +101,13 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	var d personDetail
 	d.Reports = make([]person, 0)
-	d.Image = "/images/anon.png"
-	path := "/detail/"
+
+	var path string
+	if strings.Contains(r.RequestURI, "pop") {
+		path = "/detailpop/"
+	} else {
+		path = "/detail/"
+	}
 	uidstr := r.RequestURI[len(path):]
 	uid := 0
 	if len(uidstr) > 0 {
@@ -94,6 +126,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if uid > 0 {
+		d.Image = getImageFilename(uid)
 		rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
 			"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
 			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+

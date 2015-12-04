@@ -20,7 +20,7 @@
 <td width=30></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
 <td width=50></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="25"><br>{{.X.Firstname}}</span></a></p></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
 <td width=4></td><td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</span></a></td>
 <td width=30></td>
 </tr>
@@ -55,18 +55,20 @@
 
 {{if .T.Query}}    
 <table cellpadding="2" class="bd" id="personDetailText" >
-<tr><th width=7></th><th align="left">COMMON NAME</th>
+    
+<tr><th width=7></th><th align="left">DES</th>
+    <th width=7></th><th align="left">COMMON NAME</th>
     <th width=7></th><th align="left">LEGAL NAME</th>
-    <th width=7></th><th align="left">DES</th>
     <th width=7></th><th align="left">EMAIL</th>
     <th width=7></th><th align="left">PHONE</th>
     <th width=7></th><th align="left">FAX</th>
     <th width=7></th>
+</tr>
 	{{range .T.Matches}}
     	<tr>
-    	<td></td><td><a href="/company/{{.CoCode}}">{{.CommonName}}</a></td>
-    	<td width=7></td><td><a href="/company/{{.CoCode}}">{{.LegalName}}</td>
         <td width=7></td><td><a href="/company/{{.CoCode}}">{{.Designation}}</td>
+        <td></td><td><a href="/company/{{.CoCode}}">{{.CommonName}}</a></td>
+        <td width=7></td><td><a href="/company/{{.CoCode}}">{{.LegalName}}</td>
     	<td width=7></td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
     	<td width=7></td><td>{{.Phone}}</td>
     	<td width=7></td><td>{{.Fax}}</td>
