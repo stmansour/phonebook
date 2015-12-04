@@ -7,6 +7,7 @@ clean:
 	go clean
 
 phonebook: *.go
+	cd admintools;make
 	go vet
 	golint
 	go build
@@ -16,6 +17,7 @@ dbmake:
 	mysqldump accord > testdb.sql
 
 package: phonebook
+	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebook
 	cp phonebook activate.sh testdb.sql *.css *.html pbbkup.sh pbrestore.sh admintools/apasswd/apasswd admintools/auser/auser tmp/phonebook/
