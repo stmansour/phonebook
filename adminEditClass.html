@@ -63,6 +63,9 @@
 			<p></p>
 			<input type="submit" name="action" value="Save">  &nbsp;&nbsp;&nbsp;
 			<input type="submit" name="action" value="Cancel" formnovalidate>
+			{{if hasFieldAccess .X.Token 3 "ElemEntity" 8}}
+			&nbsp;&nbsp;<input type="submit" name="action" value="Delete" formnovalidate>
+			{{end}}
 		</td></tr>
 	</table>
 

@@ -84,13 +84,9 @@ func dumpSessions() {
 	}
 }
 
-func hasPERMMODaccess(token string, el int, fieldName string) bool {
+func hasAccess(s *session, el int, fieldName string, access int) bool {
 	var perm int
-	s, ok := sessions[token]
-	if !ok {
-		fmt.Printf("hasPERMMODaccess:  Could not find session for %s\n", token)
-		return false
-	}
+	var ok bool
 
 	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqSessionMemAck // make sure we got it
@@ -105,9 +101,23 @@ func hasPERMMODaccess(token string, el int, fieldName string) bool {
 		perm, ok = s.Ppr[fieldName] // here's the permission we have
 	}
 	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
-	ok = (0 != perm&PERMMOD)
-	dulog("%v\n", ok)
+	ok = (0 != perm&access)
+	// fmt.Printf("hasFieldAccess: access to el: %d, field %s, access 0x%02x: %v\n", el, fieldName, access, ok)
 	return ok // could be true or false
+
+}
+
+func hasFieldAccess(token string, el int, fieldName string, access int) bool {
+	s, ok := sessions[token]
+	if !ok {
+		fmt.Printf("hasFieldAccess:  Could not find session for %s\n", token)
+		return false
+	}
+	return hasAccess(s, el, fieldName, access)
+}
+
+func hasPERMMODaccess(token string, el int, fieldName string) bool {
+	return hasFieldAccess(token, el, fieldName, PERMMOD)
 }
 
 //=====================================================================================

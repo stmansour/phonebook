@@ -83,6 +83,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 					ulog("Picture file %s uploaded successfully to %s\n", header.Filename, picturefilename)
 				}
 			}
+			sess.ImageURL = getImageFilename(uid)
 		}
 
 		//=================================================================

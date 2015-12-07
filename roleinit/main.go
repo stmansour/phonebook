@@ -243,9 +243,11 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "StateOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Deductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "RID", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "Role", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "Permissions role"},
+		{ELEMPERSON, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "Permissions to delete the entity"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -261,10 +263,12 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "Active", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPBSVC, "Shutdown", PERMEXEC, "Permission to shutdown the service"},
 		{ELEMPBSVC, "Restart", PERMEXEC, "Permission to restart the service"},
 	}
@@ -314,9 +318,11 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "StateOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Deductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
-		{ELEMPERSON, "Role", PERMVIEW, "Permissions Rol"},
+		{ELEMPERSON, "Role", PERMVIEW, "Permissions Role"},
 		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPERSON, "ElemEntity", PERMNONE, "Permissions to delete the entity"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMPRINT, "def"},
@@ -332,10 +338,12 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "Designation", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "Active", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMPRINT, "def"},
+		{ELEMCOMPANY, "ElemEntity", PERMNONE, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMPRINT, "def"},
+		{ELEMCLASS, "ElemEntity", PERMNONE, "def"},
 		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
 		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
 	}
@@ -385,9 +393,11 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "StateOfEmployment", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMPRINT, "def"},
+		{ELEMPERSON, "Deductions", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "RID", PERMNONE, "def"},
 		{ELEMPERSON, "Role", PERMNONE, "Permissions Role"},
+		{ELEMPERSON, "ElemEntity", PERMNONE, "Permissions to delete the entity"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -403,10 +413,12 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "Active", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "ElemEntity", PERMNONE, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "ElemEntity", PERMNONE, "def"},
 		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
 		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
 	}
@@ -456,9 +468,11 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "StateOfEmployment", PERMOWNERVIEW | PERMOWNERPRINT, "def"},
 		{ELEMPERSON, "CountryOfEmployment", PERMOWNERVIEW | PERMOWNERPRINT, "def"},
 		{ELEMPERSON, "Comps", PERMOWNERVIEW | PERMOWNERPRINT, "Compensation type(s) for this person."},
+		{ELEMPERSON, "Deductions", PERMOWNERVIEW | PERMOWNERPRINT, "The deductions for this person."},
 		{ELEMPERSON, "MyDeductions", PERMOWNERVIEW | PERMOWNERPRINT, "The deductions for this person."},
 		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "Role", PERMNONE, "Permissions Rol"},
+		{ELEMPERSON, "ElemEntity", PERMNONE, "Permissions to delete the entity"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW, "def"},
@@ -478,6 +492,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCLASS, "Name", PERMVIEW, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW, "def"},
 		{ELEMCLASS, "Description", PERMVIEW, "def"},
+		{ELEMCLASS, "ElemEntity", PERMNONE, "def"},
 		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
 		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
 	}
@@ -527,9 +542,11 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "StateOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "CountryOfEmployment", PERMNONE, "def"},
 		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Deductions", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
 		{ELEMPERSON, "Role", PERMNONE, "Permissions Rol"},
+		{ELEMPERSON, "ElemEntity", PERMNONE, "Permissions to delete the entity"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMNONE, "def"},
 		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -545,14 +562,90 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "Active", PERMNONE, "def"},
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMNONE, "def"},
+		{ELEMCLASS, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPBSVC, "Shutdown", PERMEXEC, "Permission to shutdown the service"},
 		{ELEMPBSVC, "Restart", PERMEXEC, "Permission to restart the service"},
 	}
 	r = Role{5, "Tester", "This role is for testing", TesterPerms}
+	makeNewRole(db, &r)
+
+	OfficeAdminPerms := []FieldPerm{
+		{ELEMPERSON, "Status", PERMVIEW | PERMCREATE | PERMMOD | PERMPRINT, "Indicates whether the person is an active employee."},
+		{ELEMPERSON, "EligibleForRehire", PERMVIEW | PERMCREATE | PERMMOD | PERMPRINT, "Indicates whether a past employee can be rehired."},
+		{ELEMPERSON, "UID", PERMVIEW | PERMCREATE | PERMPRINT, "A unique identifier associated with the employee. Once created, it never changes."},
+		{ELEMPERSON, "Salutation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "'Mr.', 'Mrs.', 'Ms.', etc."},
+		{ELEMPERSON, "FirstName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "The person's common name."},
+		{ELEMPERSON, "MiddleName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "The person's middle name."},
+		{ELEMPERSON, "LastName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "The person's surname or last name."},
+		{ELEMPERSON, "PreferredName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "Less formal name but more commonly used, for example 'Mike' rather than 'Michael'."},
+		{ELEMPERSON, "PrimaryEmail", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "The primary email address to use for this person."},
+		{ELEMPERSON, "OfficePhone", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "This person's office telephone number."},
+		{ELEMPERSON, "CellPhone", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "This person's cellphone number."},
+		{ELEMPERSON, "EmergencyContactName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "Name of someone to contact in the event of an emergency."},
+		{ELEMPERSON, "EmergencyContactPhone", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "Phone number for the emergency contact."},
+		{ELEMPERSON, "HomeStreetAddress", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "HomeStreetAddress2", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "HomeCity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "HomeState", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "HomePostalCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "HomeCountry", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "PrimaryEmail", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "SecondaryEmail", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "OfficePhone", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "OfficeFax", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "CellPhone", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT | PERMOWNERMOD, "def"},
+		{ELEMPERSON, "BirthDOM", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "BirthMonth", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "The company code associated with this user."},
+		{ELEMPERSON, "JobCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "DeptCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "PositionControlNumber", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "MgrUID", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Accepted401K", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "AcceptedDentalInsurance", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "AcceptedHealthInsurance", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Hire", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Termination", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "LastReview", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "NextReview", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "StateOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "CountryOfEmployment", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Comps", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Deductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMPERSON, "Role", PERMVIEW, "Permissions Rol"},
+		{ELEMPERSON, "RID", PERMVIEW | PERMPRINT, "def"},
+		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "CommonName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Address", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Address2", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "City", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "State", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "PostalCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Country", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Phone", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Fax", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Email", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "Active", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCOMPANY, "ElemEntity", PERMNONE, "def"},
+		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "ElemEntity", PERMNONE, "def"},
+		{ELEMPBSVC, "Shutdown", PERMNONE, "Permission to shutdown the service"},
+		{ELEMPBSVC, "Restart", PERMNONE, "Permission to restart the service"},
+	}
+	r = Role{6, "OfficeAdministrator", "This role is both HR and Finance.", OfficeAdminPerms}
 	makeNewRole(db, &r)
 }
 
@@ -581,7 +674,7 @@ func addRoleToPeople(db *sql.DB) {
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set RID=2 where UID=202") // Stacey gets HR
+	update, err = db.Prepare("Update people set RID=6 where UID=202") // Stacey gets Office Administrator
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
@@ -589,7 +682,11 @@ func addRoleToPeople(db *sql.DB) {
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)
-	update, err = db.Prepare("Update people set RID=5 where UID=3") //  vagers gets Finance
+	update, err = db.Prepare("Update people set RID=5 where UID=3") //  vagers gets Tester
+	errcheck(err)
+	_, err = update.Exec()
+	errcheck(err)
+	update, err = db.Prepare("Update people set RID=2 where UID=207") //  mwheeler gets HR
 	errcheck(err)
 	_, err = update.Exec()
 	errcheck(err)

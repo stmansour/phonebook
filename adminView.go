@@ -115,11 +115,11 @@ func adminReadDetails(d *personDetail) {
 			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+ // 15
 			"BirthMonth,BirthDOM,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+ // 20
 			"HomeState,HomePostalCode,HomeCountry,"+ // 23
-			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+ // 27
+			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+ // 26
 			"jobcode,hire,termination,"+ // 29
 			"mgruid,deptcode,cocode,StateOfEmployment,"+ // 33
 			"CountryOfEmployment,PreferredName,"+ // 35
-			"EmergencyContactName,EmergencyContactPhone,RID "+ // 39
+			"EmergencyContactName,EmergencyContactPhone,RID "+ // 38
 			"from people where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()

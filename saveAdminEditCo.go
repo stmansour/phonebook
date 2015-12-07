@@ -38,6 +38,12 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 
 	c.CoCode = CoCode
 	action := strings.ToLower(r.FormValue("action"))
+	if "delete" == action {
+		url := fmt.Sprintf("/delCompany/%d", CoCode)
+		http.Redirect(w, r, url, http.StatusFound)
+		return
+	}
+
 	if "save" == action {
 		c.LegalName = r.FormValue("LegalName")
 		c.CommonName = r.FormValue("CommonName")
@@ -87,6 +93,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 			errcheck(rows.Err())
 			CoCode = nCoCode
 			c.CoCode = CoCode
+			loadCompanies() // This is a new company, we've saved it, now we need to reload our company list...
 		} else {
 			update, err := Phonebook.db.Prepare("update companies set LegalName=?,CommonName=?,Designation=?,Email=?,Phone=?,Fax=?,EmploysPersonnel=?,Active=?,Address=?,Address2=?,City=?,State=?,PostalCode=?,Country=? where CoCode=?")
 			errcheck(err)
@@ -97,6 +104,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}
+
 	}
 	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
 }

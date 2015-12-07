@@ -217,8 +217,10 @@ var adminScreenFields = []dataFields{
 	{ELEMPERSON, "StateOfEmployment", false, "def"},
 	{ELEMPERSON, "CountryOfEmployment", false, "def"},
 	{ELEMPERSON, "Comps", true, "def"},
+	{ELEMPERSON, "Deductions", true, "def"},
 	{ELEMPERSON, "MyDeductions", true, "def"},
 	{ELEMPERSON, "RID", true, "role identifier"},
+	{ELEMPERSON, "ElemEntity", true, "The entire entity"},
 	{ELEMCOMPANY, "CoCode", false, "def"},
 	{ELEMCOMPANY, "LegalName", false, "def"},
 	{ELEMCOMPANY, "CommonName", false, "def"},
@@ -234,10 +236,12 @@ var adminScreenFields = []dataFields{
 	{ELEMCOMPANY, "Designation", false, "def"},
 	{ELEMCOMPANY, "Active", false, "def"},
 	{ELEMCOMPANY, "EmploysPersonnel", false, "def"},
+	{ELEMCOMPANY, "ElemEntity", true, "The entire entity"},
 	{ELEMCLASS, "ClassCode", false, "def"},
 	{ELEMCLASS, "Name", false, "def"},
 	{ELEMCLASS, "Designation", false, "def"},
 	{ELEMCLASS, "Description", false, "def"},
+	{ELEMCLASS, "ElemEntity", true, "The entire entity"},
 	{ELEMPBSVC, "Shutdown", true, "Shut down the running Phonebook service"},
 	{ELEMPBSVC, "Restart", true, "Restart the running Phonebook service"},
 }
@@ -384,6 +388,43 @@ func Dispatcher() {
 	}
 }
 
+func loadCompanies() {
+	var code int
+	var name string
+	PhonebookUI.CoCodeToName = make(map[int]string)
+	PhonebookUI.NameToCoCode = make(map[string]int)
+
+	rows, err := Phonebook.db.Query("select cocode,CommonName from companies")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		errcheck(rows.Scan(&code, &name))
+		PhonebookUI.CoCodeToName[code] = name
+		PhonebookUI.NameToCoCode[name] = code
+	}
+	errcheck(rows.Err())
+}
+
+func loadClasses() {
+	var code int
+	var name string
+
+	PhonebookUI.NameToClassCode = make(map[string]int)
+	PhonebookUI.ClassCodeToName = make(map[int]string)
+	rows, err := Phonebook.db.Query("select classcode,designation from classes")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		errcheck(rows.Scan(&code, &name))
+		PhonebookUI.NameToClassCode[name] = code
+		PhonebookUI.ClassCodeToName[code] = name
+	}
+	// for k, v := range PhonebookUI.NameToClassCode {
+	// 	fmt.Printf("%s %d\n", k, v)
+	// }
+	errcheck(rows.Err())
+}
+
 func loadMaps() {
 	var code int
 	var name string
@@ -399,29 +440,18 @@ func loadMaps() {
 		"rmd":                  rmd,
 		"mul":                  mul,
 		"div":                  div,
+		"hasFieldAccess":       hasFieldAccess,
 		"hasPERMMODaccess":     hasPERMMODaccess,
 		"hasAdminScreenAccess": hasAdminScreenAccess,
 		"showAdminButton":      showAdminButton,
 		"getBreadcrumb":        getBreadcrumb,
 		"getHTMLBreadcrumb":    getHTMLBreadcrumb,
 	}
-
-	PhonebookUI.CoCodeToName = make(map[int]string)
-	PhonebookUI.NameToCoCode = make(map[string]int)
-	PhonebookUI.AcceptCodeToName = make(map[int]string)
-
-	rows, err := Phonebook.db.Query("select cocode,CommonName from companies")
-	errcheck(err)
-	defer rows.Close()
-	for rows.Next() {
-		errcheck(rows.Scan(&code, &name))
-		PhonebookUI.CoCodeToName[code] = name
-		PhonebookUI.NameToCoCode[name] = code
-	}
-	errcheck(rows.Err())
+	loadCompanies()
+	loadClasses()
 
 	PhonebookUI.NameToJobCode = make(map[string]int)
-	rows, err = Phonebook.db.Query("select jobcode,title from jobtitles")
+	rows, err := Phonebook.db.Query("select jobcode,title from jobtitles")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -440,21 +470,7 @@ func loadMaps() {
 	}
 	errcheck(rows.Err())
 
-	PhonebookUI.NameToClassCode = make(map[string]int)
-	PhonebookUI.ClassCodeToName = make(map[int]string)
-	rows, err = Phonebook.db.Query("select classcode,designation from classes")
-	errcheck(err)
-	defer rows.Close()
-	for rows.Next() {
-		errcheck(rows.Scan(&code, &name))
-		PhonebookUI.NameToClassCode[name] = code
-		PhonebookUI.ClassCodeToName[code] = name
-	}
-	// for k, v := range PhonebookUI.NameToClassCode {
-	// 	fmt.Printf("%s %d\n", k, v)
-	// }
-	errcheck(rows.Err())
-
+	PhonebookUI.AcceptCodeToName = make(map[int]string)
 	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {
 		PhonebookUI.AcceptCodeToName[i] = acceptIntToString(i)
 	}
@@ -462,7 +478,6 @@ func loadMaps() {
 	PhonebookUI.Months = make([]string, len(fmtMonths))
 	for i := 0; i < len(fmtMonths); i++ {
 		PhonebookUI.Months[i] = fmtMonths[i]
-
 	}
 }
 
@@ -480,6 +495,9 @@ func initHTTP() {
 	http.HandleFunc("/adminViewBtn/", adminViewBtnHandler)
 	http.HandleFunc("/class/", classHandler)
 	http.HandleFunc("/company/", companyHandler)
+	http.HandleFunc("/delClass/", delClassHandler)
+	http.HandleFunc("/delCompany/", delCoHandler)
+	http.HandleFunc("/delPerson/", delPersonHandler)
 	http.HandleFunc("/detail/", detailHandler)
 	http.HandleFunc("/detailpop/", detailpopHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)

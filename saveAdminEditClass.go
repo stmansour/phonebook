@@ -38,6 +38,11 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 
 	c.ClassCode = ClassCode
 	action := strings.ToLower(r.FormValue("action"))
+	if "delete" == action {
+		url := fmt.Sprintf("/delClass/%d", ClassCode)
+		http.Redirect(w, r, url, http.StatusFound)
+		return
+	}
 	if "save" == action {
 		c.Name = r.FormValue("Name")
 		c.Designation = r.FormValue("Designation")
@@ -71,6 +76,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			errcheck(rows.Err())
 			ClassCode = nClassCode
 			c.ClassCode = ClassCode
+			loadClasses() // This is a new class, we've saved it, now we need to reload our company list...
 		} else {
 			update, err := Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=? where ClassCode=?")
 			errcheck(err)

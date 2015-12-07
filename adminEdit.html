@@ -265,8 +265,8 @@
         {{if hasPERMMODaccess .X.Token 1 "Comps"}}
 	 		<table>
 			<tr><td class="edAttrib">COMPENSATION&nbsp;</td>
-			<td class="HRBoxed"> {{range .D.MyComps}}<input type="checkbox" name="{{.Name}}" 
-				value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
+			<td class="HRBoxed"> {{range .D.MyComps}}<label><input type="checkbox" name="{{.Name}}" 
+				value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}}</label> &nbsp;&nbsp;&nbsp;{{end}}</td>
 			</tr>
 			</table>
         {{else}}
@@ -301,8 +301,8 @@
 					<td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
 					{{range $i, $v := .D.MyDeductions}}
 					<td class="HRBoxedDisabled">
-					<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
-					{{.Name}} &nbsp;&nbsp;
+					<label><input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
+					{{.Name}}</label> &nbsp;&nbsp;
 					</td>
 					{{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
 					{{end}}
@@ -331,8 +331,11 @@
 		<p></p>
 		<hr>
 		<p></p>
-		<input type="submit" name="action" value="Save">  &nbsp;&nbsp;&nbsp;
+		<input type="submit" name="action" value="Save">  &nbsp;
 		<input type="submit" name="action" value="Cancel" formnovalidate>
+		{{if hasFieldAccess .X.Token 1 "ElemEntity" 8}}
+		&nbsp;&nbsp;<input type="submit" name="action" value="Delete" formnovalidate>
+		{{end}}
 </form>
 </body>
 </html>

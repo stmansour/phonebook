@@ -58,6 +58,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	action := strings.ToLower(r.FormValue("action"))
+	if action == "delete" {
+		url := fmt.Sprintf("/delPerson/%d", uid)
+		http.Redirect(w, r, url, http.StatusFound)
+		return
+	}
+
 	if "save" == action {
 		d.UID = uid
 		d.Salutation = r.FormValue("Salutation")
@@ -113,6 +119,11 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		initMyDeductions(&d)
+		for i := 0; i < len(d.MyDeductions); i++ {
+			if "" != r.FormValue(d.MyDeductions[i].Name) {
+				d.Deductions = append(d.Deductions, d.MyDeductions[i].DCode)
+			}
+		}
 
 		//----------------------
 		// Handle dropdowns...
@@ -130,6 +141,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		do.filterSecurityMerge(sess, PERMMOD, &d) // merge in new data
 
 		if uid == 0 {
+			// some first-time setup that needs to be handled
+			if do.RID == 0 {
+				do.RID = 4 // default security role is Viewer
+			}
+			// TODO: set username
+
 			insert, err := Phonebook.db.Prepare("INSERT INTO people (Salutation,FirstName,MiddleName,LastName,PreferredName," +
 				"EmergencyContactName,EmergencyContactPhone," +
 				"PrimaryEmail,SecondaryEmail,OfficePhone,OfficeFax,CellPhone,CoCode,JobCode," +
@@ -138,9 +155,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				"status,EligibleForRehire,Accepted401K,AcceptedDentalInsurance,AcceptedHealthInsurance," +
 				"Hire,Termination,ClassCode," +
 				"BirthMonth,BirthDOM,mgruid,StateOfEmployment,CountryOfEmployment," +
-				"LastReview,NextReview) " +
+				"LastReview,NextReview,RID) " +
 				//      1                 10                  20                  30
-				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 			errcheck(err)
 			_, err = insert.Exec(do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName, // 5
 				do.EmergencyContactName, do.EmergencyContactPhone, //7
@@ -150,7 +167,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance, // 27
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode, // 30
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment, // 35
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview)) // 37
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), d.RID) // 37
 			errcheck(err)
 
 			// read this record back to get the UID...
@@ -223,9 +240,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		ct, err = Phonebook.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
 		errcheck(err)
 		for i := 0; i < len(do.MyDeductions); i++ {
-			//fmt.Printf("%s = %s\n", do.MyDeductions[i].Name, r.FormValue(do.MyDeductions[i].Name))
+			// fmt.Printf("\"%s\" = %s\n", do.MyDeductions[i].Name, r.FormValue(do.MyDeductions[i].Name))
 			if r.FormValue(do.MyDeductions[i].Name) != "" {
-				_, err := ct.Exec(d.UID, d.MyDeductions[i].DCode)
+				_, err := ct.Exec(do.UID, do.MyDeductions[i].DCode)
 				errcheck(err)
 			}
 		}
