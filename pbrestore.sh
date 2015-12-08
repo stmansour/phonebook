@@ -36,6 +36,7 @@ ZZEOF
 restoreFull() {
 	echo "Retrieving backup data from Artifactory"
 	${GET} accord/db/accorddb.tar
+	tar xvf accorddb.tar
 	echo "Done."
 
 	echo "Extracting pictures"
