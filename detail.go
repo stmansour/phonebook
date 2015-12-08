@@ -89,6 +89,30 @@ func detailpopHandler(w http.ResponseWriter, r *http.Request) {
 	detailHandler(w, r)
 }
 
+//===========================================================
+//  getPersonDetail can be used by external callers
+//  to get detailed person information on a particular user
+//  returns 0 if success, err number otherwise
+//===========================================================
+func getPersonDetail(d *personDetail, uid int) int {
+	d.Image = getImageFilename(uid)
+	err := Phonebook.db.QueryRow("select lastname,firstname,preferredname,jobcode,primaryemail,"+
+		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
+		"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
+		"from people where uid=?", uid).Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
+		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
+		&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
+		&d.HomeState, &d.HomePostalCode, &d.HomeCountry)
+	if nil != err {
+		return 1
+	}
+	d.MgrName = getNameFromUID(d.MgrUID)
+	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
+	d.JobTitle = getJobTitle(d.JobCode)
+	getCompanyInfo(d.CoCode, &d.Company)
+	return 0
+}
+
 func detailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	var sess *session
