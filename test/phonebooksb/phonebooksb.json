@@ -23,8 +23,7 @@
 	    		"UPort": 8250,
 	    		"IsTest": false,
 				"AppRes": {
-					"RestoreMySQLdb": "testdb.sql",
-					"DBname": "accord"
+					"cmd": "./pbrestore.sh -f",
 				}
 	    	}
 	    ]
