@@ -63,7 +63,9 @@
 			<input type="submit" name="action" value="Save">  &nbsp;&nbsp;&nbsp;
 			<input type="submit" name="action" value="Cancel" formnovalidate>
 			{{if hasFieldAccess .X.Token 3 "ElemEntity" 8}}
+			{{if gt .A.ClassCode 0}}
 			&nbsp;&nbsp;<input type="submit" name="action" value="Delete" formnovalidate>
+			{{end}}
 			{{end}}
 		</td></tr>
 	</table>
