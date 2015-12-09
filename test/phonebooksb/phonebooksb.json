@@ -23,7 +23,7 @@
 	    		"UPort": 8250,
 	    		"IsTest": false,
 				"AppRes": {
-					"cmd": "./pbrestore.sh -f"
+					"Cmd": "./pbrestore.sh -f"
 				}
 	    	}
 	    ]
