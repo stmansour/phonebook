@@ -47,6 +47,9 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		c.Name = r.FormValue("Name")
 		c.Designation = r.FormValue("Designation")
 		c.Description = r.FormValue("Description")
+		if len(c.Designation) > 3 {
+			c.Designation = c.Designation[0:3]
+		}
 
 		//-------------------------------
 		// SECURITY
@@ -57,9 +60,9 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		co.filterSecurityMerge(sess, PERMMOD, &c) // merge new info based on permissions
 
 		if 0 == ClassCode {
-			insert, err := Phonebook.db.Prepare("INSERT INTO classes (Name,Designation,Description) VALUES(?,?,?)")
+			insert, err := Phonebook.db.Prepare("INSERT INTO classes (Name,Designation,Description,lastmodby) VALUES(?,?,?,?)")
 			errcheck(err)
-			_, err = insert.Exec(co.Name, co.Designation, co.Description)
+			_, err = insert.Exec(co.Name, co.Designation, co.Description, sess.UID)
 			errcheck(err)
 
 			// read this record back to get the ClassCode...
@@ -78,9 +81,9 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			c.ClassCode = ClassCode
 			loadClasses() // This is a new class, we've saved it, now we need to reload our company list...
 		} else {
-			update, err := Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=? where ClassCode=?")
+			update, err := Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=?,lastmodby=? where ClassCode=?")
 			errcheck(err)
-			_, err = update.Exec(co.Name, co.Designation, co.Description, ClassCode)
+			_, err = update.Exec(co.Name, co.Designation, co.Description, sess.UID, ClassCode)
 			if nil != err {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

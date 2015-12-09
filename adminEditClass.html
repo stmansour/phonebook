@@ -41,9 +41,9 @@
 			<td class="edAttrib">DESIGNATION</td>
 		</tr>
 		<tr>
-			<td><input type=text name="Name" value="{{.A.Name}}" size="35"
+			<td><input type=text name="Name" value="{{.A.Name}}" size="25" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 3 "Name"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required"
+			<td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required" maxlength="3" 
 				{{if hasPERMMODaccess .X.Token 3 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
@@ -52,9 +52,8 @@
 			<td class="edAttrib" colspan="2">DESCRIPTION</td>
 		</tr>
 		<tr>
-			<td colspan="2"><textarea rows=5 cols=60 name="Description" maxlength=256
-				{{if hasPERMMODaccess .X.Token 3 "Description"}}{{else}}disabled="disabled"{{end}}>{{.A.Description}}
-				</textarea>
+			<td colspan="2"><textarea rows=5 cols=60 name="Description" maxlength="256"
+				{{if hasPERMMODaccess .X.Token 3 "Description"}}{{else}}disabled="disabled"{{end}}>{{.A.Description}}</textarea>
 			</td>
 		</tr>
 		<tr><td colspan="2">

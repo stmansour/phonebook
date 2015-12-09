@@ -12,10 +12,10 @@
 		<p><br><br></p>
 			<h1>Sign in to use Accord</h1>
 			<div>
-				<input type="text" name="username" placeholder="Username" required="" id="username" />
+				<input type="text" name="username" placeholder="Username" required="" id="username" maxlength="25" />
 			</div>
 			<div>
-				<input type="password" name="password" placeholder="Password" required="" id="password" />
+				<input type="password" name="password" placeholder="Password" required="" id="password" maxlength="25" />
 			</div>
 			{{if gt .S.ErrNo 0}}<br><p class="ErrMsg">{{.S.ErrMsg}}</p><br>{{end}}
 			<div>

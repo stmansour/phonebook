@@ -42,11 +42,11 @@
 			<td class="edAttrib">DESIGNATION</td>
 		</tr>
 		<tr>
-			<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35"  required="required"
+			<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35"  required="required" maxlength="50" 
 				{{if hasPERMMODaccess .X.Token 2 "LegalName"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35"
+			<td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35" maxlength="50" 
 				{{if hasPERMMODaccess .X.Token 2 "CommonName"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type=text name="Designation" value="{{.C.Designation}}" size="7"  required="required"
+			<td><input type=text name="Designation" value="{{.C.Designation}}" size="7"  required="required" maxlength="3" 
 				{{if hasPERMMODaccess .X.Token 2 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
@@ -57,11 +57,11 @@
 			<td class="edAttrib">EMAIL</td>
 		</tr>
 		<tr>
-			<td><input type="text" name="Phone" value="{{.C.Phone}}" size="13"
+			<td><input type="text" name="Phone" value="{{.C.Phone}}" size="13" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 2 "Phone"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type="text" name="Fax" value="{{.C.Fax}}" size="13"
+			<td><input type="text" name="Fax" value="{{.C.Fax}}" size="13" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 2 "Fax"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type="email" name="Email" value="{{.C.Email}}" size="35"
+			<td><input type="email" name="Email" value="{{.C.Email}}" size="35" maxlength="35" 
 				{{if hasPERMMODaccess .X.Token 2 "Email"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
@@ -72,9 +72,9 @@
 			<td class="edAttrib">ADDRESS2</td>
 		</tr>
 		<tr>
-			<td><input type=text name="Address" value="{{.C.Address}}" size="35"
+			<td><input type=text name="Address" value="{{.C.Address}}" size="35" maxlength="35" 
 				{{if hasPERMMODaccess .X.Token 2 "Address"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type=text name="Address2" value="{{.C.Address2}}" size="35"
+			<td><input type=text name="Address2" value="{{.C.Address2}}" size="35" maxlength="35" 
 				{{if hasPERMMODaccess .X.Token 2 "Address2"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
@@ -87,13 +87,13 @@
 			<td class="edAttrib">COUNTRY</td>
 		</tr>
 		<tr>
-			<td><input type=text name="City" value="{{.C.City}}" size="25"
+			<td><input type=text name="City" value="{{.C.City}}" size="25" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 2 "City"}}{{else}}disabled="disabled"{{end}}></td>
 			<td><input type=text name="State" value="{{.C.State}}" size="3" maxlength="2"
 				{{if hasPERMMODaccess .X.Token 2 "State"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type=text name="PostalCode" value="{{.C.PostalCode}}" size="10"
+			<td><input type=text name="PostalCode" value="{{.C.PostalCode}}" size="10" maxlength="10" 
 				{{if hasPERMMODaccess .X.Token 2 "PostalCode"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type=text name="Country" value="{{.C.Country}}" size="10"
+			<td><input type=text name="Country" value="{{.C.Country}}" size="10" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 2 "Country"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>

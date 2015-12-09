@@ -91,13 +91,13 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		//=================================================================
 		update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?," +
 			"EmergencyContactName=?,EmergencyContactPhone=?," +
-			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=? " +
+			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,lastmodby=? " +
 			"where people.uid=?")
 		errcheck(err)
 
 		_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
 			d.EmergencyContactName, d.EmergencyContactPhone,
-			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, sess.UID,
 			uid)
 		if nil != err {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

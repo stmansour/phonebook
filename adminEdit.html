@@ -62,13 +62,13 @@
 						<option value="Dr" {{if eq .D.Salutation "Dr"}}selected{{end}}>Dr</option>
 					</select>
 				</td>
-				<td><input type=text name="LastName" value="{{.D.LastName}}" size="20" required="required"
+				<td><input type=text name="LastName" value="{{.D.LastName}}" size="20" required="required" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "LastName"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="MiddleName" value="{{.D.MiddleName}}" size="10"
+				<td><input type=text name="MiddleName" value="{{.D.MiddleName}}" size="10" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "MiddleName"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="FirstName" value="{{.D.FirstName}}" size="20"  required="required"
+				<td><input type=text name="FirstName" value="{{.D.FirstName}}" size="20"  required="required" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "FirstName"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="PreferredName" value="{{.D.PreferredName}}" size="15"
+				<td><input type=text name="PreferredName" value="{{.D.PreferredName}}" size="15" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "PreferredName"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -80,11 +80,11 @@
 				<td class="edAttrib">CELL</td>
 			</tr>
 			<tr>
-				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13"
+				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "OfficePhone"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type="text" name="OfficeFax" value="{{.D.OfficeFax}}" size="13"
+				<td><input type="text" name="OfficeFax" value="{{.D.OfficeFax}}" size="13" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "OfficeFax"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13"
+				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13"  maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "CellPhone"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -96,9 +96,9 @@
 				<td class="edAttrib">SECONDARYEMAIL</td>
 			</tr>
 			<tr>
-				<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35"
+				<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35" maxlength="35" 
 					{{if hasPERMMODaccess .X.Token 1 "PrimaryEmail"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type="email" name="SecondaryEmail" value="{{.D.SecondaryEmail}}" size="35"
+				<td><input type="email" name="SecondaryEmail" value="{{.D.SecondaryEmail}}" size="35" maxlength="35" 
 					{{if hasPERMMODaccess .X.Token 1 "SecondaryEmail"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -109,9 +109,9 @@
 				<td class="edAttrib">HOME STREET ADDRESS2</td>
 			</tr>
 			<tr>
-				<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35"
+				<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35" maxlength="35" 
 					{{if hasPERMMODaccess .X.Token 1 "HomeStreetAddress"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35"
+				<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "HomeStreetAddress2"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -124,13 +124,13 @@
 				<td class="edAttrib">COUNTRY</td>
 			</tr>
 			<tr>
-				<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25"
+				<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "HomeCity"}}{{else}}disabled="disabled"{{end}}></td>
 				<td><input type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"
 					{{if hasPERMMODaccess .X.Token 1 "HomeState"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10"
+				<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10" maxlength="10" 
 					{{if hasPERMMODaccess .X.Token 1 "HomePostalCode"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10"
+				<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "HomeCountry"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -141,9 +141,9 @@
 				<td class="edAttrib">PHONE</td>
 			</tr>
 			<tr>
-				<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="25"
+				<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="25" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "EmergencyContactName"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13"
+				<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "EmergencyContactPhone"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -175,10 +175,12 @@
 		<p></p>
 		<table >
 			<tr>
-				<td class="edAttrib">STATE OF EMPLOYMENT</td><td><input class="HR" type=text name="StateOfEmployment" value="{{.D.StateOfEmployment}}" size="15" 
+				<td class="edAttrib">STATE OF EMPLOYMENT</td><td><input class="HR" type=text name="StateOfEmployment"
+				 value="{{.D.StateOfEmployment}}" size="15"  maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 1 "StateOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
 				<td width=10></td>
-				<td class="edAttrib">COUNTRY OF EMPLOYEMENT</td><td><input class="HR" type=text name="CountryOfEmployment" value="{{.D.CountryOfEmployment}}" size="15"
+				<td class="edAttrib">COUNTRY OF EMPLOYEMENT</td><td><input class="HR"
+				 type=text name="CountryOfEmployment" value="{{.D.CountryOfEmployment}}" size="15" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 1 "CountryOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
 				<td width=10></td>
 				<td class="edAttrib"></td><td></td>
@@ -203,7 +205,7 @@
 					<option value="{{$classcode}}"{{if eq $classcode $ccode}}selected{{end}}>{{$name}}</option>{{end}}</select>
 				</td>
 				<td width=10></td>
-				<td class="edAttrib">POSITION CONTROL NUMBER:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10"
+				<td class="edAttrib">POSITION CONTROL NUMBER:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10" maxlength="10" 
 				{{if hasPERMMODaccess .X.Token 1 "Status"}}{{else}}disabled="disabled"{{end}}>
 				</td>
 			</tr>

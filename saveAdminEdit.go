@@ -155,9 +155,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				"status,EligibleForRehire,Accepted401K,AcceptedDentalInsurance,AcceptedHealthInsurance," +
 				"Hire,Termination,ClassCode," +
 				"BirthMonth,BirthDOM,mgruid,StateOfEmployment,CountryOfEmployment," +
-				"LastReview,NextReview,RID) " +
+				"LastReview,NextReview,RID,lastmodby) " +
 				//      1                 10                  20                  30
-				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 			errcheck(err)
 			_, err = insert.Exec(do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName, // 5
 				do.EmergencyContactName, do.EmergencyContactPhone, //7
@@ -167,7 +167,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance, // 27
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode, // 30
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment, // 35
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), d.RID) // 37
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), d.RID, sess.UID) // 37
 			errcheck(err)
 
 			// read this record back to get the UID...
@@ -197,7 +197,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				"status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?," + // 27
 				"Hire=?,Termination=?,ClassCode=?," + // 30
 				"BirthMonth=?,BirthDOM=?,mgruid=?,StateOfEmployment=?,CountryOfEmployment=?," + // 35
-				"LastReview=?,NextReview=? " + // 37
+				"LastReview=?,NextReview=?,lastmodby=? " + // 38
 				"where people.uid=?")
 			errcheck(err)
 			_, err = update.Exec(
@@ -209,7 +209,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance,
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode,
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment,
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview),
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), sess.UID,
 				uid)
 
 			if nil != err {
