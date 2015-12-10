@@ -108,7 +108,7 @@ CREATE TABLE people (
     HomeState CHAR(2) NOT NULL DEFAULT '',
     HomePostalCode varchar(10) NOT NULL DEFAULT '',
     HomeCountry VARCHAR(25) NOT NULL DEFAULT '',
-    JobCode MEDIUMINT NOT NULL DEFAULT '',
+    JobCode MEDIUMINT NOT NULL DEFAULT 0,
     Hire DATE,
     Termination DATE,
     MgrUID MEDIUMINT NOT NULL DEFAULT 0,
