@@ -145,8 +145,37 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			if do.RID == 0 {
 				do.RID = 4 // default security role is Viewer
 			}
-			// TODO: set username
 
+			//============================================
+			// generate a unique username...
+			//============================================
+			do.UserName = strings.ToLower(do.FirstName[0:1] + do.LastName)
+			if len(do.UserName) > 17 {
+				do.UserName = do.UserName[0:17]
+			}
+			UserName := do.UserName
+			var xx int
+			nUID := 0
+			for {
+				found := false
+				rows, err := Phonebook.db.Query("select uid from people where UserName=?", UserName)
+				errcheck(err)
+				defer rows.Close()
+				for rows.Next() {
+					errcheck(rows.Scan(&xx))
+					nUID++
+					found = true
+					UserName = fmt.Sprintf("%s%d", do.UserName, nUID)
+				}
+				if !found {
+					break
+				}
+			}
+			do.UserName = UserName
+
+			//============================================
+			// OK, now write it to the db...
+			//============================================
 			insert, err := Phonebook.db.Prepare("INSERT INTO people (Salutation,FirstName,MiddleName,LastName,PreferredName," +
 				"EmergencyContactName,EmergencyContactPhone," +
 				"PrimaryEmail,SecondaryEmail,OfficePhone,OfficeFax,CellPhone,CoCode,JobCode," +
@@ -155,9 +184,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				"status,EligibleForRehire,Accepted401K,AcceptedDentalInsurance,AcceptedHealthInsurance," +
 				"Hire,Termination,ClassCode," +
 				"BirthMonth,BirthDOM,mgruid,StateOfEmployment,CountryOfEmployment," +
-				"LastReview,NextReview,RID,lastmodby) " +
-				//      1                 10                  20                  30
-				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+				"LastReview,NextReview,RID,lastmodby,UserName) " +
+				//      1                 10                  20                  30                  40
+				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 			errcheck(err)
 			_, err = insert.Exec(do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName, // 5
 				do.EmergencyContactName, do.EmergencyContactPhone, //7
@@ -167,7 +196,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance, // 27
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode, // 30
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment, // 35
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), d.RID, sess.UID) // 37
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), do.RID, sess.UID, do.UserName) // 37
 			errcheck(err)
 
 			// read this record back to get the UID...
@@ -175,7 +204,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.FirstName, do.LastName, do.PrimaryEmail, do.OfficePhone, do.CoCode, do.JobCode)
 			errcheck(err)
 			defer rows.Close()
-			nUID := 0 // quick way to handle multiple matches... in this case, largest UID wins, it hast to be the latest person added
+			nUID = 0 // quick way to handle multiple matches... in this case, largest UID wins, it hast to be the latest person added
 			for rows.Next() {
 				errcheck(rows.Scan(&uid))
 				if uid > nUID {

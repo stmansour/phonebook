@@ -105,6 +105,7 @@ type person struct {
 
 type personDetail struct {
 	UID                     int
+	UserName                string
 	LastName                string
 	FirstName               string
 	PrimaryEmail            string
@@ -307,6 +308,7 @@ var PhonebookUI uiSupport
 var Phonebook struct {
 	Port               int // port on which we listen
 	db                 *sql.DB
+	DBName             string // name of database to use
 	LogFile            *os.File
 	Roles              []Role        // the roles saved in the database
 	ReqMem             chan int      // request to access UI data memory
@@ -530,6 +532,7 @@ func readCommandLineArgs() {
 	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
 	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
 	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
+	dbnmPtr := flag.String("N", "accord", "database name")
 
 	flag.Parse()
 
@@ -537,9 +540,29 @@ func readCommandLineArgs() {
 	Phonebook.Debug = *dbugPtr
 	Phonebook.SecurityDebug = *sbugPtr
 	Phonebook.DebugToScreen = *dtscPtr
+	Phonebook.DBName = *dbnmPtr
 }
 
 func main() {
+	//=============================
+	//  Hardcoded defaults...
+	//=============================
+	Phonebook.ReqMem = make(chan int)
+	Phonebook.ReqMemAck = make(chan int)
+	Phonebook.ReqSessionMem = make(chan int)
+	Phonebook.ReqSessionMemAck = make(chan int)
+	Phonebook.Roles = make([]Role, 0)
+	Phonebook.SessionTimeout = 120    // minutes
+	Phonebook.SessionCleanupTime = 10 // minutes
+
+	//==============================================
+	// There may be some command line overrides...
+	//==============================================
+	readCommandLineArgs()
+
+	//==============================================
+	// Now open the logfile and the database...
+	//==============================================
 	var err error
 	Phonebook.LogFile, err = os.OpenFile("Phonebook.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -549,36 +572,35 @@ func main() {
 	log.SetOutput(Phonebook.LogFile)
 	ulog("*** Accord PHONEBOOK ***\n")
 
-	dbopenparms := "ec2-user:@/accord?charset=utf8&parseTime=True"
+	//==============================================
+	// And the database...
+	//==============================================
+	dbopenparms := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", Phonebook.DBName)
 	db, err := sql.Open("mysql", dbopenparms)
 	if nil != err {
 		ulog("sql.Open: Error = %v\n", err)
 	}
 	defer db.Close()
-
 	err = db.Ping()
 	if nil != err {
 		ulog("db.Ping: Error = %v\n", err)
+		os.Exit(2)
 	}
 	ulog("MySQL database opened with \"%s\"\n", dbopenparms)
-
 	Phonebook.db = db
-	Phonebook.ReqMem = make(chan int)
-	Phonebook.ReqMemAck = make(chan int)
-	Phonebook.ReqSessionMem = make(chan int)
-	Phonebook.ReqSessionMemAck = make(chan int)
-	Phonebook.Roles = make([]Role, 0)
-	Phonebook.SessionTimeout = 10      // minutes
-	Phonebook.SessionCleanupTime = 120 // minutes
+
+	//==============================================
+	// Load some of the database info...
+	//==============================================
 	loadMaps()
 	readAccessRoles()
-
 	if Phonebook.Debug {
 		dumpAccessRoles()
 	}
 
-	readCommandLineArgs()
-
+	//==============================================
+	// On with the show...
+	//==============================================
 	go Dispatcher()
 	go SessionDispatcher()
 	go SessionCleanup()
