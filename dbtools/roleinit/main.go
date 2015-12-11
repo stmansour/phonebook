@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -150,6 +151,12 @@ type Role struct {
 	Name  string      // role name
 	Descr string      // role description
 	Perms []FieldPerm // permissions for all fields, all entities
+}
+
+var App struct {
+	db          *sql.DB
+	DBName      string
+	presetRoles bool
 }
 
 func errcheck(err error) {
@@ -650,17 +657,18 @@ func makeDefaultRoles(db *sql.DB) {
 }
 
 func addRoleToPeople(db *sql.DB) {
-	alter, err := db.Prepare("ALTER TABLE people drop column RID")
-	_, err = alter.Exec()
-	if err != nil {
-		fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
-	}
 
-	alter, err = db.Prepare("ALTER TABLE people add column RID MEDIUMINT")
-	_, err = alter.Exec()
-	if err != nil {
-		fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
-	}
+	// alter, err := db.Prepare("ALTER TABLE people drop column RID")
+	// _, err = alter.Exec()
+	// if err != nil {
+	// 	fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
+	// }
+
+	// alter, err = db.Prepare("ALTER TABLE people add column RID MEDIUMINT")
+	// _, err = alter.Exec()
+	// if err != nil {
+	// 	fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
+	// }
 
 	update, err := db.Prepare("Update people set RID=4") // everyone starts with ReadOnly
 	errcheck(err)
@@ -723,21 +731,38 @@ func readAccessRoles(db *sql.DB) {
 	errcheck(rows.Err())
 }
 
+func readCommandLineArgs() {
+
+	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
+	rolePtr := flag.Bool("r", false, "Preset accord employee roles")
+
+	flag.Parse()
+
+	App.DBName = *dbnmPtr
+	App.presetRoles = *rolePtr
+}
+
 func main() {
-	db, err := sql.Open("mysql", "sman:@/accord?charset=utf8&parseTime=True")
+	readCommandLineArgs()
+
+	var err error
+	s := fmt.Sprintf("sman:@/%s?charset=utf8&parseTime=True", App.DBName)
+	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)
 	}
-	defer db.Close()
+	defer App.db.Close()
 
-	err = db.Ping()
+	err = App.db.Ping()
 	if nil != err {
-		fmt.Printf("db.Ping: Error = %v\n", err)
+		fmt.Printf("App.db.Ping: Error = %v\n", err)
 	}
 
-	createRoleTables(db)
-	makeDefaultRoles(db)
-	addRoleToPeople(db)
+	// createRoleTables(App.db)
+	makeDefaultRoles(App.db)
+	addRoleToPeople(App.db)
 
-	readAccessRoles(db)
+	if App.presetRoles {
+		readAccessRoles(App.db)
+	}
 }

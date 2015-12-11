@@ -1,50 +1,31 @@
--- ACCORD PHONEBOOK DATABSE
--- mysql> show grants for 'ec2-user'@'localhost';
--- +-----------------------------------------------------------------------------+
--- | Grants for ec2-user@localhost                                               |
--- +-----------------------------------------------------------------------------+
--- | GRANT USAGE ON *.* TO 'ec2-user'@'localhost'                                |
--- | GRANT ALL PRIVILEGES ON `accord`.* TO 'ec2-user'@'localhost'                |
--- | GRANT ALL PRIVILEGES ON `accordtest`.* TO 'ec2-user'@'localhost'            |
--- | GRANT ALL PRIVILEGES ON `accordtest`.`accord` TO 'ec2-user'@'localhost'     |
--- | GRANT ALL PRIVILEGES ON `accordtest`.`accordtest` TO 'ec2-user'@'localhost' |
--- | GRANT ALL PRIVILEGES ON `accord`.`accord` TO 'ec2-user'@'localhost'         |
--- +-----------------------------------------------------------------------------+
-
-DROP DATABASE IF EXISTS accordtest;
-CREATE DATABASE accordtest;
-USE accordtest;
-GRANT ALL PRIVILEGES ON accordtest TO 'ec2-user'@'localhost';
-GRANT ALL PRIVILEGES ON `accordtest`.* TO 'ec2-user'@'localhost';
-
 CREATE TABLE classes (
     ClassCode MEDIUMINT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(25),
-    Designation CHAR(3) NOT NULL,
-    Description VARCHAR(256),
+    Name VARCHAR(25) NOT NULL DEFAULT '',
+    Designation CHAR(3) NOT NULL DEFAULT '',
+    Description VARCHAR(256) NOT NULL DEFAULT '',
     LastModTime TIMESTAMP,
-    LastModBy MEDIUMINT NOT NULL,
+    LastModBy MEDIUMINT NOT NULL DEFAULT 0,
     PRIMARY KEY (ClassCode)
 );
 
 CREATE TABLE companies (
     CoCode MEDIUMINT NOT NULL AUTO_INCREMENT,
-    LegalName VARCHAR(50) NOT NULL,
-    CommonName VARCHAR(50) NOT NULL,
-    Address VARCHAR(35),
-    Address2 VARCHAR(35),
-    City VARCHAR(25),
-    State CHAR(25),
-    PostalCode VARCHAR(10),
-    Country VARCHAR(25),
-    Phone VARCHAR(25),
-    Fax VARCHAR(25),
-    Email VARCHAR(35),
-    Designation CHAR(3) NOT NULL,
-    Active SMALLINT NOT NULL,
-    EmploysPersonnel SMALLINT NOT NULL,
+    LegalName VARCHAR(50) NOT NULL DEFAULT '',
+    CommonName VARCHAR(50) NOT NULL DEFAULT '',
+    Address VARCHAR(35) NOT NULL DEFAULT '',
+    Address2 VARCHAR(35) NOT NULL DEFAULT '',
+    City VARCHAR(25) NOT NULL DEFAULT '',
+    State CHAR(25) NOT NULL DEFAULT '',
+    PostalCode VARCHAR(10) NOT NULL DEFAULT '',
+    Country VARCHAR(25) NOT NULL DEFAULT '',
+    Phone VARCHAR(25) NOT NULL DEFAULT '',
+    Fax VARCHAR(25) NOT NULL DEFAULT '',
+    Email VARCHAR(35) NOT NULL DEFAULT '',
+    Designation CHAR(3) NOT NULL NOT NULL DEFAULT '',
+    Active SMALLINT NOT NULL DEFAULT 0,
+    EmploysPersonnel SMALLINT NOT NULL DEFAULT 0,
     LastModTime TIMESTAMP,
-    LastModBy MEDIUMINT NOT NULL,
+    LastModBy MEDIUMINT NOT NULL DEFAULT 0,
     PRIMARY KEY (CoCode)
 );
 
@@ -60,7 +41,7 @@ CREATE TABLE deductions (
 
 CREATE TABLE deductionlist (
     DCode MEDIUMINT NOT NULL,
-    Name VARCHAR(25)
+    Name VARCHAR(25) NOT NULL
 );
 
 CREATE TABLE departments (
@@ -74,15 +55,13 @@ CREATE TABLE fieldperms (
     Elem MEDIUMINT NOT NULL,
     Field VARCHAR(25) NOT NULL,
     Perm MEDIUMINT NOT NULL,
-    Descr VARCHAR(256),
-    PRIMARY KEY (RID)
+    Descr VARCHAR(256)
 );
 
 CREATE TABLE jobtitles (
     JobCode MEDIUMINT NOT NULL AUTO_INCREMENT,
-    Title VARCHAR(40),
-    DeptCode MEDIUMINT,
-    Department VARCHAR(25),
+    Title VARCHAR(40) NOT NULL DEFAULT '',
+    Descr VARCHAR(256) NOT NULL DEFAULT '',
     PRIMARY KEY (JobCode)
 );
 
@@ -109,8 +88,8 @@ CREATE TABLE people (
     HomePostalCode varchar(10) NOT NULL DEFAULT '',
     HomeCountry VARCHAR(25) NOT NULL DEFAULT '',
     JobCode MEDIUMINT NOT NULL DEFAULT 0,
-    Hire DATE,
-    Termination DATE,
+    Hire DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
+    Termination DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
     MgrUID MEDIUMINT NOT NULL DEFAULT 0,
     DeptCode MEDIUMINT NOT NULL DEFAULT 0,
     CoCode MEDIUMINT NOT NULL DEFAULT 0,
@@ -124,8 +103,8 @@ CREATE TABLE people (
     HealthInsuranceAccepted SMALLINT NOT NULL DEFAULT 0,
     DentalInsuranceAccepted SMALLINT NOT NULL DEFAULT 0,
     Accepted401K SMALLINT NOT NULL DEFAULT 0,
-    LastReview DATE,
-    NextReview DATE,
+    LastReview DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
+    NextReview DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
     passhash char(128) NOT NULL DEFAULT '',
     RID MEDIUMINT NOT NULL DEFAULT 0,
     LastModTime TIMESTAMP,

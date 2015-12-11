@@ -1,7 +1,7 @@
 all: clean phonebook
 
 clean:
-	cd roleinit;make clean
+	cd dbtools;make clean
 	cd admintools;make clean
 	rm -rf phonebook tmp Phonebook.log pbimages.tar* x.sh*
 	go clean
@@ -16,12 +16,16 @@ dbmake:
 	#cd ../dir/obfuscate;./obfuscate
 	mysqldump accord > testdb.sql
 
+dbrestore:
+	restoreMySQLdb.sh accord testdb.sql
+
 package: phonebook
 	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebook
-	cp phonebook activate.sh testdb.sql *.css *.html pbbkup.sh pbrestore.sh admintools/apasswd/apasswd admintools/auser/auser tmp/phonebook/
-	#cp -r images tmp/phonebook/
+	cp phonebook activate.sh testdb.sql *.css *.html pbbkup.sh pbrestore.sh tmp/phonebook/
+	cd admintools;make package
+	cd dbtools;make package
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
 
 publish: package
