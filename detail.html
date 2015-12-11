@@ -35,7 +35,7 @@
 <tr><td height=30 colspan="6"></td></tr>
 <tr>
 	<td width=20 class="bd"></td>
-	<td id="personDetailText" class="bd" colspan="2">
+	<td id="personDetailText" class="bd" colspan="2" width="400">
 		<div align="right">
 		<span class="FirstName">{{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}}</span> <span class="LastName">{{.D.LastName}}</span><br>
 		<span class="Employer"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></span><br>
@@ -46,7 +46,7 @@
 	</td>
 	<td width=20 class="bd"></td>
 	<td width=30></td>
-	<td width=400 height=400 valign="center" rowspan="7" class="bd"><p align="center"><img width=300 src="{{.D.Image}}"></p></td>
+	<td width=375 height=375 valign="center" rowspan="7" class="bd"><p align="center"><img width=300 src="{{.D.Image}}"></p></td>
 </tr>
 
 

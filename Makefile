@@ -1,16 +1,15 @@
-all: clean phonebook
+phonebook: *.go
+	cd admintools;make
+	cd dbtools;make
+	go vet
+	golint
+	go build
 
 clean:
 	cd dbtools;make clean
 	cd admintools;make clean
 	rm -rf phonebook tmp Phonebook.log pbimages.tar* x.sh*
 	go clean
-
-phonebook: *.go
-	cd admintools;make
-	go vet
-	golint
-	go build
 
 dbmake:
 	#cd ../dir/obfuscate;./obfuscate
