@@ -34,6 +34,22 @@ CREATE TABLE compensation (
     Type MEDIUMINT NOT NULL
 );
 
+CREATE TABLE counters (
+    SearchPeople BIGINT NOT NULL DEFAULT 0,
+    SearchClasses BIGINT NOT NULL DEFAULT 0,
+    SearchCompanies BIGINT NOT NULL DEFAULT 0,
+    EditPerson BIGINT NOT NULL DEFAULT 0,
+    ViewPerson BIGINT NOT NULL DEFAULT 0,
+    ViewClass BIGINT NOT NULL DEFAULT 0,
+    ViewCompany BIGINT NOT NULL DEFAULT 0,
+    AdminEditPerson BIGINT NOT NULL DEFAULT 0,
+    AdminEditClass BIGINT NOT NULL DEFAULT 0,
+    AdminEditCompany BIGINT NOT NULL DEFAULT 0,
+    DeleteEditPerson BIGINT NOT NULL DEFAULT 0,
+    DeleteEditClass BIGINT NOT NULL DEFAULT 0,
+    DeleteEditCompany BIGINT NOT NULL DEFAULT 0
+);
+
 CREATE TABLE deductions (
     UID MEDIUMINT NOT NULL,
     Deduction INT NOT NULL
@@ -100,8 +116,8 @@ CREATE TABLE people (
     EmergencyContactPhone VARCHAR(25) NOT NULL DEFAULT '',
     Status SMALLINT NOT NULL DEFAULT 0,
     EligibleForRehire SMALLINT NOT NULL DEFAULT 0,
-    HealthInsuranceAccepted SMALLINT NOT NULL DEFAULT 0,
-    DentalInsuranceAccepted SMALLINT NOT NULL DEFAULT 0,
+    AcceptedHealthInsurance SMALLINT NOT NULL DEFAULT 0,
+    AcceptedDentalInsurance SMALLINT NOT NULL DEFAULT 0,
     Accepted401K SMALLINT NOT NULL DEFAULT 0,
     LastReview DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
     NextReview DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
@@ -120,4 +136,4 @@ CREATE TABLE roles (
 );
 
 -- Add the Administrator as the first and only user
-INSERT INTO people (UserName,FirstName,LastName) VALUES("administrator","Administrator","Administrator");
+-- INSERT INTO people (UserName,FirstName,LastName) VALUES("administrator","Administrator","Administrator");
