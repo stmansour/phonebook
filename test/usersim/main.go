@@ -12,6 +12,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strings"
@@ -24,6 +25,12 @@ import _ "github.com/go-sql-driver/mysql"
 type Role struct {
 	RID  int    // assigned by DB
 	Name string // role name
+}
+
+// KeyVal is a struct def for generic key/value string pairs
+type KeyVal struct {
+	key   string
+	value string
 }
 
 // VUser is a structure with the basic information
@@ -85,10 +92,13 @@ type VUser struct {
 
 // App is the global data structure for this app
 var App struct {
-	seed             int64
-	db               *sql.DB
+	Seed             int64
 	DBName           string
 	DBUser           string
+	Host             string
+	Port             int
+	Debug            bool
+	Peeps            []*VUser
 	FirstNames       []string
 	LastNames        []string
 	Streets          []string
@@ -105,8 +115,7 @@ var App struct {
 	Roles            []Role         // the roles saved in the database
 	JCLo, JCHi       int            // lo and high indeces for jobcode
 	DeptLo, DeptHi   int            // lo and high indeces for department
-	host             string         // phonebook server host
-	port             int            // phonebook server port
+	db               *sql.DB
 }
 
 func createUser(v *VUser) {
@@ -152,7 +161,7 @@ func createUser(v *VUser) {
 }
 
 func login(v *VUser) {
-	URL := fmt.Sprint("http://%s:%d/signin", App.host, App.port)
+	URL := fmt.Sprintf("http://%s:%d/weblogin/", App.Host, App.Port)
 	hc := http.Client{}
 
 	form := url.Values{}
@@ -164,7 +173,29 @@ func login(v *VUser) {
 	req, err := http.NewRequest("POST", URL, bytes.NewBufferString(form.Encode()))
 	errcheck(err)
 
-	// if App.debug {
+	hdrs := []KeyVal{
+		{"Host:", "localhost:8250"},
+		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
+		{"Accept-Encoding", "gzip, deflate"},
+		{"Accept-Language", "en-US,en;q=0.8"},
+		{"Cache-Control", "max-age=0"},
+		{"Connection", "keep-alive"},
+		{"Content-Type", "application/x-www-form-urlencoded"},
+		{"Cookie", "accord=1a9da9ab4ad5e186c9b224a907fbea50"},
+		{"Origin", "http://localhost:8250"},
+		{"Referer", "http://localhost:8250/signin/"},
+		{"Upgrade-Insecure-Requests", "1"},
+		{"User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"},
+	}
+	for i := 0; i < len(hdrs); i++ {
+		req.Header.Add(hdrs[i].key, hdrs[i].value)
+	}
+
+	// fmt.Printf("URL = %s\n", URL)
+	// fmt.Printf("form = %+v\n", form)
+	// fmt.Printf("req = %+v\n", req)
+	// if 1 > 0 {
+	// 	fmt.Printf("DumpRequest:\n")
 	// 	dump, err := httputil.DumpRequest(req, false)
 	// 	errcheck(err)
 	// 	fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
@@ -174,23 +205,25 @@ func login(v *VUser) {
 	errcheck(err)
 	defer resp.Body.Close()
 
-	// if App.debug {
-	// 	dump, err := httputil.DumpResponse(resp, true)
-	// 	errcheck(err)
-	// 	fmt.Printf("\n\ndumpResponse = %s\n", string(dump))
-	// }
+	if 1 > 0 {
+		fmt.Printf("DumpResponse:\n")
+		dump, err := httputil.DumpResponse(resp, true)
+		errcheck(err)
+		fmt.Printf("\n\ndumpResponse = %s\n", string(dump))
+	}
 
 	// Check that the server actually sent compressed data
 	var reader io.ReadCloser
 	switch resp.Header.Get("Content-Encoding") {
 	case "gzip":
+		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
 		defer reader.Close()
 	default:
 		reader = resp.Body
 	}
 
-	fmt.Printf("response: %s\n", resp.Body)
+	fmt.Printf("response: %+v\n", resp.Body)
 }
 
 func main() {
@@ -210,9 +243,11 @@ func main() {
 	readAccessRoles()
 	loadNames()
 	loadMaps()
+	App.Peeps = make([]*VUser, 0)
 	for i := 0; i < 5; i++ {
 		var v VUser
 		createUser(&v)
 		login(&v)
+		App.Peeps = append(App.Peeps, &v)
 	}
 }

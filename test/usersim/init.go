@@ -17,14 +17,16 @@ func readCommandLineArgs() {
 	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
 	hPtr := flag.String("h", "localhost", "server hostname")
 	pPtr := flag.Int("p", 8250, "port on which the server listens")
+	dbgPtr := flag.Bool("d", false, "debug mode when true")
 	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
 	flag.Parse()
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
-	App.seed = int64(*p)
-	App.host = *hPtr
-	App.port = *pPtr
-	rand.Seed(App.seed)
+	App.Seed = int64(*p)
+	App.Host = *hPtr
+	App.Port = *pPtr
+	App.Debug = *dbgPtr
+	rand.Seed(App.Seed)
 }
 
 func loadNames() {
@@ -168,6 +170,9 @@ func loadMaps() {
 		}
 	}
 	errcheck(rows.Err())
+	if App.Debug {
+		fmt.Printf("DeptLo=%d, DeptHi=%d\n", App.DeptLo, App.DeptHi)
+	}
 
 	App.AcceptCodeToName = make(map[int]string)
 	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {

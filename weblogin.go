@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"strings"
 	"time"
 )
@@ -38,12 +39,23 @@ func initHandlerSession(sess *session, ui *uiSupport, w http.ResponseWriter, r *
 }
 
 func webloginHandler(w http.ResponseWriter, r *http.Request) {
+
+	// debug only
+	if 1 > 0 {
+		fmt.Printf("DumpRequest:\n")
+		dump, err := httputil.DumpRequest(r, false)
+		errcheck(err)
+		fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
+	}
+
 	n := 0 //error number associated with this login attempt
 	loggedIn := false
 	myusername := strings.ToLower(r.FormValue("username"))
 	password := []byte(r.FormValue("password"))
 	sha := sha512.Sum512(password)
 	mypasshash := fmt.Sprintf("%x", sha)
+
+	fmt.Printf("username = %s, password = %s\n", r.FormValue("username"), r.FormValue("password"))
 
 	var passhash, firstname, preferredname string
 	var uid, RID int
