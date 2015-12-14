@@ -4,10 +4,15 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"crypto/sha512"
 	"database/sql"
 	"fmt"
+	"io"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -100,11 +105,12 @@ var App struct {
 	Roles            []Role         // the roles saved in the database
 	JCLo, JCHi       int            // lo and high indeces for jobcode
 	DeptLo, DeptHi   int            // lo and high indeces for department
+	host             string         // phonebook server host
+	port             int            // phonebook server port
 }
 
 func createUser(v *VUser) {
 	v.RID = 1
-
 	Nlast := len(App.LastNames)
 	Nfirst := len(App.FirstNames)
 	v.FirstName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)])
@@ -145,6 +151,48 @@ func createUser(v *VUser) {
 	fmt.Printf("Added user to database %s:  username: %s, access role: %d\n", App.DBName, v.UserName, v.RID)
 }
 
+func login(v *VUser) {
+	URL := fmt.Sprint("http://%s:%d/signin", App.host, App.port)
+	hc := http.Client{}
+
+	form := url.Values{}
+	form.Add("username", v.UserName)
+	form.Add("password", "accord")
+	// req.PostForm = form
+	// req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	req, err := http.NewRequest("POST", URL, bytes.NewBufferString(form.Encode()))
+	errcheck(err)
+
+	// if App.debug {
+	// 	dump, err := httputil.DumpRequest(req, false)
+	// 	errcheck(err)
+	// 	fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
+	// }
+
+	resp, err := hc.Do(req)
+	errcheck(err)
+	defer resp.Body.Close()
+
+	// if App.debug {
+	// 	dump, err := httputil.DumpResponse(resp, true)
+	// 	errcheck(err)
+	// 	fmt.Printf("\n\ndumpResponse = %s\n", string(dump))
+	// }
+
+	// Check that the server actually sent compressed data
+	var reader io.ReadCloser
+	switch resp.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(resp.Body)
+		defer reader.Close()
+	default:
+		reader = resp.Body
+	}
+
+	fmt.Printf("response: %s\n", resp.Body)
+}
+
 func main() {
 	readCommandLineArgs()
 
@@ -165,5 +213,6 @@ func main() {
 	for i := 0; i < 5; i++ {
 		var v VUser
 		createUser(&v)
+		login(&v)
 	}
 }

@@ -69,7 +69,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	s += fmt.Sprintf(") order by lastname,firstname")
 
-	fmt.Printf("query = %s\n", s)
+	// fmt.Printf("query = %s\n", s)
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)
 	defer rows.Close()

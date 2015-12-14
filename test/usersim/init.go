@@ -15,11 +15,15 @@ func readCommandLineArgs() {
 
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
+	hPtr := flag.String("h", "localhost", "server hostname")
+	pPtr := flag.Int("p", 8250, "port on which the server listens")
 	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
 	flag.Parse()
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
 	App.seed = int64(*p)
+	App.host = *hPtr
+	App.port = *pPtr
 	rand.Seed(App.seed)
 }
 
@@ -174,4 +178,5 @@ func loadMaps() {
 	for i := 0; i < len(fmtMonths); i++ {
 		App.Months[i] = fmtMonths[i]
 	}
+
 }

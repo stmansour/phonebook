@@ -45,10 +45,12 @@ CREATE TABLE counters (
     AdminEditPerson BIGINT NOT NULL DEFAULT 0,
     AdminEditClass BIGINT NOT NULL DEFAULT 0,
     AdminEditCompany BIGINT NOT NULL DEFAULT 0,
-    DeleteEditPerson BIGINT NOT NULL DEFAULT 0,
-    DeleteEditClass BIGINT NOT NULL DEFAULT 0,
-    DeleteEditCompany BIGINT NOT NULL DEFAULT 0
+    DeletePerson BIGINT NOT NULL DEFAULT 0,
+    DeleteClass BIGINT NOT NULL DEFAULT 0,
+    DeleteCompany BIGINT NOT NULL DEFAULT 0
 );
+
+INSERT INTO counters (SearchPeople) VALUES(0);
 
 CREATE TABLE deductions (
     UID MEDIUMINT NOT NULL,

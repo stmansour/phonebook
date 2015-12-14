@@ -322,6 +322,25 @@ var Phonebook struct {
 	SessionCleanupTime time.Duration // time in minutes
 }
 
+// Counters stores the number of times each function was executed
+// The numbers are cumulative over server restarts and maintained
+// in the database.
+var Counters struct {
+	SearchPeople     int64
+	SearchClasses    int64
+	SearchCompanies  int64
+	EditPerson       int64
+	ViewPerson       int64
+	ViewClass        int64
+	ViewCompany      int64
+	AdminEditPerson  int64
+	AdminEditClass   int64
+	AdminEditCompany int64
+	DeletePerson     int64
+	DeleteClass      int64
+	DeleteCompany    int64
+}
+
 var funcMap map[string]interface{}
 
 var chttp = http.NewServeMux()
@@ -481,6 +500,15 @@ func loadMaps() {
 	for i := 0; i < len(fmtMonths); i++ {
 		PhonebookUI.Months[i] = fmtMonths[i]
 	}
+
+	errcheck(Phonebook.db.QueryRow("select SearchPeople,SearchClasses,SearchCompanies,"+
+		"EditPerson,ViewPerson,ViewClass,ViewCompany,"+
+		"AdminEditPerson,AdminEditClass,AdminEditCompany,"+
+		"DeletePerson,DeleteClass,DeleteCompany from counters").Scan(
+		&Counters.SearchPeople, &Counters.SearchClasses, &Counters.SearchCompanies,
+		&Counters.EditPerson, &Counters.ViewPerson, &Counters.ViewClass, &Counters.ViewCompany,
+		&Counters.AdminEditPerson, &Counters.AdminEditClass, &Counters.AdminEditCompany,
+		&Counters.DeletePerson, &Counters.DeleteClass, &Counters.DeleteCompany))
 }
 
 func initHTTP() {
