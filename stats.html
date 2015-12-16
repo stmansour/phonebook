@@ -1,0 +1,56 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="/phonebook.css" rel="stylesheet"  type="text/css">
+<title>Accord Phonebook - Stats</title>
+</head>
+<body style='background-image: url("/images/AccordWatermark.png")'>
+
+
+
+<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
+<tr>
+<td width=20></td>
+<td><a href="/search/"><img src="/images/hlogo.png" height="50"></a></td>
+<td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
+<td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
+<td width=30></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
+<td width=30></td><td><a href="/searchcl/"><span class="MenuCmd">Classes</span></a></td>
+{{if showAdminButton .X.Token}}
+<td width=30></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
+{{end}}
+<td width=50></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
+<td width=4></td><td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</span></a></td>
+<td width=30></td>
+</tr>
+<tr>
+<td width=20></td>
+<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
+</tr>
+</table>
+
+
+
+
+<p></p>
+<table>
+	<tr><td>SearchPeople</td><td><div align="right">{{.K.SearchPeople}}</span></td></tr>
+	<tr><td>SearchClasses</td><td><div align="right">{{.K.SearchClasses}}</span></td></tr>
+	<tr><td>SearchCompanies</td><td><div align="right">{{.K.SearchCompanies}}</span></td></tr>
+	<tr><td>EditPerson</td><td><div align="right">{{.K.EditPerson}}</span></td></tr>
+	<tr><td>ViewPerson</td><td><div align="right">{{.K.ViewPerson}}</span></td></tr>
+	<tr><td>ViewClass</td><td><div align="right">{{.K.ViewClass}}</span></td></tr>
+	<tr><td>ViewCompany</td><td><div align="right">{{.K.ViewCompany}}</span></td></tr>
+	<tr><td>AdminEditPerson</td><td><div align="right">{{.K.AdminEditPerson}}</span></td></tr>
+	<tr><td>AdminEditClass</td><td><div align="right">{{.K.AdminEditClass}}</span></td></tr>
+	<tr><td>AdminEditCompany</td><td><div align="right">{{.K.AdminEditCompany}}</span></td></tr>
+	<tr><td>DeletePerson</td><td><div align="right">{{.K.DeletePerson}}</span></td></tr>
+	<tr><td>DeleteClass</td><td><div align="right">{{.K.DeleteClass}}</span></td></tr>
+	<tr><td>DeleteCompany</td><td><div align="right">{{.K.DeleteCompany}}</span></td></tr>
+	<tr><td>SignIn</td><td><div align="right">{{.K.SignIn}}</span></td></tr>
+	<tr><td>Logoff</td><td><div align="right">{{.K.Logoff}}</span></td></tr>
+</table>
+
+</body>
+</html>

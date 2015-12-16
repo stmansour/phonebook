@@ -296,6 +296,7 @@ type uiSupport struct {
 	T                *searchCoResults
 	L                *searchClassResults
 	X                *session
+	K                *UsageCounters
 }
 
 //--------------------------------------------------------------------
@@ -325,10 +326,8 @@ var Phonebook struct {
 	CountersUpdateTime int           // time in minutes
 }
 
-// Counters stores the number of times each function was executed
-// The numbers are cumulative over server restarts and maintained
-// in the database.
-var Counters struct {
+// UsageCounters defines the type of stats phonebook stores
+type UsageCounters struct {
 	SearchPeople     int64
 	SearchClasses    int64
 	SearchCompanies  int64
@@ -342,7 +341,14 @@ var Counters struct {
 	DeletePerson     int64
 	DeleteClass      int64
 	DeleteCompany    int64
+	SignIn           int64
+	Logoff           int64
 }
+
+// Counters stores the number of times each function was executed
+// The numbers are cumulative over server restarts and maintained
+// in the database.
+var Counters UsageCounters
 
 var funcMap map[string]interface{}
 
@@ -507,11 +513,12 @@ func loadMaps() {
 	errcheck(Phonebook.db.QueryRow("select SearchPeople,SearchClasses,SearchCompanies,"+
 		"EditPerson,ViewPerson,ViewClass,ViewCompany,"+
 		"AdminEditPerson,AdminEditClass,AdminEditCompany,"+
-		"DeletePerson,DeleteClass,DeleteCompany from counters").Scan(
+		"DeletePerson,DeleteClass,DeleteCompany,SignIn,Logoff from counters").Scan(
 		&Counters.SearchPeople, &Counters.SearchClasses, &Counters.SearchCompanies,
 		&Counters.EditPerson, &Counters.ViewPerson, &Counters.ViewClass, &Counters.ViewCompany,
 		&Counters.AdminEditPerson, &Counters.AdminEditClass, &Counters.AdminEditCompany,
-		&Counters.DeletePerson, &Counters.DeleteClass, &Counters.DeleteCompany))
+		&Counters.DeletePerson, &Counters.DeleteClass, &Counters.DeleteCompany,
+		&Counters.SignIn, &Counters.Logoff))
 }
 
 func initHTTP() {
@@ -551,6 +558,7 @@ func initHTTP() {
 	http.HandleFunc("/shutdown/", shutdownHandler)
 	http.HandleFunc("/signin/", signinHandler)
 	http.HandleFunc("/status/", statusHandler)
+	http.HandleFunc("/stats/", statsHandler)
 	http.HandleFunc("/weblogin/", webloginHandler)
 }
 

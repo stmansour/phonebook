@@ -44,6 +44,11 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	// errcheck(err)
 	// fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
 
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.SignIn++                // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
+
 	n := 0 //error number associated with this login attempt
 	loggedIn := false
 	myusername := strings.ToLower(r.FormValue("username"))

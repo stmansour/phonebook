@@ -19,12 +19,12 @@ func CounterDispatcher() {
 
 // UpdateCountersTable writes the current values in the Counters struct to the database
 func UpdateCountersTable() {
-	update, err := Phonebook.db.Prepare("update counters set SearchPeople=?,SearchClasses=?,SearchCompanies=?,EditPerson=?,ViewPerson=?,ViewClass=?,ViewCompany=?,AdminEditPerson=?,AdminEditClass=?,AdminEditCompany=?,DeletePerson=?,DeleteClass=?,DeleteCompany=?")
+	update, err := Phonebook.db.Prepare("update counters set SearchPeople=?,SearchClasses=?,SearchCompanies=?,EditPerson=?,ViewPerson=?,ViewClass=?,ViewCompany=?,AdminEditPerson=?,AdminEditClass=?,AdminEditCompany=?,DeletePerson=?,DeleteClass=?,DeleteCompany=?,SignIn=?,Logoff=?")
 	errcheck(err)
 	_, err = update.Exec(Counters.SearchPeople, Counters.SearchClasses, Counters.SearchCompanies,
 		Counters.EditPerson, Counters.ViewPerson, Counters.ViewClass, Counters.ViewCompany,
 		Counters.AdminEditPerson, Counters.AdminEditClass, Counters.AdminEditCompany,
-		Counters.DeletePerson, Counters.DeleteClass, Counters.DeleteCompany)
+		Counters.DeletePerson, Counters.DeleteClass, Counters.DeleteCompany, Counters.SignIn, Counters.Logoff)
 	if nil != err {
 		ulog("Error updating counters table: %v\n", err)
 	}
