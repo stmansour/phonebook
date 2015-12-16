@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 	"time"
 )
@@ -41,12 +40,9 @@ func initHandlerSession(sess *session, ui *uiSupport, w http.ResponseWriter, r *
 func webloginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// debug only
-	if 1 > 0 {
-		fmt.Printf("DumpRequest:\n")
-		dump, err := httputil.DumpRequest(r, false)
-		errcheck(err)
-		fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
-	}
+	// dump, err := httputil.DumpRequest(r, false)
+	// errcheck(err)
+	// fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
 
 	n := 0 //error number associated with this login attempt
 	loggedIn := false
@@ -54,8 +50,6 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	password := []byte(r.FormValue("password"))
 	sha := sha512.Sum512(password)
 	mypasshash := fmt.Sprintf("%x", sha)
-
-	fmt.Printf("username = %s, password = %s\n", r.FormValue("username"), r.FormValue("password"))
 
 	var passhash, firstname, preferredname string
 	var uid, RID int
@@ -91,6 +85,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)
+		r.AddCookie(&cookie) // need this so that the redirect to search finds the cookie
 	} else {
 		ulog("user name or password did not match for: %s\n", myusername)
 		n = 1
@@ -99,6 +94,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	if !loggedIn {
 		http.Redirect(w, r, fmt.Sprintf("/signin/%d", n), http.StatusFound)
 	} else {
-		http.Redirect(w, r, "/search/", http.StatusFound)
+		// http.Redirect(w, r, "/search/", http.StatusFound)
+		searchHandler(w, r) // redirect loses the cookie, but this seems to work just fine
 	}
 }

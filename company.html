@@ -57,7 +57,7 @@
         <form action="/adminViewBtn/" method="POST">
         <input type="submit" name="action" value="Done">  &nbsp;&nbsp;&nbsp;
     {{if hasAdminScreenAccess .X.Token 2 4}}
-        <input type="submit" name="action" value="AdminEdit">
+        <input type="submit" name="action" value="AdminView">
         <input type="hidden" name="url" value="/adminEditCo/{{.C.CoCode}}">
     {{end}}
         </form>

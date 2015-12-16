@@ -18,8 +18,14 @@ func readCommandLineArgs() {
 	hPtr := flag.String("h", "localhost", "server hostname")
 	pPtr := flag.Int("p", 8250, "port on which the server listens")
 	dbgPtr := flag.Bool("d", false, "debug mode when true")
+	tPtr := flag.Int("t", 0, "test duration time in minutes. 0 means use iterations")
+	uPtr := flag.Int("u", 1, "number of users to simulate")
+	iPtr := flag.Int("i", 1, "number of iterations, ignored if test duration time is non-zero")
 	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
 	flag.Parse()
+	App.TestIterations = *iPtr // number of iterations (mutually exclusive with TestDuration)
+	App.TestUsers = *uPtr      // number of users to test with
+	App.TestDuration = *tPtr   // time in minutes
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
 	App.Seed = int64(*p)

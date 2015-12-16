@@ -1,12 +1,14 @@
 phonebook: *.go
 	cd admintools;make
 	cd dbtools;make
+	cd test;make
 	go vet
 	golint
 	go build
 
 clean:
 	cd dbtools;make clean
+	cd test;make clean
 	cd admintools;make clean
 	rm -rf phonebook tmp Phonebook.log pbimages.tar* x.sh*
 	go clean

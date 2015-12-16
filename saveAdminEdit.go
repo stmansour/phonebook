@@ -37,6 +37,10 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.AdminEditPerson++       // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
 	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {

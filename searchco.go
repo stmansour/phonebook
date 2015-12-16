@@ -16,6 +16,10 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	sess = ui.X
 	breadcrumbReset(sess, "Search Companies", "/searchco/")
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.SearchCompanies++       // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	var s string
 	var d searchCoResults

@@ -8,15 +8,22 @@ import (
 )
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
 	var sess *session
 	var ui uiSupport
 	sess = nil
+
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
+
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.SearchPeople++          // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
+
 	sess = ui.X
 	breadcrumbReset(sess, "Search People", "/search/")
+	w.Header().Set("Content-Type", "text/html")
 
 	var d searchResults
 	var s string

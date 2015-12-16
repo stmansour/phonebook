@@ -315,11 +315,14 @@ var Phonebook struct {
 	ReqMemAck          chan int      // done with memory
 	ReqSessionMem      chan int      // request to access Session data memory
 	ReqSessionMemAck   chan int      // done with Session datamemory
+	ReqCountersMem     chan int      // request to access counters
+	ReqCountersMemAck  chan int      // done with counters mem
 	DebugToScreen      bool          // show logged messages to screen
 	Debug              bool          // push debug log messages to the logfile
 	SecurityDebug      bool          // push security debug messages to the logfile
 	SessionTimeout     time.Duration // timeout in minutes
 	SessionCleanupTime time.Duration // time in minutes
+	CountersUpdateTime int           // time in minutes
 }
 
 // Counters stores the number of times each function was executed
@@ -561,6 +564,7 @@ func readCommandLineArgs() {
 	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
 	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
 	dbnmPtr := flag.String("N", "accord", "database name")
+	cntrPtr := flag.Int("c", 5, "counter update period in minutes")
 
 	flag.Parse()
 
@@ -569,6 +573,7 @@ func readCommandLineArgs() {
 	Phonebook.SecurityDebug = *sbugPtr
 	Phonebook.DebugToScreen = *dtscPtr
 	Phonebook.DBName = *dbnmPtr
+	Phonebook.CountersUpdateTime = *cntrPtr
 }
 
 func main() {
@@ -579,6 +584,8 @@ func main() {
 	Phonebook.ReqMemAck = make(chan int)
 	Phonebook.ReqSessionMem = make(chan int)
 	Phonebook.ReqSessionMemAck = make(chan int)
+	Phonebook.ReqCountersMem = make(chan int)
+	Phonebook.ReqCountersMemAck = make(chan int)
 	Phonebook.Roles = make([]Role, 0)
 	Phonebook.SessionTimeout = 120    // minutes
 	Phonebook.SessionCleanupTime = 10 // minutes
@@ -630,6 +637,8 @@ func main() {
 	// On with the show...
 	//==============================================
 	go Dispatcher()
+	go CounterDispatcher()
+	go UpdateCounters()
 	go SessionDispatcher()
 	go SessionCleanup()
 

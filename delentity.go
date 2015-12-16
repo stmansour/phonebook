@@ -75,6 +75,10 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.DeletePerson++          // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
 	if !hasAccess(sess, ELEMPERSON, "ElemEntity", PERMDEL) {
@@ -210,6 +214,10 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.DeleteClass++           // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
 	if !hasAccess(sess, ELEMCLASS, "ElemEntity", PERMDEL) {
@@ -326,6 +334,10 @@ func delCoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.DeleteCompany++         // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
 	if !hasAccess(sess, ELEMCOMPANY, "ElemEntity", PERMDEL) {
