@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
 // CounterDispatcher controls access to shared resources. Any routine that
 // needs to work with the counters must get the channel first
@@ -39,7 +36,7 @@ func UpdateCounters() {
 			<-Phonebook.ReqCountersMemAck    // make sure we got it
 			UpdateCountersTable()            // do the db update
 			Phonebook.ReqCountersMemAck <- 1 // tell CountersDispatcher we're done with the data
-			fmt.Printf("UpdateCounters completed. Current counters: %+v\n", Counters)
+			// fmt.Printf("UpdateCounters completed. Current counters: %+v\n", Counters)
 		}
 	}
 }

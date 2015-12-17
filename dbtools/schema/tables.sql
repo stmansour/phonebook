@@ -49,7 +49,8 @@ CREATE TABLE counters (
     DeleteClass BIGINT NOT NULL DEFAULT 0,
     DeleteCompany BIGINT NOT NULL DEFAULT 0,
     SignIn BIGINT NOT NULL DEFAULT 0,
-    Logoff BIGINT NOT NULL DEFAULT 0
+    Logoff BIGINT NOT NULL DEFAULT 0,
+    LastModTime TIMESTAMP
 );
 
 INSERT INTO counters (SearchPeople) VALUES(0);

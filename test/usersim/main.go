@@ -214,17 +214,18 @@ var App struct {
 	db               *sql.DB
 }
 
-func createUser(v *personDetail) {
-	v.RID = 1
+func fillUserFields(v *personDetail) {
 	Nlast := len(App.LastNames)
 	Nfirst := len(App.FirstNames)
 	v.FirstName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)])
 	v.LastName = strings.ToLower(App.LastNames[rand.Intn(Nlast)])
 	v.UserName = getUsername(v.FirstName, v.LastName)
+	v.PreferredName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)])
 	v.Status = 1
 	v.OfficePhone = randomPhoneNumber()
 	v.CellPhone = randomPhoneNumber()
 	v.OfficeFax = randomPhoneNumber()
+	v.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)]) + " " + strings.ToLower(App.LastNames[rand.Intn(Nlast)])
 	v.HomeStreetAddress = randomAddress()
 	v.HomeCity = App.Cities[rand.Intn(len(App.Cities))]
 	v.HomeState = App.States[rand.Intn(len(App.States))]
@@ -232,6 +233,16 @@ func createUser(v *personDetail) {
 	v.HomeCountry = "USA"
 	v.DeptCode = rand.Intn(1 + rand.Intn(App.DeptHi-App.DeptLo))
 	v.JobCode = rand.Intn(App.JCLo + rand.Intn(App.JCHi-App.JCLo))
+	v.Status = 1
+	v.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)]) + strings.ToLower(App.LastNames[rand.Intn(Nlast)])
+	v.EmergencyContactPhone = randomPhoneNumber()
+	v.PrimaryEmail = randomEmail(v.LastName, v.FirstName)
+	v.SecondaryEmail = randomEmail(v.LastName, v.FirstName)
+}
+
+func createUser(v *personDetail) {
+	v.RID = 1
+	fillUserFields(v)
 
 	sha := sha512.Sum512([]byte("accord"))
 	passhash := fmt.Sprintf("%x", sha)
@@ -255,6 +266,7 @@ func createUser(v *personDetail) {
 	}
 	v.Pro = &Tester
 	fmt.Printf("Added user to database %s:  username: %s, access role: %d\n", App.DBName, v.UserName, v.RID)
+
 }
 
 func loadUsers() {

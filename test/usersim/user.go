@@ -8,8 +8,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // Behavior describes a "behavior" of the virtual user.
@@ -58,7 +60,7 @@ func initProfiles() {
 //    returns true if login was successful
 //            false if login failed
 func logoff(d *personDetail) bool {
-	URL := fmt.Sprintf("http://%s:%d/loggoff/", App.Host, App.Port)
+	URL := fmt.Sprintf("http://%s:%d/logoff/", App.Host, App.Port)
 	hc := http.Client{}
 
 	req, err := http.NewRequest("GET", URL, nil)
@@ -157,7 +159,10 @@ func login(d *personDetail) bool {
 	// }
 
 	resp, err := hc.Do(req)
-	errcheck(err)
+	if nil != err {
+		fmt.Printf("login:  hc.Do(req) returned error:  %#v\n", err)
+		os.Exit(1)
+	}
 	defer resp.Body.Close()
 
 	// if 1 > 0 {
@@ -232,6 +237,9 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 			if v.SessionCookie == nil {
 				testResult("login", login(v), &tr)
 			}
+
+			testResult("detail", viewPersonDetail(v), &tr)
+
 			if v.SessionCookie != nil {
 				testResult("logoff", logoff(v), &tr)
 			}
@@ -243,6 +251,7 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 }
 
 func executeSimulation() {
+	StartTime := time.Now()
 	TestResChan := make(chan TestResults) // usersim reports results via this struct
 	TestResChanAck := make(chan int)      // ack receipt
 
@@ -263,4 +272,6 @@ func executeSimulation() {
 	}
 
 	fmt.Printf("Total Tests: %d   pass: %d   fail: %d\n", totTR.Fail+totTR.Pass, totTR.Pass, totTR.Fail)
+	Elapsed := time.Since(StartTime)
+	fmt.Printf("Simulation Time: %s\n", Elapsed /*Round(Elapsed, 0.5e9)*/)
 }

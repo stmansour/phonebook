@@ -44,7 +44,6 @@ func loadNames() {
 		App.FirstNames = append(App.FirstNames, scanner.Text())
 	}
 	errcheck(scanner.Err())
-	fmt.Printf("FirstNames: %d\n", len(App.FirstNames))
 
 	file, err = os.Open("./lastnames.txt")
 	errcheck(err)
@@ -54,7 +53,6 @@ func loadNames() {
 		App.LastNames = append(App.LastNames, scanner.Text())
 	}
 	errcheck(scanner.Err())
-	fmt.Printf("LastNames: %d\n", len(App.LastNames))
 
 	file, err = os.Open("./states.txt")
 	errcheck(err)
@@ -64,7 +62,6 @@ func loadNames() {
 		App.States = append(App.States, scanner.Text())
 	}
 	errcheck(scanner.Err())
-	fmt.Printf("States: %d\n", len(App.States))
 
 	file, err = os.Open("./cities.txt")
 	errcheck(err)
@@ -74,7 +71,6 @@ func loadNames() {
 		App.Cities = append(App.Cities, scanner.Text())
 	}
 	errcheck(scanner.Err())
-	fmt.Printf("Cities: %d\n", len(App.Cities))
 
 	file, err = os.Open("./streets.txt")
 	errcheck(err)
@@ -84,7 +80,14 @@ func loadNames() {
 		App.Streets = append(App.Streets, scanner.Text())
 	}
 	errcheck(scanner.Err())
-	fmt.Printf("Streets: %d\n", len(App.Streets))
+
+	if App.Debug {
+		fmt.Printf("FirstNames: %d\n", len(App.FirstNames))
+		fmt.Printf("LastNames: %d\n", len(App.LastNames))
+		fmt.Printf("Cities: %d\n", len(App.Cities))
+		fmt.Printf("States: %d\n", len(App.States))
+		fmt.Printf("Streets: %d\n", len(App.Streets))
+	}
 }
 
 func readAccessRoles() {
