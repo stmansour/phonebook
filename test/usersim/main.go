@@ -194,6 +194,7 @@ var App struct {
 	TestUsers        int             // number of users to test with
 	TestDuration     int             // time in minutes
 	Debug            bool            // show debug information
+	UpdateDBOnly     bool            // just update the db as needed, don't run the simulation
 	Peeps            []*personDetail // the people to use for test users
 	FirstNames       []string        // array of first names
 	LastNames        []string        // array of last names
@@ -238,6 +239,9 @@ func fillUserFields(v *personDetail) {
 	v.EmergencyContactPhone = randomPhoneNumber()
 	v.PrimaryEmail = randomEmail(v.LastName, v.FirstName)
 	v.SecondaryEmail = randomEmail(v.LastName, v.FirstName)
+
+	v.ClassCode = rand.Intn(len(App.NameToClassCode))
+	v.CoCode = rand.Intn(len(App.NameToCoCode))
 }
 
 func createUser(v *personDetail) {
@@ -249,10 +253,11 @@ func createUser(v *personDetail) {
 
 	stmt, err := App.db.Prepare("INSERT INTO people (UserName,passhash,FirstName,LastName,RID,Status," + //6
 		"OfficePhone,CellPhone,OfficeFax," + //9
-		"HomeStreetAddress,HomeCity,HomeState,HomePostalCode,HomeCountry," +
-		"DeptCode,JobCode) " + //14
-		//           1                 10
-		" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+		"HomeStreetAddress,HomeCity,HomeState,HomePostalCode,HomeCountry," + // 14
+		"DeptCode,JobCode,PreferredName,EmergencyContactName,EmergencyContactPhone," + // 19
+		"PrimaryEmail,SecondaryEmail,ClassCode,CoCode) " + // 23
+		//       1                 10                  20
+		" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if nil != err {
 		fmt.Printf("error = %v\n", err)
 		os.Exit(1)
@@ -260,12 +265,13 @@ func createUser(v *personDetail) {
 	_, err = stmt.Exec(v.UserName, passhash, v.FirstName, v.LastName, v.RID, v.Status,
 		v.OfficePhone, v.CellPhone, v.OfficeFax,
 		v.HomeStreetAddress, v.HomeCity, v.HomeState, v.HomePostalCode, v.HomeCountry,
-		v.DeptCode, v.JobCode)
+		v.DeptCode, v.JobCode, v.PreferredName, v.EmergencyContactName, v.EmergencyContactPhone,
+		v.PrimaryEmail, v.SecondaryEmail, v.ClassCode, v.CoCode)
 	if nil != err {
 		fmt.Printf("error = %v\n", err)
 	}
 	v.Pro = &Tester
-	fmt.Printf("Added user to database %s:  username: %s, access role: %d\n", App.DBName, v.UserName, v.RID)
+	//fmt.Printf("Added user to database %s:  username: %s, access role: %d\n", App.DBName, v.UserName, v.RID)
 
 }
 
@@ -319,5 +325,7 @@ func main() {
 		loadUsers()
 	}
 
-	executeSimulation()
+	if !App.UpdateDBOnly {
+		executeSimulation()
+	}
 }

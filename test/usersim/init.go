@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -22,6 +23,7 @@ func readCommandLineArgs() {
 	uPtr := flag.Int("u", 1, "number of users to simulate")
 	iPtr := flag.Int("i", 1, "number of iterations, ignored if test duration time is non-zero")
 	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
+	fdbPtr := flag.Bool("f", false, "just update the database as needed, do not run simulation")
 	flag.Parse()
 	App.TestIterations = *iPtr // number of iterations (mutually exclusive with TestDuration)
 	App.TestUsers = *uPtr      // number of users to test with
@@ -32,7 +34,83 @@ func readCommandLineArgs() {
 	App.Host = *hPtr
 	App.Port = *pPtr
 	App.Debug = *dbgPtr
+	App.UpdateDBOnly = *fdbPtr
 	rand.Seed(App.Seed)
+}
+
+func genDesignation(cn string) string {
+	parts := strings.Split(cn, " ")
+	// fmt.Printf("parts = %#v\n", parts)
+	if len(parts) > 2 {
+		return strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[1][0], parts[2][0]))
+	} else if len(parts) == 2 {
+		return strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[0][1], parts[1][0]))
+	}
+	return strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[0][1], parts[0][2]))
+}
+
+func createClasses() {
+	insert, err := App.db.Prepare("INSERT INTO classes (Name,Designation) VALUES(?,?)")
+	errcheck(err)
+	file, err := os.Open("./classes.txt")
+	errcheck(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		cn := scanner.Text()
+		dsg := genDesignation(cn)
+		if len(cn) > 25 {
+			cn = cn[0:25]
+		}
+		_, err = insert.Exec(cn, dsg)
+		errcheck(err)
+	}
+	errcheck(scanner.Err())
+}
+
+func createCompanies() {
+	insert, err := App.db.Prepare("INSERT INTO companies (LegalName,CommonName,Designation," +
+		"Email,Phone,Fax,Active,EmploysPersonnel,Address,City,State,PostalCode,Country) " +
+		//      1                 10                  20                  30
+		"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	errcheck(err)
+	file, err := os.Open("./companies.txt")
+	errcheck(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		cn := scanner.Text()
+		dsg := genDesignation(cn)
+		if len(cn) > 25 {
+			cn = cn[0:25]
+		}
+		LegalName := cn
+		em := cn
+		if len(cn) > 15 {
+			em = cn[0:15]
+		}
+		Email := randomCompanyEmail(em)
+		Phone := randomPhoneNumber()
+		Fax := randomPhoneNumber()
+		Active := 0
+		if rand.Intn(100) > 49 {
+			Active = 1
+		}
+		EmploysPersonnel := 0
+		if rand.Intn(100) > 50 {
+			EmploysPersonnel = 1
+		}
+		Address := randomAddress()
+		City := App.Cities[rand.Intn(len(App.Cities))]
+		State := App.States[rand.Intn(len(App.States))]
+		PostalCode := fmt.Sprintf("%05d", rand.Intn(99999))
+		Country := "USA"
+		_, err = insert.Exec(LegalName, cn, dsg,
+			Email, Phone, Fax, Active, EmploysPersonnel,
+			Address, City, State, PostalCode, Country)
+		errcheck(err)
+	}
+	errcheck(scanner.Err())
 }
 
 func loadNames() {
@@ -108,15 +186,30 @@ func loadCompanies() {
 	App.CoCodeToName = make(map[int]string)
 	App.NameToCoCode = make(map[string]int)
 
-	rows, err := App.db.Query("select cocode,CommonName from companies")
-	errcheck(err)
-	defer rows.Close()
-	for rows.Next() {
-		errcheck(rows.Scan(&code, &name))
-		App.CoCodeToName[code] = name
-		App.NameToCoCode[name] = code
+	retrycount := 0
+	count := 0
+
+	for {
+		rows, err := App.db.Query("select cocode,CommonName from companies")
+		errcheck(err)
+		defer rows.Close()
+		for rows.Next() {
+			errcheck(rows.Scan(&code, &name))
+			App.CoCodeToName[code] = name
+			App.NameToCoCode[name] = code
+			count++
+		}
+		errcheck(rows.Err())
+		if 0 < count {
+			break
+		}
+		retrycount++
+		if retrycount > 1 {
+			fmt.Printf("something bad happened while loading companies\n")
+			os.Exit(2)
+		}
+		createCompanies()
 	}
-	errcheck(rows.Err())
 }
 
 func loadClasses() {
@@ -125,18 +218,30 @@ func loadClasses() {
 
 	App.NameToClassCode = make(map[string]int)
 	App.ClassCodeToName = make(map[int]string)
-	rows, err := App.db.Query("select classcode,designation from classes")
-	errcheck(err)
-	defer rows.Close()
-	for rows.Next() {
-		errcheck(rows.Scan(&code, &name))
-		App.NameToClassCode[name] = code
-		App.ClassCodeToName[code] = name
+	retrycount := 0
+	classcount := 0
+
+	for {
+		rows, err := App.db.Query("select classcode,designation from classes")
+		errcheck(err)
+		defer rows.Close()
+		for rows.Next() {
+			errcheck(rows.Scan(&code, &name))
+			App.NameToClassCode[name] = code
+			App.ClassCodeToName[code] = name
+			classcount++
+		}
+		errcheck(rows.Err())
+		if 0 < classcount {
+			break
+		}
+		retrycount++
+		if retrycount > 1 {
+			fmt.Printf("something bad happened while loading classes\n")
+			os.Exit(2)
+		}
+		createClasses()
 	}
-	// for k, v := range App.NameToClassCode {
-	// 	fmt.Printf("%s %d\n", k, v)
-	// }
-	errcheck(rows.Err())
 }
 
 func loadMaps() {

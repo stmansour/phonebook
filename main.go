@@ -449,7 +449,7 @@ func loadClasses() {
 		PhonebookUI.NameToClassCode[name] = code
 		PhonebookUI.ClassCodeToName[code] = name
 	}
-	// for k, v := range PhonebookUI.NameToClassCode {
+	// for k, v := range Phonebook.NameToClassCode {
 	// 	fmt.Printf("%s %d\n", k, v)
 	// }
 	errcheck(rows.Err())

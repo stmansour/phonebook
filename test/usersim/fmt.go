@@ -316,7 +316,6 @@ func compensationTypeToString(i int) string {
 
 /****************************************************************************
 ***  EXAMPLE USAGE OF THE ROUND() FUNCTION
-
 	import (
 		"fmt"
 		"time"
@@ -351,10 +350,10 @@ OUTPUT:
      8.91234s        8.912s            9s            9s           10s             0             0
     34.56789s       34.568s         34.5s           35s           30s          1m0s             0
 3h25m45.6789s  3h25m45.679s    3h25m45.5s      3h25m46s      3h25m50s       3h26m0s        3h0m0s
-
 ***
 ****************************************************************************/
 
+// Round is used to reduce the number of digits in a duration.
 func Round(d, r time.Duration) time.Duration {
 	if r <= 0 {
 		return d

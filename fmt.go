@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"runtime/debug"
 	"strings"
 	"time"
 )
