@@ -267,10 +267,12 @@ func viewAdminPersonDetail(d *personDetail) bool {
 			{"Validate AcceptedDentalInsurance", &s, `>ACCEPTED DENTAL INSURANCE `, `>ACCEPTED 401K `, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.AcceptedDentalInsurance))},
 			{"Validate Accepted401K", &s, `>ACCEPTED 401K `, `>COMPENSATION`, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.Accepted401K))},
 		}
+
 		executeValSubstrTests(&validate, &tr)
 		if tr.Fail > 0 {
 			dumpTestErrors(&tr)
 		}
+
 		return (tr.Fail == 0)
 	}
 	return false
