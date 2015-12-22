@@ -16,11 +16,13 @@ import _ "github.com/go-sql-driver/mysql"
 var App struct {
 	db       *sql.DB
 	DBName   string
+	DBUser   string
 	user     string
 	password string
 }
 
 func readCommandLineArgs() {
+	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
 	uPtr := flag.String("u", "username", "username")
 	psPtr := flag.String("p", "accord", "password")
@@ -28,13 +30,14 @@ func readCommandLineArgs() {
 	App.DBName = *dbnmPtr
 	App.user = *uPtr
 	App.password = *psPtr
+	App.DBUser = *dbuPtr
 }
 
 func main() {
 	readCommandLineArgs()
 
 	var err error
-	s := fmt.Sprintf("sman:@/%s?charset=utf8&parseTime=True", App.DBName)
+	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)

@@ -15,6 +15,7 @@ import _ "github.com/go-sql-driver/mysql"
 var App struct {
 	db         *sql.DB
 	DBName     string
+	DBUser     string
 	JTFileName string
 }
 
@@ -43,18 +44,20 @@ func loadDepartments(db *sql.DB) {
 }
 
 func readCommandLineArgs() {
+	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
 	jobtPtr := flag.String("j", "jobtitles.csv", "The file containing the job titles to load")
 	flag.Parse()
 	App.DBName = *dbnmPtr
 	App.JTFileName = *jobtPtr
+	App.DBUser = *dbuPtr
 }
 
 func main() {
 	readCommandLineArgs()
 
 	var err error
-	s := fmt.Sprintf("sman:@/%s?charset=utf8&parseTime=True", App.DBName)
+	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)

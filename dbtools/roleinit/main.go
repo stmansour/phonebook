@@ -156,6 +156,7 @@ type Role struct {
 var App struct {
 	db          *sql.DB
 	DBName      string
+	DBUser      string
 	presetRoles bool
 }
 
@@ -732,12 +733,13 @@ func readAccessRoles(db *sql.DB) {
 }
 
 func readCommandLineArgs() {
-
+	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
 	rolePtr := flag.Bool("r", false, "Preset accord employee roles")
 
 	flag.Parse()
 
+	App.DBUser = *dbuPtr
 	App.DBName = *dbnmPtr
 	App.presetRoles = *rolePtr
 }
@@ -746,7 +748,7 @@ func main() {
 	readCommandLineArgs()
 
 	var err error
-	s := fmt.Sprintf("sman:@/%s?charset=utf8&parseTime=True", App.DBName)
+	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)
