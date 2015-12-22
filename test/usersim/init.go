@@ -19,11 +19,15 @@ func readCommandLineArgs() {
 	hPtr := flag.String("h", "localhost", "server hostname")
 	pPtr := flag.Int("p", 8250, "port on which the server listens")
 	dbgPtr := flag.Bool("d", false, "debug mode when true")
+	tmPtr := flag.Bool("m", false, "show test matching, helps debug test failures")
 	tPtr := flag.Int("t", 0, "test duration time in minutes. 0 means use iterations")
 	uPtr := flag.Int("u", 1, "number of users to simulate")
 	iPtr := flag.Int("i", 1, "number of iterations, ignored if test duration time is non-zero")
 	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
 	fdbPtr := flag.Bool("f", false, "just update the database as needed, do not run simulation")
+	pcoPtr := flag.Int("c", 75, "number of companies to create with -f")
+	pclPtr := flag.Int("C", 75, "number of classes to create with -f")
+
 	flag.Parse()
 	App.TestIterations = *iPtr // number of iterations (mutually exclusive with TestDuration)
 	App.TestUsers = *uPtr      // number of users to test with
@@ -35,6 +39,9 @@ func readCommandLineArgs() {
 	App.Port = *pPtr
 	App.Debug = *dbgPtr
 	App.UpdateDBOnly = *fdbPtr
+	App.TotalClasses = *pclPtr
+	App.TotalCompanies = *pcoPtr
+	App.ShowTestMatching = *tmPtr
 	rand.Seed(App.Seed)
 }
 
@@ -55,6 +62,7 @@ func createClasses() {
 	file, err := os.Open("./classes.txt")
 	errcheck(err)
 	defer file.Close()
+	classcount := 0
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		cn := scanner.Text()
@@ -64,6 +72,10 @@ func createClasses() {
 		}
 		_, err = insert.Exec(cn, dsg)
 		errcheck(err)
+		classcount++
+		if classcount > App.TotalClasses {
+			break
+		}
 	}
 	errcheck(scanner.Err())
 }
@@ -78,6 +90,7 @@ func createCompanies() {
 	errcheck(err)
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
+	cocount := 0
 	for scanner.Scan() {
 		cn := scanner.Text()
 		dsg := genDesignation(cn)
@@ -109,6 +122,10 @@ func createCompanies() {
 			Email, Phone, Fax, Active, EmploysPersonnel,
 			Address, City, State, PostalCode, Country)
 		errcheck(err)
+		cocount++
+		if cocount > App.TotalCompanies {
+			break
+		}
 	}
 	errcheck(scanner.Err())
 }

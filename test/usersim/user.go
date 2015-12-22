@@ -29,11 +29,19 @@ type Profile struct {
 	Behaviors []Behavior
 }
 
+// TestFailure provides a bit of detail about any test that fails...
+// its name and table index as appropriate
+type TestFailure struct {
+	Name  string
+	Index int
+}
+
 // TestResults is a container for the number of passed and failed tests
 type TestResults struct {
-	SimUserID int // the simulation uses this user id
-	Pass      int // number of tests that passed
-	Fail      int // number of tests that failed
+	SimUserID int           // the simulation uses this user id
+	Pass      int           // number of tests that passed
+	Fail      int           // number of tests that failed
+	Failures  []TestFailure // more info about failures
 }
 
 // Tester profile does everything that Phonebook can do
@@ -230,7 +238,7 @@ func testResult(testname string, success bool, tr *TestResults) bool {
 
 func usersim(userindex, iterations, duration int, TestResChan chan TestResults, TestResChanAck chan int) {
 	v := App.Peeps[userindex]
-	tr := TestResults{v.UID, 0, 0}
+	tr := TestResults{v.UID, 0, 0, nil}
 
 	if duration == 0 {
 		for i := 0; i < iterations; i++ {
@@ -239,6 +247,7 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 			}
 
 			testResult("detail", viewPersonDetail(v), &tr)
+			testResult("adminView", viewAdminPersonDetail(v), &tr)
 
 			if v.SessionCookie != nil {
 				testResult("logoff", logoff(v), &tr)

@@ -41,7 +41,7 @@ func delPersonRefErrHandler(w http.ResponseWriter, r *http.Request) {
 		ui.D.filterSecurityRead(sess, PERMVIEW)
 		breadcrumbAdd(sess, "Delete Person", fmt.Sprintf("/delPersonRefErr/%d", uid))
 
-		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where mgruid=%d", uid)
+		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where status=1 and mgruid=%d", uid)
 		rows, err := Phonebook.db.Query(s)
 		errcheck(err)
 		defer rows.Close()
@@ -104,7 +104,7 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 	//===============================================================
 	//  Check to see if this person manages anyone before deleting...
 	//===============================================================
-	s := fmt.Sprintf("select uid from people where MgrUID=%d", uid)
+	s := fmt.Sprintf("select uid from people where status=1 and MgrUID=%d", uid)
 	rows, err := Phonebook.db.Query(s)
 	errcheck(err)
 	defer rows.Close()

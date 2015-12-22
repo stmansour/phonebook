@@ -80,11 +80,11 @@
 				<td class="edAttrib">CELL</td>
 			</tr>
 			<tr>
-				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="13" maxlength="25" 
+				<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="15" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "OfficePhone"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type="text" name="OfficeFax" value="{{.D.OfficeFax}}" size="13" maxlength="25" 
+				<td><input type="text" name="OfficeFax" value="{{.D.OfficeFax}}" size="15" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "OfficeFax"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="13"  maxlength="25" 
+				<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="15"  maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "CellPhone"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -141,9 +141,9 @@
 				<td class="edAttrib">PHONE</td>
 			</tr>
 			<tr>
-				<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="25" maxlength="25" 
+				<td><input type=text name="EmergencyContactName" value="{{.D.EmergencyContactName}}" size="25" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "EmergencyContactName"}}{{else}}disabled="disabled"{{end}}></td>
-				<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="13" maxlength="25" 
+				<td><input type=text name="EmergencyContactPhone" value="{{.D.EmergencyContactPhone}}" size="15" maxlength="25" 
 					{{if hasPERMMODaccess .X.Token 1 "EmergencyContactPhone"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
@@ -179,7 +179,7 @@
 				 value="{{.D.StateOfEmployment}}" size="15"  maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 1 "StateOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
 				<td width=10></td>
-				<td class="edAttrib">COUNTRY OF EMPLOYEMENT</td><td><input class="HR"
+				<td class="edAttrib">COUNTRY OF EMPLOYMENT</td><td><input class="HR"
 				 type=text name="CountryOfEmployment" value="{{.D.CountryOfEmployment}}" size="15" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 1 "CountryOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
 				<td width=10></td>
@@ -205,7 +205,7 @@
 					<option value="{{$classcode}}"{{if eq $classcode $ccode}}selected{{end}}>{{$name}}</option>{{end}}</select>
 				</td>
 				<td width=10></td>
-				<td class="edAttrib">POSITION CONTROL NUMBER:</td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10" maxlength="10" 
+				<td class="edAttrib">POSITION CONTROL NUMBER </td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10" maxlength="10" 
 				{{if hasPERMMODaccess .X.Token 1 "Status"}}{{else}}disabled="disabled"{{end}}>
 				</td>
 			</tr>
@@ -213,9 +213,10 @@
 		<p></p>
 		<table >
 			<tr>
+				{{$hireyear := dateYear .D.Hire}}
 			    <td class="edAttrib">HIRE DATE</td>
 			    <td><input class="HR" type=date 
-			    	name="Hire" value="{{dateToString .D.Hire}}" maxlength="2" size="10" 
+			    	name="Hire" {{if gt $hireyear 2000}}value="{{dateToString .D.Hire}}"{{end}} size="10" 
 			    	{{if hasPERMMODaccess .X.Token 1 "Hire"}}{{else}}disabled="disabled"{{end}}>
 			    </td>
 				<td width="10"></td>
@@ -231,17 +232,19 @@
 		</table>
 		<p></p>
 		{{$termyear := dateYear .D.Termination}}
+		{{$lastrevyear := dateYear .D.LastReview}}
+		{{$nextrevyear := dateYear .D.NextReview}}
 		<table >
 			<tr>
-				<td class="edAttrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview" value="{{.D.LastReview}}" maxlength="2" size="10"
+				<td class="edAttrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview" {{if gt $lastrevyear 2000}}value="{{dateToString .D.LastReview}}"{{end}}  size="10"
 				{{if hasPERMMODaccess .X.Token 1 "LastReview"}}{{else}}disabled="disabled"{{end}} ></td>
 				<td width="10"></td>
-				<td class="edAttrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview" value="{{.D.NextReview}}" maxlength="2"size="10" 
+				<td class="edAttrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview" {{if gt $nextrevyear 2000}}value="{{dateToString .D.NextReview}}"{{end}} size="10" 
 				{{if hasPERMMODaccess .X.Token 1 "NextReview"}}{{else}}disabled="disabled"{{end}}
 				></td>
 				<td width="10"></td>
 				<td class="edAttrib">TERMINATION DATE</td><td><input class="HR" type=date 
-				name="Termination" {{if gt $termyear 1970}}value="{{dateToString .D.Termination}}"{{end}}size="10"
+				name="Termination" {{if gt $termyear 2000}}value="{{dateToString .D.Termination}}"{{end}} size="10"
 				{{if hasPERMMODaccess .X.Token 1 "Termination"}}{{else}}disabled="disabled"{{end}} >
 			</tr>
 		</table>

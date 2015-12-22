@@ -194,7 +194,10 @@ var App struct {
 	TestUsers        int             // number of users to test with
 	TestDuration     int             // time in minutes
 	Debug            bool            // show debug information
+	ShowTestMatching bool            // to debug when matches fail
 	UpdateDBOnly     bool            // just update the db as needed, don't run the simulation
+	TotalCompanies   int             // number of companies to create
+	TotalClasses     int             // number of classes to create
 	Peeps            []*personDetail // the people to use for test users
 	FirstNames       []string        // array of first names
 	LastNames        []string        // array of last names
@@ -232,8 +235,8 @@ func fillUserFields(v *personDetail) {
 	v.HomeState = App.States[rand.Intn(len(App.States))]
 	v.HomePostalCode = fmt.Sprintf("%05d", rand.Intn(99999))
 	v.HomeCountry = "USA"
-	v.DeptCode = rand.Intn(1 + rand.Intn(App.DeptHi-App.DeptLo))
-	v.JobCode = rand.Intn(App.JCLo + rand.Intn(App.JCHi-App.JCLo))
+	v.DeptCode = 1 + rand.Intn(1+rand.Intn(App.DeptHi-App.DeptLo-1))
+	v.JobCode = 1 + rand.Intn(1+rand.Intn(App.JCHi-App.JCLo-1))
 	v.Status = 1
 	v.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)]) + strings.ToLower(App.LastNames[rand.Intn(Nlast)])
 	v.EmergencyContactPhone = randomPhoneNumber()
@@ -293,7 +296,7 @@ func loadUsers() {
 func main() {
 	readCommandLineArgs()
 
-	if App.TestUsers > 100 {
+	if App.TestUsers > 100 && !App.UpdateDBOnly {
 		fmt.Printf("Maximum users per simulation is 100.  You specified %d. Please reduce user count.\n", App.TestUsers)
 		os.Exit(1)
 	}

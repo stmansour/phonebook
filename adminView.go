@@ -189,7 +189,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d
-	//fmt.Printf("ui.D = %#v\n", ui.D)
+	// fmt.Printf("ui.D = %#v\n", ui.D)
 	err := t.Execute(w, &ui)
 	if nil != err {
 		ulog("Error executing template: %v\n", err)

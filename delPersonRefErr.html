@@ -31,8 +31,10 @@
 </table>
 
 <p></p>
+{{$ref := .R.Matches | len}}
+{{if gt 0 $ref}}
 <H1>Cannot delete {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}</H1>
-<p><strong>Number of people reporting to {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}: {{.R.Matches | len}}</strong>
+<p><strong>Number of people reporting to {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}: {{$ref}}</strong>
 <br>These people are listed below. A person cannot
 be deleted if he or she has any direct reports.  Please change the manager for each of these people and try the delete again.
 </p>
@@ -58,5 +60,15 @@ be deleted if he or she has any direct reports.  Please change the manager for e
     	</tr>
 	{{end}}
 </table>
+{{else}}
+<H1>{{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}} is now ready for Delete</H1>
+<p><strong>Return to AdminEdit page to delete {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}</strong></p>
+<p></p>
+    <form action="/adminViewBtn/{{.D.UID}}" method="POST">
+    <input type="submit" name="action" value="Done">  &nbsp;&nbsp;&nbsp;
+    <input type="submit" name="action" value="AdminEdit">
+    <input type="hidden" name="url" value="/adminEdit/{{.D.UID}}">
+    </form>
+{{end}}
 </body>
 </html>

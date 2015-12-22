@@ -15,6 +15,21 @@ const (
 	YES      = 1
 )
 
+func dumpTestErrors(tr *TestResults) {
+	for i := 0; i < len(tr.Failures); i++ {
+		fmt.Printf("%d: %s\n", tr.Failures[i].Index, tr.Failures[i].Name)
+	}
+}
+
+func stripchars(str string, chr string) string {
+	return strings.Map(func(r rune) rune {
+		if strings.IndexRune(chr, r) < 0 {
+			return r
+		}
+		return -1
+	}, str)
+}
+
 func errcheck(err error) {
 	if nil != err {
 		fmt.Printf("Error = %#v\n", err)

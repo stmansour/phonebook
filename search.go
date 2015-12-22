@@ -30,6 +30,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	d.Query = strings.TrimSpace(r.FormValue("searchstring"))
 	inclterms := "" != r.FormValue("inclterms")
 
+	searchTerms := strings.Split(d.Query, " ")
+
 	//===========================================================
 	//  First, determine the deptcodes that match this query...
 	//===========================================================
@@ -56,8 +58,20 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	// here are the general conditions
 	s += "("
 	if l > 0 {
-		s += fmt.Sprintf("(lastname like \"%%%s%%\" or firstname like \"%%%s%%\" or PreferredName like \"%%%s%%\" or primaryemail like \"%%%s%%\" or cellphone like \"%%%s%%\" or OfficePhone like \"%%%s%%\" or OfficeFax like \"%%%s%%\") ",
-			d.Query, d.Query, d.Query, d.Query, d.Query, d.Query, d.Query)
+		switch len(searchTerms) {
+		case 2:
+			s += fmt.Sprintf(`((firstname like "%%%s%%" and lastname like "%%%s%%") or (PreferredName like "%%%s%%" and lastname like "%%%s%%") `,
+				searchTerms[0], searchTerms[1], searchTerms[0], searchTerms[1])
+		case 3:
+			s += fmt.Sprintf(`((firstname like "%%%s%%" and middlename like "%%%s%%" and lastname like "%%%s%%") or (PreferredName like "%%%s%%" and middlename like "%%%s%%" and lastname like "%%%s%%") `,
+				searchTerms[0], searchTerms[1], searchTerms[2], searchTerms[0], searchTerms[1], searchTerms[2])
+		default:
+			s += fmt.Sprintf("(lastname like \"%%%s%%\" or firstname like \"%%%s%%\" or PreferredName like \"%%%s%%\" ",
+				d.Query, d.Query, d.Query)
+
+		}
+		s += fmt.Sprintf("or primaryemail like \"%%%s%%\" or cellphone like \"%%%s%%\" or OfficePhone like \"%%%s%%\" or OfficeFax like \"%%%s%%\") ",
+			d.Query, d.Query, d.Query, d.Query)
 	}
 
 	// include departments...
