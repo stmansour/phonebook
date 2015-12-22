@@ -186,7 +186,7 @@ func loadNames() {
 }
 
 func readAccessRoles() {
-	rows, err := App.db.Query("select RID,Name from Roles")
+	rows, err := App.db.Query("select RID,Name from roles")
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {

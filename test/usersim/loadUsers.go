@@ -178,7 +178,7 @@ func getDeductionsStr(d *personDetail) {
 }
 
 func initMyDeductions(d *personDetail) {
-	rows, err := App.db.Query("select dcode,name from DeductionList")
+	rows, err := App.db.Query("select dcode,name from deductionlist")
 	errcheck(err)
 	defer rows.Close()
 	d.MyDeductions = make([]aDeduction, 0)

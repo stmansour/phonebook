@@ -77,7 +77,7 @@ func getDeductionsStr(d *personDetail) {
 }
 
 func initMyDeductions(d *personDetail) {
-	rows, err := Phonebook.db.Query("select dcode,name from DeductionList")
+	rows, err := Phonebook.db.Query("select dcode,name from deductionlist")
 	errcheck(err)
 	defer rows.Close()
 	d.MyDeductions = make([]aDeduction, 0)

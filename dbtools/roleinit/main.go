@@ -191,7 +191,7 @@ func makeNewRole(db *sql.DB, r *Role) {
 	// TODO: ensure the name is unique
 
 	// get the RID
-	errcheck(db.QueryRow("select RID from Roles where Name=?", r.Name).Scan(&r.RID))
+	errcheck(db.QueryRow("select RID from roles where Name=?", r.Name).Scan(&r.RID))
 
 	insert, err = db.Prepare("INSERT INTO FieldPerms (RID,Elem,Field,Perm,Descr) VALUES(?,?,?,?,?)")
 	errcheck(err)
@@ -702,7 +702,7 @@ func addRoleToPeople(db *sql.DB) {
 }
 
 func readFieldPerms(db *sql.DB, r *Role) {
-	rows, err := db.Query("select Elem,Field,Perm,Descr from FieldPerms where RID=?", r.RID)
+	rows, err := db.Query("select Elem,Field,Perm,Descr from fieldperms where RID=?", r.RID)
 	errcheck(err)
 	defer rows.Close()
 
@@ -716,7 +716,7 @@ func readFieldPerms(db *sql.DB, r *Role) {
 }
 
 func readAccessRoles(db *sql.DB) {
-	rows, err := db.Query("select RID,Name,Descr from Roles")
+	rows, err := db.Query("select RID,Name,Descr from roles")
 	errcheck(err)
 	defer rows.Close()
 

@@ -113,6 +113,10 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.CountryOfEmployment = r.FormValue("CountryOfEmployment")
 
 		//fmt.Printf("r.FormValue(BirthMonth) = %s,  convert to num -> %d\n", r.FormValue("BirthMonth"), d.BirthMonth)
+		fmt.Printf("Role form value = %s\n", r.FormValue("Role"))
+		if hasAccess(sess, ELEMPERSON, "Role", PERMMOD) {
+			d.RID = strToInt(r.FormValue("Role"))
+		}
 
 		initMyComps(&d)
 		d.Comps = d.Comps[:0] // clear the compensation types list
@@ -230,7 +234,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				"status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?," + // 27
 				"Hire=?,Termination=?,ClassCode=?," + // 30
 				"BirthMonth=?,BirthDOM=?,mgruid=?,StateOfEmployment=?,CountryOfEmployment=?," + // 35
-				"LastReview=?,NextReview=?,lastmodby=? " + // 38
+				"LastReview=?,NextReview=?,lastmodby=?,RID=? " + // 39
 				"where people.uid=?")
 			errcheck(err)
 			_, err = update.Exec(
@@ -242,7 +246,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance,
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode,
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment,
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), sess.UID,
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), sess.UID, do.RID,
 				uid)
 
 			if nil != err {

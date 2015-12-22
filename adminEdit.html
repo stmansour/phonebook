@@ -32,6 +32,7 @@
 </table>
 
 
+	<form action="/saveAdminEdit/{{.D.UID}}" method="POST">
 
 	<p class="AppHeading">Admin Edit - {{if gt .D.UID 0}}{{.D.FirstName}} {{.D.LastName}} ({{.D.UID}}){{else}}add new person{{end}}
 	{{$er := .D.RID}}
@@ -42,7 +43,6 @@
 	</select>
 	</p>
 
-	<form action="/saveAdminEdit/{{.D.UID}}" method="POST">
 		<table >
 			<tr>
 				<td class="edAttrib">TITLE</td>
