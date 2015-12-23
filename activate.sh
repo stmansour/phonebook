@@ -33,6 +33,11 @@ ZZEOF
 	exit 0
 }
 
+updateImages() {
+	/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
+	gunzip pbimages.tar.gz
+	tar xvf pbimages.tar
+}
 
 while getopts ":p:ih:" o; do
     case "${o}" in
@@ -55,6 +60,10 @@ for arg do
 	# echo '--> '"\`$arg'"
 	cmd=$(echo ${arg}|tr "[:upper:]" "[:lower:]")
     case "$cmd" in
+    "images")
+		updateImages
+		echo "Images updated"
+		;;
 	"start")
 		#===============================================
 		# START

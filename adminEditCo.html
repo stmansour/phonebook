@@ -57,9 +57,9 @@
 			<td class="edAttrib">EMAIL</td>
 		</tr>
 		<tr>
-			<td><input type="text" name="Phone" value="{{.C.Phone}}" size="13" maxlength="25" 
+			<td><input type="text" name="Phone" value="{{.C.Phone}}" size="15" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 2 "Phone"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type="text" name="Fax" value="{{.C.Fax}}" size="13" maxlength="25" 
+			<td><input type="text" name="Fax" value="{{.C.Fax}}" size="15" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 2 "Fax"}}{{else}}disabled="disabled"{{end}}></td>
 			<td><input type="email" name="Email" value="{{.C.Email}}" size="35" maxlength="35" 
 				{{if hasPERMMODaccess .X.Token 2 "Email"}}{{else}}disabled="disabled"{{end}}></td>

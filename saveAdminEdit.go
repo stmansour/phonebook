@@ -113,7 +113,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.CountryOfEmployment = r.FormValue("CountryOfEmployment")
 
 		//fmt.Printf("r.FormValue(BirthMonth) = %s,  convert to num -> %d\n", r.FormValue("BirthMonth"), d.BirthMonth)
-		fmt.Printf("Role form value = %s\n", r.FormValue("Role"))
+		// fmt.Printf("Role form value = %s\n", r.FormValue("Role"))
 		if hasAccess(sess, ELEMPERSON, "Role", PERMMOD) {
 			d.RID = strToInt(r.FormValue("Role"))
 		}
@@ -143,9 +143,22 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
-		var do personDetail                       // container for current info
-		do.UID = uid                              // init
-		adminReadDetails(&do)                     //read current data
+		var do personDetail   // container for current info
+		do.UID = uid          // init
+		adminReadDetails(&do) //read current data
+
+		//----------------------------------------------------------------------------
+		// If we're changing Status to Inactive, then it's like a delete. We'll have
+		// to reference checking...
+		//----------------------------------------------------------------------------
+		if do.Status == ACTIVE && d.Status == INACTIVE {
+			count := getDirectReportsCount(uid)
+			if count > 0 {
+				http.Redirect(w, r, fmt.Sprintf("/inactivatePerson/%d", uid), http.StatusFound)
+				return
+			}
+		}
+
 		do.filterSecurityMerge(sess, PERMMOD, &d) // merge in new data
 
 		if uid == 0 {

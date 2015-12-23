@@ -32,11 +32,11 @@
 
 <p></p>
 {{$ref := .R.Matches | len}}
-{{if gt 0 $ref}}
-<H1>Cannot delete {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}</H1>
-<p><strong>Number of people reporting to {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}: {{$ref}}</strong>
-<br>These people are listed below. A person cannot
-be deleted if he or she has any direct reports.  Please change the manager for each of these people and try the delete again.
+{{if gt $ref 0 }}
+<H1>Cannot inactivate (or delete) {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}</H1>
+<p><strong>Number of people reporting to {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}: {{$ref}}</strong></p>
+<p>These people are listed below. A person cannot
+be deleted if he or she has any direct reports.  Please change the manager for each of these people and try the operation again.
 </p>
 <p></p>
 <table cellpadding="2" class="bd" id="personDetailText" >
@@ -62,7 +62,7 @@ be deleted if he or she has any direct reports.  Please change the manager for e
 </table>
 {{else}}
 <H1>{{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}} is now ready for Delete</H1>
-<p><strong>Return to AdminEdit page to delete {{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}} {{.D.LastName}}</strong></p>
+<p><strong>Return to AdminEdit page and try the operation again.</strong></p>
 <p></p>
     <form action="/adminViewBtn/{{.D.UID}}" method="POST">
     <input type="submit" name="action" value="Done">  &nbsp;&nbsp;&nbsp;

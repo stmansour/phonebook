@@ -17,7 +17,8 @@ func delCheckError(caller string, sess *session, err error, s string, w http.Res
 	}
 	return false
 }
-func delPersonRefErrHandler(w http.ResponseWriter, r *http.Request) {
+
+func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string) {
 	w.Header().Set("Content-Type", "text/html")
 	var sess *session
 	var ui uiSupport
@@ -27,21 +28,21 @@ func delPersonRefErrHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	sess = ui.X
 
-	path := "/delPersonRefErr/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
 		var pd personDetail
 		if 0 != getPersonDetail(&pd, uid) {
-			ulog("delPersonRefErrHandler: Error retrieving person information for userid=%d\n", uid)
+			ulog("%s: Error retrieving person information for userid=%d\n", path, uid)
 			http.Redirect(w, r, "/search/", http.StatusFound)
 			return
 		}
 		ui.D = &pd
 		ui.D.filterSecurityRead(sess, PERMVIEW)
-		breadcrumbAdd(sess, "Delete Person", fmt.Sprintf("/delPersonRefErr/%d", uid))
+		breadcrumbAdd(sess, "Inactivate Person", fmt.Sprintf("/inactivatePerson/%d", uid))
 
 		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where status=1 and mgruid=%d", uid)
+		// fmt.Printf("QUERY = %s\n", s)
 		rows, err := Phonebook.db.Query(s)
 		errcheck(err)
 		defer rows.Close()
@@ -57,6 +58,7 @@ func delPersonRefErrHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		errcheck(rows.Err())
 		ui.R = &d
+		// fmt.Printf("Match Count = %d\n", len(ui.R.Matches))
 		t, _ := template.New("delPersonRefErr.html").Funcs(funcMap).ParseFiles("delPersonRefErr.html")
 		err = t.Execute(w, &ui)
 		if nil != err {
@@ -65,6 +67,31 @@ func delPersonRefErrHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "uid = %s\nCould not convert to number\n", uidstr)
 	}
+}
+func delPersonRefErrHandler(w http.ResponseWriter, r *http.Request) {
+	intPersonRefErrHandler(w, r, "/delPersonRefErr/")
+}
+
+func inactivatePersonHandler(w http.ResponseWriter, r *http.Request) {
+	intPersonRefErrHandler(w, r, "/inactivatePerson/")
+}
+
+func getDirectReportsCount(uid int) int {
+	//===============================================================
+	//  Check to see if this person manages anyone before deleting...
+	//===============================================================
+	s := fmt.Sprintf("select uid from people where status=1 and MgrUID=%d", uid)
+	rows, err := Phonebook.db.Query(s)
+	errcheck(err)
+	defer rows.Close()
+	var refuid int
+	count := 0
+	for rows.Next() {
+		errcheck(rows.Scan(&refuid))
+		count++
+	}
+	errcheck(rows.Err())
+	return count
 }
 
 func delPersonHandler(w http.ResponseWriter, r *http.Request) {
@@ -101,21 +128,7 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//===============================================================
-	//  Check to see if this person manages anyone before deleting...
-	//===============================================================
-	s := fmt.Sprintf("select uid from people where status=1 and MgrUID=%d", uid)
-	rows, err := Phonebook.db.Query(s)
-	errcheck(err)
-	defer rows.Close()
-	var refuid int
-	count := 0
-	for rows.Next() {
-		errcheck(rows.Scan(&refuid))
-		count++
-	}
-	errcheck(rows.Err())
-
+	count := getDirectReportsCount(uid)
 	if count > 0 {
 		http.Redirect(w, r, fmt.Sprintf("/delPersonRefErr/%d", uid), http.StatusFound)
 		return
@@ -127,7 +140,7 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 	//		deductions
 	//		compensation
 	//===============================================================
-	s = fmt.Sprintf("DELETE FROM people WHERE UID=%d", uid)
+	s := fmt.Sprintf("DELETE FROM people WHERE UID=%d", uid)
 	stmt, err := Phonebook.db.Prepare(s)
 	if delCheckError(c, sess, err, s, w, r) {
 		return

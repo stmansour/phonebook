@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"text/template"
@@ -24,7 +23,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		s, ok := sessionGet(cookie.Value)
 		if ok {
 			if s.Token == cookie.Value {
-				fmt.Printf("FOUND session, redirecting\n")
+				// fmt.Printf("FOUND session, redirecting\n")
 				http.Redirect(w, r, "/search/", http.StatusFound)
 				return
 			}
