@@ -545,6 +545,7 @@ func initHTTP() {
 	http.HandleFunc("/detailpop/", detailpopHandler)
 	http.HandleFunc("/editDetail/", editDetailHandler)
 	http.HandleFunc("/extAdminShutdown/", extAdminShutdown)
+	http.HandleFunc("/help/", helpHandler)
 	http.HandleFunc("/inactivatePerson/", inactivatePersonHandler)
 	http.HandleFunc("/logoff/", logoffHandler)
 	http.HandleFunc("/pop/", popHandler)

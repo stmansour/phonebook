@@ -66,6 +66,8 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		d.HomePostalCode = r.FormValue("HomePostalCode")
 		d.HomeCountry = r.FormValue("HomeCountry")
 
+		sess.Firstname = d.PreferredName
+
 		//=================================================================
 		// handle image
 		//=================================================================
