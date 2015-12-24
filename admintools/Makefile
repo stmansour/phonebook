@@ -3,12 +3,14 @@ tools:
 	cd pbsetrole;make
 	cd pbsetusername;make
 	cd pbadduser;make
+	cd pbupdateallpw;make
 
 clean:
 	cd pbsetpw;make clean
 	cd pbsetrole;make clean
 	cd pbsetusername;make clean
 	cd pbadduser;make clean
+	cd pbupdateallpw;make clean
 
 
 package:
@@ -16,9 +18,11 @@ package:
 	cd pbsetrole;make package
 	cd pbsetusername;make package
 	cd pbadduser;make package
+	cd pbupdateallpw;make package
 
 test:
 	cd pbsetpw;make test
 	cd pbsetrole;make test
 	cd pbsetusername;make test
 	cd pbadduser;make test
+	cd pbupdateallpw;make test
