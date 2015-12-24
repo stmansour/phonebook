@@ -1,0 +1,57 @@
+.TH pbadduser 1 "December 23, 2015" "Version 0.9" "USER COMMANDS"
+.SH NAME
+pbadduser \- add a user to the Accord system
+.SH SYNOPSIS
+.B pbadduser
+[\fB\-N\fR \fIdatabase_name\fR]
+[\fB\-B\fR \fIdatabase_username\fR]
+[\fB\-R\fR]
+[\fB\-f\fR \fIfirstname\fR]
+[\fB\-l\fR \fIlastname\fR]
+[\fB\-p\fR \fIpasswd\fR]
+[\fB\-r\fR \fIrole\fR]
+[\fB\-u\fR \fIusername\fR]
+
+.SH DESCRIPTION
+.B pbadduser
+adds a new user to the Accord system. It can only add a minimal
+number of fields:  first name, last name, username, password, and role.
+.SH OPTIONS
+.TP
+.IP "-N database_name"
+The current default name is accordtest. The production database name is accord.
+.IP "-B database_username"
+Username for logging into the database server. Default name is "ec2-user"
+.IP -R
+This option dumps the name of the roles currently defined in the database to stdout.
+.IP "-f firstname"
+Specifies the new user's first name
+.IP "-l lastname"
+Specifies the new user's last name
+.IP "-p password"
+Specifies the new user's password
+.IP "-r role"
+Specifies the new user's security role. Note: use the -R option to see the list of defined roles.
+.IP "-u username"
+Specifies the new user's username.
+If username is already found in the database, digits will be appended to username
+in order to make it unique. The username is printed to stdout when the command is complete.
+
+.SH EXAMPLES
+
+.IP "pbadduser -f John -l Doe -u jdoe -r Viewer -p FoolMe1"
+This command adds a new user named John Doe, with username jdoe, his role is Viewer,
+and his password is "FoolMe1".  The user will be added to database accordtest.
+
+.IP "pbadduser -R -N accord"
+This command lists the roles defined in the database named accord
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR pbsetpw (1),
+.BR pbsetrole (1),
+.BR pbsetusername (1)

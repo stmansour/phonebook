@@ -13,3 +13,7 @@ package: pbadduser
 
 test:
 	@echo "*** Testing completed in pbadduser ***"
+
+manpage:
+	nroff -man pbadduser.1
+	groff -man -Tascii pbadduser.1
