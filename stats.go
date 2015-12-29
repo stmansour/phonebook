@@ -24,6 +24,23 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	ui.K = &MyCounters
 
+	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqSessionMemAck // make sure we got it
+	var p []session
+	for _, v := range sessions {
+		s := session{}
+		s.Token = v.Token
+		s.Firstname = v.Firstname
+		s.ImageURL = v.ImageURL
+		s.UID = v.UID
+		s.Username = v.Username
+		s.Expire = v.Expire
+		p = append(p, s)
+	}
+	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+
+	ui.N = p
+
 	t, _ := template.New("stats.html").Funcs(funcMap).ParseFiles("stats.html")
 	err := t.Execute(w, &ui)
 

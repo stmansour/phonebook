@@ -246,11 +246,24 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 				testResult("login", login(v), &tr)
 			}
 
+			if nil == v.SessionCookie {
+				fmt.Printf("viewAdminPersonDetail: could not find accord cookie after login!")
+			}
+
 			testResult("detail", viewPersonDetail(v), &tr)
+
+			if nil == v.SessionCookie {
+				fmt.Printf("viewAdminPersonDetail: could not find accord cookie after viewPersonDetail!")
+			}
 			testResult("adminView", viewAdminPersonDetail(v), &tr)
 
+			if nil == v.SessionCookie {
+				fmt.Printf("viewAdminPersonDetail: could not find accord cookie after viewAdminPersonDetail!")
+			}
 			if v.SessionCookie != nil {
 				testResult("logoff", logoff(v), &tr)
+			} else {
+				fmt.Printf("v.SessionCookie was nil\n")
 			}
 		}
 	}
@@ -281,6 +294,11 @@ func executeSimulation() {
 	}
 
 	fmt.Printf("Total Tests: %d   pass: %d   fail: %d\n", totTR.Fail+totTR.Pass, totTR.Pass, totTR.Fail)
+	if len(totTR.Failures) > 0 {
+		for i := 0; i < len(totTR.Failures); i++ {
+			fmt.Printf("%d. %s[%d] \n", i, totTR.Failures[i].Name, totTR.Failures[i].Index)
+		}
+	}
 	Elapsed := time.Since(StartTime)
 	fmt.Printf("Simulation Time: %s\n", Elapsed /*Round(Elapsed, 0.5e9)*/)
 }

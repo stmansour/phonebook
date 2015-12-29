@@ -3,7 +3,7 @@ ART=http://ec2-52-91-201-195.compute-1.amazonaws.com/artifactory
 USR=accord
 
 EXTERNAL_HOST_NAME=$( curl http://169.254.169.254/latest/meta-data/public-hostname )
-${EXTERNAL_HOST_NAME:?"Need to set EXTERNAL_HOST_NAME non-empty"}
+#${EXTERNAL_HOST_NAME:?"Need to set EXTERNAL_HOST_NAME non-empty"}
 
 #--------------------------------------------------------------
 #  Routine to download files from Artifactory
@@ -49,11 +49,9 @@ updatePkgs() {
 }
 
 updateImages() {
-    pushd phonebook
     /usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
     gunzip -f pbimages.tar.gz
     tar xvf pbimages.tar
-    popd
 }
 
 loadAccordTools() {
@@ -69,18 +67,31 @@ loadAccordTools() {
 }
 
 #----------------------------------------------
-#  Now download the requested apps...
+#  ensure that we're in the phonebook directory...
 #----------------------------------------------
-# - - - - -  APPEND DATA and DOWNLOAD APPS  - - - - - - -
-# install_mysql
-# UHURA_MASTER_URL=http://ip-172-31-56-33:8251/
-# MY_INSTANCE_NAME="phone"
-# mkdir ~ec2-user/apps;cd apps
-# mkdir ~ec2-user/apps/tgo
-# mkdir ~ec2-user/apps/phonebook
-# artf_get jenkins-snapshot/tgo/latest tgo.tar.gz
-artf_get jenkins-snapshot/phonebook/latest phonebook.tar.gz
-# gunzip tgo.tar.gz;tar xf tgo.tar
-gunzip phonebook.tar.gz;tar xf phonebook.tar
-updateImages
 
+dir=${PWD##*/}
+if [ ${dir} != "phonebook" ]; then
+    echo "This script must execute in the phonebook directory."
+    exit 1
+fi
+
+$(./activate.sh stop)
+echo "shutdown initiated..."
+sleep 6
+cd ..
+echo "Retrieving latest phonebook..."
+/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/phonebook.tar.gz
+# gunzip tgo.tar.gz;tar xf tgo.tar
+gunzip -f phonebook.tar.gz;tar xvf phonebook.tar
+cd phonebook/
+updateImages
+echo "starting..."
+./activate.sh start
+sleep 3
+status=$(./activate.sh ready)
+if [ ${status} == "OK" ]; then
+    echo "Activation successful"
+else
+    echo "Problems activating phonebook.  Status = ${status}"
+fi

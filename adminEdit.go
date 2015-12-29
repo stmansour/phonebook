@@ -41,7 +41,7 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	//		in personDetail includes those fields with VIEW and MOD perms
 	//---------------------------------------------------------------------
 	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
-		fmt.Printf("sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMMOD) returned 0\n")
+		fmt.Printf("adminEditHandler:  sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMMOD) returned 0\n")
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}

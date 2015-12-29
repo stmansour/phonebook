@@ -220,7 +220,7 @@
 	<table>
 	<tr>
 	<td class="edAttrib">COMPENSATION&nbsp;</td>
-	<td class="HRBoxedDisabled"> {{range .D.MyComps}}<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
+	<td class="HRBoxedDisabled"> {{range .D.MyComps}}<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
 	</tr>
 	</table>
 	<p></p>
@@ -230,7 +230,7 @@
 			<td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
 			{{range $i, $v := .D.MyDeductions}}
 			<td class="HRBoxedDisabled">
-			<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
+			<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}"{{if eq .HaveIt 1}} checked{{end}}>
 			{{.Name}} &nbsp;&nbsp;
 			</td>
 			{{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
@@ -244,7 +244,7 @@
 		<td>
 			<select disabled="disabled" name="BirthMonth" class="HR">
 			<option value="month">month</option>
-			{{range .Months}}<option {{$t := monthStringToInt .}}value="{{$t}}" {{if eq $t $bdayMon}}selected{{end}}>{{.}}</option>{{end}}
+			{{range .Months}}<option {{$t := monthStringToInt .}}value="{{$t}}"{{if eq $t $bdayMon}} selected{{end}}>{{.}}</option>{{end}}
 			</select>
 			<input disabled="disabled" type="number" class="HR" name="BirthDOM" value="{{.D.BirthDOM}}" min="1" max="31">
 		</td>

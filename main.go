@@ -297,6 +297,7 @@ type uiSupport struct {
 	L                *searchClassResults
 	X                *session
 	K                *UsageCounters
+	N                []session
 }
 
 //--------------------------------------------------------------------
@@ -476,6 +477,7 @@ func loadMaps() {
 		"showAdminButton":      showAdminButton,
 		"getBreadcrumb":        getBreadcrumb,
 		"getHTMLBreadcrumb":    getHTMLBreadcrumb,
+		"datetimeToString":     datetimeToString,
 	}
 	loadCompanies()
 	loadClasses()

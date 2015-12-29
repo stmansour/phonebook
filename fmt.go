@@ -151,6 +151,10 @@ func stringToDate(s string) time.Time {
 	return d
 }
 
+func datetimeToString(t time.Time) string {
+	return t.Format(time.RFC3339)
+}
+
 // ACPTUNKNOWN - x are general values for Yes, No, NotApplicable, Unknown
 const (
 	ACPTUNKNOWN = 0           // no selection
