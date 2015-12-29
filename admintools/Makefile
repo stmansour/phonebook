@@ -1,28 +1,15 @@
+DIRS = pbadduser pbbkup pbrestore pbsetpw pbsetrole pbsetusername pbupdateallpw pbwatchdog
+
 tools:
-	cd pbsetpw;make
-	cd pbsetrole;make
-	cd pbsetusername;make
-	cd pbadduser;make
-	cd pbupdateallpw;make
+	for dir in $(DIRS); do make -C $$dir;done
 
 clean:
-	cd pbsetpw;make clean
-	cd pbsetrole;make clean
-	cd pbsetusername;make clean
-	cd pbadduser;make clean
-	cd pbupdateallpw;make clean
+	for dir in $(DIRS); do make -C $$dir clean;done
 
 
 package:
-	cd pbsetpw;make package
-	cd pbsetrole;make package
-	cd pbsetusername;make package
-	cd pbadduser;make package
-	cd pbupdateallpw;make package
+	mkdir -p ../tmp/phonebook/man/man1
+	for dir in $(DIRS); do make -C $$dir package;done
 
 test:
-	cd pbsetpw;make test
-	cd pbsetrole;make test
-	cd pbsetusername;make test
-	cd pbadduser;make test
-	cd pbupdateallpw;make test
+	for dir in $(DIRS); do make -C $$dir test;done

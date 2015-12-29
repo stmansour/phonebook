@@ -3,6 +3,7 @@
 FULL=0
 GET="/usr/local/accord/bin/getfile.sh"
 RESTORE="/usr/local/accord/testtools/restoreMySQLdb.sh"
+DATABASE="accord"
 
 ##############################################################
 #   USAGE
@@ -35,8 +36,8 @@ ZZEOF
 ##############################################################
 restoreFull() {
 	echo "Retrieving backup data from Artifactory"
-	${GET} accord/db/accorddb.tar
-	tar xvf accorddb.tar
+	${GET} ${DATABASE}/db/${DATABASE}db.tar
+	tar xvf ${DATABASE}db.tar
 	echo "Done."
 
 	echo "Extracting pictures"
@@ -45,12 +46,12 @@ restoreFull() {
 	echo "Done."
 	
 	echo "Extracting data"
-	gunzip accorddb.sql.gz
-	${RESTORE} accord accorddb.sql
+	gunzip ${DATABASE}db.sql.gz
+	${RESTORE} ${DATABASE} ${DATABASE}db.sql
 	echo "Done."
 
 	echo "Cleaning up..."
-	rm -f pictures.tar accorddb.sql accorddb.tar
+	rm -f pictures.tar ${DATABASE}db.sql ${DATABASE}db.tar
 	echo "Done."
 }
 
@@ -59,16 +60,16 @@ restoreFull() {
 ##############################################################
 restoreData() {
 	echo "Retrieving backup data from Artifactory"
-	${GET} accord/db/accorddb.sql.gz
+	${GET} ${DATABASE}/db/${DATABASE}db.sql.gz
 	echo "Done."
 
 	echo "Extracting data"
-	gunzip accorddb.sql.gz
-	${RESTORE} accord accorddb.sql
+	gunzip ${DATABASE}db.sql.gz
+	${RESTORE} ${DATABASE} ${DATABASE}db.sql
 	echo "Done."
 
 	echo "Cleaning up..."
-	rm -f accorddb.sql
+	rm -f ${DATABASE}db.sql
 	echo "Done."
 }
 
@@ -76,13 +77,16 @@ restoreData() {
 ##############################################################
 #   MAIN ROUTINE
 ##############################################################
-while getopts ":fh" o; do
+while getopts ":fhN:" o; do
     case "${o}" in
         f)
             FULL=1
             ;;
         h)
 			usage
+            ;;
+        N)
+			DATABASE=${OPTARG}
             ;;
         *)
 			echo "UNRECOGNIZED OPTION:  ${o}"

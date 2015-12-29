@@ -1,0 +1,47 @@
+.TH pbsetusername 1 "December 23, 2015" "Version 0.9" "USER COMMANDS"
+.SH NAME
+pbsetusername \- set the username for a user in the Accord system
+.SH SYNOPSIS
+.B pbsetusername
+[\fB\-B\fR \fIdatabase_username\fR]
+[\fB\-help\fR]
+[\fB\-N\fR \fIdatabase_name\fR]
+\fB\-n\fR \fIusername\fR
+\fB\-u\fR \fIuid\fR
+
+.SH DESCRIPTION
+.B pbsetusername
+sets the username for the user with the supplied uid.  If the requested username
+is already in use the program will exit with an appropriate message and take no
+action on the database. If the uid supplied does not exist in the database an error
+message will be displayed.
+.SH OPTIONS
+.TP
+.IP "-B database_username"
+Username for logging into the database server. Default name is "ec2-user"
+.IP "-N database_name"
+The current default name is accordtest. The production database name is accord.
+.IP "-help"
+List the options to stdout.
+.IP "-n username"
+Specifies the desired new username
+.IP "-u uid"
+Specifies the uid of the user.
+
+.SH EXAMPLES
+
+.IP "pbsetusername -u 221 -n billyjoe
+This command sets the username for user with uid 221 to billyjoe.
+
+.IP "pbsetusername -help"
+This command prints the program options to stdout.
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR pbadduser (1),
+.BR pbsetpw (1)
+.BR pbsetrole (1),

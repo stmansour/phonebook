@@ -10,7 +10,7 @@ clean:
 	cd dbtools;make clean
 	cd test;make clean
 	cd admintools;make clean
-	rm -rf phonebook tmp Phonebook.log pbimages.tar* x.sh*
+	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* x.sh*
 	go clean
 
 dbmake:
@@ -24,10 +24,15 @@ package: phonebook
 	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebook
-	cp phonebook activate.sh testdb.sql *.css *.html pbbkup.sh pbrestore.sh tmp/phonebook/
+	cp phonebook activate.sh testdb.sql *.css *.html  tmp/phonebook/
 	cd admintools;make package
 	cd dbtools;make package
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
+
+install: package
+	if [ ! -d /usr/local/accord ]; then mkdir -p /usr/local/accord; fi
+	tar -C /usr/local/accord -xzvf ./tmp/phonebook.tar.gz
+
 
 publish: package
 	cd tmp;/usr/local/accord/bin/deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest

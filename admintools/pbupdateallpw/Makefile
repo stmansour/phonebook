@@ -9,6 +9,7 @@ install: pbupdateallpw
 
 package: pbupdateallpw
 	cp pbupdateallpw ../../tmp/phonebook/
+	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbupdateallpw ***"
 
 test:

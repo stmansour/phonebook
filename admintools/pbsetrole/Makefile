@@ -9,7 +9,12 @@ install: pbsetrole
 
 package: pbsetrole
 	cp pbsetrole ../../tmp/phonebook/
+	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbsetrole ***"
 
 test:
 	@echo "*** Testing completed in pbsetrole ***"
+
+manpage:
+	#nroff -man pbsetrole.1
+	groff -man -Tascii pbsetrole.1

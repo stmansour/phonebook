@@ -2,6 +2,7 @@
 
 FULL=0
 DEPLOY="/usr/local/accord/bin/deployfile.sh"
+DATABASE=accord
 
 ##############################################################
 #   USAGE
@@ -35,11 +36,11 @@ ZZEOF
 bkupFull() {
 	tar cvf pictures.tar pictures
 	gzip pictures.tar
-	mysqldump accord > accorddb.sql
-	gzip accorddb.sql
-	tar cvf accorddb.tar pictures.tar.gz accorddb.sql.gz
+	mysqldump ${DATABASE} > ${DATABASE}db.sql
+	gzip ${DATABASE}db.sql
+	tar cvf ${DATABASE}db.tar pictures.tar.gz ${DATABASE}db.sql.gz
 
-	${DEPLOY} accorddb.tar accord/db
+	${DEPLOY} ${DATABASE}db.tar ${DATABASE}/db
 
 	rm -f pictures.tar.gz accorddb.sql.gz accorddb.tar
 }
@@ -48,23 +49,26 @@ bkupFull() {
 #   BACKUP - DATA ONLY
 ##############################################################
 bkupData() {
-	mysqldump accord > accorddb.sql
-	gzip accorddb.sql
-	${DEPLOY} accorddb.sql.gz accord/db
-	rm -f accorddb.sql.gz
+	mysqldump ${DATABASE} > ${DATABASE}db.sql
+	gzip ${DATABASE}db.sql
+	${DEPLOY} ${DATABASE}db.sql.gz ${DATABASE}/db
+	rm -f ${DATABASE}db.sql.gz
 }
 
 
 ##############################################################
 #   MAIN ROUTINE
 ##############################################################
-while getopts ":fh" o; do
+while getopts ":fhN:" o; do
     case "${o}" in
         f)
             FULL=1
             ;;
         h)
 			usage
+            ;;
+        N)
+			DATABASE=${OPTARG}
             ;;
         *)
 			echo "UNRECOGNIZED OPTION:  ${o}"
@@ -75,10 +79,10 @@ done
 shift $((OPTIND-1))
 
 if [ ${FULL} -eq 0 ]; then
-	echo "Backing up data..."
+	echo "Backing up data on database ${DATABASE}..."
 	bkupData
 elif [ ${FULL} -eq 1 ]; then
-	echo "Backing up data and pictures..."
+	echo "Backing up data and pictures for database ${DATABASE}..."
 	bkupFull
 fi
 

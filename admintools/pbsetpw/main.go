@@ -55,10 +55,15 @@ func main() {
 		fmt.Printf("error = %v\n", err)
 		os.Exit(1)
 	}
-	_, err = update.Exec(passhash, App.user)
+	t, err := update.Exec(passhash, App.user)
 	if nil != err {
 		fmt.Printf("error = %v\n", err)
 	} else {
+		n, _ := t.RowsAffected()
+		if 0 == n {
+			fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.user)
+			os.Exit(1)
+		}
 		fmt.Printf("password for user %s has been set to \"%s\"\n", App.user, App.password)
 	}
 

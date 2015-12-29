@@ -99,7 +99,10 @@ func main() {
 
 	uid := 0
 	err = App.db.QueryRow("select uid from people where username=?", App.username).Scan(&uid)
-
+	if 0 == uid {
+		fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.username)
+		os.Exit(1)
+	}
 	update, err := App.db.Prepare("update people set RID=? where uid=?")
 	if nil != err {
 		fmt.Printf("error = %v\n", err)

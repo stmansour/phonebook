@@ -1,0 +1,40 @@
+.TH pbbkup 1 "December 23, 2015" "Version 0.9" "USER COMMANDS"
+.SH NAME
+pbbkup \- back up the Accord System database
+.SH SYNOPSIS
+.B pbbkup
+[\fB\-f\fR ]
+[\fB\-help\fR ]
+[\fB\-N\fR \fIdatabase_name\fR]
+
+.SH DESCRIPTION
+.B pbbkup
+make a full or data-only backup of the Accord System database.
+.SH OPTIONS
+.TP
+.IP "-B database_username"
+Username for logging into the database server. Default name is "ec2-user"
+.IP "-f"
+Back up both the data in the database as well as the pictures of individuals.
+If this option is not specified, only the data in the database is saved.
+.IP "-help"
+Lists the command options to stdout.
+.IP "-N database_name"
+The default name for the production database is "accord".  For testing the
+standard name is "accordtest".
+
+.SH EXAMPLES
+
+.IP "pbbkup -f"
+Performs a full database backup which includes the people pictures.
+
+.IP "pbbkup"
+Performs a data-only database backup.
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR pbrestore (1),

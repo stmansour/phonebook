@@ -3,12 +3,13 @@
 pbadduser \- add a user to the Accord system
 .SH SYNOPSIS
 .B pbadduser
-[\fB\-N\fR \fIdatabase_name\fR]
 [\fB\-B\fR \fIdatabase_username\fR]
-[\fB\-R\fR]
 [\fB\-f\fR \fIfirstname\fR]
+[\fB\-help\fR]
 [\fB\-l\fR \fIlastname\fR]
+[\fB\-N\fR \fIdatabase_name\fR]
 [\fB\-p\fR \fIpasswd\fR]
+[\fB\-R\fR]
 [\fB\-r\fR \fIrole\fR]
 [\fB\-u\fR \fIusername\fR]
 
@@ -18,18 +19,20 @@ adds a new user to the Accord system. It can only add a minimal
 number of fields:  first name, last name, username, password, and role.
 .SH OPTIONS
 .TP
-.IP "-N database_name"
-The current default name is accordtest. The production database name is accord.
 .IP "-B database_username"
 Username for logging into the database server. Default name is "ec2-user"
-.IP -R
-This option dumps the name of the roles currently defined in the database to stdout.
 .IP "-f firstname"
 Specifies the new user's first name
+.IP "-help"
+List the options to stdout.
 .IP "-l lastname"
 Specifies the new user's last name
+.IP "-N database_name"
 .IP "-p password"
 Specifies the new user's password
+The current default name is accordtest. The production database name is accord.
+.IP -R
+This option dumps the name of the roles currently defined in the database to stdout.
 .IP "-r role"
 Specifies the new user's security role. Note: use the -R option to see the list of defined roles.
 .IP "-u username"

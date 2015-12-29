@@ -1,0 +1,28 @@
+.TH pbwatchdog 1 "December 23, 2015" "Version 0.9" "USER COMMANDS"
+.SH NAME
+pbwatchdog \- run the Accord System watchdog process
+.SH SYNOPSIS
+.B pbwatchdog
+
+.SH DESCRIPTION
+.B pbwatchdog
+monitors a running Phonebook service. If the service goes down the watchdog
+process will restart it using the activate(1) process.  This process was designed 
+to run as a cron job.
+.SH OPTIONS
+.TP
+none at this time
+
+.SH EXAMPLES
+
+.IP "*/5 * * * * pbwatchdog"
+Run the watchdog every 5 minutes, every day, every month.
+
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR pbrestore (1),

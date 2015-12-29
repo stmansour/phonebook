@@ -25,8 +25,8 @@ var App struct {
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
-	uPtr := flag.Int("u", 0, "user's UID")
 	nPtr := flag.String("n", "", "new user name")
+	uPtr := flag.Int("u", 0, "user's UID")
 	flag.Parse()
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
@@ -50,6 +50,14 @@ func strToInt(s string) int {
 func main() {
 	readCommandLineArgs()
 
+	if "" == App.username {
+		fmt.Printf("You must supply the username using the -n option\n")
+		os.Exit(2)
+	}
+	if 0 == App.UID {
+		fmt.Printf("You must supply the uid of the user for whom you wish to change the username using the -u option\n")
+		os.Exit(2)
+	}
 	var err error
 	s := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", App.DBName)
 	App.db, err = sql.Open("mysql", s)
@@ -62,16 +70,40 @@ func main() {
 		fmt.Printf("App.db.Ping: Error = %v\n", err)
 	}
 
+	var uid int
+	err = App.db.QueryRow("select uid from people where username=?", App.username).Scan(&uid)
+	switch {
+	case err == sql.ErrNoRows:
+		fmt.Printf("username = %s is available for use in database %s\n", App.username, App.DBName)
+	case err != nil:
+		fmt.Printf("error with QueryRow selecturing username: %s,  error = %v\n", App.username, err)
+		os.Exit(1)
+	default:
+		fmt.Printf("username %s is already being used in database %s. UID = %d\n", App.username, App.DBName, uid)
+		os.Exit(2)
+	}
+
 	update, err := App.db.Prepare("update people set username=? where uid=?")
 	if nil != err {
 		fmt.Printf("error = %v\n", err)
 		os.Exit(1)
 	}
-	_, err = update.Exec(App.username, App.UID)
+	c, err := update.Exec(App.username, App.UID)
 	if nil != err {
-		fmt.Printf("error = %v\n", err)
+		switch err {
+		case sql.ErrNoRows:
+			fmt.Printf("Database %s does not contain a user with uid=%d\n", App.DBName, App.UID)
+			os.Exit(1)
+		default:
+			fmt.Printf("error = %v\n", err)
+			os.Exit(1)
+		}
 	} else {
-		fmt.Printf("password for uid %d has been updated\n", App.UID)
+		n, _ := c.RowsAffected()
+		if n == 0 {
+			fmt.Printf("Database %s does not contain a user with uid=%d\n", App.DBName, App.UID)
+			os.Exit(1)
+		}
+		fmt.Printf("uid %d now has username %s\n", App.UID, App.username)
 	}
-
 }

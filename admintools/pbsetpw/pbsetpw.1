@@ -1,0 +1,44 @@
+.TH pbsetpw 1 "December 23, 2015" "Version 0.9" "USER COMMANDS"
+.SH NAME
+pbsetpw \- set a password for a user in the Accord system
+.SH SYNOPSIS
+.B pbsetpw
+[\fB\-B\fR \fIdatabase_username\fR]
+[\fB\-help\fR]
+[\fB\-N\fR \fIdatabase_name\fR]
+[\fB\-p\fR \fIpasswd\fR]
+[\fB\-u\fR \fIusername\fR]
+
+.SH DESCRIPTION
+.B pbsetpw
+sets the user password for the supplied user.
+.SH OPTIONS
+.TP
+.IP "-B database_username"
+Username for logging into the database server. Default name is "ec2-user"
+.IP "-N database_name"
+The current default name is accordtest. The production database name is accord.
+.IP "-help"
+List the options to stdout.
+.IP "-p password"
+Specifies the user's new password
+.IP "-u username"
+Specifies the user's username.
+
+.SH EXAMPLES
+
+.IP "pbsetpw -u jdoe -p FoolMe1"
+This command sets the password for user jdoe to "FoolMe1".
+
+.IP "pbsetpw -help"
+This command prints the program options to stdout.
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR pbadduser (1),
+.BR pbsetrole (1),
+.BR pbsetusername (1)
