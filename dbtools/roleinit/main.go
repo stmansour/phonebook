@@ -193,7 +193,7 @@ func makeNewRole(db *sql.DB, r *Role) {
 	// get the RID
 	errcheck(db.QueryRow("select RID from roles where Name=?", r.Name).Scan(&r.RID))
 
-	insert, err = db.Prepare("INSERT INTO FieldPerms (RID,Elem,Field,Perm,Descr) VALUES(?,?,?,?,?)")
+	insert, err = db.Prepare("INSERT INTO fieldperms (RID,Elem,Field,Perm,Descr) VALUES(?,?,?,?,?)")
 	errcheck(err)
 
 	// fmt.Println(r.Name)
