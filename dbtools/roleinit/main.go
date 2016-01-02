@@ -168,22 +168,22 @@ func errcheck(err error) {
 }
 
 func createRoleTables(db *sql.DB) {
-	ps, err := db.Prepare("DROP TABLE IF EXISTS Roles,FieldPerms,Role,FieldPerm")
+	ps, err := db.Prepare("DROP TABLE IF EXISTS roles,fieldperms,role,fieldperm")
 	errcheck(err)
 	_, err = ps.Exec()
 	errcheck(err)
-	ps, err = db.Prepare("CREATE TABLE Roles (RID MEDIUMINT NOT NULL AUTO_INCREMENT,Name VARCHAR(25),Descr VARCHAR(512), PRIMARY KEY (RID))")
+	ps, err = db.Prepare("CREATE TABLE roles (RID MEDIUMINT NOT NULL AUTO_INCREMENT,Name VARCHAR(25),Descr VARCHAR(512), PRIMARY KEY (RID))")
 	errcheck(err)
 	_, err = ps.Exec()
 	errcheck(err)
-	ps, err = db.Prepare("CREATE TABLE FieldPerms (RID MEDIUMINT NOT NULL,Elem MEDIUMINT NOT NULL,Field VARCHAR(25) NOT NULL,Perm MEDIUMINT NOT NULL,Descr VARCHAR(256))")
+	ps, err = db.Prepare("CREATE TABLE fieldperms (RID MEDIUMINT NOT NULL,Elem MEDIUMINT NOT NULL,Field VARCHAR(25) NOT NULL,Perm MEDIUMINT NOT NULL,Descr VARCHAR(256))")
 	errcheck(err)
 	_, err = ps.Exec()
 	errcheck(err)
 }
 
 func makeNewRole(db *sql.DB, r *Role) {
-	insert, err := db.Prepare("INSERT INTO Roles (Name,Descr) VALUES(?,?)")
+	insert, err := db.Prepare("INSERT INTO roles (Name,Descr) VALUES(?,?)")
 	errcheck(err)
 	_, err = insert.Exec(r.Name, r.Descr)
 	errcheck(err)

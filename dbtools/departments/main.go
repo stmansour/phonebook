@@ -30,7 +30,7 @@ func loadDepartments(db *sql.DB) {
 	//--------------------------------------------------------------------------
 	// Populate the JobTitles table
 	//--------------------------------------------------------------------------
-	InsertJT, err := db.Prepare("INSERT INTO Departments (name) VALUES(?)")
+	InsertJT, err := db.Prepare("INSERT INTO departments (name) VALUES(?)")
 	errcheck(err)
 	filename := "depts.csv"
 	f, err := os.Open(filename)

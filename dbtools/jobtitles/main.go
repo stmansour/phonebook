@@ -32,7 +32,7 @@ func CreateJobTitlesTable(db *sql.DB) {
 	//--------------------------------------------------------------------------
 	// Populate the JobTitles table
 	//--------------------------------------------------------------------------
-	InsertJT, err := db.Prepare("INSERT INTO JobTitles (title) VALUES(?)")
+	InsertJT, err := db.Prepare("INSERT INTO jobtitles (title) VALUES(?)")
 	errcheck(err)
 	jobtitles := "jobtitles.csv"
 	f, err := os.Open(jobtitles)

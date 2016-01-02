@@ -111,7 +111,7 @@ func deductionToString(i int) string {
 }
 
 func createDeductionsList(db *sql.DB) {
-	Insrt, err := db.Prepare("INSERT INTO DeductionList (dcode,name) VALUES(?,?)")
+	Insrt, err := db.Prepare("INSERT INTO deductionlist (dcode,name) VALUES(?,?)")
 	errcheck(err)
 
 	for i := 0; i < DDEND; i++ {

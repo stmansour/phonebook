@@ -19,7 +19,7 @@ lastmodby, lastmodtime from accord.companies;
 INSERT accordtest.classes (Name, Designation, Description, lastmodby, lastmodtime)
 SELECT Name, Designation, Description, lastmodby, lastmodtime from accord.classes;
 
-insert into accordtest.DeductionList select * from accord.DeductionList;
-insert into accordtest.FieldPerms select * from accord.FieldPerms;
-insert into accordtest.Compensation select * from accord.Compensation;
-insert into accordtest.Deductions select * from accord.Deductions;
+insert into accordtest.deductionlist select * from accord.deductionlist;
+insert into accordtest.fieldperms select * from accord.fieldperms;
+insert into accordtest.compensation select * from accord.compensation;
+insert into accordtest.deductions select * from accord.deductions;
