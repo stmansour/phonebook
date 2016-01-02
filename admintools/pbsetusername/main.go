@@ -76,7 +76,7 @@ func main() {
 	case err == sql.ErrNoRows:
 		fmt.Printf("username = %s is available for use in database %s\n", App.username, App.DBName)
 	case err != nil:
-		fmt.Printf("error with QueryRow selecturing username: %s,  error = %v\n", App.username, err)
+		fmt.Printf("error with QueryRow selecting username: %s,  error = %v\n", App.username, err)
 		os.Exit(1)
 	default:
 		fmt.Printf("username %s is already being used in database %s. UID = %d\n", App.username, App.DBName, uid)

@@ -3,5 +3,8 @@ usersim: *.go
 	golint
 	go build
 
+test: usersim
+	./functest1.sh
+
 clean:
 	rm -f usersim

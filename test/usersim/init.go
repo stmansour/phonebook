@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"database/sql"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -45,15 +46,42 @@ func readCommandLineArgs() {
 	rand.Seed(App.Seed)
 }
 
-func genDesignation(cn string) string {
+// DesChars is the set of characters used to build a designation
+var DesChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+func randDesChar() byte {
+	return DesChars[rand.Intn(len(DesChars))]
+}
+
+func genDesignation(cn string, code, table string) string {
+	d := ""
 	parts := strings.Split(cn, " ")
 	// fmt.Printf("parts = %#v\n", parts)
 	if len(parts) > 2 {
-		return strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[1][0], parts[2][0]))
+		d = strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[1][0], parts[2][0]))
 	} else if len(parts) == 2 {
-		return strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[0][1], parts[1][0]))
+		d = strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[0][1], parts[1][0]))
+	} else {
+		d = strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[0][1], parts[0][2]))
 	}
-	return strings.ToUpper(fmt.Sprintf("%c%c%c", parts[0][0], parts[0][1], parts[0][2]))
+
+	for {
+		var Code int
+		qs := fmt.Sprintf("select %s from %s where Designation=?", code, table)
+		err := App.db.QueryRow(qs, d).Scan(&Code)
+		switch {
+		case err == sql.ErrNoRows:
+			// fmt.Printf("Designation = %s is available for use in database %s\n", App.Designation, App.DBName)
+			return d
+		case err != nil:
+			fmt.Printf("error with QueryRow:  query = %s   error = %v\n", qs, err)
+			os.Exit(1)
+		default:
+			// fmt.Printf("Designation %s is already being used in database %s. CoCode = %d\n", App.Designation, App.DBName, CoCode)
+			d = fmt.Sprintf("%c%c%c", randDesChar(), randDesChar(), randDesChar())
+			// fmt.Printf("regenerated: %s\n", d)
+		}
+	}
 }
 
 func createClasses() {
@@ -66,7 +94,7 @@ func createClasses() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		cn := scanner.Text()
-		dsg := genDesignation(cn)
+		dsg := genDesignation(cn, "classcode", "classes")
 		if len(cn) > 25 {
 			cn = cn[0:25]
 		}
@@ -93,7 +121,7 @@ func createCompanies() {
 	cocount := 0
 	for scanner.Scan() {
 		cn := scanner.Text()
-		dsg := genDesignation(cn)
+		dsg := genDesignation(cn, "cocode", "companies")
 		if len(cn) > 25 {
 			cn = cn[0:25]
 		}

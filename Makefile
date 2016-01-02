@@ -6,12 +6,17 @@ phonebook: *.go
 	golint
 	go build
 
+.PHONY:  test
+
 clean:
 	cd dbtools;make clean
 	cd test;make clean
 	cd admintools;make clean
 	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* x.sh*
 	go clean
+
+test:
+	cd test;make test
 
 dbmake:
 	#cd ../dir/obfuscate;./obfuscate

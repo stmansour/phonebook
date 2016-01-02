@@ -247,19 +247,30 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 			}
 
 			if nil == v.SessionCookie {
-				fmt.Printf("viewAdminPersonDetail: could not find accord cookie after login!")
+				fmt.Printf("usersim: could not find accord cookie after login!")
+				return
 			}
 
 			testResult("detail", viewPersonDetail(v), &tr)
 
 			if nil == v.SessionCookie {
-				fmt.Printf("viewAdminPersonDetail: could not find accord cookie after viewPersonDetail!")
+				fmt.Printf("usersim: could not find accord cookie after viewPersonDetail!")
+				return
 			}
-			testResult("adminView", viewAdminPersonDetail(v), &tr)
+			testResult("adminView", adminViewTest(v), &tr)
 
 			if nil == v.SessionCookie {
-				fmt.Printf("viewAdminPersonDetail: could not find accord cookie after viewAdminPersonDetail!")
+				fmt.Printf("usersim: could not find accord cookie after viewAdminPersonDetail!")
+				return
 			}
+
+			testResult("adminEdit", adminEditTest(v), &tr)
+
+			if nil == v.SessionCookie {
+				fmt.Printf("usersim: could not find accord cookie after viewAdminPersonEditDetail!")
+				return
+			}
+
 			if v.SessionCookie != nil {
 				testResult("logoff", logoff(v), &tr)
 			} else {
@@ -269,7 +280,7 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 	}
 
 	TestResChan <- tr // push our results to the simulation executor
-	<-TestResChanAck  // wait for receipt before continuint
+	<-TestResChanAck  // wait for receipt before continuing
 }
 
 func executeSimulation() {

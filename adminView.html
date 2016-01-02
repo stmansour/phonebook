@@ -183,7 +183,8 @@
 	<table >
 		<tr>
 		    <td class="edAttrib">HIRE DATE</td><td><input disabled="disabled" class="HR" type=date name="Hire"
-		     value="{{if gt $hireyear 2000}}{{dateToString .D.Hire}}{{end}}" size="10"></td>
+		     value="{{if gt $hireyear 2000}}{{dateToString .D.Hire}}{{end}}"
+		      size="10"></td>
 			<td width="10"></td>
 			<td class="edAttrib">STATUS</td><td><select disabled="disabled" name="Status" class="HR"> <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option> </select></td>
 			<td width="10"></td>
@@ -200,7 +201,7 @@
 			  value="{{if gt $nextrevyear 2000}}{{dateToString .D.NextReview}}{{end}}" size="10"></td>
 			<td width="10"></td>
 			<td class="edAttrib">TERMINATION DATE</td><td><input disabled="disabled" class="HR" type=date name="Termination"
-			  value="{{if gt $termyear 2000}}{{dateToString .D.Termination}}{{end}}" size="10">
+			  value="{{if gt $termyear 2000}}{{dateToString .D.Termination}}{{end}}" size="10"></td>
 		</tr>
 	</table>
 	<p></p>
@@ -220,7 +221,8 @@
 	<table>
 	<tr>
 	<td class="edAttrib">COMPENSATION&nbsp;</td>
-	<td class="HRBoxedDisabled"> {{range .D.MyComps}}<input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
+	<td class="HRBoxedDisabled"> {{range .D.MyComps}}<input disabled="disabled" type="checkbox" 
+		name="{{.Name}}" value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
 	</tr>
 	</table>
 	<p></p>
@@ -246,7 +248,9 @@
 			<option value="month">month</option>
 			{{range .Months}}<option {{$t := monthStringToInt .}}value="{{$t}}"{{if eq $t $bdayMon}} selected{{end}}>{{.}}</option>{{end}}
 			</select>
-			<input disabled="disabled" type="number" class="HR" name="BirthDOM" value="{{.D.BirthDOM}}" min="1" max="31">
+			<input disabled="disabled" type="number" class="HR"
+			name="BirthDOM" value="{{.D.BirthDOM}}"
+			min="1" max="31">
 		</td>
 		</tr>
 	</table>

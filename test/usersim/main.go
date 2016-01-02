@@ -243,8 +243,8 @@ func fillUserFields(v *personDetail) {
 	v.PrimaryEmail = randomEmail(v.LastName, v.FirstName)
 	v.SecondaryEmail = randomEmail(v.LastName, v.FirstName)
 
-	v.ClassCode = rand.Intn(len(App.NameToClassCode))
-	v.CoCode = rand.Intn(len(App.NameToCoCode))
+	v.ClassCode = 1 + rand.Intn(len(App.NameToClassCode))
+	v.CoCode = 1 + rand.Intn(len(App.NameToCoCode))
 }
 
 func createUser(v *personDetail) {

@@ -4,6 +4,9 @@
 HOST=localhost
 PORT=8250
 
+DBNAME="accord"
+DBUSER="ec2-user"
+
 usage() {
     cat << ZZEOF
 Phonebook activation script.
@@ -12,6 +15,7 @@ Usage:   activate.sh [OPTIONS] CMD
 OPTIONS:
 -p port      (default is 8250)
 -h hostname  (default is localhost)
+-N dbname    (default is accord)
 
 CMD is one of: start | stop | ready | test | teststatus
 
@@ -39,11 +43,15 @@ updateImages() {
 	tar xvf pbimages.tar
 }
 
-while getopts ":p:ih:" o; do
+while getopts ":p:ih:N:" o; do
     case "${o}" in
-        h)
+       h)
             HOST=${OPTARG}
             echo "HOST set to: ${HOST}"
+            ;;
+        N)
+            DBNAME=${OPTARG}
+            echo "DBNAME set to: ${DBNAME}"
             ;;
         p)
             PORT=${OPTARG}
@@ -74,7 +82,7 @@ for arg do
 			gunzip pbimages.tar.gz
 			tar xvf pbimages.tar
 		fi
-		./phonebook >phonebook.log 2>&1 &
+		./phonebook -N ${DBNAME} >phonebook.log 2>&1 &
 		echo "OK"
 		exit 0
 		;;
@@ -106,7 +114,7 @@ curl -s http://${HOST}:${PORT}/extAdminShutdown/
 echo "sleeping 10 seconds before restart..."
 sleep 10
 echo "starting phonebook"
-./phonebook >phonebook.log 2>&1 &
+./phonebook  -N ${DBNAME} -B ${DBUSER} >phonebook.log 2>&1 &
 ZZEOF1
 		chmod +x x.sh
 		./x.sh >x.sh.log 2>&1 &

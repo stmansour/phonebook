@@ -31,12 +31,13 @@ func validateSubstring(ps *string, s1 string, s2 string, target string) bool {
 	reg2 := regexp.MustCompile(s2)
 	m1 := reg1.FindStringIndex(*ps)
 	m2 := reg2.FindStringIndex(*ps)
-	if App.ShowTestMatching {
-		fmt.Printf("s1=%s  s2=%s  target=%s\n", s1, s2, target)
-		fmt.Printf("m1 = %#v\n", m1)
-		fmt.Printf("m2 = %#v\n", m2)
-	}
+
 	if nil == m1 || nil == m2 {
+		if App.ShowTestMatching {
+			fmt.Printf("s1=%s  s2=%s  target=%s\n", s1, s2, target)
+			fmt.Printf("m1 = %#v\n", m1)
+			fmt.Printf("m2 = %#v\n", m2)
+		}
 		return false
 	}
 	if m2[0] < m1[1] {
@@ -44,9 +45,10 @@ func validateSubstring(ps *string, s1 string, s2 string, target string) bool {
 	}
 	m := (*ps)[m1[1]:m2[0]]
 	b := strings.Contains(m, target)
-	if App.ShowTestMatching {
-		fmt.Printf("m = %s\n", m)
-		fmt.Printf("found target = %v\n", b)
+	if false == b && App.ShowTestMatching {
+		fmt.Printf("s1=\"%s\"  s2=\"%s\"  target=\"%s\"\n", s1, s2, target)
+		fmt.Printf("substring = \"%s\"\n", m)
+		fmt.Printf("could not find = \"%s\"\n", target)
 	}
 	return b
 }
@@ -158,8 +160,7 @@ func viewPersonDetail(d *personDetail) bool {
 //     false = the test failed for any on of several reasons. If the session is not established
 //             after the request, the test fails. If the request succeeds, and one or more of
 //             the data fields were not correct then the test fails.
-func viewAdminPersonDetail(d *personDetail) bool {
-	URL := fmt.Sprintf("http://%s:%d/adminView/%d", App.Host, App.Port, d.UID)
+func viewAdminPerson(d *personDetail, URL string, pageName string) bool {
 	hc := http.Client{}
 
 	req, err := http.NewRequest("GET", URL, nil)
@@ -225,7 +226,7 @@ func viewAdminPersonDetail(d *personDetail) bool {
 	tr.Failures = make([]TestFailure, 0)
 
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord") && strings.Contains(m, "Admin - View") && d.SessionCookie != nil {
+	if strings.Contains(m, "Accord") && strings.Contains(m, pageName) && d.SessionCookie != nil {
 		t := time.Date(2000, time.December, 31, 23, 59, 59, 0, time.UTC)
 		sHire := ""
 		if d.Hire.After(t) {
@@ -244,41 +245,41 @@ func viewAdminPersonDetail(d *personDetail) bool {
 			sTermination = dateToString(d.Termination)
 		}
 		validate := []validationTable{
-			/* 00 */ {"adminView validate Last Name", &s, `name="LastName"`, `name="MiddleName"`, `value="` + d.LastName + `"`},
-			/* 01 */ {"adminView validate Middle Name", &s, `name="MiddleName"`, `name="FirstName"`, `value="` + d.MiddleName + `"`},
-			/* 02 */ {"adminView validate First Name", &s, `name="FirstName"`, `name="PreferredName"`, `value="` + d.FirstName + `"`},
-			/* 03 */ {"adminView validate Preferred Name", &s, `name="PreferredName"`, `OFFICE PHONE`, `value="` + d.PreferredName + `"`},
-			/* 04 */ {"adminView validate Office Phone", &s, `name="OfficePhone"`, `name="OfficeFax"`, `value="` + d.OfficePhone + `"`},
-			/* 05 */ {"adminView validate Office Fax", &s, `name="OfficeFax"`, `name="CellPhone"`, `value="` + d.OfficeFax + `"`},
-			/* 06 */ {"adminView validate Cell Phone", &s, `name="CellPhone"`, `PRIMARY EMAIL`, `value="` + d.CellPhone + `"`},
-			/* 07 */ {"adminView validate Primary Email", &s, `name="PrimaryEmail"`, `name="SecondaryEmail"`, `value="` + d.PrimaryEmail + `"`},
-			/* 08 */ {"adminView validate Secondary Email", &s, `name="SecondaryEmail"`, `HOME STREET ADDRESS`, `value="` + d.SecondaryEmail + `"`},
-			/* 09 */ {"adminView validate Home Street Addr", &s, `name="HomeStreetAddress"`, `name="HomeStreetAddress2"`, `value="` + d.HomeStreetAddress + `"`},
-			/* 10 */ {"adminView validate Home Street Addr2", &s, `name="HomeStreetAddress2"`, `>CITY<`, `value="` + d.HomeStreetAddress2 + `"`},
-			/* 11 */ {"adminView validate Home City", &s, `name="HomeCity"`, `name="HomeState"`, `value="` + d.HomeCity + `"`},
-			/* 12 */ {"adminView validate Home State", &s, `name="HomeState"`, `name="HomePostalCode"`, `value="` + d.HomeState + `"`},
-			/* 13 */ {"adminView validate Home Postal Code", &s, `name="HomePostalCode"`, `name="HomeCountry"`, `value="` + d.HomePostalCode + `"`},
-			/* 14 */ {"adminView validate Home Country", &s, `name="HomeCountry"`, `EMERGENCY CONTACT NAME`, `value="` + d.HomeCountry + `"`},
-			/* 15 */ {"adminView validate EmergencyContactName", &s, `name="EmergencyContactName"`, `name="EmergencyContactPhone"`, `value="` + d.EmergencyContactName + `"`},
-			/* 16 */ {"adminView validate EmergencyContactPhone", &s, `name="EmergencyContactPhone"`, `>COMPANY<`, `value="` + d.EmergencyContactPhone + `"`},
-			/* 17 */ {"adminView validate Company", &s, `>COMPANY<`, `>JOB TITLE<`, fmt.Sprintf("option value=\"%d\"selected>", d.CoCode)},
-			/* 18 */ {"adminView validate JobTitle", &s, `>JOB TITLE<`, `>MANAGER UID<`, fmt.Sprintf("option value=\"%d\"selected>", d.JobCode)},
-			/* 19 */ {"adminView validate ManagerUID", &s, `>MANAGER UID<`, `>STATE OF EMPLOYMENT<`, `value="` + fmt.Sprintf("%d", d.MgrUID) + `"`},
-			/* 20 */ {"adminView validate StateOfEmployment", &s, `>STATE OF EMPLOYMENT<`, `>COUNTRY OF EMPLOYMENT<`, `value="` + d.StateOfEmployment + `"`},
-			/* 21 */ {"adminView validate CountryOfEmployment", &s, `>COUNTRY OF EMPLOYMENT<`, `>DEPARTMENT<`, `value="` + d.CountryOfEmployment + `"`},
-			/* 22 */ {"adminView validate Department", &s, `>DEPARTMENT<`, `>CLASS<`, fmt.Sprintf("option value=\"%d\"selected>", d.DeptCode)},
-			/* 23 */ {"adminView validate Class", &s, `>CLASS<`, `>POSITION CONTROL NUMBER`, fmt.Sprintf("option value=\"%d\"selected>", d.ClassCode)},
-			/* 24 */ {"adminView validate PositionControlNumber", &s, `>POSITION CONTROL NUMBER`, `>HIRE DATE<`, fmt.Sprintf("value=\"%s\"", d.PositionControlNumber)},
-			/* 25 */ {"adminView validate Hire Date", &s, `>HIRE DATE<`, `>STATUS<`, fmt.Sprintf("value=\"%s\"", sHire)},
-			/* 26 */ {"adminView validate Status", &s, `>STATUS<`, `>ELIGIBLE FOR REHIRE`, fmt.Sprintf("option value=\"%s\" selected>", activeToString(d.Status))},
-			/* 27 */ {"adminView validate EligibleForRehire", &s, `>ELIGIBLE FOR REHIRE`, `>LAST REVIEW<`, fmt.Sprintf("option value=\"%s\" selected>", yesnoToString(d.EligibleForRehire))},
-			/* 28 */ {"adminView validate LastReview", &s, `>LAST REVIEW<`, `>NEXT REVIEW<`, fmt.Sprintf("value=\"%s\"", sLastReview)},
-			/* 29 */ {"adminView validate NextReview", &s, `>NEXT REVIEW<`, `>TERMINATION DATE<`, fmt.Sprintf("value=\"%s\"", sNextReview)},
-			/* 30 */ {"adminView validate Termination", &s, `>TERMINATION DATE<`, `ACCEPTED HEALTH INSURANCE `, fmt.Sprintf("value=\"%s\"", sTermination)},
-			/* 31 */ {"adminView validate AcceptedHealthInsurance", &s, `>ACCEPTED HEALTH INSURANCE `, `>ACCEPTED DENTAL INSURANCE `, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.AcceptedHealthInsurance))},
-			/* 32 */ {"adminView validate AcceptedDentalInsurance", &s, `>ACCEPTED DENTAL INSURANCE `, `>ACCEPTED 401K `, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.AcceptedDentalInsurance))},
-			/* 33 */ {"adminView validate Accepted401K", &s, `>ACCEPTED 401K `, `>COMPENSATION`, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.Accepted401K))},
-			/* 34 */ {"adminView validate birthDOM", &s, `>BIRTHDAY<`, `action="/adminViewBtn/`, fmt.Sprintf(`name="BirthDOM" value="%d"`, d.BirthDOM)},
+			/* 00 */ {pageName + ": validate Last Name", &s, `name="LastName"`, `name="MiddleName"`, `value="` + d.LastName + `"`},
+			/* 01 */ {pageName + ": validate Middle Name", &s, `name="MiddleName"`, `name="FirstName"`, `value="` + d.MiddleName + `"`},
+			/* 02 */ {pageName + ": validate First Name", &s, `name="FirstName"`, `name="PreferredName"`, `value="` + d.FirstName + `"`},
+			/* 03 */ {pageName + ": validate Preferred Name", &s, `name="PreferredName"`, `OFFICE PHONE`, `value="` + d.PreferredName + `"`},
+			/* 04 */ {pageName + ": validate Office Phone", &s, `name="OfficePhone"`, `name="OfficeFax"`, `value="` + d.OfficePhone + `"`},
+			/* 05 */ {pageName + ": validate Office Fax", &s, `name="OfficeFax"`, `name="CellPhone"`, `value="` + d.OfficeFax + `"`},
+			/* 06 */ {pageName + ": validate Cell Phone", &s, `name="CellPhone"`, `PRIMARY EMAIL`, `value="` + d.CellPhone + `"`},
+			/* 07 */ {pageName + ": validate Primary Email", &s, `name="PrimaryEmail"`, `name="SecondaryEmail"`, `value="` + d.PrimaryEmail + `"`},
+			/* 08 */ {pageName + ": validate Secondary Email", &s, `name="SecondaryEmail"`, `HOME STREET ADDRESS`, `value="` + d.SecondaryEmail + `"`},
+			/* 09 */ {pageName + ": validate Home Street Addr", &s, `name="HomeStreetAddress"`, `name="HomeStreetAddress2"`, `value="` + d.HomeStreetAddress + `"`},
+			/* 10 */ {pageName + ": validate Home Street Addr2", &s, `name="HomeStreetAddress2"`, `>CITY<`, `value="` + d.HomeStreetAddress2 + `"`},
+			/* 11 */ {pageName + ": validate Home City", &s, `name="HomeCity"`, `name="HomeState"`, `value="` + d.HomeCity + `"`},
+			/* 12 */ {pageName + ": validate Home State", &s, `name="HomeState"`, `name="HomePostalCode"`, `value="` + d.HomeState + `"`},
+			/* 13 */ {pageName + ": validate Home Postal Code", &s, `name="HomePostalCode"`, `name="HomeCountry"`, `value="` + d.HomePostalCode + `"`},
+			/* 14 */ {pageName + ": validate Home Country", &s, `name="HomeCountry"`, `EMERGENCY CONTACT NAME`, `value="` + d.HomeCountry + `"`},
+			/* 15 */ {pageName + ": validate EmergencyContactName", &s, `name="EmergencyContactName"`, `name="EmergencyContactPhone"`, `value="` + d.EmergencyContactName + `"`},
+			/* 16 */ {pageName + ": validate EmergencyContactPhone", &s, `name="EmergencyContactPhone"`, `>COMPANY<`, `value="` + d.EmergencyContactPhone + `"`},
+			/* 17 */ {pageName + ": validate Company", &s, `>COMPANY<`, `>JOB TITLE<`, fmt.Sprintf("option value=\"%d\"selected>", d.CoCode)},
+			/* 18 */ {pageName + ": validate JobTitle", &s, `>JOB TITLE<`, `>MANAGER UID<`, fmt.Sprintf("option value=\"%d\"selected>", d.JobCode)},
+			/* 19 */ {pageName + ": validate ManagerUID", &s, `>MANAGER UID<`, `>STATE OF EMPLOYMENT<`, `value="` + fmt.Sprintf("%d", d.MgrUID) + `"`},
+			/* 20 */ {pageName + ": validate StateOfEmployment", &s, `>STATE OF EMPLOYMENT<`, `>COUNTRY OF EMPLOYMENT<`, `value="` + d.StateOfEmployment + `"`},
+			/* 21 */ {pageName + ": validate CountryOfEmployment", &s, `>COUNTRY OF EMPLOYMENT<`, `>DEPARTMENT<`, `value="` + d.CountryOfEmployment + `"`},
+			/* 22 */ {pageName + ": validate Department", &s, `>DEPARTMENT<`, `>CLASS<`, fmt.Sprintf("option value=\"%d\"selected>", d.DeptCode)},
+			/* 23 */ {pageName + ": validate Class", &s, `>CLASS<`, `>POSITION CONTROL NUMBER`, fmt.Sprintf("option value=\"%d\"selected>", d.ClassCode)},
+			/* 24 */ {pageName + ": validate PositionControlNumber", &s, `>POSITION CONTROL NUMBER`, `>HIRE DATE<`, fmt.Sprintf("value=\"%s\"", d.PositionControlNumber)},
+			/* 25 */ {pageName + ": validate Hire Date", &s, `>HIRE DATE<`, `>STATUS<`, fmt.Sprintf("value=\"%s\"", sHire)},
+			/* 26 */ {pageName + ": validate Status", &s, `>STATUS<`, `>ELIGIBLE FOR REHIRE`, fmt.Sprintf("option value=\"%s\" selected>", activeToString(d.Status))},
+			/* 27 */ {pageName + ": validate EligibleForRehire", &s, `>ELIGIBLE FOR REHIRE`, `>LAST REVIEW<`, fmt.Sprintf("option value=\"%s\" selected>", yesnoToString(d.EligibleForRehire))},
+			/* 28 */ {pageName + ": validate LastReview", &s, `>LAST REVIEW<`, `>NEXT REVIEW<`, fmt.Sprintf("value=\"%s\"", sLastReview)},
+			/* 29 */ {pageName + ": validate NextReview", &s, `>NEXT REVIEW<`, `>TERMINATION DATE<`, fmt.Sprintf("value=\"%s\"", sNextReview)},
+			/* 30 */ {pageName + ": validate Termination", &s, `>TERMINATION DATE<`, `ACCEPTED HEALTH INSURANCE `, fmt.Sprintf("value=\"%s\"", sTermination)},
+			/* 31 */ {pageName + ": validate AcceptedHealthInsurance", &s, `>ACCEPTED HEALTH INSURANCE `, `>ACCEPTED DENTAL INSURANCE `, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.AcceptedHealthInsurance))},
+			/* 32 */ {pageName + ": validate AcceptedDentalInsurance", &s, `>ACCEPTED DENTAL INSURANCE `, `>ACCEPTED 401K `, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.AcceptedDentalInsurance))},
+			/* 33 */ {pageName + ": validate Accepted401K", &s, `>ACCEPTED 401K `, `>COMPENSATION`, fmt.Sprintf("value=\"%s\" selected", acceptIntToString(d.Accepted401K))},
+			/* 34 */ {pageName + ": validate birthDOM", &s, `>BIRTHDAY<`, `<input type="submit"`, fmt.Sprintf(`name="BirthDOM" value="%d"`, d.BirthDOM)},
 		}
 
 		//-----------------------------------------------------------
@@ -289,7 +290,7 @@ func viewAdminPersonDetail(d *personDetail) bool {
 			if d.MyComps[i].HaveIt > 0 {
 				h = " checked"
 			}
-			v := validationTable{"adminView validate compensation." + d.MyComps[i].Name, &s, `>COMPENSATION`, `>DEDUCTIONS`, fmt.Sprintf(`name="%s" value="%d"%s>`, d.MyComps[i].Name, d.MyComps[i].CompCode, h)}
+			v := validationTable{pageName + ": validate compensation." + d.MyComps[i].Name, &s, `>COMPENSATION`, `>DEDUCTIONS`, fmt.Sprintf(`name="%s" value="%d"%s>`, d.MyComps[i].Name, d.MyComps[i].CompCode, h)}
 			validate = append(validate, v)
 		}
 
@@ -301,7 +302,7 @@ func viewAdminPersonDetail(d *personDetail) bool {
 			if d.MyDeductions[i].HaveIt > 0 {
 				h = " checked"
 			}
-			v := validationTable{"adminView validate deductions." + d.MyDeductions[i].Name, &s, `>DEDUCTIONS`, `>BIRTHDAY<`, fmt.Sprintf(`name="%s" value="%d"%s>`, d.MyDeductions[i].Name, d.MyDeductions[i].DCode, h)}
+			v := validationTable{pageName + ": validate deductions." + d.MyDeductions[i].Name, &s, `>DEDUCTIONS`, `>BIRTHDAY<`, fmt.Sprintf(`name="%s" value="%d"%s>`, d.MyDeductions[i].Name, d.MyDeductions[i].DCode, h)}
 			validate = append(validate, v)
 		}
 
@@ -309,16 +310,27 @@ func viewAdminPersonDetail(d *personDetail) bool {
 		// check birthmonth if present...
 		//-----------------------------------------------------------
 		if d.BirthMonth > 0 {
-			v := validationTable{"adminView validate birth month", &s, `>BIRTHDAY<`, `action="/adminViewBtn/`, fmt.Sprintf(`value="%d" selected>`, d.BirthMonth)}
+			v := validationTable{pageName + ": validate birth month", &s, `>BIRTHDAY<`, `<input type="submit"`, fmt.Sprintf(`value="%d" selected>`, d.BirthMonth)}
 			validate = append(validate, v)
 		}
 
 		executeValSubstrTests(&validate, &tr)
 		if tr.Fail > 0 {
+			fmt.Printf("tr.Fail = %d, len(tr.Failures)=%d\n", tr.Fail, len(tr.Failures))
 			dumpTestErrors(&tr)
 		}
 
 		return (tr.Fail == 0)
 	}
 	return false
+}
+
+func adminViewTest(d *personDetail) bool {
+	URL := fmt.Sprintf("http://%s:%d/adminView/%d", App.Host, App.Port, d.UID)
+	return viewAdminPerson(d, URL, "Admin - View")
+}
+
+func adminEditTest(d *personDetail) bool {
+	URL := fmt.Sprintf("http://%s:%d/adminEdit/%d", App.Host, App.Port, d.UID)
+	return viewAdminPerson(d, URL, "Admin - Edit")
 }

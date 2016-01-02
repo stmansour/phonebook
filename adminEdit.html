@@ -3,7 +3,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<link href="/phonebook.css" rel="stylesheet"  type="text/css">
 	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
-	<title>Accord Directory - Admin - Directory Edit for {{.D.FirstName}} {{.D.LastName}}</title>
+	<title>Accord Directory - Admin - Edit {{.D.FirstName}} {{.D.LastName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -198,8 +198,7 @@
 			<tr>
 				<td class="edAttrib">DEPARTMENT</td><td><select class="HR" name="DeptCode"
 				{{if hasPERMMODaccess .X.Token 1 "DeptCode"}}{{else}}disabled="disabled"{{end}}>
-				{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}" 
-				{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+				{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
 				<td class="edAttrib">CLASS</td><td>
 					<select class="HR" name="ClassCode" 
@@ -219,7 +218,7 @@
 				{{$hireyear := dateYear .D.Hire}}
 			    <td class="edAttrib">HIRE DATE</td>
 			    <td><input class="HR" type=date 
-			    	name="Hire" {{if gt $hireyear 2000}}value="{{dateToString .D.Hire}}"{{end}} size="10" 
+			    	name="Hire" value="{{if gt $hireyear 2000}}{{dateToString .D.Hire}}{{end}}" size="10" 
 			    	{{if hasPERMMODaccess .X.Token 1 "Hire"}}{{else}}disabled="disabled"{{end}}>
 			    </td>
 				<td width="10"></td>
@@ -239,16 +238,17 @@
 		{{$nextrevyear := dateYear .D.NextReview}}
 		<table >
 			<tr>
-				<td class="edAttrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview" {{if gt $lastrevyear 2000}}value="{{dateToString .D.LastReview}}"{{end}}  size="10"
-				{{if hasPERMMODaccess .X.Token 1 "LastReview"}}{{else}}disabled="disabled"{{end}} ></td>
+				<td class="edAttrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview"
+				value="{{if gt $lastrevyear 2000}}{{dateToString .D.LastReview}}{{end}}" size="10"
+				{{if hasPERMMODaccess .X.Token 1 "LastReview"}}{{else}}disabled="disabled"{{end}}></td>
 				<td width="10"></td>
-				<td class="edAttrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview" {{if gt $nextrevyear 2000}}value="{{dateToString .D.NextReview}}"{{end}} size="10" 
-				{{if hasPERMMODaccess .X.Token 1 "NextReview"}}{{else}}disabled="disabled"{{end}}
-				></td>
+				<td class="edAttrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview" 
+				value="{{if gt $nextrevyear 2000}}{{dateToString .D.NextReview}}{{end}}" size="10" 
+				{{if hasPERMMODaccess .X.Token 1 "NextReview"}}{{else}}disabled="disabled"{{end}}></td>
 				<td width="10"></td>
-				<td class="edAttrib">TERMINATION DATE</td><td><input class="HR" type=date 
-				name="Termination" {{if gt $termyear 2000}}value="{{dateToString .D.Termination}}"{{end}} size="10"
-				{{if hasPERMMODaccess .X.Token 1 "Termination"}}{{else}}disabled="disabled"{{end}} >
+				<td class="edAttrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination"
+				value="{{if gt $termyear 2000}}{{dateToString .D.Termination}}{{end}}" size="10"
+				{{if hasPERMMODaccess .X.Token 1 "Termination"}}{{else}}disabled="disabled"{{end}}></td>
 			</tr>
 		</table>
 		<p></p>
@@ -273,15 +273,15 @@
         {{if hasPERMMODaccess .X.Token 1 "Comps"}}
 	 		<table>
 			<tr><td class="edAttrib">COMPENSATION&nbsp;</td>
-			<td class="HRBoxed"> {{range .D.MyComps}}<label><input type="checkbox" name="{{.Name}}" 
-				value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}}</label> &nbsp;&nbsp;&nbsp;{{end}}</td>
+			<td class="HRBoxed"> {{range .D.MyComps}}<label><input type="checkbox"
+				name="{{.Name}}" value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}}</label> &nbsp;&nbsp;&nbsp;{{end}}</td>
 			</tr>
 			</table>
         {{else}}
 	 		<table>
 			<tr><td class="edAttrib">COMPENSATION&nbsp;</td>
 			<td class="HRBoxedDisabled"> {{range .D.MyComps}}<input type="checkbox" name="{{.Name}}" disabled="disabled" 
-				value="{{.CompCode}}" {{if eq .HaveIt 1}}checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
+				value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
 			</tr>
 			</table>
         {{end}}
@@ -295,7 +295,7 @@
 					<td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
 					{{range $i, $v := .D.MyDeductions}}
 					<td class="HRBoxed">
-					<input type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
+					<input type="checkbox" name="{{.Name}}" value="{{.DCode}}"{{if eq .HaveIt 1}} checked{{end}}>
 					{{.Name}} &nbsp;&nbsp;
 					</td>
 					{{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
@@ -309,7 +309,7 @@
 					<td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
 					{{range $i, $v := .D.MyDeductions}}
 					<td class="HRBoxedDisabled">
-					<label><input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}" {{if eq .HaveIt 1}}checked{{end}}>
+					<label><input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}"{{if eq .HaveIt 1}} checked{{end}}>
 					{{.Name}}</label> &nbsp;&nbsp;
 					</td>
 					{{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
@@ -332,7 +332,8 @@
 				{{range .Months}}<option {{$t := monthStringToInt .}}value="{{$t}}" {{if eq $t $bdayMon}}selected{{end}}>{{.}}</option>{{end}}
 				</select>
 				<input {{if hasPERMMODaccess .X.Token 1 "BirthDOM"}}{{else}}disabled="disabled"{{end}}
-				type="number" class="HR" name="BirthDOM" value="{{.D.BirthDOM}}" min="1" max="31">
+				type="number" class="HR"
+				name="BirthDOM" value="{{.D.BirthDOM}}" min="1" max="31">
 			</td>
 			</tr>
 		</table>
