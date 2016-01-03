@@ -31,6 +31,17 @@ ZZEOF
 	exit 0
 }
 
+restoreMySQLdb() {
+DB=$1
+DBfile=$2
+
+echo "DROP DATABASE IF EXISTS ${DB}; CREATE DATABASE ${DB}; USE ${DB};" > restore.sql
+echo "source ${DBfile}" >> restore.sql
+echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
+mysql < restore.sql
+
+}
+
 ##############################################################
 #   RESTORE - FULL
 ##############################################################
@@ -47,7 +58,11 @@ restoreFull() {
 	
 	echo "Extracting data"
 	gunzip ${DATABASE}db.sql.gz
-	${RESTORE} ${DATABASE} ${DATABASE}db.sql
+	
+	echo "DROP DATABASE IF EXISTS ${DATABASE}; CREATE DATABASE ${DATABASE}; USE ${DATABASE};" > restore.sql
+	echo "source ${DATABASE}db.sql" >> restore.sql
+	echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
+	mysql < restore.sql
 	echo "Done."
 
 	echo "Cleaning up..."
@@ -65,7 +80,11 @@ restoreData() {
 
 	echo "Extracting data"
 	gunzip ${DATABASE}db.sql.gz
-	${RESTORE} ${DATABASE} ${DATABASE}db.sql
+
+	echo "DROP DATABASE IF EXISTS ${DATABASE}; CREATE DATABASE ${DATABASE}; USE ${DATABASE};" > restore.sql
+	echo "source ${DATABASE}db.sql" >> restore.sql
+	echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
+	mysql < restore.sql
 	echo "Done."
 
 	echo "Cleaning up..."
