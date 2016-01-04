@@ -8,7 +8,7 @@ DBNAME="accord"
 DBUSER="ec2-user"
 
 usage() {
-    cat << ZZEOF
+    cat <<ZZEOF
 Phonebook activation script.
 Usage:   activate.sh [OPTIONS] CMD
 
@@ -41,6 +41,16 @@ updateImages() {
 	/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
 	gunzip pbimages.tar.gz
 	tar xvf pbimages.tar
+}
+
+stopwatchdog() {
+	# make sure we can find it
+	pidline=$(ps -ef | grep pbwatchdog | grep -v grep)
+	lines=$(echo "${pidline}" | wc -l)
+	if [ $lines -gt "0" ]; then
+		pid=$(echo "${pidline}" | awk '{print $2}')
+		$(kill $pid)
+	fi
 }
 
 while getopts ":p:ih:N:" o; do
@@ -82,7 +92,11 @@ for arg do
 			gunzip pbimages.tar.gz
 			tar xvf pbimages.tar
 		fi
+		if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
+			./installman.sh
+		fi
 		./phonebook -N ${DBNAME} >phonebook.log 2>&1 &
+		./pbwatchdog &
 		echo "OK"
 		exit 0
 		;;
@@ -91,6 +105,7 @@ for arg do
 		# STOP
 		# Add the command to terminate your application...
 		#===============================================
+		stopwatchdog
 		curl -s http://${HOST}:${PORT}/extAdminShutdown/
 		echo "OK"
 		exit 0

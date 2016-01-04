@@ -1,5 +1,6 @@
 #!/bin/bash
-cd /usr/local/share/man/man1
+TARGET=/usr/local/share/man/man1
+DIR=$(pwd)
 pages1=("pbadduser"
 	"pbbkup"
 	"pbrestore"
@@ -10,8 +11,9 @@ pages1=("pbadduser"
 	"pbwatchdog"
 	)
 
+
 for i in "${pages1[@]}"
 do
-	rm -f ${i}.1
-	ln -s /usr/local/accord/phonebook/man/man1/${i}.1 
+	rm -f ${TARGET}/${i}.1
+	ln -s ${DIR}/man/man1/${i}.1 ${TARGET}/${i}.1 
 done

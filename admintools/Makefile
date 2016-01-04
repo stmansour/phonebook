@@ -9,6 +9,7 @@ clean:
 
 package:
 	mkdir -p ../tmp/phonebook/man/man1
+	cp installman.sh ../tmp/phonebook/
 	for dir in $(DIRS); do make -C $$dir package;done
 
 test:

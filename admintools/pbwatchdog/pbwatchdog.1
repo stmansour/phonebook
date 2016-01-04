@@ -7,16 +7,17 @@ pbwatchdog \- run the Accord System watchdog process
 .SH DESCRIPTION
 .B pbwatchdog
 monitors a running Phonebook service. If the service goes down the watchdog
-process will restart it using the activate(1) process.  This process was designed 
-to run as a cron job.
+process will restart it using the activate(1) process. Phonebook's activate
+process will automatically start the watchdog when it performs a START and
+will automatically stop the watchdog when it performs a STOP.
 .SH OPTIONS
 .TP
 none at this time
 
 .SH EXAMPLES
 
-.IP "*/5 * * * * pbwatchdog"
-Run the watchdog every 5 minutes, every day, every month.
+.IP pbwatchdog
+Run the watchdog. No params are necessary
 
 
 .SH BUGS
