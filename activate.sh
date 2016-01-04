@@ -120,13 +120,13 @@ for arg do
 			fi
 		fi
 		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
-		if [ "${DEVTESTING}" -ne "1" ]; then
-			if [ ${IAM} == "root" ]; then
-				/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
-			else
+		# if [ "${DEVTESTING}" -ne "1" ]; then
+		# 	if [ ${IAM} == "root" ]; then
+		# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
+		# 	else
 				./pbwatchdog >pbwatchdogstartup.out 2>&1 &
-			fi
-		fi
+		# 	fi
+		# fi
 		echo "OK"
 		exit 0
 		;;
