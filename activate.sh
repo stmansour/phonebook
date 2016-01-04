@@ -113,9 +113,9 @@ for arg do
 				./installman.sh >phonebook.log 2>&1
 			fi
 		fi
-		./phonebook -N ${DBNAME} >pbconsoleout.log 2>&1 &
+		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
 		if [ "${DEVTESTING}" -ne "1" ]; then
-			./pbwatchdog &
+			./pbwatchdog >pbwatchdogstartup.out 2>&1 &
 		fi
 		echo "OK"
 		exit 0
