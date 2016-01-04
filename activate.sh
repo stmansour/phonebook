@@ -120,7 +120,6 @@ for arg do
 			fi
 		fi
 		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
-		rm -f 
 		if [ "${DEVTESTING}" -ne "1" ]; then
 			if [ ${IAM} == "root" ]; then
 				/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
