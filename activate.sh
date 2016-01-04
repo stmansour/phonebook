@@ -3,6 +3,7 @@
 
 HOST=localhost
 PORT=8250
+DEVTESTING=0
 
 DBNAME="accord"
 DBUSER="ec2-user"
@@ -16,6 +17,7 @@ OPTIONS:
 -p port      (default is 8250)
 -h hostname  (default is localhost)
 -N dbname    (default is accord)
+-T           (use this option to indicate testing rather than production)
 
 CMD is one of: start | stop | ready | test | teststatus
 
@@ -24,6 +26,14 @@ cmd is case insensitive
 Examples:
 Command to start phonebook:
 	bash$  activate.sh START 
+
+Command to start phonebook for testing purposes:
+	bash$  activate.sh -T START 
+
+	If you do testing in the context of the source code tree and you don't 
+	use -T, you may see messages like this:
+
+	  ./activate.sh: line 101: ./pbwatchdog: No such file or directory
 
 Command to stop phonebook:
 	bash$  activate.sh Stop
@@ -55,7 +65,7 @@ stopwatchdog() {
     fi      
 }
 
-while getopts ":p:ih:N:" o; do
+while getopts ":p:ih:N:T" o; do
     case "${o}" in
        h)
             HOST=${OPTARG}
@@ -68,6 +78,10 @@ while getopts ":p:ih:N:" o; do
         p)
             PORT=${OPTARG}
 	    	echo "PORT set to: ${PORT}"
+            ;;
+        T)
+            DEVTESTING=1
+	    	echo "DEVTESTING set to: ${DEVTESTING}"
             ;;
         *)
             usage
@@ -89,16 +103,20 @@ for arg do
 		# START
 		# Add the command to start your application...
 		#===============================================
-		if [ ! -d "./images" ]; then
-			/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
-			gunzip pbimages.tar.gz
-			tar xvf pbimages.tar
-		fi
-		if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
-			./installman.sh
+		if [ "${DEVTESTING}" -ne "1" ]; then
+			if [ ! -d "./images" ]; then
+				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
+				gunzip pbimages.tar.gz
+				tar xvf pbimages.tar
+			fi
+			if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
+				./installman.sh
+			fi
 		fi
 		./phonebook -N ${DBNAME} >phonebook.log 2>&1 &
-		./pbwatchdog &
+		if [ "${DEVTESTING}" -ne "1" ]; then
+			./pbwatchdog &
+		fi
 		echo "OK"
 		exit 0
 		;;

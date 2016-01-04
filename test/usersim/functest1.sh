@@ -11,7 +11,7 @@ PBHOST="localhost"
 PBPORT="8250"
 
 PHONEBOOKDIR="../.."
-STARTPHONEBOOKCMD="./activate.sh -N ${DBNAME} start"
+STARTPHONEBOOKCMD="./activate.sh -N ${DBNAME} -T start"
 STOPPHONEBOOKCMD="./activate.sh stop"
 
 initDB() {
@@ -27,7 +27,7 @@ stopPhonebook() {
 	# echo "results = ${results}"
 	result=$(echo "${results}" | grep OK | wc -l)
 	if [ ${result} -ge 0 ]; then
-		echo "phonbook stopped"
+		echo "phonebook stopped"
 		sleep 5
 	else 
 		echo "phonebook did not stop properly.  result = \"${result}\""
