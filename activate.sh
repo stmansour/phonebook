@@ -105,15 +105,15 @@ for arg do
 		#===============================================
 		if [ "${DEVTESTING}" -ne "1" ]; then
 			if [ ! -d "./images" ]; then
-				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
-				gunzip pbimages.tar.gz
-				tar xvf pbimages.tar
+				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
+				gunzip -f pbimages.tar.gz >phonebook.log 2>&1
+				tar xvf pbimages.tar >phonebook.log 2>&1
 			fi
 			if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
-				./installman.sh
+				./installman.sh >phonebook.log 2>&1
 			fi
 		fi
-		./phonebook -N ${DBNAME} >phonebook.log 2>&1 &
+		./phonebook -N ${DBNAME} >pbconsoleout.log 2>&1 &
 		if [ "${DEVTESTING}" -ne "1" ]; then
 			./pbwatchdog &
 		fi
