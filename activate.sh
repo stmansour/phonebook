@@ -124,13 +124,9 @@ for arg do
 		if [ "${DEVTESTING}" -ne "1" ]; then
 			if [ ${IAM} == "root" ]; then
 				/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
-				touch startedas.ec2user
 			else
 				./pbwatchdog >pbwatchdogstartup.out 2>&1 &
-				touch startedas.root
 			fi
-		else
-			touch skipped.watchdog
 		fi
 		echo "OK"
 		exit 0
