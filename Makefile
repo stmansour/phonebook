@@ -29,7 +29,7 @@ package: phonebook
 	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebook
-	cp phonebook activate.sh testdb.sql *.css *.html  tmp/phonebook/
+	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	cd admintools;make package
 	cd dbtools;make package
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar

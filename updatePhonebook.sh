@@ -2,7 +2,7 @@ PASS=AP3wHZhcQQCvkC4GVCCZzPcqe3L
 ART=http://ec2-52-91-201-195.compute-1.amazonaws.com/artifactory
 USR=accord
 
-EXTERNAL_HOST_NAME=$( curl http://169.254.169.254/latest/meta-data/public-hostname )
+EXTERNAL_HOST_NAME=$(curl -s http://169.254.169.254/latest/meta-data/public-hostname)
 #${EXTERNAL_HOST_NAME:?"Need to set EXTERNAL_HOST_NAME non-empty"}
 
 #--------------------------------------------------------------
@@ -76,6 +76,12 @@ if [ ${dir} != "phonebook" ]; then
     exit 1
 fi
 
+user=$(whoami)
+if [ ${user} != "root" ]; then
+    echo "This script must execute as root.  Try sudo !!"
+    exit 1
+fi
+
 $(./activate.sh stop)
 echo "shutdown initiated..."
 sleep 6
@@ -84,8 +90,10 @@ echo "Retrieving latest phonebook..."
 /usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/phonebook.tar.gz
 # gunzip tgo.tar.gz;tar xf tgo.tar
 gunzip -f phonebook.tar.gz;tar xvf phonebook.tar
+chown -R ec2-user:ec2-user phonebook
 cd phonebook/
 updateImages
+chmod u+s phonebook pbwatchdog
 echo "starting..."
 ./activate.sh start
 sleep 3

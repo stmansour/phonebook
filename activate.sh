@@ -7,6 +7,7 @@ DEVTESTING=0
 
 DBNAME="accord"
 DBUSER="ec2-user"
+IAM=$(whoami)
 
 usage() {
     cat <<ZZEOF
@@ -103,6 +104,11 @@ for arg do
 		# START
 		# Add the command to start your application...
 		#===============================================
+		if [ ${IAM} == "root" ]; then
+			chown -R ec2-user *
+			chmod u+s phonebook pbwatchdog
+		fi
+
 		if [ "${DEVTESTING}" -ne "1" ]; then
 			if [ ! -d "./images" ]; then
 				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
@@ -114,8 +120,17 @@ for arg do
 			fi
 		fi
 		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
+		rm -f 
 		if [ "${DEVTESTING}" -ne "1" ]; then
-			./pbwatchdog >pbwatchdogstartup.out 2>&1 &
+			if [ ${IAM} == "root" ]; then
+				/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
+				touch startedas.ec2user
+			else
+				./pbwatchdog >pbwatchdogstartup.out 2>&1 &
+				touch startedas.root
+			fi
+		else
+			touch skipped.watchdog
 		fi
 		echo "OK"
 		exit 0
