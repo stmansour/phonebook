@@ -45,12 +45,14 @@ updateImages() {
 
 stopwatchdog() {
 	# make sure we can find it
-	pidline=$(ps -ef | grep pbwatchdog | grep -v grep)
-	lines=$(echo "${pidline}" | wc -l)
-	if [ $lines -gt "0" ]; then
-		pid=$(echo "${pidline}" | awk '{print $2}')
-		$(kill $pid)
-	fi
+    pidline=$(ps -ef | grep pbwatchdog | grep -v grep)
+    if [ "${pidline}" != "" ]; then
+        lines=$(echo "${pidline}" | wc -l)
+        if [ $lines -gt "0" ]; then
+            pid=$(echo "${pidline}" | awk '{print $2}')
+            $(kill $pid)
+        fi          
+    fi      
 }
 
 while getopts ":p:ih:N:" o; do
