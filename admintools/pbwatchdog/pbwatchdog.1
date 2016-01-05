@@ -10,6 +10,10 @@ monitors a running Phonebook service. If the service goes down the watchdog
 process will restart it using the activate(1) process. Phonebook's activate
 process will automatically start the watchdog when it performs a START and
 will automatically stop the watchdog when it performs a STOP.
+
+Currently, pbwatchdog also initiates database backups. The current data-only
+backups are scheduled for 08:15:00 UTC daily. Full backups are scheduled every
+Saturday at 08:15:00.
 .SH OPTIONS
 .TP
 none at this time

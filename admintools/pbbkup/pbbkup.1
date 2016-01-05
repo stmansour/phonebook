@@ -9,7 +9,22 @@ pbbkup \- back up the Accord System database
 
 .SH DESCRIPTION
 .B pbbkup
-make a full or data-only backup of the Accord System database.
+make a full or data-only backup of the Accord System database. Backups are
+stored in Artifactory under the path of the form
+.B (databaseName)/db/01/(databaseName)db.sql.gz.  For example, the default
+database is named "accord", so the file path for data-only backups would be
+.B accord/db/01/accorddb.sql.gz.
+The number in the path will range from 01 to 31 and represents the day of 
+the month on which the backup was done. For example, a backup made on
+Jan 05 will be storedin accord/db/05/accorddb.sql.gz.  This backup will be
+kept until Feb 05. When a backup is made on Feb 05, the new backup will overwrite
+the file in the path accord/db/05. 
+.B pbbkup
+stores full backups in a path of the form 
+.B (databaseName)/db/(databaseName)db.tar.
+Every full update overwrites the previous one.
+.B date(1).
+
 .SH OPTIONS
 .TP
 .IP "-B database_username"

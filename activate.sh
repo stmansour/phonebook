@@ -4,6 +4,7 @@
 HOST=localhost
 PORT=8250
 DEVTESTING=0
+WATCHDOGOPTS=""
 
 DBNAME="accord"
 DBUSER="ec2-user"
@@ -15,14 +16,13 @@ Phonebook activation script.
 Usage:   activate.sh [OPTIONS] CMD
 
 OPTIONS:
+-b 			 (enable db backups, default is off)
 -p port      (default is 8250)
 -h hostname  (default is localhost)
 -N dbname    (default is accord)
 -T           (use this option to indicate testing rather than production)
 
 CMD is one of: start | stop | ready | test | teststatus
-
-cmd is case insensitive
 
 Examples:
 Command to start phonebook:
@@ -66,23 +66,27 @@ stopwatchdog() {
     fi      
 }
 
-while getopts ":p:ih:N:T" o; do
+while getopts ":p:ih:N:TB" o; do
     case "${o}" in
+       b)
+            WATCHDOGOPTS="-b"
+	    	# echo "WATCHDOGOPTS set to: ${WATCHDOGOPTS}"
+            ;;
        h)
             HOST=${OPTARG}
             echo "HOST set to: ${HOST}"
             ;;
         N)
             DBNAME=${OPTARG}
-            echo "DBNAME set to: ${DBNAME}"
+            # echo "DBNAME set to: ${DBNAME}"
             ;;
         p)
             PORT=${OPTARG}
-	    	echo "PORT set to: ${PORT}"
+	    	# echo "PORT set to: ${PORT}"
             ;;
         T)
             DEVTESTING=1
-	    	echo "DEVTESTING set to: ${DEVTESTING}"
+	    	# echo "DEVTESTING set to: ${DEVTESTING}"
             ;;
         *)
             usage
@@ -122,13 +126,13 @@ for arg do
 		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
 		# give phonebook a few seconds to start up before initiating the watchdog
 		sleep 5
-		# if [ "${DEVTESTING}" -ne "1" ]; then
+		if [ "${DEVTESTING}" -ne "1" ]; then
 		# 	if [ ${IAM} == "root" ]; then
 		# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
 		# 	else
-				./pbwatchdog >pbwatchdogstartup.out 2>&1 &
+				./pbwatchdog ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
 		# 	fi
-		# fi
+		fi
 		echo "OK"
 		exit 0
 		;;
