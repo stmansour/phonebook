@@ -52,7 +52,7 @@ func yesnoToInt(s string) int {
 	case s == "N" || s == "NO":
 		return NO
 	default:
-		fmt.Printf("Unrecognized yes/no response: %s. Returning default = No\n", s)
+		fmt.Printf("Unrecognized yes/no string: %s. Returning default = No\n", s)
 		return NO
 	}
 }
@@ -77,7 +77,7 @@ func activeToInt(s string) int {
 	case s == "INACTIVE" || s == "IN-ACTIVE" || s == "NOTACTIVE" || s == "NOT-ACTIVE":
 		return INACTIVE
 	default:
-		fmt.Printf("Unrecognized yes/no response: %s. Returning default = Inactive\n", s)
+		fmt.Printf("Unrecognized ACTIVE/INACTIVE response: %s. Returning default = Inactive\n", s)
 		return NO
 	}
 }

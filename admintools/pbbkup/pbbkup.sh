@@ -1,8 +1,8 @@
 #!/bin/bash
-
+DOM=$(date +%d)
 FULL=0
 DEPLOY="/usr/local/accord/bin/deployfile.sh"
-DATABASE=accord
+DATABASE="accord"
 
 ##############################################################
 #   USAGE
@@ -42,7 +42,7 @@ bkupFull() {
 
 	${DEPLOY} ${DATABASE}db.tar ${DATABASE}/db
 
-	rm -f pictures.tar.gz accorddb.sql.gz accorddb.tar
+	rm -f pictures.tar.gz ${DATABASE}db.sql.gz ${DATABASE}db.tar
 }
 
 ##############################################################
@@ -51,7 +51,7 @@ bkupFull() {
 bkupData() {
 	mysqldump ${DATABASE} > ${DATABASE}db.sql
 	gzip ${DATABASE}db.sql
-	${DEPLOY} ${DATABASE}db.sql.gz ${DATABASE}/db
+	${DEPLOY} ${DATABASE}db.sql.gz ${DATABASE}/db/${DOM}
 	rm -f ${DATABASE}db.sql.gz
 }
 

@@ -155,14 +155,14 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	if uid > 0 {
 		d.Image = getImageFilename(uid)
-		rows, err := Phonebook.db.Query("select lastname,firstname,preferredname,jobcode,primaryemail,"+
+		rows, err := Phonebook.db.Query("select lastname,middlename,firstname,preferredname,jobcode,primaryemail,"+
 			"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
 			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
 			"from people where uid=?", uid)
 		errcheck(err)
 		defer rows.Close()
 		for rows.Next() {
-			errcheck(rows.Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
+			errcheck(rows.Scan(&d.LastName, &d.MiddleName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
 				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
 				&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 				&d.HomeState, &d.HomePostalCode, &d.HomeCountry))

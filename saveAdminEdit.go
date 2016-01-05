@@ -33,10 +33,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	var sess *session
 	var ui uiSupport
 	sess = nil
+	fmt.Printf("Entered saveAdminEditHandler\n")
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
 	sess = ui.X
+	fmt.Printf("Found session\n")
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.AdminEditPerson++       // initialize our data
@@ -48,6 +50,8 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
+
+	fmt.Printf("Initial security check passed. Proceeding with form submission.\n")
 
 	var d personDetail
 	path := "/saveAdminEdit/"
@@ -61,7 +65,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
+
+	//====================================================
+	//  Determine which button the user pressed and act...
+	//====================================================
 	action := strings.ToLower(r.FormValue("action"))
+	fmt.Printf("action found = '%s'\n", action)
 	if action == "delete" {
 		url := fmt.Sprintf("/delPerson/%d", uid)
 		http.Redirect(w, r, url, http.StatusFound)
@@ -74,9 +83,6 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.FirstName = r.FormValue("FirstName")
 		d.MiddleName = r.FormValue("MiddleName")
 		d.LastName = r.FormValue("LastName")
-		d.PrimaryEmail = r.FormValue("PrimaryEmail")
-		d.OfficePhone = r.FormValue("OfficePhone")
-		d.CellPhone = r.FormValue("CellPhone")
 		d.PreferredName = r.FormValue("PreferredName")
 		d.EmergencyContactName = r.FormValue("EmergencyContactName")
 		d.EmergencyContactPhone = r.FormValue("EmergencyContactPhone")
@@ -96,7 +102,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.OfficePhone = r.FormValue("OfficePhone")
 		d.OfficeFax = r.FormValue("OfficeFax")
 		d.CellPhone = r.FormValue("CellPhone")
-		d.DeptName = r.FormValue("DeptName")
+		// d.DeptName = r.FormValue("DeptName")
 		d.Status = activeToInt(r.FormValue("Status")) // active or inactive, old values included "not-active"
 		d.EligibleForRehire = yesnoToInt(r.FormValue("EligibleForRehire"))
 		d.LastReview = stringToDate(r.FormValue("LastReview"))
