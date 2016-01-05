@@ -121,7 +121,7 @@ for arg do
 		fi
 		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
 		# give phonebook a few seconds to start up before initiating the watchdog
-		sleep 15
+		sleep 5
 		# if [ "${DEVTESTING}" -ne "1" ]; then
 		# 	if [ ${IAM} == "root" ]; then
 		# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
