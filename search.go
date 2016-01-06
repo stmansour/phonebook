@@ -88,7 +88,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		s += ") "
 	}
-	s += fmt.Sprintf(") order by lastname,firstname")
+	s += fmt.Sprintf(") order by lastname,firstname LIMIT 75")
 
 	// fmt.Printf("query = %s\n", s)
 	rows, err := Phonebook.db.Query(s)

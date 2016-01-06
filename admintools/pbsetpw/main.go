@@ -23,7 +23,7 @@ var App struct {
 
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
-	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
+	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
 	uPtr := flag.String("u", "username", "username")
 	psPtr := flag.String("p", "accord", "password")
 	flag.Parse()
@@ -40,12 +40,12 @@ func main() {
 	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
-		fmt.Printf("sql.Open: Error = %v\n", err)
+		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}
 	defer App.db.Close()
 	err = App.db.Ping()
 	if nil != err {
-		fmt.Printf("App.db.Ping: Error = %v\n", err)
+		fmt.Printf("App.db.Ping for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}
 
 	sha := sha512.Sum512([]byte(App.password))

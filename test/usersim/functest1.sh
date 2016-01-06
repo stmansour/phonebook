@@ -72,11 +72,14 @@ if [ ${L} -ne 1 ]; then
 	exit 1
 fi
 
-results=$(${USERSIM})
+usrsimout=$(${USERSIM})
 
-echo "results: ${results}"
-result=$(echo "${results}" | grep "fail: 0" | wc -l)
-if [ ${result} -eq 1 ]; then
+echo "Shutting down phonebook service..."
+stopPhonebook
+
+echo "results: ${usrsimout}"
+rs=$(echo "${usrsimout}" | grep "fail: 0" | wc -l)
+if [ ${rs} -eq 1 ]; then
 	exit 0
 else
 	exit 1

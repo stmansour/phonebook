@@ -227,13 +227,24 @@ func login(d *personDetail) bool {
 	return false
 }
 
-func testResult(testname string, success bool, tr *TestResults) bool {
+// testResult consolidates a bunch of chores around running a test.
+// returns true if the session cookie is nil
+// otherwise returns false
+func testResult(v *personDetail, testname string, success bool, tr *TestResults) bool {
 	if success {
 		tr.Pass++
 	} else {
 		tr.Fail++
 	}
-	return success
+	if nil == v.SessionCookie && testname != "logoff" {
+		fmt.Printf("usersim: could not find accord cookie after %s!\n", testname)
+		return true
+	}
+	if nil != v.SessionCookie && testname == "logoff" {
+		fmt.Printf("usersim: session cookie was not removed after %s!\n", testname)
+		return true
+	}
+	return false
 }
 
 func usersim(userindex, iterations, duration int, TestResChan chan TestResults, TestResChanAck chan int) {
@@ -242,46 +253,23 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 
 	if duration == 0 {
 		for i := 0; i < iterations; i++ {
-			if v.SessionCookie == nil {
-				testResult("login", login(v), &tr)
-			}
-
-			if nil == v.SessionCookie {
-				fmt.Printf("usersim: could not find accord cookie after login!\n")
+			if testResult(v, "login", login(v), &tr) {
 				break
 			}
-
-			testResult("detail", viewPersonDetail(v), &tr)
-
-			if nil == v.SessionCookie {
-				fmt.Printf("usersim: could not find accord cookie after viewPersonDetail!\n")
+			if testResult(v, "detail", viewPersonDetail(v), &tr) {
 				break
 			}
-			testResult("adminView", adminViewTest(v), &tr)
-
-			if nil == v.SessionCookie {
-				fmt.Printf("usersim: could not find accord cookie after adminViewTest!\n")
+			if testResult(v, "adminView", adminViewTest(v), &tr) {
 				break
 			}
-
-			testResult("adminEdit", adminEditTest(v), &tr)
-
-			if nil == v.SessionCookie {
-				fmt.Printf("usersim: could not find accord cookie after adminEditTest!\n")
+			if testResult(v, "adminEdit", adminEditTest(v), &tr) {
 				break
 			}
-
-			testResult("saveAdminEdit", saveAdminEdit(v), &tr)
-
-			if nil == v.SessionCookie {
-				fmt.Printf("usersim: could not find accord cookie after saveAdminEdit!\n")
+			if testResult(v, "saveAdminEdit", saveAdminEdit(v), &tr) {
 				break
 			}
-
-			if v.SessionCookie != nil {
-				testResult("logoff", logoff(v), &tr)
-			} else {
-				fmt.Printf("v.SessionCookie was nil\n")
+			if testResult(v, "logoff", logoff(v), &tr) {
+				break
 			}
 		}
 	}
@@ -307,7 +295,10 @@ func executeSimulation() {
 		case tr := <-TestResChan: // get the data the usersim collected
 			totTR.Fail += tr.Fail // update cumulative totals
 			totTR.Pass += tr.Pass // update cumulative totals
-			TestResChanAck <- 1   // acknowledge receipt
+			for j := 0; j < len(tr.Failures); j++ {
+				totTR.Failures = append(totTR.Failures, tr.Failures[j])
+			}
+			TestResChanAck <- 1 // acknowledge receipt
 		}
 	}
 

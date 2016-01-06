@@ -308,10 +308,11 @@ var PhonebookUI uiSupport
 // Phonebook is the global application structure providing
 // information that any function might need.
 var Phonebook struct {
-	Port               int // port on which we listen
-	db                 *sql.DB
-	DBName             string // name of database to use
-	LogFile            *os.File
+	Port               int           // port on which we listen
+	db                 *sql.DB       // the database connection
+	DBName             string        // name of database to use
+	DBUser             string        // user phonebook should use for accessing db
+	LogFile            *os.File      // where to log messages
 	Roles              []Role        // the roles saved in the database
 	ReqMem             chan int      // request to access UI data memory
 	ReqMemAck          chan int      // done with memory
@@ -576,6 +577,7 @@ func readCommandLineArgs() {
 	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
 	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
 	dbnmPtr := flag.String("N", "accord", "database name")
+	dbusPtr := flag.String("B", "ec2-user", "database username")
 	cntrPtr := flag.Int("c", 5, "counter update period in minutes")
 
 	flag.Parse()
@@ -585,6 +587,7 @@ func readCommandLineArgs() {
 	Phonebook.SecurityDebug = *sbugPtr
 	Phonebook.DebugToScreen = *dtscPtr
 	Phonebook.DBName = *dbnmPtr
+	Phonebook.DBUser = *dbusPtr
 	Phonebook.CountersUpdateTime = *cntrPtr
 }
 
@@ -622,7 +625,7 @@ func main() {
 	//==============================================
 	// And the database...
 	//==============================================
-	dbopenparms := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", Phonebook.DBName)
+	dbopenparms := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", Phonebook.DBUser, Phonebook.DBName)
 	db, err := sql.Open("mysql", dbopenparms)
 	if nil != err {
 		ulog("sql.Open: Error = %v\n", err)

@@ -62,12 +62,12 @@ func main() {
 	s := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
-		fmt.Printf("sql.Open: Error = %v\n", err)
+		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}
 	defer App.db.Close()
 	err = App.db.Ping()
 	if nil != err {
-		fmt.Printf("App.db.Ping: Error = %v\n", err)
+		fmt.Printf("App.db.Ping for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}
 
 	var uid int
