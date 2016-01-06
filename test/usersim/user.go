@@ -271,12 +271,12 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 				break
 			}
 
-			// testResult("saveAdminEdit", saveAdminEdit(v), &tr)
+			testResult("saveAdminEdit", saveAdminEdit(v), &tr)
 
-			// if nil == v.SessionCookie {
-			// 	fmt.Printf("usersim: could not find accord cookie after saveAdminEdit!\n")
-			// 	break
-			// }
+			if nil == v.SessionCookie {
+				fmt.Printf("usersim: could not find accord cookie after saveAdminEdit!\n")
+				break
+			}
 
 			if v.SessionCookie != nil {
 				testResult("logoff", logoff(v), &tr)

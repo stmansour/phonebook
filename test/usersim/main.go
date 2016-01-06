@@ -229,7 +229,6 @@ func fillUserFields(v *personDetail) {
 	v.OfficePhone = randomPhoneNumber()
 	v.CellPhone = randomPhoneNumber()
 	v.OfficeFax = randomPhoneNumber()
-	v.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)]) + " " + strings.ToLower(App.LastNames[rand.Intn(Nlast)])
 	v.HomeStreetAddress = randomAddress()
 	v.HomeCity = App.Cities[rand.Intn(len(App.Cities))]
 	v.HomeState = App.States[rand.Intn(len(App.States))]
@@ -237,7 +236,6 @@ func fillUserFields(v *personDetail) {
 	v.HomeCountry = "USA"
 	v.DeptCode = 1 + rand.Intn(1+rand.Intn(App.DeptHi-App.DeptLo-1))
 	v.JobCode = 1 + rand.Intn(1+rand.Intn(App.JCHi-App.JCLo-1))
-	v.Status = 1
 	v.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)]) + strings.ToLower(App.LastNames[rand.Intn(Nlast)])
 	v.EmergencyContactPhone = randomPhoneNumber()
 	v.PrimaryEmail = randomEmail(v.LastName, v.FirstName)

@@ -146,6 +146,7 @@ func viewPersonDetail(d *personDetail) bool {
 		}
 		executeValSubstrTests(&validate, &tr)
 		if tr.Fail > 0 {
+			fmt.Printf("Failures for %s (%d)\n", d.UserName, d.UID)
 			dumpTestErrors(&tr)
 		}
 		return (tr.Fail == 0)

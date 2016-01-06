@@ -100,6 +100,7 @@ do
             fi
             BACKUPCOMPLETED=1
         fi
+
         if [ ${HR} = ${TRIGGERHR} -a ${MN} = ${RESETMN} -a ${BACKUPCOMPLETED} -eq 1 ]; then
             BACKUPCOMPLETED=0
         fi

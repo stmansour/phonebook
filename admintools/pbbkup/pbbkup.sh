@@ -52,6 +52,11 @@ bkupData() {
 	mysqldump ${DATABASE} > ${DATABASE}db.sql
 	gzip ${DATABASE}db.sql
 	${DEPLOY} ${DATABASE}db.sql.gz ${DATABASE}/db/${DOM}
+
+	if [ ${DOM} = "01" ]; then
+		${DEPLOY} ${DATABASE}db.sql.gz ${DATABASE}/db/monthly
+	fi
+
 	rm -f ${DATABASE}db.sql.gz
 }
 

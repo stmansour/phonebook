@@ -33,12 +33,10 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	var sess *session
 	var ui uiSupport
 	sess = nil
-	fmt.Printf("Entered saveAdminEditHandler\n")
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
 	sess = ui.X
-	fmt.Printf("Found session\n")
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.AdminEditPerson++       // initialize our data
@@ -50,8 +48,6 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-
-	fmt.Printf("Initial security check passed. Proceeding with form submission.\n")
 
 	var d personDetail
 	path := "/saveAdminEdit/"
@@ -70,7 +66,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	//  Determine which button the user pressed and act...
 	//====================================================
 	action := strings.ToLower(r.FormValue("action"))
-	fmt.Printf("action found = '%s'\n", action)
+
 	if action == "delete" {
 		url := fmt.Sprintf("/delPerson/%d", uid)
 		http.Redirect(w, r, url, http.StatusFound)
@@ -118,8 +114,6 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.StateOfEmployment = r.FormValue("StateOfEmployment")
 		d.CountryOfEmployment = r.FormValue("CountryOfEmployment")
 
-		//fmt.Printf("r.FormValue(BirthMonth) = %s,  convert to num -> %d\n", r.FormValue("BirthMonth"), d.BirthMonth)
-		// fmt.Printf("Role form value = %s\n", r.FormValue("Role"))
 		if hasAccess(sess, ELEMPERSON, "Role", PERMMOD) {
 			d.RID = strToInt(r.FormValue("Role"))
 		}
@@ -270,6 +264,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 
 			if nil != err {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 		}
 		//--------------------------------------------------------------------------

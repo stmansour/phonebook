@@ -24,7 +24,9 @@ stores full backups in a path of the form
 .B (databaseName)/db/(databaseName)db.tar.
 Every full update overwrites the previous one.
 .B date(1).
-
+If it happens to be the first day of the month, an additional copy of the
+data-only backup is created in (databaseName)/db/monthly/(databaseName)db.sql.gz.
+So, for the "accord" database, it would be accord/db/monthly/accorddb.sql.gz.
 .SH OPTIONS
 .TP
 .IP "-B database_username"
