@@ -66,7 +66,7 @@ stopwatchdog() {
     fi      
 }
 
-while getopts ":p:ih:N:TB" o; do
+while getopts ":p:ih:N:Tb" o; do
     case "${o}" in
        b)
             WATCHDOGOPTS="-b"
