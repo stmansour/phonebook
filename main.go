@@ -300,9 +300,7 @@ type uiSupport struct {
 	N                []session
 }
 
-//--------------------------------------------------------------------
 // PhonebookUI is the instance of uiSupport used by this app
-//--------------------------------------------------------------------
 var PhonebookUI uiSupport
 
 // Phonebook is the global application structure providing
