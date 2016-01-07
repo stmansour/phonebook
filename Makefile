@@ -17,6 +17,7 @@ clean:
 
 test:
 	cd test;make test
+	@echo "*** TESTING COMPLETE, ALL TESTS PASSED ***"
 
 dbmake:
 	#cd ../dir/obfuscate;./obfuscate

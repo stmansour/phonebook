@@ -253,6 +253,7 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 
 	if duration == 0 {
 		for i := 0; i < iterations; i++ {
+			// there should be no session in v now
 			if testResult(v, "login", login(v), &tr) {
 				break
 			}
@@ -268,6 +269,7 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 			if testResult(v, "saveAdminEdit", saveAdminEdit(v), &tr) {
 				break
 			}
+			// after logoff, the session in v should be removed
 			if testResult(v, "logoff", logoff(v), &tr) {
 				break
 			}

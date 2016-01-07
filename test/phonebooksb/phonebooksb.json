@@ -22,7 +22,7 @@
 	    		"Repo": "jenkins-snapshot/phonebook/latest",
 	    		"UPort": 8250,
 	    		"IsTest": false,
-	    		"ActivateOpts": "-b"
+	    		"ActivateOpts": "-b",
 				"AppRes": {
 					"Cmd": "./pbrestore -f"
 				}
