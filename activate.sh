@@ -130,7 +130,7 @@ for arg do
 		# 	if [ ${IAM} == "root" ]; then
 		# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
 		# 	else
-				./pbwatchdog -T ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
+				./pbwatchdog ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
 		# 	fi
 		fi
 		echo "OK"

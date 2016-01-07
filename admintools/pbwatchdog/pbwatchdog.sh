@@ -70,7 +70,7 @@ do
             logtimestamp
             PHONEBOOKSTOPPED=1
         fi
-            echo -n "calling ./activate.sh start " >> ${LOGFILE}
+            echo -n "calling ./activate.sh -T start " >> ${LOGFILE}
             logtimestamp
             ./activate.sh start >> ${LOGFILE}
     else
