@@ -1,0 +1,134 @@
+.TH usersim 1 "January 7, 2016" "Version 0.9" "USER COMMANDS"
+.SH NAME
+usersim \- the test program for Accord Phonebook
+.SH SYNOPSIS
+.B usersim
+[\fB\-B\fR \fIdatabaseUsername\fR]
+[\fB\-c\fR \fInumCompanies\fR]
+[\fB\-C\fR \fInumClasses\fR]
+[\fB\-d\fR]
+[\fB\-f\fR]
+[\fB\-h\fR \fIhostname\fR]
+[\fB\-help\fR]
+[\fB\-H\fR \fInumTestHours\fR]
+[\fB\-i\fR \fInumTestIterations\fI]
+[\fB\-m\fR]
+[\fB\-M\fR \fInumTestMinutes\fR]
+[\fB\-N\fR \fIdatabaseName\fR]
+[\fB\-p\fR \fIport\fR]
+[\fB\-s\fR \fIrandNumSeed\fR]
+[\fB\-u\fR \fInumUsers\fR]
+
+.SH DESCRIPTION
+.B usersim(1)
+tests the Accord phonebook(1) server. It exercises all functionality
+of the phonebook server. By default, it performs all tests as a single
+user interacting with the phonebook server through its web interface.
+It can also be instructed to run multiple users simultaneously using the
+.B -u
+option. Each virtual user logs in as a different user as defined in the 
+database. As of this writing there are no pauses that would be associated with a human
+user. The program simply executes all its tests as fast as it can. So,
+running this application with, for example,
+.B "-u 10"
+would actually simulate the steady-state load of several hundred human users. 
+It has been tested
+with up to 70 users on Mac before the machine ran out of resources. The number of users
+that can be simulated varies based on the host system's resources.
+In addition to specifying the number of virtual users. Each virtual user runs the
+entire gamit of tests. They can either iterate (run the tests a specified number
+of times) or run for a specified time duration. By default,
+.B usersim
+will run one iteration with one user. Use the options define below to change
+the behavior.
+
+.B usersim
+can also be used to build up a database using the
+.B -f
+option. It generates random people, companies, and
+classes.  Each iteration of the functional test will change all attributes of a person
+except the
+.I uid
+and
+.I username.
+
+.SH OPTIONS
+.TP
+.IP "-B databaseUsername"
+Username for logging into the database server. Default name is "ec2-user"
+.IP "-c numCompanies"
+Used in conjunction with -f, this option specifies the number of companies to create.
+The default is 75.
+.IP "-C numClasses"
+Used in conjunction with -f, this option specifies the number of classes (sometimes
+referred to as "cost centers") to create. The default is 75.
+.IP -d
+Run the tests in debug mode. It generates a lot of output. It's probably best to 
+run this with a single user and 1 iteration until you know what you're getting into.
+.IP -f
+Do not run the test, but update the database to support the numer of people, companies, 
+and classes specified by
+the options -u, -c, and -C.  The data created in the database consists of random people,
+names, addresses, email addresses, phone numbers, etc.  All of these values are generated
+randomly based on files of names, city names, etc.  The phone numbers and email addresses
+are completely random. The addresses, phone numbers, email addresses, etc., will most
+likely not be real. The form of the data will be correct, which is sufficient for testing.
+.IP "-h hostname"
+The host name of the server on which the phonebook server is running. This value defaults
+to "localhost".
+.IP "-help"
+List the options to stdout.
+.IP "-H hours"
+The number of hours to run the tests. If any combination of -H and/or -M are specified, then
+the number of iterations (-i) is ignored.  The actual duration for the test run is the
+number of hours from -H plus the number of minutes specified in -M. The default values for
+both -H and -M are 0.
+.IP "-i numIterations"
+This specifies the number of iterations for running the test. This value is ignored if either
+-H or -M is specified.
+.IP "-m"
+Show debug information for test failures. This is probably going to be more useful than
+the -d option in most cases. Tests fail when the data returned by the server miscompares
+with the expected data. This option prints out enough information to figure out what
+went wrong most of the time.
+.IP "-M mins"
+Number of minutes for test duration. See -H for full details.
+.IP "-N databaseName"
+The default name is "accordtest". The production database name is "accord" by default.
+.IP "-p port"
+Specifies the port number on which the phonebook server is listening. The default value is 8250.
+.IP "-s seedNumber"
+Specifies the seed for the random number generator. This is useful if you want to reproduce
+exactly what happened during a test run.
+.IP "-u numUsers"
+Specifies the number users to simulate. A "go routine" (think: low-overhead thread) for each
+user will be started and given the mission to run tests. The tests will either be the specified
+number of iterations (-i) or as many runs as can be done for the duration of time specified for
+the test run (-H, -M).  The results for all users will be aggregated and a brief report will be
+generated at the end with the overall results.
+
+
+.SH EXAMPLES
+.IP usersim
+Run the test, one pass, 1 user.
+
+.IP usersim -i 5
+Run the test 5 times, 1 user.
+
+.IP usersim -i 5 -u 30
+Simulate 30 users each running the test 5 times
+
+.IP usersim -H 5 -M 30 -u 42
+Simulate 42 users running the test continuously for 5 hours and 30 mins.
+
+.IP usersim -f -u 400 -c 50 -C 12
+Update the database with 400 random users, 50 companies, and 12 classes.  This will NOT run
+the test.
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR phonebook(1),

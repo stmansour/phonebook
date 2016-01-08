@@ -247,32 +247,40 @@ func testResult(v *personDetail, testname string, success bool, tr *TestResults)
 	return false
 }
 
-func usersim(userindex, iterations, duration int, TestResChan chan TestResults, TestResChanAck chan int) {
+func usersimDoTest(v *personDetail, tr *TestResults) {
+	// there should be no session in v now
+	if testResult(v, "login", login(v), tr) {
+		return
+	}
+	if testResult(v, "detail", viewPersonDetail(v), tr) {
+		return
+	}
+	if testResult(v, "adminView", adminViewTest(v), tr) {
+		return
+	}
+	if testResult(v, "adminEdit", adminEditTest(v), tr) {
+		return
+	}
+	if testResult(v, "saveAdminEdit", saveAdminEdit(v), tr) {
+		return
+	}
+	// after logoff, the session in v should be removed
+	if testResult(v, "logoff", logoff(v), tr) {
+		return
+	}
+}
+
+func usersim(userindex, iterations int, finishTime time.Time, TestResChan chan TestResults, TestResChanAck chan int) {
 	v := App.Peeps[userindex]
 	tr := TestResults{v.UID, 0, 0, nil}
 
-	if duration == 0 {
+	if finishTime.Year() < 2015 {
 		for i := 0; i < iterations; i++ {
-			// there should be no session in v now
-			if testResult(v, "login", login(v), &tr) {
-				break
-			}
-			if testResult(v, "detail", viewPersonDetail(v), &tr) {
-				break
-			}
-			if testResult(v, "adminView", adminViewTest(v), &tr) {
-				break
-			}
-			if testResult(v, "adminEdit", adminEditTest(v), &tr) {
-				break
-			}
-			if testResult(v, "saveAdminEdit", saveAdminEdit(v), &tr) {
-				break
-			}
-			// after logoff, the session in v should be removed
-			if testResult(v, "logoff", logoff(v), &tr) {
-				break
-			}
+			usersimDoTest(v, &tr)
+		}
+	} else {
+		for time.Now().Before(finishTime) {
+			usersimDoTest(v, &tr)
 		}
 	}
 
@@ -281,14 +289,18 @@ func usersim(userindex, iterations, duration int, TestResChan chan TestResults, 
 }
 
 func executeSimulation() {
-	StartTime := time.Now()
+	StartTime := time.Now()               // note the time we start
 	TestResChan := make(chan TestResults) // usersim reports results via this struct
 	TestResChanAck := make(chan int)      // ack receipt
+	finishTime, _ := time.Parse(time.UnixDate, "Sat Mar  7 11:06:39 PST 2000")
 
-	if App.TestDuration == 0 {
-		for j := 0; j < App.TestUsers; j++ {
-			go usersim(j, App.TestIterations, App.TestDuration, TestResChan, TestResChanAck)
-		}
+	// fmt.Printf("Requested test duration: %v\n", App.TestDuration)
+
+	if App.TestDuration.Seconds() > 0 {
+		finishTime = time.Now().Add(App.TestDuration)
+	}
+	for j := 0; j < App.TestUsers; j++ {
+		go usersim(j, App.TestIterations, finishTime, TestResChan, TestResChanAck)
 	}
 
 	var totTR TestResults                // net results
@@ -303,7 +315,6 @@ func executeSimulation() {
 			TestResChanAck <- 1 // acknowledge receipt
 		}
 	}
-
 	fmt.Printf("Total Tests: %d   pass: %d   fail: %d\n", totTR.Fail+totTR.Pass, totTR.Pass, totTR.Fail)
 	if len(totTR.Failures) > 0 {
 		for i := 0; i < len(totTR.Failures); i++ {
@@ -311,5 +322,8 @@ func executeSimulation() {
 		}
 	}
 	Elapsed := time.Since(StartTime)
-	fmt.Printf("Simulation Time: %s\n", Elapsed /*Round(Elapsed, 0.5e9)*/)
+	fmt.Printf("Random number seed for this run: %d\n", App.Seed)
+	fmt.Printf("Test start time: %s\n", StartTime)
+	fmt.Printf("Test end time  : %s\n", time.Now())
+	fmt.Printf("Elapse time    : %s\n", Elapsed /*Round(Elapsed, 0.5e9)*/)
 }

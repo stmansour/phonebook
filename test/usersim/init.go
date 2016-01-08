@@ -16,23 +16,23 @@ func readCommandLineArgs() {
 	sd = time.Now().UnixNano()
 
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
-	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
-	hPtr := flag.String("h", "localhost", "server hostname")
-	pPtr := flag.Int("p", 8250, "port on which the server listens")
-	dbgPtr := flag.Bool("d", false, "debug mode when true")
-	tmPtr := flag.Bool("m", false, "show test matching, helps debug test failures")
-	tPtr := flag.Int("t", 0, "test duration time in minutes. 0 means use iterations")
-	uPtr := flag.Int("u", 1, "number of users to simulate")
-	iPtr := flag.Int("i", 1, "number of iterations, ignored if test duration time is non-zero")
-	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
-	fdbPtr := flag.Bool("f", false, "just update the database as needed, do not run simulation")
 	pcoPtr := flag.Int("c", 75, "number of companies to create with -f")
 	pclPtr := flag.Int("C", 75, "number of classes to create with -f")
+	dbgPtr := flag.Bool("d", false, "debug mode when true")
+	fdbPtr := flag.Bool("f", false, "just update the database as needed, do not run simulation")
+	hPtr := flag.String("h", "localhost", "server hostname")
+	HPtr := flag.Int64("H", 0, "number of hours to iterate tests")
+	iPtr := flag.Int("i", 1, "number of iterations, ignored if test duration time is non-zero")
+	tmPtr := flag.Bool("m", false, "show test matching, helps debug test failures")
+	MPtr := flag.Int64("M", 0, "number of minutes to iterate tests")
+	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
+	pPtr := flag.Int("p", 8250, "port on which the server listens")
+	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
+	uPtr := flag.Int("u", 1, "number of users to simulate")
 
 	flag.Parse()
 	App.TestIterations = *iPtr // number of iterations (mutually exclusive with TestDuration)
 	App.TestUsers = *uPtr      // number of users to test with
-	App.TestDuration = *tPtr   // time in minutes
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
 	App.Seed = int64(*p)
@@ -44,6 +44,9 @@ func readCommandLineArgs() {
 	App.TotalCompanies = *pcoPtr
 	App.ShowTestMatching = *tmPtr
 	rand.Seed(App.Seed)
+	App.TestDurationHrs = *HPtr
+	App.TestDurationMins = *MPtr
+	App.TestDuration = time.Duration(App.TestDurationHrs)*time.Hour + time.Duration(App.TestDurationMins)*time.Minute
 }
 
 // DesChars is the set of characters used to build a designation

@@ -570,13 +570,13 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readCommandLineArgs() {
-	portPtr := flag.Int("p", 8250, "port on which Phonebook listens")
-	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
-	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
-	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
-	dbnmPtr := flag.String("N", "accord", "database name")
 	dbusPtr := flag.String("B", "ec2-user", "database username")
 	cntrPtr := flag.Int("c", 5, "counter update period in minutes")
+	dbugPtr := flag.Bool("d", false, "debug mode - includes debug info in logfile")
+	dtscPtr := flag.Bool("D", false, "LogToScreen mode - prints log messages to stdout")
+	dbnmPtr := flag.String("N", "accord", "database name")
+	portPtr := flag.Int("p", 8250, "port on which Phonebook listens")
+	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
 
 	flag.Parse()
 

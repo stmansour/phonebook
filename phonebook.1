@@ -1,0 +1,55 @@
+.TH phonebook 1 "December 17, 2015" "Version 0.9" "USER COMMANDS"
+.SH NAME
+phonebook \- Accord Phonebook Server
+.SH SYNOPSIS
+.B phonebook
+[\fB\-B\fR \fIdatabaseUsername\fR]
+[\fB\-c\fR \fIfreq\fR]
+[\fB\-d\fR]
+[\fB\-D\fR]
+[\fB\-N\fR \fIdatabaseName\fR]
+[\fB\-p\fR \fIport\fR]
+[\fB\-s\fR]
+
+.SH DESCRIPTION
+.B phonebook(1)
+is a web service that manages Accords people, company, and class information.
+It also provides a web interface for users to interact with the data.
+
+.SH OPTIONS
+.TP
+.IP "-B databaseUsername"
+Username for logging into the database server. Default name is "ec2-user"
+.IP "-c freq"
+Specify the internal counter update frequency in minutes. Phonebook manages a number of counters
+that indicate usage of its functions. By default, these counters are updated to the
+database every 5 minutes. 
+.IP -d
+Run in debug mode. It generates a lot of output to the logfile.
+.IP -D
+Echo log information to stdout.
+.IP "-N databaseName"
+The default name is "accordtest". The production database name is "accord" by default.
+.IP "-p port"
+Specifies the port number on which the phonebook server is listening. The default value is 8250.
+.IP "-s"
+Dumps security-related debug messages to the logfile and stdout.
+
+.SH EXAMPLES
+.IP phonebook
+Run the phonebook server, listen on port 8250, use the database named "accord".
+
+.IP phonebook -p 8102 -N accordtest
+Run the phonebook server, listen on port 8102, use the database named "accordtest".
+
+.SH FILES
+.B Phonebook.log
+is the logfile where phonebook(1) logs its information.
+
+.SH BUGS
+Contact me if you find any.
+
+.SH AUTHOR
+Steve Mansour (sman@accordinterests.com)
+.SH "SEE ALSO"
+.BR pbwatchdog(1), pbbkup(1), pbrestore(1), pbsetpw(1), pbadduser(1), pbsetusername(1)

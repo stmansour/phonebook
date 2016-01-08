@@ -12,7 +12,7 @@ clean:
 	cd dbtools;make clean
 	cd test;make clean
 	cd admintools;make clean
-	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* x.sh*
+	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* *.out *.log x.sh*
 	go clean
 
 test:
@@ -30,9 +30,12 @@ package: phonebook
 	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebook
+	mkdir -p tmp/phonebook/man/man1/
+	cp *.1 tmp/phonebook/man/man1/
 	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	cd admintools;make package
 	cd dbtools;make package
+	cd test;make package
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
 
 install: package

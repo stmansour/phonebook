@@ -6,3 +6,6 @@ test:
 
 clean:
 	cd usersim;make clean
+
+package:
+	cd usersim;make package

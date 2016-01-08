@@ -95,7 +95,7 @@ cd phonebook/
 updateImages
 chmod u+s phonebook pbwatchdog
 echo "starting..."
-./activate.sh start
+./activate.sh -b start
 sleep 3
 status=$(./activate.sh ready)
 if [ ${status} == "OK" ]; then

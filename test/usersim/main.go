@@ -192,7 +192,9 @@ var App struct {
 	Port             int
 	TestIterations   int             // number of iterations (mutually exclusive with TestDuration)
 	TestUsers        int             // number of users to test with
-	TestDuration     int             // time in minutes
+	TestDurationMins int64           // duration in minutes
+	TestDurationHrs  int64           // duration in hours
+	TestDuration     time.Duration   // duration of tests
 	Debug            bool            // show debug information
 	ShowTestMatching bool            // to debug when matches fail
 	UpdateDBOnly     bool            // just update the db as needed, don't run the simulation
