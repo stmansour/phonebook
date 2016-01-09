@@ -303,11 +303,51 @@ type uiSupport struct {
 // PhonebookUI is the instance of uiSupport used by this app
 var PhonebookUI uiSupport
 
+// PrepSQL is the data type holding all prepared statements
+// for use within phonebook
+type PrepSQL struct {
+	deductList         *sql.Stmt // deduction list names and id vals
+	getComps           *sql.Stmt // compensations associated with a user
+	myDeductions       *sql.Stmt // deductions for a specific user
+	adminPersonDetails *sql.Stmt // for AdminView and AdminEdit
+	classInfo          *sql.Stmt // get class attributes
+	companyInfo        *sql.Stmt // company attributes
+	countersUpdate     *sql.Stmt // feature usage counters update
+	delClass           *sql.Stmt // deletes a class
+	delCompany         *sql.Stmt // deletes a company
+	delPerson          *sql.Stmt // deletes a person
+	delPersonComp      *sql.Stmt // part of delperson
+	delPersonDeduct    *sql.Stmt // part of delperson
+	getJobTitle        *sql.Stmt // title associated with a job code
+	nameFromUID        *sql.Stmt // name lookup
+	deptName           *sql.Stmt // name from DeptCode
+	directReports      *sql.Stmt // folks who report to an individual
+	personDetail       *sql.Stmt // get a bunch of user attributes
+	adminInsertPerson  *sql.Stmt // insert a new person
+	adminReadBack      *sql.Stmt // read back newly inserted person
+	adminUpdatePerson  *sql.Stmt // admin update person
+	insertComp         *sql.Stmt // part of admin update person
+	insertDeduct       *sql.Stmt // part of admin update person
+	insertClass        *sql.Stmt // adding a new class
+	classReadBack      *sql.Stmt // read back newly written class
+	updateClass        *sql.Stmt // update a class
+	insertCompany      *sql.Stmt // insert a new company
+	companyReadback    *sql.Stmt // read back newly written company
+	updateCompany      *sql.Stmt // update a company
+	updateMyDetails    *sql.Stmt // person updating their own details
+	updatePasswd       *sql.Stmt // person updating their passwd
+	readFieldPerms     *sql.Stmt // read field permissions
+	accessRoles        *sql.Stmt // read access roles
+	getUserCoCode      *sql.Stmt // read the cocode for a person
+	loginInfo          *sql.Stmt //read info for login
+}
+
 // Phonebook is the global application structure providing
 // information that any function might need.
 var Phonebook struct {
 	Port               int           // port on which we listen
 	db                 *sql.DB       // the database connection
+	prepstmt           PrepSQL       // struct of prepared sql statements
 	DBName             string        // name of database to use
 	DBUser             string        // user phonebook should use for accessing db
 	LogFile            *os.File      // where to log messages
@@ -558,6 +598,7 @@ func initHTTP() {
 	http.HandleFunc("/search/", searchHandler)
 	http.HandleFunc("/searchcl/", searchClassHandler)
 	http.HandleFunc("/searchco/", searchCompaniesHandler)
+	http.HandleFunc("/setup/", setupHandler)
 	http.HandleFunc("/shutdown/", shutdownHandler)
 	http.HandleFunc("/signin/", signinHandler)
 	http.HandleFunc("/status/", statusHandler)
@@ -636,6 +677,7 @@ func main() {
 	}
 	ulog("MySQL database opened with \"%s\"\n", dbopenparms)
 	Phonebook.db = db
+	buildPreparedStatements()
 
 	//==============================================
 	// Load some of the database info...

@@ -12,7 +12,7 @@ import (
 func getJobTitle(JobCode int) string {
 	if JobCode > 0 {
 		var JobTitle string
-		rows, err := Phonebook.db.Query("select title from jobtitles where jobcode=?", JobCode)
+		rows, err := Phonebook.prepstmt.getJobTitle.Query(JobCode)
 		errcheck(err)
 		defer rows.Close()
 		for rows.Next() {
@@ -28,7 +28,7 @@ func getNameFromUID(uid int) string {
 	var FirstName string
 	var LastName string
 	var name string
-	rows, err := Phonebook.db.Query("select firstname,lastname from people where uid=?", uid)
+	rows, err := Phonebook.prepstmt.nameFromUID.Query(uid)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -41,7 +41,7 @@ func getNameFromUID(uid int) string {
 
 func getDepartmentFromDeptCode(deptcode int) string {
 	var name string
-	rows, err := Phonebook.db.Query("select name from departments where deptcode=?", deptcode)
+	rows, err := Phonebook.prepstmt.deptName.Query(deptcode)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -52,8 +52,8 @@ func getDepartmentFromDeptCode(deptcode int) string {
 }
 
 func getReports(uid int, d *personDetail) {
-	s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
-	rows, err := Phonebook.db.Query(s)
+	//s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
+	rows, err := Phonebook.prepstmt.directReports.Query(uid)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
@@ -96,11 +96,10 @@ func detailpopHandler(w http.ResponseWriter, r *http.Request) {
 //===========================================================
 func getPersonDetail(d *personDetail, uid int) int {
 	d.Image = getImageFilename(uid)
-	err := Phonebook.db.QueryRow("select lastname,firstname,preferredname,jobcode,primaryemail,"+
-		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
-		"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
-		"from people where uid=?", uid).Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
+	err := Phonebook.prepstmt.personDetail.QueryRow(uid).Scan(&d.LastName, &d.MiddleName,
+		&d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
 		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
+		&d.EmergencyContactName, &d.EmergencyContactPhone,
 		&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 		&d.HomeState, &d.HomePostalCode, &d.HomeCountry)
 	if nil != err {
@@ -155,15 +154,14 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	if uid > 0 {
 		d.Image = getImageFilename(uid)
-		rows, err := Phonebook.db.Query("select lastname,middlename,firstname,preferredname,jobcode,primaryemail,"+
-			"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
-			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
-			"from people where uid=?", uid)
+		rows, err := Phonebook.prepstmt.personDetail.Query(uid)
 		errcheck(err)
 		defer rows.Close()
 		for rows.Next() {
-			errcheck(rows.Scan(&d.LastName, &d.MiddleName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
-				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
+			errcheck(rows.Scan(&d.LastName, &d.MiddleName, &d.FirstName, &d.PreferredName,
+				&d.JobCode, &d.PrimaryEmail,
+				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID,
+				&d.ClassCode, &d.EmergencyContactName, &d.EmergencyContactPhone,
 				&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
 				&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
 		}

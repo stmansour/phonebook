@@ -197,19 +197,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			//============================================
 			// OK, now write it to the db...
 			//============================================
-			insert, err := Phonebook.db.Prepare("INSERT INTO people (Salutation,FirstName,MiddleName,LastName,PreferredName," +
-				"EmergencyContactName,EmergencyContactPhone," +
-				"PrimaryEmail,SecondaryEmail,OfficePhone,OfficeFax,CellPhone,CoCode,JobCode," +
-				"PositionControlNumber,DeptCode," +
-				"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry," +
-				"status,EligibleForRehire,Accepted401K,AcceptedDentalInsurance,AcceptedHealthInsurance," +
-				"Hire,Termination,ClassCode," +
-				"BirthMonth,BirthDOM,mgruid,StateOfEmployment,CountryOfEmployment," +
-				"LastReview,NextReview,RID,lastmodby,UserName) " +
-				//      1                 10                  20                  30                  40
-				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
-			errcheck(err)
-			_, err = insert.Exec(do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName, // 5
+			_, err = Phonebook.prepstmt.adminInsertPerson.Exec(do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName, // 5
 				do.EmergencyContactName, do.EmergencyContactPhone, //7
 				do.PrimaryEmail, do.SecondaryEmail, do.OfficePhone, do.OfficeFax, do.CellPhone, do.CoCode, do.JobCode, //14
 				do.PositionControlNumber, do.DeptCode, //16
@@ -221,7 +209,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			errcheck(err)
 
 			// read this record back to get the UID...
-			rows, err := Phonebook.db.Query("select uid from people where FirstName=? and LastName=? and PrimaryEmail=? and OfficePhone=? and CoCode=? and JobCode=?",
+			rows, err := Phonebook.prepstmt.adminReadBack.Query(
 				do.FirstName, do.LastName, do.PrimaryEmail, do.OfficePhone, do.CoCode, do.JobCode)
 			errcheck(err)
 			defer rows.Close()
@@ -239,18 +227,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			//--------------------------
 			// update existing record
 			//--------------------------
-			update, err := Phonebook.db.Prepare("update people set Salutation=?,FirstName=?,MiddleName=?,LastName=?,PreferredName=?," + // 5
-				"EmergencyContactName=?,EmergencyContactPhone=?," + // 7
-				"PrimaryEmail=?,SecondaryEmail=?,OfficePhone=?,OfficeFax=?,CellPhone=?,CoCode=?,JobCode=?," + // 14
-				"PositionControlNumber=?,DeptCode=?," + // 16
-				"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?," + // 22
-				"status=?,EligibleForRehire=?,Accepted401K=?,AcceptedDentalInsurance=?,AcceptedHealthInsurance=?," + // 27
-				"Hire=?,Termination=?,ClassCode=?," + // 30
-				"BirthMonth=?,BirthDOM=?,mgruid=?,StateOfEmployment=?,CountryOfEmployment=?," + // 35
-				"LastReview=?,NextReview=?,lastmodby=?,RID=? " + // 39
-				"where people.uid=?")
-			errcheck(err)
-			_, err = update.Exec(
+			_, err = Phonebook.prepstmt.adminUpdatePerson.Exec(
 				do.Salutation, do.FirstName, do.MiddleName, do.LastName, do.PreferredName,
 				do.EmergencyContactName, do.EmergencyContactPhone,
 				do.PrimaryEmail, do.SecondaryEmail, do.OfficePhone, do.OfficeFax, do.CellPhone, do.CoCode, do.JobCode,
@@ -270,30 +247,30 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		//--------------------------------------------------------------------------
 		// Remove old compensation type(s) and Insert new compensation type(s)
 		//--------------------------------------------------------------------------
-		ct, err := Phonebook.db.Prepare("DELETE FROM compensation WHERE uid=?")
+		// ct, err := Phonebook.db.Prepare("DELETE FROM compensation WHERE uid=?")
+		// errcheck(err)
+		_, err = Phonebook.prepstmt.delPersonComp.Exec(do.UID)
 		errcheck(err)
-		_, err = ct.Exec(do.UID)
-		errcheck(err)
-		ct, err = Phonebook.db.Prepare("INSERT INTO compensation (uid,type) VALUES(?,?)")
-		errcheck(err)
+		// ct, err = Phonebook.db.Prepare("INSERT INTO compensation (uid,type) VALUES(?,?)")
+		// errcheck(err)
 		for i := 0; i < len(do.Comps); i++ {
-			_, err := ct.Exec(do.UID, do.Comps[i])
+			_, err := Phonebook.prepstmt.insertComp.Exec(do.UID, do.Comps[i])
 			errcheck(err)
 		}
 
 		//--------------------------------------------------------------------------
 		// Update deductions...
 		//--------------------------------------------------------------------------
-		ct, err = Phonebook.db.Prepare("DELETE FROM deductions WHERE uid=?")
+		// ct, err = Phonebook.db.Prepare("DELETE FROM deductions WHERE uid=?")
+		// errcheck(err)
+		_, err = Phonebook.prepstmt.delPersonDeduct.Exec(do.UID)
 		errcheck(err)
-		_, err = ct.Exec(do.UID)
-		errcheck(err)
-		ct, err = Phonebook.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
-		errcheck(err)
+		// ct, err = Phonebook.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
+		// errcheck(err)
 		for i := 0; i < len(do.MyDeductions); i++ {
 			// fmt.Printf("\"%s\" = %s\n", do.MyDeductions[i].Name, r.FormValue(do.MyDeductions[i].Name))
 			if r.FormValue(do.MyDeductions[i].Name) != "" {
-				_, err := ct.Exec(do.UID, do.MyDeductions[i].DCode)
+				_, err := Phonebook.prepstmt.insertDeduct.Exec(do.UID, do.MyDeductions[i].DCode)
 				errcheck(err)
 			}
 		}

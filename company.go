@@ -28,8 +28,7 @@ func (c *company) filterSecurityRead(sess *session, permRequired int) {
 }
 
 func getCompanyInfo(cocode int, c *company) {
-	s := fmt.Sprintf("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies where cocode=%d", cocode)
-	rows, err := Phonebook.db.Query(s)
+	rows, err := Phonebook.prepstmt.companyInfo.Query(cocode)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {

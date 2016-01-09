@@ -64,13 +64,11 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		co.filterSecurityMerge(sess, PERMMOD, &c) // merge new info based on permissions
 
 		if 0 == ClassCode {
-			insert, err := Phonebook.db.Prepare("INSERT INTO classes (Name,Designation,Description,lastmodby) VALUES(?,?,?,?)")
-			errcheck(err)
-			_, err = insert.Exec(co.Name, co.Designation, co.Description, sess.UID)
+			_, err = Phonebook.prepstmt.insertClass.Exec(co.Name, co.Designation, co.Description, sess.UID)
 			errcheck(err)
 
 			// read this record back to get the ClassCode...
-			rows, err := Phonebook.db.Query("select ClassCode from classes where Name=? and Designation=?", co.Name, co.Designation)
+			rows, err := Phonebook.prepstmt.classReadBack.Query(co.Name, co.Designation)
 			errcheck(err)
 			defer rows.Close()
 			nClassCode := 0 // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest class added
@@ -85,9 +83,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			c.ClassCode = ClassCode
 			loadClasses() // This is a new class, we've saved it, now we need to reload our company list...
 		} else {
-			update, err := Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=?,lastmodby=? where ClassCode=?")
-			errcheck(err)
-			_, err = update.Exec(co.Name, co.Designation, co.Description, sess.UID, ClassCode)
+			_, err = Phonebook.prepstmt.updateClass.Exec(co.Name, co.Designation, co.Description, sess.UID, ClassCode)
 			if nil != err {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

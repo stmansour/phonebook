@@ -43,7 +43,7 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 
 		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where status=1 and mgruid=%d", uid)
 		// fmt.Printf("QUERY = %s\n", s)
-		rows, err := Phonebook.db.Query(s)
+		rows, err := Phonebook.db.Query(s) // note: the single arg to Query causes the sql impl to NOT create a prepared statement
 		errcheck(err)
 		defer rows.Close()
 		var d searchResults
@@ -134,41 +134,36 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//===============================================================
+	//===============================
+	//  ******  BEGIN TRANSACTION  ******
+	//===============================
+	//------------------------------------------------------------
 	// in order to delete a person, we must delete all references
 	// to the person in the following database tables:
 	//		deductions
 	//		compensation
-	//===============================================================
+	//------------------------------------------------------------
 	s := fmt.Sprintf("DELETE FROM people WHERE UID=%d", uid)
-	stmt, err := Phonebook.db.Prepare(s)
-	if delCheckError(c, sess, err, s, w, r) {
-		return
-	}
-	_, err = stmt.Exec()
+	_, err = Phonebook.prepstmt.delPerson.Exec(uid)
 	if delCheckError(c, sess, err, s, w, r) {
 		return
 	}
 
 	s = fmt.Sprintf("DELETE FROM deductions WHERE UID=%d", uid)
-	stmt, err = Phonebook.db.Prepare(s)
-	if delCheckError(c, sess, err, s, w, r) {
-		return
-	}
-	_, err = stmt.Exec()
+	_, err = Phonebook.prepstmt.delPersonDeduct.Exec(uid)
 	if delCheckError(c, sess, err, s, w, r) {
 		return
 	}
 
 	s = fmt.Sprintf("DELETE FROM compensation WHERE UID=%d", uid)
-	stmt, err = Phonebook.db.Prepare(s)
+	_, err = Phonebook.prepstmt.delPersonComp.Exec(uid)
 	if delCheckError(c, sess, err, s, w, r) {
 		return
 	}
-	_, err = stmt.Exec()
-	if delCheckError(c, sess, err, s, w, r) {
-		return
-	}
+	//===============================
+	//  ******  END TRANSACTION  ******
+	//===============================
+
 	http.Redirect(w, r, "/search/", http.StatusFound)
 }
 
@@ -194,7 +189,7 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 		breadcrumbAdd(sess, "Delete Class", fmt.Sprintf("/delClassRefErr/%d", classcode))
 
 		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where classcode=%d", classcode)
-		rows, err := Phonebook.db.Query(s)
+		rows, err := Phonebook.db.Query(s) // does NOT create a prepared statement
 		errcheck(err)
 		defer rows.Close()
 		var d searchResults
@@ -278,12 +273,12 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 	//		deductions
 	//		compensationc,
 	//===============================================================
-	s = fmt.Sprintf("DELETE FROM classes WHERE ClassCode=%d", ClassCode)
-	stmt, err := Phonebook.db.Prepare(s)
+	// s = fmt.Sprintf("DELETE FROM classes WHERE ClassCode=%d", ClassCode)
+	// stmt, err := Phonebook.db.Prepare(s)
 	if delCheckError(c, sess, err, s, w, r) {
 		return
 	}
-	_, err = stmt.Exec()
+	_, err = Phonebook.prepstmt.delClass.Exec(ClassCode)
 	if delCheckError(c, sess, err, s, w, r) {
 		return
 	}
@@ -313,8 +308,8 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 
 		breadcrumbAdd(sess, "Delete Company", fmt.Sprintf("/delCoRefErr/%d", cocode))
 
-		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where cocode=%d", cocode)
-		rows, err := Phonebook.db.Query(s)
+		// s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where cocode=%d", cocode)
+		rows, err := Phonebook.prepstmt.delCompany.Query(cocode)
 		errcheck(err)
 		defer rows.Close()
 		var d searchResults

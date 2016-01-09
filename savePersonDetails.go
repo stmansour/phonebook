@@ -173,13 +173,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		//=================================================================
 		// Do the update
 		//=================================================================
-		update, err := Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?," +
-			"EmergencyContactName=?,EmergencyContactPhone=?," +
-			"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,lastmodby=? " +
-			"where people.uid=?")
-		errcheck(err)
-
-		_, err = update.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
+		_, err = Phonebook.prepstmt.updateMyDetails.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
 			d.EmergencyContactName, d.EmergencyContactPhone,
 			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, sess.UID,
 			uid)
@@ -191,9 +185,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		if "" != password {
 			sha := sha512.Sum512([]byte(password))
 			passhash := fmt.Sprintf("%x", sha)
-			update, err = Phonebook.db.Prepare("update people set passhash=? where uid=?")
-			errcheck(err)
-			_, err = update.Exec(passhash, uid)
+			_, err = Phonebook.prepstmt.updatePasswd.Exec(passhash, uid)
 			if nil != err {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

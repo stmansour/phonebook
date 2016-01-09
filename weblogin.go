@@ -58,7 +58,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var passhash, firstname, preferredname string
 	var uid, RID int
-	err := Phonebook.db.QueryRow("select uid,firstname,preferredname,passhash,rid from people where username=?", myusername).Scan(&uid, &firstname, &preferredname, &passhash, &RID)
+	err := Phonebook.prepstmt.loginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
 		ulog("No user with username = %s\n", myusername)

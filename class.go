@@ -12,8 +12,8 @@ func (c *class) filterSecurityRead(sess *session, permRequired int) {
 }
 
 func getClassInfo(classcode int, c *class) {
-	s := fmt.Sprintf("select classcode,Name,Designation,Description from classes where classcode=%d", classcode)
-	rows, err := Phonebook.db.Query(s)
+	// s := fmt.Sprintf("select classcode,Name,Designation,Description from classes where classcode=%d", classcode)
+	rows, err := Phonebook.prepstmt.classInfo.Query(classcode)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {

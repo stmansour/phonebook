@@ -73,18 +73,13 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		co.filterSecurityMerge(sess, PERMMOD, &c) // merge
 
 		if 0 == CoCode {
-			insert, err := Phonebook.db.Prepare("INSERT INTO companies (LegalName,CommonName,Designation," +
-				"Email,Phone,Fax,Active,EmploysPersonnel,Address,Address2,City,State,PostalCode,Country,lastmodby) " +
-				//      1                 10                  20                  30
-				"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
-			errcheck(err)
-			_, err = insert.Exec(c.LegalName, c.CommonName, c.Designation,
+			_, err = Phonebook.prepstmt.insertCompany.Exec(c.LegalName, c.CommonName, c.Designation,
 				c.Email, c.Phone, c.Fax, c.Active, c.EmploysPersonnel,
 				c.Address, c.Address2, c.City, c.State, c.PostalCode, c.Country, sess.UID)
 			errcheck(err)
 
 			// read this record back to get the CoCode...
-			rows, err := Phonebook.db.Query("select CoCode from companies where CommonName=? and LegalName=?", c.CommonName, c.LegalName)
+			rows, err := Phonebook.prepstmt.companyReadback.Query(c.CommonName, c.LegalName)
 			errcheck(err)
 			defer rows.Close()
 			nCoCode := 0 // quick way to handle multiple matches... in this case, largest CoCode wins, it hast to be the latest person added
@@ -99,9 +94,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 			c.CoCode = CoCode
 			loadCompanies() // This is a new company, we've saved it, now we need to reload our company list...
 		} else {
-			update, err := Phonebook.db.Prepare("update companies set LegalName=?,CommonName=?,Designation=?,Email=?,Phone=?,Fax=?,EmploysPersonnel=?,Active=?,Address=?,Address2=?,City=?,State=?,PostalCode=?,Country=?,lastmodby=? where CoCode=?")
-			errcheck(err)
-			_, err = update.Exec(c.LegalName, c.CommonName, c.Designation, c.Email, c.Phone,
+			_, err = Phonebook.prepstmt.updateCompany.Exec(c.LegalName, c.CommonName, c.Designation, c.Email, c.Phone,
 				c.Fax, c.EmploysPersonnel, c.Active, c.Address, c.Address2, c.City, c.State,
 				c.PostalCode, c.Country, sess.UID, CoCode)
 			if nil != err {

@@ -8,7 +8,7 @@ import (
 )
 
 func getCompensations(d *personDetail) {
-	rows, err := Phonebook.db.Query("select type from compensation where uid=?", d.UID)
+	rows, err := Phonebook.prepstmt.getComps.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
 	var c int
@@ -54,7 +54,7 @@ func buildMyCompsMap(d *personDetail) {
 }
 
 func getDeductions(d *personDetail) {
-	rows, err := Phonebook.db.Query("select deduction from deductions where uid=?", d.UID)
+	rows, err := Phonebook.prepstmt.deductList.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
 	var c int
@@ -77,7 +77,7 @@ func getDeductionsStr(d *personDetail) {
 }
 
 func initMyDeductions(d *personDetail) {
-	rows, err := Phonebook.db.Query("select dcode,name from deductionlist")
+	rows, err := Phonebook.prepstmt.myDeductions.Query()
 	errcheck(err)
 	defer rows.Close()
 	d.MyDeductions = make([]aDeduction, 0)
@@ -108,19 +108,7 @@ func adminReadDetails(d *personDetail) {
 	//-----------------------------------------------------------
 	// query for all the fields in table People
 	//-----------------------------------------------------------
-	rows, err := Phonebook.db.Query(
-		"select LastName,FirstName,MiddleName,Salutation,"+ // 4
-			"ClassCode,Status,PositionControlNumber,"+ // 7
-			"OfficePhone,OfficeFax,CellPhone,PrimaryEmail,"+ // 11
-			"SecondaryEmail,EligibleForRehire,LastReview,NextReview,"+ // 15
-			"BirthMonth,BirthDOM,HomeStreetAddress,HomeStreetAddress2,HomeCity,"+ // 20
-			"HomeState,HomePostalCode,HomeCountry,"+ // 23
-			"AcceptedHealthInsurance,AcceptedDentalInsurance,Accepted401K,"+ // 26
-			"jobcode,hire,termination,"+ // 29
-			"mgruid,deptcode,cocode,StateOfEmployment,"+ // 33
-			"CountryOfEmployment,PreferredName,"+ // 35
-			"EmergencyContactName,EmergencyContactPhone,RID "+ // 38
-			"from people where uid=?", d.UID)
+	rows, err := Phonebook.prepstmt.adminPersonDetails.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {

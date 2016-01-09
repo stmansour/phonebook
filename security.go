@@ -29,7 +29,7 @@ func dumpAccessRoles() {
 }
 
 func readFieldPerms(r *Role) {
-	rows, err := Phonebook.db.Query("select Elem,Field,Perm,Descr from fieldperms where RID=?", r.RID)
+	rows, err := Phonebook.prepstmt.readFieldPerms.Query(r.RID)
 	errcheck(err)
 	defer rows.Close()
 
@@ -45,7 +45,7 @@ func readFieldPerms(r *Role) {
 }
 
 func readAccessRoles() {
-	rows, err := Phonebook.db.Query("select RID,Name,Descr from roles")
+	rows, err := Phonebook.prepstmt.accessRoles.Query()
 	errcheck(err)
 	defer rows.Close()
 

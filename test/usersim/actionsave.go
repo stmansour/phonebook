@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
@@ -176,7 +175,8 @@ func saveAdminEdit(d *personDetail) bool {
 	resp, err := hc.Do(req)
 	if nil != err {
 		fmt.Printf("saveAdminEdit:  hc.Do(req) returned error:  %#v\n", err)
-		os.Exit(1)
+		fmt.Printf("err: %s\n", err.Error())
+		return false
 	}
 	defer resp.Body.Close()
 
