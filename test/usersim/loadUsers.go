@@ -6,8 +6,7 @@ import (
 )
 
 func getCompanyInfo(cocode int, c *company) {
-	s := fmt.Sprintf("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies where cocode=%d", cocode)
-	rows, err := App.db.Query(s)
+	rows, err := App.prepstmt.companyInfo.Query(cocode)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {

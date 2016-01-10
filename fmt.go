@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//
 // Constant values for employment status as well as any yes/no value
 const (
 	INACTIVE = 0

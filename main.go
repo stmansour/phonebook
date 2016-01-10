@@ -339,7 +339,7 @@ type PrepSQL struct {
 	readFieldPerms     *sql.Stmt // read field permissions
 	accessRoles        *sql.Stmt // read access roles
 	getUserCoCode      *sql.Stmt // read the cocode for a person
-	loginInfo          *sql.Stmt //read info for login
+	loginInfo          *sql.Stmt // read info for login
 }
 
 // Phonebook is the global application structure providing

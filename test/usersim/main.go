@@ -183,6 +183,45 @@ type personDetail struct {
 	MyDeductions            []aDeduction
 }
 
+// PrepSQL is the data type holding all prepared statements
+// for use within phonebook
+type PrepSQL struct {
+	deductList         *sql.Stmt // deduction list names and id vals
+	getComps           *sql.Stmt // compensations associated with a user
+	myDeductions       *sql.Stmt // deductions for a specific user
+	adminPersonDetails *sql.Stmt // for AdminView and AdminEdit
+	classInfo          *sql.Stmt // get class attributes
+	companyInfo        *sql.Stmt // company attributes
+	countersUpdate     *sql.Stmt // feature usage counters update
+	delClass           *sql.Stmt // deletes a class
+	delCompany         *sql.Stmt // deletes a company
+	delPerson          *sql.Stmt // deletes a person
+	delPersonComp      *sql.Stmt // part of delperson
+	delPersonDeduct    *sql.Stmt // part of delperson
+	getJobTitle        *sql.Stmt // title associated with a job code
+	nameFromUID        *sql.Stmt // name lookup
+	deptName           *sql.Stmt // name from DeptCode
+	directReports      *sql.Stmt // folks who report to an individual
+	personDetail       *sql.Stmt // get a bunch of user attributes
+	adminInsertPerson  *sql.Stmt // insert a new person
+	adminReadBack      *sql.Stmt // read back newly inserted person
+	adminUpdatePerson  *sql.Stmt // admin update person
+	insertComp         *sql.Stmt // part of admin update person
+	insertDeduct       *sql.Stmt // part of admin update person
+	insertClass        *sql.Stmt // adding a new class
+	classReadBack      *sql.Stmt // read back newly written class
+	updateClass        *sql.Stmt // update a class
+	insertCompany      *sql.Stmt // insert a new company
+	companyReadback    *sql.Stmt // read back newly written company
+	updateCompany      *sql.Stmt // update a company
+	updateMyDetails    *sql.Stmt // person updating their own details
+	updatePasswd       *sql.Stmt // person updating their passwd
+	readFieldPerms     *sql.Stmt // read field permissions
+	accessRoles        *sql.Stmt // read access roles
+	getUserCoCode      *sql.Stmt // read the cocode for a person
+	loginInfo          *sql.Stmt // read info for login
+}
+
 // App is the global data structure for this app
 var App struct {
 	Seed             int64
@@ -190,6 +229,8 @@ var App struct {
 	DBUser           string
 	Host             string
 	Port             int
+	db               *sql.DB
+	prepstmt         PrepSQL         // struct of prepared sql statements
 	TestIterations   int             // number of iterations (mutually exclusive with TestDuration)
 	TestUsers        int             // number of users to test with
 	TestDurationMins int64           // duration in minutes
@@ -217,7 +258,6 @@ var App struct {
 	Roles            []Role          // the roles saved in the database
 	JCLo, JCHi       int             // lo and high indeces for jobcode
 	DeptLo, DeptHi   int             // lo and high indeces for department
-	db               *sql.DB
 }
 
 func fillUserFields(v *personDetail) {
@@ -312,6 +352,8 @@ func main() {
 	if nil != err {
 		fmt.Printf("App.db.Ping: Error = %v\n", err)
 	}
+
+	buildPreparedStatements()
 	readAccessRoles()
 	loadNames()
 	loadMaps()

@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Directory - {{.C.CommonName}}</title>
+<title>Accord Directory - Company: {{.C.CommonName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -40,8 +40,8 @@
 <span class="FirstName">{{.C.CommonName}}</span></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right" valign="top">ADDRESS</td>
     <td>
-        {{.C.Address}}
-        {{if .C.Address2}}<br>{{.C.Address2}}{{end}}<br>
+        {{.C.Address}}<br>
+        {{if .C.Address2}}{{.C.Address2}}<br>{{end}}
         {{.C.City}}, {{.C.State}}&nbsp;&nbsp;{{.C.PostalCode}}, {{.C.Country}}
     </td><td width="50px"></td>
 </tr>
