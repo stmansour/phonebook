@@ -264,9 +264,9 @@ func usersimDoTest(v *personDetail, tr *TestResults) {
 	if testResult(v, "saveAdminEdit", saveAdminEdit(v), tr) {
 		return
 	}
-	// if testResult(v, "viewCompany", viewCompany(v), tr) {
-	// 	return
-	// }
+	if testResult(v, "viewCompany", viewCompany(v), tr) {
+		return
+	}
 
 	// after logoff, the session in v should be removed
 	if testResult(v, "logoff", logoff(v), tr) {
