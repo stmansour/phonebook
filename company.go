@@ -28,6 +28,10 @@ func (c *company) filterSecurityRead(sess *session, permRequired int) {
 }
 
 func getCompanyInfo(cocode int, c *company) {
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.ViewCompany++           // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 	rows, err := Phonebook.prepstmt.companyInfo.Query(cocode)
 	errcheck(err)
 	defer rows.Close()
@@ -46,10 +50,6 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
-	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
-	<-Phonebook.ReqCountersMemAck    // make sure we got it
-	Counters.ViewCompany++           // initialize our data
-	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
 	if !sess.elemPermsAny(ELEMCOMPANY, PERMVIEW) {

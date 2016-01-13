@@ -7,3 +7,8 @@ clean:
 
 package:
 	echo "./schema: package done"
+
+packageqa:
+	mkdir -p ../../tmp/phonebookqa/dbtools/schema
+	cp apply.sh tables.sql ../../tmp/phonebookqa/dbtools/schema
+	echo "./schema: packageqa done"

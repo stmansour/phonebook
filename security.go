@@ -6,7 +6,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"time"
 )
@@ -134,7 +133,7 @@ func filterSecurityRead(d interface{}, el int, sess *session, permRequired int, 
 					sulog("No access to %s, type []int, setting to 0\n", n)
 					field.Set(reflect.ValueOf([]int{}))
 				default:
-					fmt.Printf("filterSecurityRead: unhandled variable type. Name = %s, type = %s\n", n, t)
+					ulog("filterSecurityRead: unhandled variable type. Name = %s, type = %s\n", n, t)
 				}
 			}
 		}

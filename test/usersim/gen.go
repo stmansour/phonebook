@@ -11,7 +11,7 @@ func randomPhoneNumber() string {
 }
 
 func scrubEmailAddr(s string) string {
-	return stripchars(s, " ,")
+	return stripchars(s, " ,&'\"*()!$#%^+=_:;<>,?")
 }
 
 func randomEmail(lastname string, firstname string) string {
@@ -35,6 +35,9 @@ func randomCompanyEmail(cn string) string {
 		"netzero.com", "tricore.com", "zephcore.com", "carmelcore.com"}
 	np := len(providers)
 	n := rand.Intn(10)
+	if len(cn) > 20 {
+		cn = cn[0:20]
+	}
 	switch {
 	case n < 4:
 		em = fmt.Sprintf("%s%d@%s", cn, rand.Intn(10000), providers[rand.Intn(np)])

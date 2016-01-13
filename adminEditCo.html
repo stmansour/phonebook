@@ -3,7 +3,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<link href="/phonebook.css" rel="stylesheet"  type="text/css">
 	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
-	<title>Accord Directory - Admin - View {{.C.CommonName}}</title>
+	<title>Accord Phonebook - Admin Edit - {{.C.CommonName}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -100,7 +100,7 @@
 				{{if hasPERMMODaccess .X.Token 2 "Country"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
-
+	<p></p>
 	<table>
 		<tr>
 			<td class="edAttrib">STATUS</td><td><select name="Active" class="HR"

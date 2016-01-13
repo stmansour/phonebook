@@ -14,6 +14,16 @@ will automatically stop the watchdog when it performs a STOP.
 Currently, pbwatchdog also initiates database backups. The current data-only
 backups are scheduled for 08:15:00 UTC daily. Full backups are scheduled every
 Saturday at 08:15:00.
+
+Daily backup database files are stored in the Artifactory directory:
+
+.IP <dbname>/db/<DOM>/<dbname>db.sql.gz
+
+.PP
+where <dbname> is the name of the database. This is "accord" by default.
+<DOM> is the day-of-the-month as obtained from date(1). The daily backups
+are data only. Full database backups are done weekly on Saturdays.
+
 .SH OPTIONS
 .TP
 none at this time
@@ -30,4 +40,4 @@ No known bugs.
 .SH AUTHOR
 Steve Mansour (sman@accordinterests.com)
 .SH "SEE ALSO"
-.BR pbrestore (1),
+.BR pbrestore (1)

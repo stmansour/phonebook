@@ -8,3 +8,7 @@ clean:
 
 package:
 	cp departments ../../tmp/phonebook/
+
+packageqa:
+	mkdir -p ../../tmp/phonebookqa/dbtools/departments
+	cp departments depts.csv ../../tmp/phonebookqa/dbtools/departments/

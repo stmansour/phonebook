@@ -18,7 +18,7 @@ initDB() {
 	pushd ${DBTOOLSDIR} >/dev/null
 	./apply.sh > /dev/null
 	popd >/dev/null
-	${USERSIM} -f -u 300
+	${USERSIM} -f -u 300 -c 70 -C 70
 }
 
 stopPhonebook() {

@@ -1,31 +1,22 @@
+DIRS = schema jobtitles departments roleinit deductions
+
 db:
-	cd schema; make
-	cd jobtitles; make
-	cd departments; make
-	cd roleinit; make
-	cd deductions; make
+	for dir in $(DIRS); do make -C $$dir;done
 	echo "./dbtools  done."
 
 clean:
-	cd schema;make clean
-	cd jobtitles;make clean
-	cd departments;make clean
-	cd roleinit;make clean
-	cd deductions; make clean
+	for dir in $(DIRS); do make -C $$dir clean;done
 	echo "./dbtools: clean done."
 
 package:
-	cd schema;make package
-	cd jobtitles;make package
-	cd departments;make package
-	cd roleinit;make package
-	cd deductions; make package
+	for dir in $(DIRS); do make -C $$dir package;done
 	echo "./dbtools: package done."
 
+packageqa:
+	for dir in $(DIRS); do make -C $$dir packageqa;done
+	cp apply.sh ../tmp/phonebookqa/dbtools/
+	echo "./dbtools: packageqa done."
+
 test:
-	cd schema;make test
-	cd jobtitles;make test
-	cd departments;make test
-	cd roleinit;make test
-	cd deductions; make test
+	for dir in $(DIRS); do make -C $$dir package;done
 	echo "./dbtools: test done."

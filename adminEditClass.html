@@ -3,7 +3,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<link href="/phonebook.css" rel="stylesheet"  type="text/css">
 	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
-	<title>Accord Directory - Admin - EditClass {{.A.ClassCode}}</title>
+	<title>Accord Phonebook - Edit Class {{.A.Name}}</title>
 </head>
 <body style='background-image: url("/images/AccordWatermark.png")'>
 
@@ -35,7 +35,7 @@
 
 
 
-<p class="AppHeading">Admin Edit - {{if eq .A.ClassCode 0}}New Class{{else}}{{.A.Designation}}  ({{.A.ClassCode}}){{end}}</p>
+<p class="AppHeading">Admin Edit - {{if eq .A.ClassCode 0}}New Class{{else}}{{.A.Designation}} ({{.A.ClassCode}}){{end}}</p>
 
 <form action="/saveAdminEditClass/{{.A.ClassCode}}" method="POST">
 	<table>

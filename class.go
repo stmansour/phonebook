@@ -12,6 +12,10 @@ func (c *class) filterSecurityRead(sess *session, permRequired int) {
 }
 
 func getClassInfo(classcode int, c *class) {
+	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
+	<-Phonebook.ReqCountersMemAck    // make sure we got it
+	Counters.ViewClass++             // initialize our data
+	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 	// s := fmt.Sprintf("select classcode,Name,Designation,Description from classes where classcode=%d", classcode)
 	rows, err := Phonebook.prepstmt.classInfo.Query(classcode)
 	errcheck(err)
@@ -31,10 +35,6 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
-	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
-	<-Phonebook.ReqCountersMemAck    // make sure we got it
-	Counters.ViewClass++             // initialize our data
-	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
 	if !sess.elemPermsAny(ELEMCLASS, PERMVIEW) {

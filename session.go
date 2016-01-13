@@ -284,7 +284,9 @@ func sessionNew(token, username, firstname string, uid int, rid int) *session {
 	var d personDetail
 	d.UID = uid
 	//getSecurityList(&d)
-	err := Phonebook.prepstmt.getUserCoCode.QueryRow("select cocode from people where uid=?", uid).Scan(&s.CoCode)
+
+	// err := Phonebook.prepstmt.getUserCoCode.QueryRow("select cocode from people where uid=?", uid).Scan(&s.CoCode)
+	err := Phonebook.db.QueryRow(fmt.Sprintf("select cocode from people where uid=%d", uid)).Scan(&s.CoCode)
 	if nil != err {
 		ulog("Unable to read CoCode for userid=%d,  err = %v\n", uid, err)
 	}

@@ -17,7 +17,9 @@ const (
 
 func dumpTestErrors(tr *TestResults) {
 	for i := 0; i < len(tr.Failures); i++ {
-		fmt.Printf("%d: %s\n", tr.Failures[i].Index, tr.Failures[i].Name)
+		fmt.Printf("%2d. %s\n", tr.Failures[i].Index, tr.Failures[i].TestName)
+		fmt.Printf("    Context: %s\n", tr.Failures[i].Context)
+		fmt.Printf("    Reason: %s\n", tr.Failures[i].Reason)
 	}
 }
 

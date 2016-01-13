@@ -29,7 +29,7 @@ func RandomString(n int) string {
 // adminEdit changes the details for the current user, saves them, then validates the change after saving
 //    returns true if the save was successful
 //            false if save failed
-func saveAdminEdit(d *personDetail) bool {
+func saveAdminEdit(d *personDetail, atr *TestResults) bool {
 	URL := fmt.Sprintf("http://%s:%d/saveAdminEdit/%d", App.Host, App.Port, d.UID)
 	hc := http.Client{}
 	Nlast := len(App.LastNames)
@@ -203,7 +203,8 @@ func saveAdminEdit(d *personDetail) bool {
 	var dnew personDetail
 	dnew.UID = d.UID
 	adminReadDetails(&dnew)
-	res := d.matches(&dnew)
+	res := d.matches(&dnew, atr)
 	adminReadDetails(d) // ensure that all values are correct for remaining tests...
+
 	return res
 }

@@ -28,6 +28,13 @@ type KeyVal struct {
 	value string
 }
 
+type testContext struct {
+	d        *personDetail
+	co       *company
+	cl       *class
+	testtype int
+}
+
 //--------------------------------------------------------------------
 //  FINANCE
 //--------------------------------------------------------------------
@@ -229,7 +236,8 @@ var App struct {
 	DBUser           string
 	Host             string
 	Port             int
-	db               *sql.DB
+	FirstUserIndex   int             // index of first user to test
+	db               *sql.DB         // database connection
 	prepstmt         PrepSQL         // struct of prepared sql statements
 	TestIterations   int             // number of iterations (mutually exclusive with TestDuration)
 	TestUsers        int             // number of users to test with
@@ -247,6 +255,8 @@ var App struct {
 	Streets          []string        // array of street names
 	Cities           []string        // array of cities
 	States           []string        // array of states
+	Companies        []string        // array of random company names
+	RandClasses      []string        // array of random class names
 	CoCodeToName     map[int]string  // map from company code to company name
 	NameToCoCode     map[string]int  // map from company name to company code
 	NameToJobCode    map[string]int  // jobtitle to jobcode

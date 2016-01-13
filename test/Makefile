@@ -7,5 +7,5 @@ test:
 clean:
 	cd usersim;make clean
 
-package:
-	cd usersim;make package
+packageqa:
+	cd usersim;make packageqa

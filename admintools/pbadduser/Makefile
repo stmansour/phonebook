@@ -12,6 +12,11 @@ package: pbadduser
 	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbadduser ***"
 
+packageqa: pbadduser
+	cp pbadduser ../../tmp/phonebookqa/
+	cp *.1 ../../tmp/phonebookqa/man/man1/
+	@echo "*** Packaging completed in pbadduser ***"
+
 test:
 	@echo "*** Testing completed in pbadduser ***"
 

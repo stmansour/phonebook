@@ -12,6 +12,11 @@ package: pbrestore
 	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbrestore ***"
 
+packageqa: pbrestore
+	cp pbrestore ../../tmp/phonebookqa/
+	cp *.1 ../../tmp/phonebookqa/man/man1/
+	@echo "*** Packaging completed in pbrestore ***"
+
 test:
 	@echo "*** Testing completed in pbrestore ***"
 

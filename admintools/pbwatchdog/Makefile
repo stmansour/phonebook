@@ -12,6 +12,11 @@ package: pbwatchdog
 	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbwatchdog ***"
 
+packageqa: pbwatchdog
+	cp pbwatchdog ../../tmp/phonebookqa/
+	cp *.1 ../../tmp/phonebookqa/man/man1/
+	@echo "*** Packaging completed in pbwatchdog ***"
+
 test:
 	@echo "*** Testing completed in pbwatchdog ***"
 

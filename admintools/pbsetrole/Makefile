@@ -12,6 +12,11 @@ package: pbsetrole
 	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbsetrole ***"
 
+packageqa: pbsetrole
+	cp pbsetrole ../../tmp/phonebookqa/
+	cp *.1 ../../tmp/phonebookqa/man/man1/
+	@echo "*** Packaging completed in pbsetrole ***"
+
 test:
 	@echo "*** Testing completed in pbsetrole ***"
 

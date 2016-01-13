@@ -95,7 +95,7 @@ do
         # echo "TIME TO DO A BACKUP"
             ./pbbkup >dailyDBbackup.log &
             DOW=$(date +%u)
-            if [ ${DOW} = "2" ]; then
+            if [ ${DOW} = "6" ]; then
                 ./pbbkup -f >weeklyDBfullbackup.log &
             fi
             BACKUPCOMPLETED=1

@@ -8,3 +8,7 @@ clean:
 
 package:
 	cp deductions ../../tmp/phonebook/
+
+packageqa:
+	mkdir -p ../../tmp/phonebookqa/dbtools/deductions
+	cp deductions ../../tmp/phonebookqa/dbtools/deductions/

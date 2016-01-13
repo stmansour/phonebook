@@ -35,8 +35,18 @@ package: phonebook
 	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	cd admintools;make package
 	cd dbtools;make package
-	cd test;make package
 	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
+
+packageqa: phonebook
+	#cd admintools;make
+	rm -rf tmp
+	mkdir -p tmp/phonebookqa/man/man1/
+	cp *.1 tmp/phonebookqa/man/man1/
+	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebookqa/
+	cd admintools;make packageqa
+	cd dbtools;make packageqa
+	cd test;make packageqa
+	cd tmp;tar cvf phonebookqa.tar phonebookqa; gzip phonebookqa.tar
 
 install: package
 	if [ ! -d /usr/local/accord ]; then mkdir -p /usr/local/accord; fi

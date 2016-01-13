@@ -29,6 +29,7 @@ func readCommandLineArgs() {
 	pPtr := flag.Int("p", 8250, "port on which the server listens")
 	p := flag.Int64("s", sd, "seed for random numbers. Default is to use a random seed.")
 	uPtr := flag.Int("u", 1, "number of users to simulate")
+	fptr := flag.Int("o", 0, "index of first user to test")
 
 	flag.Parse()
 	App.TestIterations = *iPtr // number of iterations (mutually exclusive with TestDuration)
@@ -39,6 +40,7 @@ func readCommandLineArgs() {
 	App.Host = *hPtr
 	App.Port = *pPtr
 	App.Debug = *dbgPtr
+	App.FirstUserIndex = *fptr
 	App.UpdateDBOnly = *fdbPtr
 	App.TotalClasses = *pclPtr
 	App.TotalCompanies = *pcoPtr
@@ -87,26 +89,38 @@ func genDesignation(cn string, code, table string) string {
 	}
 }
 
-func createClasses() {
-	insert, err := App.db.Prepare("INSERT INTO classes (Name,Designation) VALUES(?,?)")
-	errcheck(err)
+func loadRandomClassNames() {
 	file, err := os.Open("./classes.txt")
 	errcheck(err)
 	defer file.Close()
-	classcount := 0
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		cn := scanner.Text()
+		App.RandClasses = append(App.RandClasses, scanner.Text())
+	}
+	errcheck(scanner.Err())
+}
+
+func createClasses() {
+	insert, err := App.db.Prepare("INSERT INTO classes (Name,Designation) VALUES(?,?)")
+	errcheck(err)
+	for i := 0; i < App.TotalClasses; i++ {
+		cn := App.RandClasses[rand.Intn(len(App.RandClasses))]
 		dsg := genDesignation(cn, "classcode", "classes")
 		if len(cn) > 25 {
 			cn = cn[0:25]
 		}
 		_, err = insert.Exec(cn, dsg)
 		errcheck(err)
-		classcount++
-		if classcount > App.TotalClasses {
-			break
-		}
+	}
+}
+
+func loadRandomCompanyNames() {
+	file, err := os.Open("./companies.txt")
+	errcheck(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		App.Companies = append(App.Companies, scanner.Text())
 	}
 	errcheck(scanner.Err())
 }
@@ -117,13 +131,8 @@ func createCompanies() {
 		//      1                 10                  20                  30
 		"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	errcheck(err)
-	file, err := os.Open("./companies.txt")
-	errcheck(err)
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	cocount := 0
-	for scanner.Scan() {
-		cn := scanner.Text()
+	for i := 0; i < App.TotalCompanies; i++ {
+		cn := App.Companies[rand.Intn(len(App.Companies))]
 		dsg := genDesignation(cn, "cocode", "companies")
 		if len(cn) > 25 {
 			cn = cn[0:25]
@@ -153,12 +162,7 @@ func createCompanies() {
 			Email, Phone, Fax, Active, EmploysPersonnel,
 			Address, City, State, PostalCode, Country)
 		errcheck(err)
-		cocount++
-		if cocount > App.TotalCompanies {
-			break
-		}
 	}
-	errcheck(scanner.Err())
 }
 
 func loadNames() {
@@ -206,6 +210,9 @@ func loadNames() {
 		App.Streets = append(App.Streets, scanner.Text())
 	}
 	errcheck(scanner.Err())
+
+	loadRandomCompanyNames()
+	loadRandomClassNames()
 
 	if App.Debug {
 		fmt.Printf("FirstNames: %d\n", len(App.FirstNames))

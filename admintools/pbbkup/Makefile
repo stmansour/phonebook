@@ -12,6 +12,11 @@ package: pbbkup
 	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbbkup ***"
 
+packageqa: pbbkup
+	cp pbbkup ../../tmp/phonebookqa/
+	cp *.1 ../../tmp/phonebookqa/man/man1/
+	@echo "*** Packaging completed in pbbkup ***"
+
 test:
 	@echo "*** Testing completed in pbbkup ***"
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+DOM=$(date +%d)
 FULL=0
 GET="/usr/local/accord/bin/getfile.sh"
 RESTORE="/usr/local/accord/testtools/restoreMySQLdb.sh"
@@ -9,11 +9,14 @@ DATABASE="accord"
 #   USAGE
 ##############################################################
 usage() {
-    cat << ZZEOF
+    cat <<ZZEOF
 ACCORD Phonebook database restore utility
 Usage:   pbrestore.sh [OPTIONS]
 
 OPTIONS:
+-d  day-of-month. Default is today's date. Note that if the daily
+                  backup has not been performed yet, this would restore
+                  last month's data.
 -f 	full restore -- includes pictures. Default is data only
 -h	print this help message
 
@@ -74,9 +77,14 @@ restoreFull() {
 #   RESTORE - DATA ONLY
 ##############################################################
 restoreData() {
-	echo "Retrieving backup data from Artifactory"
-	${GET} ${DATABASE}/db/${DATABASE}db.sql.gz
+	echo "Retrieving backup data from Artifactory: ${DATABASE}/db/${DOM}/accorddb.sql.gz"
+	${GET} ${DATABASE}/db/${DOM}/${DATABASE}db.sql.gz
 	echo "Done."
+
+	if [ ! -f ${DATABASE}db.sql.gz ]; then
+		echo "failed to download ${DATABASE}/db/${DOM}/accorddb.sql.gz"
+		exit 1
+	fi
 
 	echo "Extracting data"
 	gunzip ${DATABASE}db.sql.gz
@@ -96,8 +104,19 @@ restoreData() {
 ##############################################################
 #   MAIN ROUTINE
 ##############################################################
-while getopts ":fhN:" o; do
+while getopts ":d:fhN:" o; do
     case "${o}" in
+        d)
+            DOM=${OPTARG}
+            if [ ${DOM} -gt 31 ]; then
+            	echo "Largest value for DOM is 31."
+            	exit 1
+            fi
+            if [ ${DOM} -lt 1 ]; then
+            	echo "Small value for DOM is 1."
+            	exit 1
+            fi
+            ;;
         f)
             FULL=1
             ;;

@@ -12,5 +12,10 @@ package:
 	cp installman.sh ../tmp/phonebook/
 	for dir in $(DIRS); do make -C $$dir package;done
 
+packageqa:
+	mkdir -p ../tmp/phonebookqa/man/man1
+	cp installman.sh ../tmp/phonebookqa/
+	for dir in $(DIRS); do make -C $$dir packageqa;done
+
 test:
 	for dir in $(DIRS); do make -C $$dir test;done

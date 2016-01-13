@@ -32,8 +32,10 @@ type Profile struct {
 // TestFailure provides a bit of detail about any test that fails...
 // its name and table index as appropriate
 type TestFailure struct {
-	Name  string
-	Index int
+	TestName string // name of test
+	Context  string // some relevant context, the user, company, class, etc
+	Reason   string // how was the failure noticed
+	Index    int    // deprecated
 }
 
 // TestResults is a container for the number of passed and failed tests
@@ -53,7 +55,8 @@ var reTitleEnd = regexp.MustCompile("</title>")
 
 func initProfiles() {
 	Tester.Name = "Tester"
-	Tester.Behaviors = []Behavior{{"search", 80, 5},
+	Tester.Behaviors = []Behavior{
+		{"search", 80, 5},
 		{"detail", 10, 10},
 		{"searchco", 2, 4},
 		{"company", 1, 4},
@@ -252,19 +255,34 @@ func usersimDoTest(v *personDetail, tr *TestResults) {
 	if testResult(v, "login", login(v), tr) {
 		return
 	}
-	if testResult(v, "detail", viewPersonDetail(v), tr) {
+	if testResult(v, "detail", viewPersonDetail(v, tr), tr) {
 		return
 	}
-	if testResult(v, "adminView", adminViewTest(v), tr) {
+	if testResult(v, "adminView", adminViewTest(v, tr), tr) {
 		return
 	}
-	if testResult(v, "adminEdit", adminEditTest(v), tr) {
+	if testResult(v, "adminEdit", adminEditTest(v, tr), tr) {
 		return
 	}
-	if testResult(v, "saveAdminEdit", saveAdminEdit(v), tr) {
+	if testResult(v, "saveAdminEdit", saveAdminEdit(v, tr), tr) {
 		return
 	}
-	if testResult(v, "viewCompany", viewCompany(v), tr) {
+	if testResult(v, "viewCompany", viewCompany(v, tr), tr) {
+		return
+	}
+	if testResult(v, "adminEditCompany", adminEditCompany(v, tr), tr) {
+		return
+	}
+	if testResult(v, "saveAdminEditCo", saveAdminEditCo(v, tr), tr) {
+		return
+	}
+	if testResult(v, "viewClass", viewClass(v, tr), tr) {
+		return
+	}
+	if testResult(v, "adminEditClass", adminEditClass(v, tr), tr) {
+		return
+	}
+	if testResult(v, "saveAdminEditCo", saveAdminEditClass(v, tr), tr) {
 		return
 	}
 
@@ -305,10 +323,11 @@ func executeSimulation() {
 	}
 	for j := 0; j < App.TestUsers; j++ {
 		go usersim(j, App.TestIterations, finishTime, TestResChan, TestResChanAck)
+		time.Sleep(500 * time.Millisecond)
 	}
 
-	var totTR TestResults                // net results
-	for i := 0; i < App.TestUsers; i++ { // i is the number of usersims completed
+	var totTR TestResults                                                    // net results
+	for i := App.FirstUserIndex; i < App.FirstUserIndex+App.TestUsers; i++ { // i is the number of usersims completed
 		select {
 		case tr := <-TestResChan: // get the data the usersim collected
 			totTR.Fail += tr.Fail // update cumulative totals
@@ -319,13 +338,11 @@ func executeSimulation() {
 			TestResChanAck <- 1 // acknowledge receipt
 		}
 	}
-	fmt.Printf("Total Tests: %d   pass: %d   fail: %d\n", totTR.Fail+totTR.Pass, totTR.Pass, totTR.Fail)
 	if len(totTR.Failures) > 0 {
-		for i := 0; i < len(totTR.Failures); i++ {
-			fmt.Printf("%d. %s[%d] \n", i, totTR.Failures[i].Name, totTR.Failures[i].Index)
-		}
+		dumpTestErrors(&totTR)
 	}
 	Elapsed := time.Since(StartTime)
+	fmt.Printf("Total Tests: %d   pass: %d   fail: %d\n", totTR.Fail+totTR.Pass, totTR.Pass, totTR.Fail)
 	fmt.Printf("Random number seed for this run: %d\n", App.Seed)
 	fmt.Printf("Test start time: %s\n", StartTime)
 	fmt.Printf("Test end time  : %s\n", time.Now())
