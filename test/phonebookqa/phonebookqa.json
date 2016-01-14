@@ -1,0 +1,29 @@
+{
+    "EnvName": "Phonebook QA",
+    "Instances": [
+	{
+	    "InstName": "phone",
+	    "OS":       "Linux",
+	    "Count":    1,
+		"Resources": {
+			"MySql": true
+		},
+	    "Apps": [
+	    	{
+	    		"UID": "t01",
+	    		"Name": "tgo",
+	    		"Repo": "jenkins-snapshot/tgo/latest",
+	    		"UPort": 8102,
+	    		"IsTest": false
+	    	},
+	    	{
+	    		"UID": "pb01",
+	    		"Name": "phonebookqa",
+	    		"Repo": "jenkins-snapshot/phonebook/latest",
+	    		"UPort": 8250,
+	    		"IsTest": false
+	    	}
+	    ]
+	}
+	]
+} 

@@ -1,0 +1,118 @@
+MAN PAGE FORMATTING
+
+.\" text
+This is how you put comments in a man page. The text, text, is not seen by the person using man to read the page. The backslash (\) is an escape character that tells parts of the man system to treat the next character as a literal rather than as the beginning of a quoted string. Any time you have trouble putting a special character in a man page, you should try preceding it with a backslash.
+To adhere to the Coding Guidelines for this course, you must document your man pages just as you document your source code. The first few lines of your man pages will start with something like this, assuming you are using RCS to manage the versions of your project:
+
+    .\"   $Id$
+    .\"
+    .\"   Man page for the xyz project.
+    .\"
+    .\"   $Log$
+    .\"
+.TH name section center-footer left-footer center-header
+This command normally goes on the first line after the initial block of comments of a man page file; it is used to set the title, header, and footer lines. The strings following .TH are used for the following information:
+name
+The name of the command or function.
+section
+The section of the manual. (1 for commands, etc.)
+center-footer
+The date the man page was last modified. Some systems do not display footers when you use the man command interactively, only when printing the pages.
+left-footer
+Bottom left footer. See Below
+center-header
+The main page (center) heading. See below.
+Use quotes if any of these fields contains embedded blanks. Use "CS-701" as the left-footer for the man pages you write for this course. The main page (center) heading gives the place or organization where the software being documented originated; we'll use "Queens College."
+
+Here is an example:
+
+.TH mycommand 1 "December 2016" "Edgeware" "Accord"
+.SH t
+This command creates a section heading. The string t will appear at the left margin. The conventional section headings are NAME, SYNOPSIS, DESCRIPTION, OPTIONS, DIAGNOSTICS, and BUGS in that order. Look at existing man pages for the type of information to put in each section. The Section 5 or 7 man page for man gives guidelines too.
+For projects that are done as a sequence of steps, add another section heading, VERSION, with the RCS $Revision$ keyword as the section body.
+
+.SS t
+This command creates a sub-heading. It will be indented 5 spaces from the left margin. You usually capitalize just the first letter in the words of a sub-heading.
+.P
+Start a new paragraph. You start the text on the next line after the .P command. Note: You must type each line of the paragraph starting in column 1 for .P to work. If you indent any lines yourself, .P will display the line as you typed it. Also, the .TH command must be present for the paragraph margins to be set properly.
+.HP
+Start a paragraph with a hanging indent. If the paragraph is more than one line long, the second and succeeding lines will be indented 5 spaces more than the first line.
+.RS
+.RE
+Start and end a nested indentation. If the current indent is 5, the .RS will make it 10. If the current indent is 10, .RS will make it 15, etc.
+.I t
+Italics (underline) text. If you want to italicize just one word, omit t from the .I command line, and type the word on the next line. For example:
+.P
+This is a sentence in which the word
+.I
+word
+is italicized.  Note that using .I does not affect the paragraph
+formatting.
+Would be output something like this:
+     This is a  sentence in which the word word is
+     italicized.  Note that using .I does not affect
+     the paragraph formatting.
+.B t
+Like .I, but for boldface text. Often shows up as reverse video or color on CRTs.
+
+TYPEFACE COMMANDS
+.B
+Bold
+
+.BI
+
+Bold alternating with italics (especially useful for function specifications)
+
+.BR
+
+Bold alternating with Roman (especially useful for referring to other manual pages)
+
+.I
+
+Italics
+
+.IB
+
+Italics alternating with bold
+
+.IR
+
+Italics alternating with Roman
+
+.RB
+
+Roman alternating with bold
+
+.RI
+
+Roman alternating with italics
+
+.SB
+
+Small alternating with bold
+
+.SM
+
+Small (useful for acronyms)
+
+.PP  | .P  |  .LP
+
+Begin a new paragraph and reset prevailing indent.
+
+Relative margin indent
+
+.RS i
+Start relative margin indent: moves the left margin i to the right (if i is omitted, the prevailing indent value is used). A new prevailing indent is set to 0.5 inches. As a result, all following paragraph(s) will be indented until the corresponding .RE.
+
+.RE
+
+End relative margin indent and restores the previous value of the prevailing indent.
+
+Indented paragraph macros
+
+.HP i
+Begin paragraph with a hanging indent (the first line of the paragraph is at the left margin of normal paragraphs, and the rest of the paragraph's lines are indented).
+
+.IP x i
+
+Indented paragraph with optional hanging tag. If the tag x is omitted, the entire following paragraph is indented by i. If the tag x is provided, it is hung at the left margin before the following indented paragraph (this is just like .TP except the tag is included with the command instead of being on the following line). If the tag is too long, the text after the tag will be moved down to the next line (text will not be lost or garbled). For bulleted lists, use this macro with \(bu (bullet) or \(em (em dash) as the tag, and for numbered lists, use the number or letter followed by a period as the tag; this simplifies translation to other formats.
