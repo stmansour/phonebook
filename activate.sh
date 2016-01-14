@@ -141,10 +141,10 @@ for arg do
 			# 	fi
 			fi
 		elif [[ ${QA} -eq 1 ]]; then
-			echo "STARTING FOR QA"
-			pushd ./test/usersim 
+			# echo "STARTING FOR QA"
+			pushd ./test/usersim >/dev/null 2>&1
 			./fntest.sh >fntest.log 2>&1 &
-			popd
+			popd >/dev/null 2>&1
 		fi
 		echo "OK"
 		exit 0
