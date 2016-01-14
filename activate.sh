@@ -5,6 +5,7 @@ HOST=localhost
 PORT=8250
 STARTPBONLY=0
 WATCHDOGOPTS=""
+QA=0
 
 DBNAME="accord"
 DBUSER="ec2-user"
@@ -20,6 +21,7 @@ OPTIONS:
 -p port      (default is 8250)
 -h hostname  (default is localhost)
 -N dbname    (default is accord)
+-q           (start as qa version)
 -T           (use this option to indicate testing rather than production)
 
 CMD is one of: start | stop | ready | test | teststatus
@@ -84,6 +86,10 @@ while getopts ":p:ih:N:Tb" o; do
             PORT=${OPTARG}
 	    	# echo "PORT set to: ${PORT}"
             ;;
+        q)
+            QA=1
+	    	# echo "PORT set to: ${PORT}"
+            ;;
         T)
             STARTPBONLY=1
 	    	# echo "STARTPBONLY set to: ${STARTPBONLY}"
@@ -104,34 +110,40 @@ for arg do
 		echo "Images updated"
 		;;
 	"start")
-		#===============================================
-		# START
-		# Add the command to start your application...
-		#===============================================
-		if [ ${IAM} == "root" ]; then
-			chown -R ec2-user *
-			chmod u+s phonebook pbwatchdog
-		fi
+		if [ 0 -eq ${QA} ]; then
+			#===============================================
+			# START
+			# Add the command to start your application...
+			#===============================================
+			if [ ${IAM} == "root" ]; then
+				chown -R ec2-user *
+				chmod u+s phonebook pbwatchdog
+			fi
 
-		if [ "${STARTPBONLY}" -ne "1" ]; then
-			if [ ! -d "./images" ]; then
-				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
-				gunzip -f pbimages.tar.gz >phonebook.log 2>&1
-				tar xvf pbimages.tar >phonebook.log 2>&1
+			if [ "${STARTPBONLY}" -ne "1" ]; then
+				if [ ! -d "./images" ]; then
+					/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
+					gunzip -f pbimages.tar.gz >phonebook.log 2>&1
+					tar xvf pbimages.tar >phonebook.log 2>&1
+				fi
+				if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
+					./installman.sh >phonebook.log 2>&1
+				fi
 			fi
-			if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
-				./installman.sh >phonebook.log 2>&1
+			./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
+			# give phonebook a few seconds to start up before initiating the watchdog
+			sleep 5
+			if [ "${STARTPBONLY}" -ne "1" ]; then
+			# 	if [ ${IAM} == "root" ]; then
+			# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
+			# 	else
+					./pbwatchdog ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
+			# 	fi
 			fi
-		fi
-		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
-		# give phonebook a few seconds to start up before initiating the watchdog
-		sleep 5
-		if [ "${STARTPBONLY}" -ne "1" ]; then
-		# 	if [ ${IAM} == "root" ]; then
-		# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
-		# 	else
-				./pbwatchdog ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
-		# 	fi
+		elif [[ ${QA} -eq 1 ]]; then
+			pushd ./test/phonebookqa
+			./fntest.sh
+			popd
 		fi
 		echo "OK"
 		exit 0

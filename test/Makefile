@@ -9,3 +9,4 @@ clean:
 
 packageqa:
 	cd usersim;make packageqa
+	cd phonebookqa;make packageqa
