@@ -21,6 +21,7 @@
 	    		"Name": "phonebookqa",
 	    		"Repo": "jenkins-snapshot/phonebook/latest",
 	    		"UPort": 8250,
+	    		"ActivateOpts": "-q",
 	    		"IsTest": false
 	    	}
 	    ]

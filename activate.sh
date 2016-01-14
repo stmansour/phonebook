@@ -68,7 +68,7 @@ stopwatchdog() {
     fi      
 }
 
-while getopts ":p:ih:N:Tb" o; do
+while getopts ":p:qih:N:Tb" o; do
     case "${o}" in
        b)
             WATCHDOGOPTS="-b"
@@ -102,7 +102,7 @@ done
 shift $((OPTIND-1))
 
 for arg do
-	# echo '--> '"\`$arg'"
+	echo '--> '"\`$arg'"
 	cmd=$(echo ${arg}|tr "[:upper:]" "[:lower:]")
     case "$cmd" in
     "images")
@@ -141,8 +141,9 @@ for arg do
 			# 	fi
 			fi
 		elif [[ ${QA} -eq 1 ]]; then
-			pushd ./test/phonebookqa
-			./fntest.sh
+			echo "STARTING FOR QA"
+			pushd ./test/usersim 
+			./fntest.sh >fntest.log 2>&1 &
 			popd
 		fi
 		echo "OK"
