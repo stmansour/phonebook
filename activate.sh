@@ -102,7 +102,7 @@ done
 shift $((OPTIND-1))
 
 for arg do
-	echo '--> '"\`$arg'"
+	# echo '--> '"\`$arg'"
 	cmd=$(echo ${arg}|tr "[:upper:]" "[:lower:]")
     case "$cmd" in
     "images")
