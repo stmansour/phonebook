@@ -56,6 +56,9 @@ install: package
 publish: package
 	cd tmp;/usr/local/accord/bin/deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
 
+publishqa: packageqa
+	cd tmp;/usr/local/accord/bin/deployfile.sh phonebookqa.tar.gz jenkins-snapshot/phonebook/latest
+
 # Handling the images must be done from the development workstation.
 # make pkimages pubimages
 # This will update artifactory with the images needed by phonebook
