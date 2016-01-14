@@ -41,6 +41,12 @@ stopPhonebook() {
 
 startPhonebook() {
 	pushd ${PHONEBOOKDIR} >/dev/null
+	if [ ! -d "./images" ]; then
+		/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
+		gunzip -f pbimages.tar.gz >phonebook.log 2>&1
+		tar xvf pbimages.tar >phonebook.log 2>&1
+	fi
+	
 	results=$(${STARTPHONEBOOKCMD})
 	# echo "results = \"${results}\""
 	result=$(${STARTPHONEBOOKCMD} | grep OK | wc -l)
