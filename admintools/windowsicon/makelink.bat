@@ -13,4 +13,4 @@ copy makelink.bat "%userprofile%\accordsw\"
 (echo [InternetShortcut]
 echo URL=http://ec2-52-23-176-52.compute-1.amazonaws.com:8250/
 echo IconFile="%userprofile%\accordsw\accordpb.ico"
-echo IconIndex=0) >"%userprofile%\desktop\Phonebook.url"
+echo IconIndex=0) >"%userprofile%\desktop\Accord Office.url"

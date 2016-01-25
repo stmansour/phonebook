@@ -31,6 +31,9 @@ Here is an example:
 This command creates a section heading. The string t will appear at the left margin. The conventional section headings are NAME, SYNOPSIS, DESCRIPTION, OPTIONS, DIAGNOSTICS, and BUGS in that order. Look at existing man pages for the type of information to put in each section. The Section 5 or 7 man page for man gives guidelines too.
 For projects that are done as a sequence of steps, add another section heading, VERSION, with the RCS $Revision$ keyword as the section body.
 
+.nf - no fill use for pre-formatted text
+.fi  - turns back on the filling capability
+
 .SS t
 This command creates a sub-heading. It will be indented 5 spaces from the left margin. You usually capitalize just the first letter in the words of a sub-heading.
 .P
