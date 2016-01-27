@@ -5,14 +5,14 @@
 <link rel="icon" type="image/png" href="/images/favicon32x32.png">
 <title>Accord Phonebook - Search</title>
 </head>
-<body style='background-image: url("/images/AccordWatermark.png")'>
+<body style='background-image: url("/{{index .Images "admin"}}")'>
 
 
 
 <table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
-<td><a href="/search/"><img src="/images/hlogo.png" height="50"></a></td>
+<td><a href="/search/"><img src="/{{index .Images "logo"}}" height="50"></a></td>
 <td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
 <td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
 <td width=20></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
@@ -38,46 +38,58 @@
 
 
 <p></p>
-<table>
-<tr><td width="50"></td><td><p class="AppHeading">Admin Page</p></td></tr>
-<tr><td height="30" colspan="2"></td></tr>
+<table border="0">
+<tr><td width="50"></td><td colspan=2><h1>Administrator Commands</h1></td></tr>
+<tr><td height="10" colspan="3"></td></tr>
 {{if hasAdminScreenAccess .X.Token 1 2}}
-<tr><td width="50" height="30"></td>
+<tr><td width="50"></td>
 	<td><form action="/adminViewBtn/" method="POST">
 	<input type="submit" name="action" value="Add Person">
 	<input type="hidden" name="url" value="/adminAddPerson/"></form></td>
+	<td valign="top">Add a new person to the database</td>
 </tr>
 </form>
 {{end}}
 {{if hasAdminScreenAccess .X.Token 2 2}}
-<tr><td width="50" height="30"></td>
+<tr><td width="50"></td>
 	<td><form action="/adminViewBtn/" method="POST">
 	<input type="submit" name="action" value="Add Company">
 	<input type="hidden" name="url" value="/adminAddCompany/"></form></td>
+	<td valign="top">Add a new company to the database</td>
 </tr>
 {{end}}
 {{if hasAdminScreenAccess .X.Token 3 2}}
-<tr><td width="50" height="30"></td>
+<tr><td width="50"></td>
 	<td><form action="/adminViewBtn/" method="POST">
 	<input type="submit" name="action" value="Add Class">
 	<input type="hidden" name="url" value="/adminAddClass/"></form></td>
+	<td valign="top">Add a new class to the database</td>
 </tr>
 {{end}}
 {{if hasAdminScreenAccess .X.Token 4 256}}
-<tr><td width="50" height="30"></td>
+<tr><td width="50"></td>
 	<td><form action="/adminViewBtn/" method="POST">
-	<input type="submit" name="action" value="Shutdown"> Stops the phonebook server
+	<input type="submit" name="action" value="Shutdown">
 	<input type="hidden" name="url" value="/shutdown/"></form></td>
+	<td valign="top"> Stops the phonebook server</td>
 </tr>
-<tr><td width="50" height="30"></td>
+<tr><td width="50"></td>
 	<td><form action="/adminViewBtn/" method="POST">
-	<input type="submit" name="action" value="Restart"> Restarts the phonebook server
+	<input type="submit" name="action" value="Restart"> 
 	<input type="hidden" name="url" value="/restart/"></form></td>
-</tr><td width="50" height="30"></td>
+	<td valign="top">Restart the phonebook server</td>
+</tr>
+<td width="50"></td>
 	<td><form action="/adminViewBtn/" method="POST">
-	<input type="submit" name="action" value="Stats"> Displays phonebook server statistics
+	<input type="submit" name="action" value="Stats"> 
 	<input type="hidden" name="url" value="/stats/"></form></td>
+	<td valign="top">Displays phonebook server statistics</td>
 <tr>
+<td width="50"></td>
+	<td><form action="/adminViewBtn/" method="POST">
+	<input type="submit" name="action" value="Setup"> 
+	<input type="hidden" name="url" value="/setup/"></form></td>
+	<td valign="top">Customize the branding and interface of this product</td>
 </tr>
 {{end}}
 </table>

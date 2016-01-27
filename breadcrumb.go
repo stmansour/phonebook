@@ -76,7 +76,7 @@ func getBreadcrumb(token string) string {
 func getHTMLBreadcrumb(token string) string {
 	s, ok := sessions[token]
 	if !ok {
-		fmt.Printf("getBreadcrumb:  Could not find session for %s\n", token)
+		fmt.Printf("getHTMLBreadcrumb:  Could not find session for %s\n", token)
 		return "-/-"
 	}
 	return breadcrumbToHTMLString(s)

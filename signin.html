@@ -5,11 +5,11 @@
 <link rel="stylesheet" type="text/css" href="/signin.css" />
 <link rel="icon" type="image/png" href="/images/favicon32x32.png">
 </head>
-<body style='background-image: url("/images/view11.jpg")'>
+<body style='background-image: url("/{{index .Images "signin"}}")'>
 <div class="container">
 	<section id="content">
 		<form action="/weblogin/" method="POST">
-		<img src="/images/vlogo.png" height="200">
+		<img src="/{{index .Images "signinlogo"}}" height="200">
 		<p><br><br></p>
 			<h1>Sign in to use Accord</h1>
 			<div>

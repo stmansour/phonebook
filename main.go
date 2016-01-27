@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 	"time"
@@ -279,15 +280,16 @@ type signin struct {
 // data objects to the UI
 //--------------------------------------------------------------------
 type uiSupport struct {
-	CoCodeToName     map[int]string // map from company code to company name
-	NameToCoCode     map[string]int // map from company name to company code
-	NameToJobCode    map[string]int // jobtitle to jobcode
-	AcceptCodeToName map[int]string // Acceptance to jobcode
-	NameToDeptCode   map[string]int // department name to dept code
-	NameToClassCode  map[string]int // class designation to classcode
-	ClassCodeToName  map[int]string // index by classcode to get the name
-	Months           []string       // a map for month number to month name
-	Roles            []Role         // list of roles -- fields are not initialized
+	CoCodeToName     map[int]string    // map from company code to company name
+	NameToCoCode     map[string]int    // map from company name to company code
+	NameToJobCode    map[string]int    // jobtitle to jobcode
+	AcceptCodeToName map[int]string    // Acceptance to jobcode
+	NameToDeptCode   map[string]int    // department name to dept code
+	NameToClassCode  map[string]int    // class designation to classcode
+	ClassCodeToName  map[int]string    // index by classcode to get the name
+	Months           []string          // a map for month number to month name
+	Roles            []Role            // list of roles -- fields are not initialized
+	Images           map[string]string // interface images
 	C                *company
 	A                *class
 	D                *personDetail
@@ -410,7 +412,59 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// find the first filename that matches the base filename in /images/
+func findMatchingFilename(base string, backup string) string {
+
+	m, err := filepath.Glob(fmt.Sprintf("./images/%s.*", base))
+	if nil != err {
+		ulog("filepath.Glob returned error: %v\n", err)
+	}
+	if len(m) == 0 {
+		// copy the default file into /images/
+		fmt.Printf("COPY DEFAULT FILE TO IMAGES\n")
+		return backup
+	}
+	return m[0]
+}
+
+// load the branding images...
+var uiDflt = []string{
+	"logo",
+	"search",
+	"searchco",
+	"searchcl",
+	"detail",
+	"company",
+	"class",
+	"signin",
+	"signinlogo",
+	"adminView",
+	"adminEdit",
+	"adminEditClass",
+	"adminEditCo",
+	"stats",
+	"setup",
+	"delPersonRefErr",
+	"delCoRefErr",
+	"delClassRefErr",
+}
+
+func initUI() {
+	PhonebookUI.Images = make(map[string]string)
+	for i := 0; i < len(uiDflt); i++ {
+		PhonebookUI.Images[uiDflt[i]] = findMatchingFilename(uiDflt[i], uiDflt[i]+".png")
+	}
+
+	// for k, v := range PhonebookUI.Images {
+	// 	fmt.Printf("%s -> %s\n", k, v)
+	// }
+}
+
 func initUIData(u *uiSupport) {
+	u.Images = make(map[string]string, len(PhonebookUI.Images))
+	for k, v := range PhonebookUI.Images {
+		u.Images[k] = v
+	}
 	u.CoCodeToName = make(map[int]string, len(PhonebookUI.CoCodeToName))
 	u.NameToCoCode = make(map[string]int, len(PhonebookUI.NameToCoCode))
 	for k, v := range PhonebookUI.CoCodeToName {
@@ -510,6 +564,7 @@ func loadMaps() {
 		"rmd":                  rmd,
 		"mul":                  mul,
 		"div":                  div,
+		"smrand":               smrand,
 		"hasFieldAccess":       hasFieldAccess,
 		"hasPERMMODaccess":     hasPERMMODaccess,
 		"hasAdminScreenAccess": hasAdminScreenAccess,
@@ -595,6 +650,7 @@ func initHTTP() {
 	http.HandleFunc("/saveAdminEditClass/", saveAdminEditClassHandler)
 	http.HandleFunc("/saveAdminEditCo/", saveAdminEditCoHandler)
 	http.HandleFunc("/savePersonDetails/", savePersonDetailsHandler)
+	http.HandleFunc("/saveSetup/", saveSetupHandler)
 	http.HandleFunc("/search/", searchHandler)
 	http.HandleFunc("/searchcl/", searchClassHandler)
 	http.HandleFunc("/searchco/", searchCompaniesHandler)
@@ -691,6 +747,7 @@ func main() {
 	//==============================================
 	// On with the show...
 	//==============================================
+	initUI()
 	go Dispatcher()
 	go CounterDispatcher()
 	go UpdateCounters()

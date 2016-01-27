@@ -2,17 +2,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>Accord Phonebook - Search</title>
+<title>Accord Phonebook - Setup</title>
 <link rel="icon" type="image/png" href="/images/favicon32x32.png">
 </head>
-<body style='background-image: url("/images/SousCiel_07_137_RESUP_FLAT3.jpg")'>
-
+<body style='background-image: url("{{index .Images "setup"}}")'>
 
 
 <table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
 <tr>
 <td width=20></td>
-<td><a href="/search/"><img src="/images/hlogo.png" height="50"></a></td>
+<td><a href="/search/"><img src="/{{index .Images "logo"}}?v=1.1" height="50"></a></td>
 <td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
 <td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
 <td width=20></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
@@ -33,6 +32,258 @@
 <td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
 </tr>
 </table>
+
+<p><br></p>
+<table border="1">
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Title Bar Logo</td>
+		<td width="20px"></td>
+		<td class="bd" id="menuid">logo on menu background:<br><br><img border="1" src="/{{index .Images "logo"}}" height="50"></td>
+<!-- 		<td width="20px"></td>
+		<td>logo on default background: <br><br><img border="1" src="/{{index .Images "logo"}}" height="50"></td>
+ -->		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="logo"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Sign In Logo</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "signinlogo"}}" height="50"></td>
+		<td width="15px"></td>
+		<td>New image:</td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="signinlogo"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Sign In Background</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "signin"}}" height="50"></td>
+		<td width="15px"></td>
+		<td>New image:</td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="signin"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Search People background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "search"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="search"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Search Companies background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "searchco"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="searchco"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Search Classes background:</td>
+		<td width="20px"></td>
+		<td><img src="/{{index .Images "searchcl"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="searchcl"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Person Detail background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "detail"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="detail"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Company Detail background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "company"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="company"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Class Detail background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "class"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="class"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Admin View Person background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "adminView"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="adminView"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Admin Edit Person background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "adminEdit"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="adminEdit"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Admin Edit Class background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "adminEditClass"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="adminEditClass"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+<tr><td>
+<form action="/saveSetup/" method="POST" enctype="multipart/form-data">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td>Admin Edit Company background:</td>
+		<td width="20px"></td>
+		<td><img border="1" src="/{{index .Images "adminEditCo"}}" height="75"></td>
+		<td width="15px"></td>
+		<td>New image: </td>
+		<td><input type="file" name="imgfile" required id="file">
+		    <input type="hidden" name="section" value="adminEditCo"></td>
+		<td><input type="submit" name="action" value="Save"></td>
+	</tr>
+</table>
+</form>
+</td></tr>
+
+
+</table>
+
+
+<p><br><hr></p>
+<form action="/saveSetup/" method="POST">
+<table>
+	<tr>
+		<td width="10px"></td>
+		<td><input type="submit" name="action" value="Reset All Images"></td>
+	</tr>
+</table>
+</form>
 
 </body>
 </html>

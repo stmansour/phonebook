@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -44,6 +45,7 @@ func sub(b, a int) int { return a - b }
 func mul(a, b int) int { return a * b }
 func div(b, a int) int { return a / b }
 func rmd(b, a int) int { return a - ((a / b) * b) }
+func smrand(n int) int { return rand.Intn(n) }
 
 func yesnoToInt(s string) int {
 	s = strings.ToUpper(s)

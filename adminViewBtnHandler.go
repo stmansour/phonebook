@@ -23,7 +23,7 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Printf("breadcrumbBack redirects to: %s\n", s)
 		http.Redirect(w, r, s, http.StatusFound)
 	} else if action == "adminedit" || action == "adminview" || action == "add person" ||
-		action == "add class" || action == "add company" || action == "stats" {
+		action == "add class" || action == "add company" || action == "stats" || action == "setup" {
 		url := r.FormValue("url")
 		// fmt.Printf("action = %s,  url = %s\n", action, url)
 		http.Redirect(w, r, url, http.StatusFound)
