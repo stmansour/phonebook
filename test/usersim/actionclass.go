@@ -118,9 +118,9 @@ func viewClass(d *personDetail, atr *TestResults) bool {
 		getClassInfo(d.UID, &c) // yes, we're getting the Class with cocode == d.UID
 
 		validate := []validationTable{
-			/* 00 */ {pageName + ": validate ClassCode", &s, `class="LastName"`, `>DESIGNATION<`, true, c.Name},
-			/* 02 */ {pageName + ": validate Designation", &s, `>DESIGNATION<`, `>DESCRIPTION<`, true, c.Designation},
-			/* 03 */ {pageName + ": validate Description", &s, `>DESCRIPTION<`, `value="Done"`, true, c.Description},
+			/* 00 */ {pageName + ": validate ClassCode", &s, `class="LastName"`, `DESIGNATION`, true, c.Name},
+			/* 02 */ {pageName + ": validate Designation", &s, `DESIGNATION`, `DESCRIPTION`, true, c.Designation},
+			/* 03 */ {pageName + ": validate Description", &s, `DESCRIPTION`, `value="Done"`, true, c.Description},
 		}
 		var tc testContext
 		tc.d = d
