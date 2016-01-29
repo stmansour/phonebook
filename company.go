@@ -27,6 +27,20 @@ func (c *company) filterSecurityRead(sess *session, permRequired int) {
 	filterSecurityRead(c, ELEMCOMPANY, sess, permRequired, 0)
 }
 
+// Accord's key for using google maps
+var MapKey = string("AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4")
+
+func mapURL(addr, city, state, zip, country string) string {
+	s := fmt.Sprintf("https://www.google.com/maps/embed/v1/place?key=%s&q=%s,%s+%s+%s+%s",
+		MapKey, addr, city, state, zip, country)
+	fmt.Printf("%s\n", s)
+	return s
+}
+
+func (c *company) mapURL() string {
+	return mapURL(c.Address, c.City, c.State, c.PostalCode, c.Country)
+}
+
 func getCompanyInfo(cocode int, c *company) {
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it

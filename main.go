@@ -573,6 +573,7 @@ func loadMaps() {
 		"getHTMLBreadcrumb":    getHTMLBreadcrumb,
 		"datetimeToString":     datetimeToString,
 		"phoneURL":             phoneURL,
+		"mapURL":               mapURL,
 	}
 	loadCompanies()
 	loadClasses()
