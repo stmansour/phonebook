@@ -74,7 +74,7 @@
         <td></td><td><a href="/company/{{.CoCode}}">{{.CommonName}}</a></td>
         <td width=7></td><td><a href="/company/{{.CoCode}}">{{.LegalName}}</td>
     	<td width=7></td><td><a href="mailto:{{.Email}}">{{.Email}}</a></td>
-    	<td width=7></td><td>{{.Phone}}</td>
+    	<td width=7></td><td><a href="{{phoneURL .Phone}}">{{.Phone}}</a></td>
     	<td width=7></td><td>{{.Fax}}</td>
         <td width=7></td>
     	</tr>

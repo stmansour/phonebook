@@ -71,8 +71,8 @@
     	<td width=7></td><td><a href="/detail/{{.UID}}">{{.LastName}}</td>
         <td width=7></td><td><a href="/detail/{{.UID}}">{{.PreferredName}}</td>
     	<td width=7></td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
-    	<td width=7></td><td>{{.OfficePhone}}</td>
-    	<td width=7></td><td>{{.CellPhone}}</td>
+    	<td width=7></td><td><a href="{{phoneURL .OfficePhone}}">{{.OfficePhone}}</a></td>
+    	<td width=7></td><td><a href="{{phoneURL .CellPhone}}">{{.CellPhone}}</a></td>
     	<td width=7></td><td>{{.DeptName}}</td>
     	</tr>
 	{{end}}

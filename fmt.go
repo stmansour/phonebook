@@ -17,6 +17,12 @@ const (
 	YES      = 1
 )
 
+func phoneURL(s string) string {
+	s = strings.TrimSpace(s)
+	s = fmt.Sprintf("tel:%s", strings.Replace(s, ".", "-", -1))
+	return s
+}
+
 // This is Phonebooks's standard logger
 func ulog(format string, a ...interface{}) {
 	p := fmt.Sprintf(format, a...)

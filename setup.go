@@ -125,21 +125,6 @@ func uploadSetupImage(dest string, userfname string, usrfile *multipart.File) (s
 	// (that is, minus the path and minus the file extension)
 	//----------------------------------------------------------
 	rmFilesWithBaseName(dest, ".tmp")
-	// m, err := filepath.Glob(fmt.Sprintf("./images/%s.*", dest))
-	// if nil != err {
-	// 	fmt.Printf("filepath.Glob returned error: %v\n", err)
-	// 	return destfilename, err
-	// }
-	// fmt.Printf("filepath.Glob returned the following matches: %v\n", m)
-	// for i := 0; i < len(m); i++ {
-	// 	if filepath.Ext(m[i]) != ".tmp" {
-	// 		fmt.Printf("removing %s\n", m[i])
-	// 		err = os.Remove(m[i])
-	// 		if nil != err {
-	// 			fmt.Printf("error removing file: %s  err = %v\n", m[i], err)
-	// 		}
-	// 	}
-	// }
 
 	//-------------------------------------------------------------
 	// now move our newly uploaded picture into its final name...

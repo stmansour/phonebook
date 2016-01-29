@@ -50,6 +50,7 @@ updatePkgs() {
 
 updateImages() {
     /usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
+    rm -rf images
     gunzip -f pbimages.tar.gz
     tar xvf pbimages.tar
 }

@@ -168,6 +168,8 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 				ulog("uploadImageFile returned error: %v\n", err)
 			}
 			sess.ImageURL = getImageFilename(uid)
+		} else {
+			ulog("err loading picture: %v\n", err)
 		}
 
 		//=================================================================

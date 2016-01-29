@@ -36,10 +36,10 @@
 
 
 <p>&nbsp;</p>
-<table border="0" class="bd" id="personDetailText">
+<table border="0" class="bd" id="personDetailText" cellpadding="3" >
 <tr><td width="50px"></td><td colspan="2"><span class="LastName">{{.C.LegalName}}</span><br>
 <span class="FirstName">{{.C.CommonName}}</span></td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right" valign="top">ADDRESS</td>
+<tr><td width="50px"></td><td class="Attrib" align="right" valign="center">ADDRESS</td>
     <td>
         {{.C.Address}}<br>
         {{if .C.Address2}}{{.C.Address2}}<br>{{end}}
@@ -48,7 +48,7 @@
 </tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.C.Designation}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">COMPANY CODE</td><td>{{.C.CoCode}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td><td>{{.C.Phone}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">PHONE</td><td><a href="{{phoneURL .C.Phone}}">{{.C.Phone}}</a></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">FAX</td><td>{{.C.Fax}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">EMAIL</td><td><a href="mailto:{{.C.Email}}">{{.C.Email}}</a></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">ACTIVE</td><td>{{if gt .C.Active 0}}Yes{{else}}No{{end}}</a></td><td width="50px"></td></tr>
