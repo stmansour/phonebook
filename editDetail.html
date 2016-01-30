@@ -85,11 +85,11 @@
   	if(pw1.value == pw2.value){
       //The passwords match. 
       pw2.style.backgroundColor = colorMatch;
-      fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="30" alt="Passwords Match">';
+      fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="20" alt="Passwords Match">';
     } else {
 	    //The passwords do not match.
 	    pw2.style.backgroundColor = colorMismatch;
-	    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="30" alt="Passwords Do Not Match">';
+	    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="20" alt="Passwords Do Not Match">';
     }
     //=========================
     // check rules
@@ -107,11 +107,20 @@
 <table border=0>
 	<tr>
 		<td width="50px"> </td>
+		<td rowspan="3">
+			<table border=0>
+				<tr>
+					<td><img src="{{.X.ImageURL}}" height="75"></td>
+					<td width=5></td>
+					<td>Your photo:<br><br><input type="file" name="picturefile" id="file"></td>
+				</tr>
+			</table>
+		</td>
+		<td rowspan="3" width=10></td>
 		<td class="Attrib" align="right">NEW PASSWORD</td>
 		<td><input type="password" id="idpw1" name="password" value="" maxlength="25" 
 			onkeyup="checkPasswd(); return false;" size="15"></td>
-		<td rowspan="2" width="5"><span id="feedbackArea"></span></td>
-		<td rowspan="2">Good passwords should:
+		<td rowspan="3">Good passwords should:
 		<ul class="helper-text">
 			<li id="length">be at least 8 characters long</li>
 			<li id="lowercase">contain at least one lowercase letter</li>
@@ -121,16 +130,12 @@
 		</ul>
 		</td>
 		<td width="50px"></td>
-		<td rowspan="2">
-<table>
-	<tr>
-		<td><img src="{{.X.ImageURL}}" height="75
-		"></td>
-		<td width=5></td>
-		<td>Your photo:<br><br><input type="file" name="picturefile" id="file"></td>
 	</tr>
-</table>
-		</td>
+
+	<tr>
+		<td width="50px"></td>
+		<td></td>
+		<td height="22"><span id="feedbackArea"></span></td>
 	</tr>
 	
 	<tr>
@@ -143,7 +148,40 @@
 	<tr><td height="20" colspan="4"></td></tr>
 </table>
 
-<br>
+
+<table>
+		<td width="50px"></td>
+		<td class="edAttrib">PREFERRED NAME</td>
+		<td class="edAttrib">OFFICE PHONE</td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35" maxlength="25"></td>
+		<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="20" maxlength="25"></td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">EMAIL</td>
+		<td class="edAttrib">CELL PHONE</td>
+	</tr>
+	<tr>
+		<td width="50px"></td>
+		<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35" maxlength="35"></td>
+		<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="20" maxlength="25"></td>
+	</tr>
+
+	<tr>
+		<td width="50px"></td>
+		<td class="edAttrib">EMERGENCY CONTACT NAME</td>
+		<td class="edAttrib">CONTACT PHONE</td>
+	</tr>
+	<tr>
+		<td width="50px">
+		<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35" maxlength="25"></td></td>
+		<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="20" maxlength="25"></td>
+	</tr>
+	<tr><td height="10" colspan="3"></td></tr>
+</table>
 
 <table>
 	<tr>
@@ -154,7 +192,7 @@
 	<tr>
 		<td width="50px"></td>
 		<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35" maxlength="35"></td>
-		<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35" maxlength="25"></td>
+		<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="20" maxlength="25"></td>
 	</tr>
 </table>
 
@@ -173,47 +211,10 @@
 		<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10" maxlength="10"></td>
 		<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10" maxlength="25"></td>
 	</tr>
+	<tr><td height="20" colspan="3"></td></tr>
 </table>
 
-
 <table>
-
-	<tr><td height="20" colspan="3"></td></tr>
-
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">PREFERRED NAME</td>
-		<td class="edAttrib">OFFICE PHONE</td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35" maxlength="25"></td>
-		<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="15" maxlength="25"></td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">EMAIL</td>
-		<td class="edAttrib">CELL PHONE</td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35" maxlength="35"></td>
-		<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="15" maxlength="25"></td>
-	</tr>
-
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">EMERGENCY CONTACT NAME</td>
-		<td class="edAttrib">CONTACT PHONE</td>
-	</tr>
-	<tr>
-		<td width="50px">
-		<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35" maxlength="25"></td></td>
-		<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="15" maxlength="25"></td>
-	</tr>
-
-	<tr><td height="20" colspan="3"></td></tr>
-
 	<tr><td width="50px"></td>
 		<td colspan="2">
 		<input type="submit" name="action" value="Save">

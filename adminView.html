@@ -5,8 +5,15 @@
 	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
 	<title>Accord Directory - Admin - View for {{.D.FirstName}} {{.D.LastName}}</title>
 <link rel="icon" type="image/png" href="/images/favicon32x32.png">
+
+<script type="text/javascript">
+function gomap() {
+    loc = "https://www.google.com/maps/embed/v1/place?key=AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4&q={{.D.HomeStreetAddress}},{{.D.HomeCity}}+{{.D.HomeState}}+{{.D.HomePostalCode}}+{{.D.HomeCountry}}";
+    document.getElementById('geomap').src = loc;
+}
+</script>
 </head>
-<body style='background-image: url("/{{index .Images "adminView"}}")'>
+<body style='background-image: url("/{{index .Images "adminView"}}")'  onload="gomap()">
 
 
 <table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
@@ -46,6 +53,8 @@
 {{end}}
 </p>
 
+<table border="0">
+<tr><td>
 	<table >
 		<tr>
 			<td class="edAttrib">TITLE</td>
@@ -70,7 +79,12 @@
 			<td><input type=text name="PreferredName" value="{{.D.PreferredName}}" size="15" disabled="disabled"></td>
 		</tr>
 	</table>
-
+</td>
+<td rowspan="6" width="10"></td>
+<td rowspan="6">
+<iframe id="geomap"width="350"height="250"frameborder="0" style="border:0" allowfullscreen></iframe>
+</td></tr>
+<tr><td>
 	<table>
 		<tr>
 			<td class="edAttrib">OFFICE PHONE</td>
@@ -83,7 +97,8 @@
 			<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="15" disabled="disabled"></td>
 		</tr>
 	</table>
-
+</td></tr>
+<tr><td>
 	<table>
 		<tr>
 			<td class="edAttrib">PRIMARY EMAIL</td>
@@ -94,7 +109,8 @@
 			<td><input disabled="disabled" type="email" name="SecondaryEmail" value="{{.D.SecondaryEmail}}" size="35"></td>
 		</tr>
 	</table>
-
+</td></tr>
+<tr><td>
 	<table>
 		<tr>
 			<td class="edAttrib">HOME STREET ADDRESS</td>
@@ -105,6 +121,8 @@
 			<td><input disabled="disabled" type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="35"></td>
 		</tr>
 	</table>
+</td></tr>
+<tr><td>
 
 	<table>
 		<tr>
@@ -120,6 +138,8 @@
 			<td><input disabled="disabled" type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10"></td>
 		</tr>
 	</table>
+</td></tr>
+<tr><td>
 
 	<table>
 		<tr>
@@ -131,6 +151,8 @@
 			<td><input disabled="disabled" type=text name="EmergencyContactPhone" value="{{.D.EmergencyContactPhone}}" size="15"></td>
 		</tr>
 	</table>
+</td></tr>
+</table>
 
 	{{$comp := .D.CoCode}}
 	{{$job := .D.JobCode}}
