@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -14,23 +15,64 @@ import _ "github.com/go-sql-driver/mysql"
 
 // App is the global data structure for this app
 var App struct {
-	db       *sql.DB
-	DBName   string
-	DBUser   string
-	user     string
-	password string
+	db           *sql.DB
+	DBName       string
+	DBUser       string
+	user         string
+	password     string
+	fname        string
+	lname        string
+	usernameonly bool
 }
 
+func errcheck(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func getUserName() {
+	n := 0
+	s := fmt.Sprintf("select username from people where FirstName=\"%s\" AND LastName=\"%s\"", App.fname, App.lname)
+	fmt.Println(s)
+	rows, err := App.db.Query(s)
+	errcheck(err)
+	defer rows.Close()
+	fmt.Printf("usernames for %s %s:\n", App.fname, App.lname)
+	for rows.Next() {
+		errcheck(rows.Scan(&App.user))
+		fmt.Println(App.user)
+		n++
+	}
+	errcheck(rows.Err())
+	if n > 1 {
+		fmt.Printf("There are multiple usernames for the %s %s.\n", App.fname, App.lname)
+		fmt.Printf("Select appropriate username and run this program again with -u and the appropriate username\n")
+		os.Exit(1)
+	}
+	if n == 0 {
+		fmt.Printf("Database %s does not have a user named %s %s\n", App.DBName, App.fname, App.lname)
+		os.Exit(1)
+	}
+}
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
+	fnPtr := flag.String("F", "", "User first name")
+	lnPtr := flag.String("L", "", "User last name")
 	uPtr := flag.String("u", "username", "username")
 	psPtr := flag.String("p", "accord", "password")
+	unoPtr := flag.Bool("n", false, "if present, just dump the username, do not make password changes.")
 	flag.Parse()
 	App.DBName = *dbnmPtr
 	App.user = *uPtr
 	App.password = *psPtr
 	App.DBUser = *dbuPtr
+	App.fname = *fnPtr
+	App.lname = *lnPtr
+	App.usernameonly = *unoPtr
+
+	fmt.Printf("App.usernameonly = %v\n", App.usernameonly)
 }
 
 func main() {
@@ -48,6 +90,14 @@ func main() {
 		fmt.Printf("App.db.Ping for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}
 
+	if len(App.fname) > 0 && len(App.lname) > 0 {
+		getUserName()
+		if App.usernameonly {
+			fmt.Printf("%s\n", App.user)
+			os.Exit(0)
+		}
+	}
+
 	sha := sha512.Sum512([]byte(App.password))
 	passhash := fmt.Sprintf("%x", sha)
 	update, err := App.db.Prepare("update people set passhash=? where username=?")
@@ -55,16 +105,17 @@ func main() {
 		fmt.Printf("error = %v\n", err)
 		os.Exit(1)
 	}
-	t, err := update.Exec(passhash, App.user)
+	// t, err := update.Exec(passhash, App.user)
+	_, err = update.Exec(passhash, App.user)
 	if nil != err {
 		fmt.Printf("error = %v\n", err)
 	} else {
-		n, _ := t.RowsAffected()
-		if 0 == n {
-			fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.user)
-			os.Exit(1)
-		}
-		fmt.Printf("password for user %s has been set to \"%s\"\n", App.user, App.password)
+		// n, _ := t.RowsAffected()
+		// if 0 == n {
+		// 	fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.user)
+		// 	os.Exit(1)
+		// }
+		fmt.Printf("username: %s\npassword: %s\nOK\n", App.user, App.password)
 	}
 
 }

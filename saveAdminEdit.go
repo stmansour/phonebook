@@ -161,6 +161,14 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 
 		do.filterSecurityMerge(sess, PERMMOD, &d) // merge in new data
 
+		if uid == sess.UID {
+			if 0 == len(do.PreferredName) {
+				sess.Firstname = do.FirstName
+			} else {
+				sess.Firstname = do.PreferredName
+			}
+		}
+
 		if uid == 0 {
 			// some first-time setup that needs to be handled
 			if do.RID == 0 {

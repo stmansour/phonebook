@@ -1,4 +1,6 @@
 pbsetpw: *.go
+	go vet
+	golint
 	go build
 
 clean:

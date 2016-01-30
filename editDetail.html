@@ -104,13 +104,13 @@
 </script>
 
 
-<table>
+<table border=0>
 	<tr>
 		<td width="50px"> </td>
 		<td class="Attrib" align="right">NEW PASSWORD</td>
 		<td><input type="password" id="idpw1" name="password" value="" maxlength="25" 
-			onkeyup="checkPasswd(); return false;" size="35"></td>
-		<td rowspan="2" width="30"><span id="feedbackArea"></span></td>
+			onkeyup="checkPasswd(); return false;" size="15"></td>
+		<td rowspan="2" width="5"><span id="feedbackArea"></span></td>
 		<td rowspan="2">Good passwords should:
 		<ul class="helper-text">
 			<li id="length">be at least 8 characters long</li>
@@ -121,29 +121,29 @@
 		</ul>
 		</td>
 		<td width="50px"></td>
+		<td rowspan="2">
+<table>
+	<tr>
+		<td><img src="{{.X.ImageURL}}" height="75
+		"></td>
+		<td width=5></td>
+		<td>Your photo:<br><br><input type="file" name="picturefile" id="file"></td>
+	</tr>
+</table>
+		</td>
 	</tr>
 	
 	<tr>
 		<td width="50px"></td>
-		<td class="Attrib" align="right">REPEAT NEW PASSWORD</td>
+		<td class="Attrib" align="right">REPEAT PASSWORD</td>
 		<td><input type="password" id="idpw2" name="password2" value="" maxlength="25" 
-			size="35" onkeyup="checkPasswd(); return false;"></td>
+			size="15" onkeyup="checkPasswd(); return false;"></td>
 		<td width="50px"></td>
 	</tr>
 	<tr><td height="20" colspan="4"></td></tr>
 </table>
 
-<table>
-	<tr>
-		<td width="50px"></td>
-		<td><img src="{{.X.ImageURL}}" height="75
-		"></td>
-		<td>Update your picture: </td>
-		<td><input type="file" name="picturefile" id="file"></td>
-	</tr>
-</table>
-
-<br><br>
+<br>
 
 <table>
 	<tr>

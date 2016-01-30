@@ -4,8 +4,11 @@ pbsetpw \- set a password for a user in the Accord system
 .SH SYNOPSIS
 .B pbsetpw
 [\fB\-B\fR \fIdatabase_username\fR]
+[\fB\-F\fR \fIfirst name\fR]
 [\fB\-help\fR]
+[\fB\-L\fR \fIlast name\fR]
 [\fB\-N\fR \fIdatabase_name\fR]
+[\fB\-n\fR]
 [\fB\-p\fR \fIpasswd\fR]
 [\fB\-u\fR \fIusername\fR]
 
@@ -16,8 +19,17 @@ sets the user password for the supplied user.
 .TP
 .IP "-B database_username"
 Username for logging into the database server. Default name is "ec2-user"
+.IP "-F firstname"
+User's first name. If -F is specified then the user is determined by a database
+search for the supplied first and last name. Note -L is required and -u is ignored.
+.IP "-L firstname"
+User's last name. If -L is specified then the user is determined by a database
+search for the supplied first and last name. Note -F is required and -u is ignored.
 .IP "-N database_name"
 The current default name is accordtest. The production database name is accord.
+.IP "-n"
+Stop after determining the username from the supplied first and last names. Print
+the username to stdout and exit.
 .IP "-help"
 List the options to stdout.
 .IP "-p password"
