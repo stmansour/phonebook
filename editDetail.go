@@ -54,7 +54,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 			&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID,
 			&d.ClassCode, &d.EmergencyContactName, &d.EmergencyContactPhone,
 			&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
-			&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
+			&d.HomeState, &d.HomePostalCode, &d.HomeCountry, &d.OfficeFax))
 	}
 	errcheck(rows.Err())
 

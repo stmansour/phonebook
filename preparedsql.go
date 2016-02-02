@@ -50,7 +50,7 @@ func buildPreparedStatements() {
 		"select lastname,middlename,firstname,preferredname,jobcode,primaryemail," + // 6
 			"officephone,cellphone,deptcode,cocode,mgruid,ClassCode," + // 12
 			"EmergencyContactName,EmergencyContactPhone," + // 14
-			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry " + // 20
+			"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry,OfficeFax " + // 21
 			"from people where uid=?")
 	errcheck(err)
 	Phonebook.prepstmt.adminInsertPerson, err = Phonebook.db.Prepare(

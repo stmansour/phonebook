@@ -29,8 +29,8 @@ func stripchars(str, chr string) string {
 func phoneURL(s string) string {
 	s = strings.TrimSpace(s)
 	s = stripchars(s, " ()")
-	s = strings.Replace(s, "X", ",,", 1)
-	s = strings.Replace(s, "x", ",,", 1)
+	s = strings.Replace(s, "X", ",,,,", 1)
+	s = strings.Replace(s, "x", ",,,,", 1)
 	s = fmt.Sprintf("tel:%s", strings.Replace(s, ".", "-", -1))
 	return s
 }

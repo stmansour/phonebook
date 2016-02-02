@@ -48,7 +48,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Here are the major search fields
-	s = "select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where "
+	s = "select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,officefax,cellphone,deptcode from people where "
 
 	// if the user has access and wants to include terminated employees...
 	if !inclterms {
@@ -97,7 +97,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var m person
-		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
+		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.OfficeFax, &m.CellPhone, &m.DeptCode))
 		m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 		pm := &m
 		pm.filterSecurityRead(sess, PERMVIEW|PERMMOD)

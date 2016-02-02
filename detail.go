@@ -101,7 +101,7 @@ func getPersonDetail(d *personDetail, uid int) int {
 		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
 		&d.EmergencyContactName, &d.EmergencyContactPhone,
 		&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
-		&d.HomeState, &d.HomePostalCode, &d.HomeCountry)
+		&d.HomeState, &d.HomePostalCode, &d.HomeCountry, &d.OfficeFax)
 	if nil != err {
 		return 1
 	}
@@ -163,7 +163,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 				&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID,
 				&d.ClassCode, &d.EmergencyContactName, &d.EmergencyContactPhone,
 				&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
-				&d.HomeState, &d.HomePostalCode, &d.HomeCountry))
+				&d.HomeState, &d.HomePostalCode, &d.HomeCountry, &d.OfficeFax))
 		}
 		errcheck(rows.Err())
 		d.MgrName = getNameFromUID(d.MgrUID)

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"text/template"
 	"time"
@@ -99,6 +100,7 @@ type person struct {
 	JobCode       int
 	OfficePhone   string
 	CellPhone     string
+	OfficeFax     string
 	DeptCode      int
 	DeptName      string
 	Employer      string
@@ -399,6 +401,7 @@ var chttp = http.NewServeMux()
 func errcheck(err error) {
 	if err != nil {
 		fmt.Printf("error = %v\n", err)
+		debug.PrintStack()
 		log.Fatal(err)
 	}
 }
