@@ -520,8 +520,6 @@ func initUIData(u *uiSupport) {
 		u.Roles[i].Name = Phonebook.Roles[i].Name
 		u.Roles[i].RID = Phonebook.Roles[i].RID
 	}
-
-	bugCheck(u)
 }
 
 // Dispatcher controls access to shared resources.

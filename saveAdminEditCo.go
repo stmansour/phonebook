@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+// LEGALNAMESIZE is the size of the varchar for the company legal name
+var LEGALNAMESIZE = 50
+
+// COMMONNAMESIZE is the sql size
+var COMMONNAMESIZE = 50
+
 func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 	var sess *session
 	var ui uiSupport
@@ -64,6 +70,13 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		c.PostalCode = r.FormValue("PostalCode")
 		c.Country = r.FormValue("Country")
 
+		if len(c.LegalName) > LEGALNAMESIZE {
+			c.LegalName = c.LegalName[0:LEGALNAMESIZE]
+		}
+		if len(c.CommonName) > COMMONNAMESIZE {
+			c.CommonName = c.CommonName[0:COMMONNAMESIZE]
+		}
+
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
@@ -98,6 +111,9 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 				c.Fax, c.EmploysPersonnel, c.Active, c.Address, c.Address2, c.City, c.State,
 				c.PostalCode, c.Country, sess.UID, CoCode)
 			if nil != err {
+				errmsg := fmt.Sprintf("saveAdminEditCoHandler: Phonebook.prepstmt.updateCompany.Exec: err = %v\n", err)
+				ulog(errmsg)
+				fmt.Println(errmsg)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}
