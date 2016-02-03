@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
-	"sort"
 	"strings"
 	"text/template"
 	"time"
@@ -464,23 +463,23 @@ func initUI() {
 	// }
 }
 
-func bugCheck(u *uiSupport) {
-	var m []int
-	for k := range PhonebookUI.CoCodeToName {
-		m = append(m, k)
-	}
-	sort.Ints(m)
+// func bugCheck(u *uiSupport) {
+// 	var m []int
+// 	for k := range PhonebookUI.CoCodeToName {
+// 		m = append(m, k)
+// 	}
+// 	sort.Ints(m)
 
-	k := m[0]
-	for i := 1; i < len(m); i++ {
-		if k+1 != m[i] {
-			fmt.Printf("k=%d, i=%d, m[i]=%d\n", k, i, m[i])
-			fmt.Printf("m = %#v\n", m)
-			os.Exit(1)
-		}
-		k = m[i]
-	}
-}
+// 	k := m[0]
+// 	for i := 1; i < len(m); i++ {
+// 		if k+1 != m[i] {
+// 			fmt.Printf("k=%d, i=%d, m[i]=%d\n", k, i, m[i])
+// 			fmt.Printf("m = %#v\n", m)
+// 			os.Exit(1)
+// 		}
+// 		k = m[i]
+// 	}
+// }
 
 func initUIData(u *uiSupport) {
 	u.Images = make(map[string]string, len(PhonebookUI.Images))
