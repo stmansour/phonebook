@@ -180,6 +180,9 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, sess.UID,
 			uid)
 		if nil != err {
+			errmsg := fmt.Sprintf("savePersonDetailsHandler: Phonebook.prepstmt.updateMyDetails.Exec: err = %v\n", err)
+			ulog(errmsg)
+			fmt.Println(errmsg)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
@@ -189,6 +192,9 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 			passhash := fmt.Sprintf("%x", sha)
 			_, err = Phonebook.prepstmt.updatePasswd.Exec(passhash, uid)
 			if nil != err {
+				errmsg := fmt.Sprintf("savePersonDetailsHandler: Phonebook.prepstmt.updatePasswd.Exec: err = %v\n", err)
+				ulog(errmsg)
+				fmt.Println(errmsg)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}

@@ -55,6 +55,9 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.New("class.html").Funcs(funcMap).ParseFiles("class.html")
 		err := t.Execute(w, &ui)
 		if nil != err {
+			errmsg := fmt.Sprintf("classHandler: err = %v\n", err)
+			ulog(errmsg)
+			fmt.Println(errmsg)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	} else {

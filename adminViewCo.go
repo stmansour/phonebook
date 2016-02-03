@@ -49,6 +49,9 @@ func adminViewCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.New("adminViewCo.html").Funcs(funcMap).ParseFiles("adminViewCo.html")
 	err = t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("adminViewCompanyHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

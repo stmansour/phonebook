@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"text/template"
 )
@@ -75,6 +76,9 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	ui.D = &d
 	err := t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("adminAddPersonHandler:  err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

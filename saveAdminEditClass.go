@@ -85,6 +85,9 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			_, err = Phonebook.prepstmt.updateClass.Exec(co.Name, co.Designation, co.Description, sess.UID, ClassCode)
 			if nil != err {
+				errmsg := fmt.Sprintf("saveAdminEditClassHandler: Phonebook.prepstmt.adminUpdatePerson.Exec: err = %v\n", err)
+				ulog(errmsg)
+				fmt.Println(errmsg)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}

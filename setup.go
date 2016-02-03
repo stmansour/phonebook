@@ -34,6 +34,9 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("setupHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -192,6 +195,9 @@ func saveSetupHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("saveSetupHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

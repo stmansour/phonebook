@@ -180,7 +180,9 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("ui.D = %#v\n", ui.D)
 	err := t.Execute(w, &ui)
 	if nil != err {
-		ulog("Error executing template: %v\n", err)
+		errmsg := fmt.Sprintf("adminViewHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

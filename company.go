@@ -84,6 +84,9 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 		ui.C.filterSecurityRead(sess, PERMVIEW)
 		err := t.Execute(w, &ui)
 		if nil != err {
+			errmsg := fmt.Sprintf("companyHandler: err = %v\n", err)
+			ulog(errmsg)
+			fmt.Println(errmsg)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	} else {

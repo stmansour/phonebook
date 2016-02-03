@@ -179,6 +179,9 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	d.filterSecurityRead(sess, PERMVIEW)
 	err := t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("detailHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

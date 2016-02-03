@@ -47,6 +47,9 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("ui.A = %#v\n", ui.A)
 	err = t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("adminEditClassHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

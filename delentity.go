@@ -62,6 +62,9 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 		t, _ := template.New("delPersonRefErr.html").Funcs(funcMap).ParseFiles("delPersonRefErr.html")
 		err = t.Execute(w, &ui)
 		if nil != err {
+			errmsg := fmt.Sprintf("intPersonRefErrHandler: err = %v\n", err)
+			ulog(errmsg)
+			fmt.Println(errmsg)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	} else {
@@ -207,6 +210,9 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.New("delClassRefErr.html").Funcs(funcMap).ParseFiles("delClassRefErr.html")
 		err = t.Execute(w, &ui)
 		if nil != err {
+			errmsg := fmt.Sprintf("delClassRefErr: err = %v\n", err)
+			ulog(errmsg)
+			fmt.Println(errmsg)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	} else {
@@ -327,6 +333,9 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.New("delCoRefErr.html").Funcs(funcMap).ParseFiles("delCoRefErr.html")
 		err = t.Execute(w, &ui)
 		if nil != err {
+			errmsg := fmt.Sprintf("delCoRefErr: err = %v\n", err)
+			ulog(errmsg)
+			fmt.Println(errmsg)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	} else {

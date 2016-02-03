@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"text/template"
 )
@@ -58,6 +59,9 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	ui.C = &c
 	err := t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("adminAddCompanyHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

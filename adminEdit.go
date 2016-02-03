@@ -52,6 +52,9 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("AdminEditHandler: d = %#v\n", d)
 	err = t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("adminEditHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

@@ -76,6 +76,9 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.New("editDetail.html").Funcs(funcMap).ParseFiles("editDetail.html")
 	err = t.Execute(w, &ui)
 	if nil != err {
+		errmsg := fmt.Sprintf("editDetailHandler: err = %v\n", err)
+		ulog(errmsg)
+		fmt.Println(errmsg)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
