@@ -327,7 +327,7 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 		}
 
 		//-----------------------------------------------------------
-		// add deduction entries to the table for compensation...
+		// add deduction entries to the table for deductions...
 		//-----------------------------------------------------------
 		for i := 0; i < len(d.MyDeductions); i++ {
 			h := ""

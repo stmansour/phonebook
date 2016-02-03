@@ -179,6 +179,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			// generate a unique username...
 			//============================================
 			do.UserName = strings.ToLower(do.FirstName[0:1] + do.LastName)
+			do.UserName = stripchars(do.UserName, "., -&`~!@#$%^*()_+={}'[]\";:<>/?\\")
 			if len(do.UserName) > 17 {
 				do.UserName = do.UserName[0:17]
 			}

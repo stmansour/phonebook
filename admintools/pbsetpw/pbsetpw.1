@@ -14,7 +14,8 @@ pbsetpw \- set a password for a user in the Accord system
 
 .SH DESCRIPTION
 .B pbsetpw
-sets the user password for the supplied user.
+sets the user password for the supplied user. If no password is supplied
+a random password will be generated.
 .SH OPTIONS
 .TP
 .IP "-B database_username"
@@ -33,7 +34,7 @@ the username to stdout and exit.
 .IP "-help"
 List the options to stdout.
 .IP "-p password"
-Specifies the user's new password
+Specifies the user's new password.  If not specified, a random password is generated.
 .IP "-u username"
 Specifies the user's username.
 

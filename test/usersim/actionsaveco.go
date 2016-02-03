@@ -106,7 +106,7 @@ func saveAdminEditCo(d *personDetail, atr *TestResults) bool {
 
 	// Verify if the response was ok
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Server return non-200 status: %v\n", resp.Status)
+		fmt.Printf("saveAdminEditCo:  Server return non-200 status: %v\n", resp.Status)
 	}
 
 	//==============================================================

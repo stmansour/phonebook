@@ -8,7 +8,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 )
 
 import _ "github.com/go-sql-driver/mysql"
@@ -29,6 +31,20 @@ func errcheck(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,?()#@!~|")
+
+func randStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }
 
 func getUserName() {
@@ -55,13 +71,23 @@ func getUserName() {
 		os.Exit(1)
 	}
 }
+
+func getRealName() string {
+	var f, l, p string
+	s := fmt.Sprintf("select FirstName,LastName,PreferredName from people where username=\"%s\"", App.user)
+	errcheck(App.db.QueryRow(s).Scan(&f, &l, &p))
+	if len(p) > 0 {
+		f = p
+	}
+	return fmt.Sprintf("%s %s", f, l)
+}
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
 	fnPtr := flag.String("F", "", "User first name")
 	lnPtr := flag.String("L", "", "User last name")
 	uPtr := flag.String("u", "username", "username")
-	psPtr := flag.String("p", "accord", "password")
+	psPtr := flag.String("p", "", "password")
 	unoPtr := flag.Bool("n", false, "if present, just dump the username, do not make password changes.")
 	flag.Parse()
 	App.DBName = *dbnmPtr
@@ -71,8 +97,6 @@ func readCommandLineArgs() {
 	App.fname = *fnPtr
 	App.lname = *lnPtr
 	App.usernameonly = *unoPtr
-
-	fmt.Printf("App.usernameonly = %v\n", App.usernameonly)
 }
 
 func main() {
@@ -98,6 +122,10 @@ func main() {
 		}
 	}
 
+	if len(App.password) == 0 {
+		App.password = randStringRunes(8)
+	}
+
 	sha := sha512.Sum512([]byte(App.password))
 	passhash := fmt.Sprintf("%x", sha)
 	update, err := App.db.Prepare("update people set passhash=? where username=?")
@@ -115,7 +143,7 @@ func main() {
 		// 	fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.user)
 		// 	os.Exit(1)
 		// }
-		fmt.Printf("username: %s\npassword: %s\nOK\n", App.user, App.password)
+		fmt.Printf("%s\nusername: %s\npassword: %s\nOK\n", getRealName(), App.user, App.password)
 	}
 
 }

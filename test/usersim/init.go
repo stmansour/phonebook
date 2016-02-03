@@ -103,8 +103,9 @@ func loadRandomClassNames() {
 func createClasses() {
 	insert, err := App.db.Prepare("INSERT INTO classes (Name,Designation) VALUES(?,?)")
 	errcheck(err)
+	list := rand.Perm(len(App.RandClasses))
 	for i := 0; i < App.TotalClasses; i++ {
-		cn := App.RandClasses[rand.Intn(len(App.RandClasses))]
+		cn := App.RandClasses[list[i]]
 		dsg := genDesignation(cn, "classcode", "classes")
 		if len(cn) > 25 {
 			cn = cn[0:25]
@@ -131,8 +132,10 @@ func createCompanies() {
 		//      1                 10                  20                  30
 		"VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	errcheck(err)
+	list := rand.Perm(len(App.Companies))
+
 	for i := 0; i < App.TotalCompanies; i++ {
-		cn := App.Companies[rand.Intn(len(App.Companies))]
+		cn := App.Companies[list[i]]
 		dsg := genDesignation(cn, "cocode", "companies")
 		if len(cn) > 25 {
 			cn = cn[0:25]

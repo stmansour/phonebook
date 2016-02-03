@@ -185,7 +185,7 @@ func login(d *personDetail) bool {
 
 	// Verify if the response was ok
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Server return non-200 status: %v\n", resp.Status)
+		fmt.Printf("login:  Server return non-200 status: %v\n", resp.Status)
 	}
 
 	// dump headers...
@@ -282,7 +282,7 @@ func usersimDoTest(v *personDetail, tr *TestResults) {
 	if testResult(v, "adminEditClass", adminEditClass(v, tr), tr) {
 		return
 	}
-	if testResult(v, "saveAdminEditCo", saveAdminEditClass(v, tr), tr) {
+	if testResult(v, "saveAdminEditClass", saveAdminEditClass(v, tr), tr) {
 		return
 	}
 

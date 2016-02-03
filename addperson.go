@@ -69,7 +69,7 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	d.Termination = stringToDate("")
 	d.StateOfEmployment = ""
 	d.CountryOfEmployment = "USA"
-	d.RID = 0
+	d.RID = 4 // Viewer
 
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	ui.D = &d
