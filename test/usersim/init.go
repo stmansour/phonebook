@@ -124,6 +124,9 @@ func loadRandomCompanyNames() {
 		App.Companies = append(App.Companies, scanner.Text())
 	}
 	errcheck(scanner.Err())
+	if App.Debug {
+		fmt.Printf("Companies: %d\n", len(App.Companies))
+	}
 }
 
 func createCompanies() {

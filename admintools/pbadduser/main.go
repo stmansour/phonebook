@@ -56,7 +56,7 @@ func readAccessRoles() {
 
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
-	dbnmPtr := flag.String("N", "accordtest", "database name (accordtest, accord)")
+	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
 	uPtr := flag.String("u", "", "username")
 	pPtr := flag.String("p", "accord", "password")
 	fPtr := flag.String("f", "", "first or given name")

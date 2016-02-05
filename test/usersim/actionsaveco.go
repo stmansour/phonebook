@@ -22,8 +22,13 @@ func saveAdminEditCo(d *personDetail, atr *TestResults) bool {
 
 	form := url.Values{}
 
+	// user d.UID must only change the company names to something that none
+	// of the other users will use.
+	n := len(App.Companies) / App.TestUsers // this is the range that ea
+	nstart := n * (d.UID - 1)               // starting index for this user
+
 	// set new values
-	c.LegalName = App.Companies[rand.Intn(len(App.Companies))]
+	c.LegalName = App.Companies[nstart+rand.Intn(n)]
 	c.CommonName = c.LegalName
 	c.Designation = genDesignation(c.LegalName, "cocode", "companies")
 	c.Email = randomCompanyEmail(c.LegalName)
