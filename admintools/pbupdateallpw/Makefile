@@ -7,6 +7,9 @@ clean:
 install: pbupdateallpw
 	cp pbupdateallpw /usr/local/accord/bin
 
+installman:
+	cp pbupdateallpw.1 /usr/local/share/man/man1/
+
 package: pbupdateallpw
 	cp pbupdateallpw ../../tmp/phonebook/
 	cp *.1 ../../tmp/phonebook/man/man1/

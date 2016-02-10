@@ -752,6 +752,9 @@ func main() {
 	err = db.Ping()
 	if nil != err {
 		ulog("db.Ping: Error = %v\n", err)
+		s := fmt.Sprintf("Could not establish database connection to db: %s, dbuser: %s\n", Phonebook.DBName, Phonebook.DBUser)
+		ulog(s)
+		fmt.Println(s)
 		os.Exit(2)
 	}
 	ulog("MySQL database opened with \"%s\"\n", dbopenparms)

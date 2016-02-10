@@ -1,5 +1,10 @@
 #!/bin/bash
-# activation script for phonebook
+# chkconfig: 345 99 01
+# description: activation script to start/stop Accord Phonebook
+#
+# processname: phonebook
+# pidfile: /var/run/phonebook/phonebook.pid
+
 
 HOST=localhost
 PORT=8250
@@ -10,6 +15,7 @@ QA=0
 DBNAME="accord"
 DBUSER="ec2-user"
 IAM=$(whoami)
+
 
 usage() {
     cat <<ZZEOF
@@ -47,7 +53,7 @@ will be "OK" if it is ready, or something else if there are problems:
     bash$  activate.sh ready
     OK
 ZZEOF
-	exit 0
+	exit 1
 }
 
 updateImages() {
@@ -66,6 +72,75 @@ stopwatchdog() {
             $(kill $pid)
         fi          
     fi      
+}
+
+start() {
+	if [ 0 -eq ${QA} ]; then
+		if [ ${IAM} == "root" ]; then
+			chown -R ec2-user *
+			chmod u+s phonebook pbwatchdog
+		fi
+
+		if [ "${STARTPBONLY}" -ne "1" ]; then
+			if [ ! -d "./images" ]; then
+				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
+				gunzip -f pbimages.tar.gz >phonebook.log 2>&1
+				tar xvf pbimages.tar >phonebook.log 2>&1
+			fi
+			if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
+				./installman.sh >phonebook.log 2>&1
+			fi
+		fi
+		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
+		if [ ${IAM} == "root" ]; then
+			if [ ! -d /var/run/phonebook ]; then
+				mkdir /var/run/phonebook
+			fi
+			echo $! >/var/run/phonebook/phonebook.pid
+			touch /var/lock/phonebook
+		fi
+
+		# give phonebook a few seconds to start up before initiating the watchdog
+		sleep 5
+		if [ "${STARTPBONLY}" -ne "1" ]; then
+			stopwatchdog
+			./pbwatchdog ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
+		fi
+	elif [[ ${QA} -eq 1 ]]; then
+		# echo "STARTING FOR QA"
+		pushd ./test/usersim >/dev/null 2>&1
+		./fntest.sh >fntest.log 2>&1 &
+		popd >/dev/null 2>&1
+	fi
+}
+
+stop() {
+	stopwatchdog
+	curl -s http://${HOST}:${PORT}/extAdminShutdown/
+	if [ ${IAM} == "root" ]; then
+		sleep 6
+		rm -f /var/run/phonebook/phonebook.pid /var/lock/phonebook
+	fi
+}
+
+status() {
+	ST=$(curl -s http://${HOST}:${PORT}/status/ | wc -c)
+	case "${ST}" in
+	"2")
+		exit 0
+		;;
+	"0")
+		# phonebook is not responsive or not running.  Exit status as described in 
+		# http://refspecs.linuxbase.org/LSB_3.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+		if [ ${IAM} == "root" -a -f /var/run/phonebook/phonebook.pid ]; then
+			exit 1
+		fi
+		if [ ${IAM} == "root" -a -f /var/lock/phonebook ]; then
+			exit 2
+		fi
+		exit 3
+		;;
+	esac
 }
 
 while getopts ":p:qih:N:Tb" o; do
@@ -101,6 +176,10 @@ while getopts ":p:qih:N:Tb" o; do
 done
 shift $((OPTIND-1))
 
+if [ ${IAM} == "root" ]; then
+	cd ~ec2-user/apps/phonebook
+fi
+
 for arg do
 	# echo '--> '"\`$arg'"
 	cmd=$(echo ${arg}|tr "[:upper:]" "[:lower:]")
@@ -110,78 +189,25 @@ for arg do
 		echo "Images updated"
 		;;
 	"start")
-		if [ 0 -eq ${QA} ]; then
-			#===============================================
-			# START
-			# Add the command to start your application...
-			#===============================================
-			if [ ${IAM} == "root" ]; then
-				chown -R ec2-user *
-				chmod u+s phonebook pbwatchdog
-			fi
-
-			if [ "${STARTPBONLY}" -ne "1" ]; then
-				if [ ! -d "./images" ]; then
-					/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
-					gunzip -f pbimages.tar.gz >phonebook.log 2>&1
-					tar xvf pbimages.tar >phonebook.log 2>&1
-				fi
-				if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
-					./installman.sh >phonebook.log 2>&1
-				fi
-			fi
-			./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
-			# give phonebook a few seconds to start up before initiating the watchdog
-			sleep 5
-			if [ "${STARTPBONLY}" -ne "1" ]; then
-			# 	if [ ${IAM} == "root" ]; then
-			# 		/bin/su - ec2-user -c "~ec2-user/apps/phonebook/pbwatchdog >pbwatchdogstartup.out 2>&1" &
-			# 	else
-					./pbwatchdog ${WATCHDOGOPTS} >pbwatchdogstartup.out 2>&1 &
-			# 	fi
-			fi
-		elif [[ ${QA} -eq 1 ]]; then
-			# echo "STARTING FOR QA"
-			pushd ./test/usersim >/dev/null 2>&1
-			./fntest.sh >fntest.log 2>&1 &
-			popd >/dev/null 2>&1
-		fi
+		start
 		echo "OK"
 		exit 0
 		;;
 	"stop")
-		#===============================================
-		# STOP
-		# Add the command to terminate your application...
-		#===============================================
-		stopwatchdog
-		curl -s http://${HOST}:${PORT}/extAdminShutdown/
+		stop
 		echo "OK"
 		exit 0
 		;;
 	"ready")
-		#===============================================
-		# READY
-		# Is your application ready to receive commands?
-		#===============================================
 		ST=$(curl -s http://${HOST}:${PORT}/status/)
 		echo "${ST}"
 		exit 0
 		;;
+	"status")
+		status
+		;;
 	"restart")
-		#===============================================
-		# RESTART
-		# Restart your application...
-		#===============================================
-cat >x.sh << ZZEOF1
-curl -s http://${HOST}:${PORT}/extAdminShutdown/ 
-echo "sleeping 10 seconds before restart..."
-sleep 10
-echo "starting phonebook"
-./phonebook  -N ${DBNAME} -B ${DBUSER} >phonebook.log 2>&1 &
-ZZEOF1
-		chmod +x x.sh
-		./x.sh >x.sh.log 2>&1 &
+		stop; sleep 10; start
 		echo "OK"
 		exit 0
 		;;

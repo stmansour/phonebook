@@ -34,11 +34,23 @@ the username to stdout and exit.
 .IP "-help"
 List the options to stdout.
 .IP "-p password"
-Specifies the user's new password.  If not specified, a random 8-character password is generated.
+Specifies the user's new password.  If not specified, a random 8-character password is generated
+and printed to stdout.
 .IP "-u username"
 Specifies the user's username.
 
 .SH EXAMPLES
+
+.IP "pbsetpw -u jdoe
+This command sets the password for user jdoe to a reasonable random password. The output
+would look something like this:
+
+.nf
+John Doe
+username: jdoe
+password: EzE)dO8J
+OK
+.fi
 
 .IP "pbsetpw -u jdoe -p FoolMe1"
 This command sets the password for user jdoe to "FoolMe1".

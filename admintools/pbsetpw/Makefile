@@ -9,6 +9,9 @@ clean:
 install: pbsetpw
 	cp pbsetpw /usr/local/accord/bin
 
+installman:
+	cp pbsetpw.1 /usr/local/share/man/man1/
+
 package: pbsetpw
 	cp pbsetpw ../../tmp/phonebook/
 	cp *.1 ../../tmp/phonebook/man/man1/

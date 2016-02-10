@@ -1,0 +1,8 @@
+Failure Runbook
+
+1. Make sure that you can log into the machine running phonebook.  If not, you may need to reboot the machine.
+2. Make sure that MySQL is running:  /etc/init.d/mysqld start
+   It should automatically start.  Make sure /etc/init.d/mysqld exists.  Then do
+   		sudo chkconfig mysqld on
+   to make sure it will start on reboots.
+ 

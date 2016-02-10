@@ -10,7 +10,13 @@ pbupdateallpw \- set the password for all users in the Accord system
 
 .SH DESCRIPTION
 .B pbupdateallpw
-sets the user password for all users. This is primarily used for testing.
+sets the user password for all users in the database. This is primarily used for testing. Note
+that because the impact of this command could be devastating to a production
+installation, the default database name is 
+.B accordtest.
+This is to ensure that if it applies to the production database that an extra, overt
+action must be taken.
+
 .SH OPTIONS
 .TP
 .IP "-B database_username"
@@ -24,8 +30,8 @@ Specifies the new password for all users.
 
 .SH EXAMPLES
 
-.IP "pbupdateallpw -p FoolMe1"
-This command sets the password for all users  to "FoolMe1".
+.IP "pbupdateallpw -p easy"
+This command sets the password for all users  to "easy".
 
 .IP "pbupdateallpw -help"
 This command prints the program options to stdout.
