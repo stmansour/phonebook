@@ -22,6 +22,10 @@ usage() {
 Phonebook activation script.
 Usage:   activate.sh [OPTIONS] CMD
 
+This is the Accord Phonebook activation script. It is designed to work in two environments.
+First, it works with Plum - Accord's test environment automation infrastructure
+Second, it can work as a service script in /etc/init.d
+
 OPTIONS:
 -b 			 (enable db backups, default is off)
 -p port      (default is 8250)
@@ -30,14 +34,14 @@ OPTIONS:
 -q           (start as qa version)
 -T           (use this option to indicate testing rather than production)
 
-CMD is one of: start | stop | ready | test | teststatus
+CMD is one of: start | stop | status | restart | ready | reload | condrestart | images
 
 Examples:
 Command to start phonebook:
-	bash$  activate.sh START 
+	bash$  activate.sh start 
 
 Command to start phonebook for testing purposes:
-	bash$  activate.sh -T START 
+	bash$  activate.sh -T start 
 
 	If you do testing in the context of the source code tree and you don't 
 	use -T, you may see messages like this:
@@ -53,7 +57,6 @@ will be "OK" if it is ready, or something else if there are problems:
     bash$  activate.sh ready
     OK
 ZZEOF
-	exit 1
 }
 
 updateImages() {
@@ -79,6 +82,10 @@ start() {
 		if [ ${IAM} == "root" ]; then
 			chown -R ec2-user *
 			chmod u+s phonebook pbwatchdog
+			if [ $(uname) == "Linux" -a ! -f "/etc/init.d/phonebook" ]; then
+				cp ./activate.sh /etc/init.d/phonebook
+				chkconfig --add phonebook
+			fi
 		fi
 
 		if [ "${STARTPBONLY}" -ne "1" ]; then
@@ -141,6 +148,10 @@ status() {
 		exit 3
 		;;
 	esac
+}
+
+reload() {
+	ST=$(curl -s http://${HOST}:${PORT}/status/)
 }
 
 while getopts ":p:qih:N:Tb" o; do
@@ -211,9 +222,22 @@ for arg do
 		echo "OK"
 		exit 0
 		;;
+	"reload")
+		reload
+		exit 0
+		;;
+	"condrestart")
+		if [ -f /var/lock/phonebook ] ; then
+			stop
+			# avoid race
+			sleep 3
+			start
+		fi
+		;;
 	*)
 		echo "Unrecognized command: $arg"
 		usage
+		exit 1
 		;;
     esac
 done
