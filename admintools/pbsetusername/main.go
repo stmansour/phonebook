@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"phonebook/lib"
 	"strconv"
 	"strings"
 )
@@ -59,7 +60,9 @@ func main() {
 		os.Exit(2)
 	}
 	var err error
-	s := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", App.DBName)
+	// s := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", App.DBName)
+	lib.ReadConfig()
+	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)

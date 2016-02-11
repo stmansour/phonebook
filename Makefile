@@ -1,4 +1,5 @@
 phonebook: *.go
+	cd lib;make
 	cd admintools;make
 	cd dbtools;make
 	cd test;make
@@ -9,6 +10,7 @@ phonebook: *.go
 .PHONY:  test
 
 clean:
+	cd lib;make clean
 	cd dbtools;make clean
 	cd test;make clean
 	cd admintools;make clean

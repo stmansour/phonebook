@@ -5,4 +5,11 @@ Failure Runbook
    It should automatically start.  Make sure /etc/init.d/mysqld exists.  Then do
    		sudo chkconfig mysqld on
    to make sure it will start on reboots.
- 
+3. To make the phonebook service survive a reboot, we need the activate.sh script to /etc/init.d/phonebook
+	be sure to do 
+		sudo chkconfig --add phonebook
+	after installing the 
+
+ Notes:
+ 	Any changes to the instance creation script -- go to accord/cloud/qmaster.sh
+

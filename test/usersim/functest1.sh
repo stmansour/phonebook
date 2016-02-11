@@ -52,7 +52,7 @@ startPhonebook() {
 echo "Stopping any running instance of phonebook..."
 stopPhonebook
 
-L=$(ps -ef | grep phonebook | grep -v grep | wc -l)
+L=$(ps -ef | grep phonebook | grep -v grep | grep -v "ssh phonebook" | wc -l)
 if [ ${L} -gt 0 ]; then
 	echo "Could not stop running instance of phonebook..."
 	ps -ef | grep phonebook | grep -v grep 
@@ -65,7 +65,7 @@ initDB
 echo "Starting phonebook service"
 startPhonebook
 
-L=$(ps -ef | grep phonebook | grep -v grep | wc -l)
+L=$(ps -ef | grep phonebook | grep -v grep | grep -v "ssh phonebook" | wc -l)
 if [ ${L} -ne 1 ]; then
 	echo "Could not find one and only one running instance of phonebook..."
 	ps -ef | grep phonebook | grep -v grep 

@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"phonebook/lib"
 )
 
 import _ "github.com/go-sql-driver/mysql"
@@ -29,23 +30,16 @@ var App struct {
 	Roles     []Role // the roles saved in the database
 }
 
-func errcheck(err error) {
-	if nil != err {
-		fmt.Printf("Error = %v\n", err)
-		os.Exit(1)
-	}
-}
-
 func readAccessRoles() {
 	rows, err := App.db.Query("select RID,Name from roles")
-	errcheck(err)
+	lib.Errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
 		var r Role
-		errcheck(rows.Scan(&r.RID, &r.Name))
+		lib.Errcheck(rows.Scan(&r.RID, &r.Name))
 		App.Roles = append(App.Roles, r)
 	}
-	errcheck(rows.Err())
+	lib.Errcheck(rows.Err())
 }
 
 func readCommandLineArgs() {
@@ -66,8 +60,10 @@ func main() {
 	readCommandLineArgs()
 
 	var err error
-	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
+	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	// s := "<awsdbusername>:<password>@tcp(<rdsinstancename>:3306)/accord"
+	lib.ReadConfig()
+	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"phonebook/lib"
 	"runtime/debug"
 	"strings"
 	"text/template"
@@ -733,9 +734,7 @@ func main() {
 	//==============================================
 	var err error
 	Phonebook.LogFile, err = os.OpenFile("Phonebook.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
-	}
+	lib.Errcheck(err)
 	defer Phonebook.LogFile.Close()
 	log.SetOutput(Phonebook.LogFile)
 	ulog("*** Accord PHONEBOOK ***\n")
@@ -743,11 +742,11 @@ func main() {
 	//==============================================
 	// And the database...
 	//==============================================
-	dbopenparms := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", Phonebook.DBUser, Phonebook.DBName)
+	// dbopenparms := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", Phonebook.DBUser, Phonebook.DBName)
+	lib.ReadConfig()
+	dbopenparms := lib.GetSQLOpenString(Phonebook.DBUser, Phonebook.DBName)
 	db, err := sql.Open("mysql", dbopenparms)
-	if nil != err {
-		ulog("sql.Open: Error = %v\n", err)
-	}
+	lib.Errcheck(err)
 	defer db.Close()
 	err = db.Ping()
 	if nil != err {
