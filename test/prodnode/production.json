@@ -2,7 +2,7 @@
     "EnvName": "Phonebook Sandbox",
     "Instances": [
 	{
-	    "InstName": "phone",
+	    "InstName": "PhonebookProductionNode",
 	    "OS":       "Linux",
 	    "Count":    1,
 		"Resources": {

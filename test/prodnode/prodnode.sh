@@ -1,10 +1,10 @@
 #!/bin/bash
-# This creates a phonebook sandbox environment
+# This creates a phonebook production node
 
-UPORT=8251
-SCRIPTLOG="sb.log"
+UPORT=8250
+SCRIPTLOG="prodnode.log"
 UOPTS="-k"
-ENV_DESCR="phonebooksb.json"
+ENV_DESCR="production.json"
 SYS_TEST_DIR=$(pwd)
 
 #---------------------------------------------------------------------
