@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"phonebook/lib"
 	"time"
 )
 
@@ -103,8 +104,10 @@ func main() {
 	readCommandLineArgs()
 
 	var err error
-	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
-	App.db, err = sql.Open("mysql", s)
+	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
+	// App.db, err = sql.Open("mysql", s)
+	lib.ReadConfig()
+	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
 	if nil != err {
 		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}

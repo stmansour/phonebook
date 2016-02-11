@@ -59,9 +59,9 @@ func readCommandLineArgs() {
 func main() {
 	readCommandLineArgs()
 
-	var err error
 	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	// s := "<awsdbusername>:<password>@tcp(<rdsinstancename>:3306)/accord"
+	var err error
 	lib.ReadConfig()
 	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
 	App.db, err = sql.Open("mysql", s)
@@ -72,6 +72,7 @@ func main() {
 	err = App.db.Ping()
 	if nil != err {
 		fmt.Printf("App.db.Ping for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
+		os.Exit(1)
 	}
 	readAccessRoles()
 	if App.DumpRoles {
