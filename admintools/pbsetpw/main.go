@@ -108,6 +108,7 @@ func main() {
 	// App.db, err = sql.Open("mysql", s)
 	lib.ReadConfig()
 	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
+	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}

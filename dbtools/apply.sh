@@ -48,8 +48,8 @@ while getopts ":p:h:N:" o; do
 done
 shift $((OPTIND-1))
 
-pushd schema;      ./apply.sh -N ${DBNAME}    ; popd
-pushd roleinit;    ./apply.sh -N ${DBNAME}    ; popd
-pushd jobtitles;   ./jobtitles -N ${DBNAME}   ; popd
-pushd deductions;  ./deductions -N ${DBNAME}  ; popd
-pushd departments; ./departments -N ${DBNAME} ; popd
+echo "schema";      pushd schema;      ./apply.sh -N ${DBNAME}    ; popd
+echo "roleinit";    pushd roleinit;    ./apply.sh -N ${DBNAME}    ; popd
+echo "jobtitles";   pushd jobtitles;   ./jobtitles -N ${DBNAME}   ; popd
+echo "deductions";  pushd deductions;  ./deductions -N ${DBNAME}  ; popd
+echo "departments"; pushd departments; ./departments -N ${DBNAME} ; popd

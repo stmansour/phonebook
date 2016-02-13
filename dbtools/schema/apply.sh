@@ -71,4 +71,4 @@ shift $((OPTIND-1))
 genGrants
 cat tables.sql >>${SCHEMAFILE}
 
-mysql < ${SCHEMAFILE}
+mysql --no-defaults < ${SCHEMAFILE}
