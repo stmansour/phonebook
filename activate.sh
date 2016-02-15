@@ -81,7 +81,7 @@ start() {
 	if [ 0 -eq ${QA} ]; then
 		if [ ${IAM} == "root" ]; then
 			chown -R ec2-user *
-			chmod u+s phonebook pbwatchdog
+			chmod u+s phonebook pbwatchdog picsync.sh
 			if [ $(uname) == "Linux" -a ! -f "/etc/init.d/phonebook" ]; then
 				cp ./activate.sh /etc/init.d/phonebook
 				chkconfig --add phonebook
