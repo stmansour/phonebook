@@ -11,18 +11,23 @@ process will restart it using the activate(1) process. Phonebook's activate
 process will automatically start the watchdog when it performs a START and
 will automatically stop the watchdog when it performs a STOP.
 
-Currently, pbwatchdog also initiates database backups. The current data-only
-backups are scheduled for 08:15:00 UTC daily. Full backups are scheduled every
-Saturday at 08:15:00.
+Currently, pbwatchdog also initiates picture syncing. Pictures are updated
+every 60 seconds. The mechanism for doing the updates is very efficient when
+no changes have been made.
 
-Daily backup database files are stored in the Artifactory directory:
+.\"  ****  This code was removed after moving to a networked db
+.\" Currently, pbwatchdog also initiates database backups. The current data-only
+.\" backups are scheduled for 08:15:00 UTC daily. Full backups are scheduled every
+.\" Saturday at 08:15:00.
 
-.IP <dbname>/db/<DOM>/<dbname>db.sql.gz
-
-.PP
-where <dbname> is the name of the database. This is "accord" by default.
-<DOM> is the day-of-the-month as obtained from date(1). The daily backups
-are data only. Full database backups are done weekly on Saturdays.
+.\"Daily backup database files are stored in the Artifactory directory:
+.\"
+.\".IP <dbname>/db/<DOM>/<dbname>db.sql.gz
+.\"
+.\".PP
+.\"where <dbname> is the name of the database. This is "accord" by default.
+.\"<DOM> is the day-of-the-month as obtained from date(1). The daily backups
+.\"are data only. Full database backups are done weekly on Saturdays.
 
 .SH OPTIONS
 .TP

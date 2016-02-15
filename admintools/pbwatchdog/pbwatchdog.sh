@@ -6,6 +6,8 @@
 
 PHONEBOOKSTOPPED=0                 # switcher for mail sending
 CHECKINGPERIOD=10                  # in sec
+PICSYNCINTERVAL=60                 # in sec
+PICSYNCCOUNT=0
 MYEMAIL="sman@stevemansour.com"    # where to send info
 LOGFILE="pbwatchdog.log"           # where to log messages
 DBBACKUP=0                         # backups are OFF by default
@@ -82,28 +84,39 @@ do
         fi
     fi
 
-    #---------------------------------------------------------------------------
-    # Check for database backup needed
-    # Do the backups at 00:15:00 PST every day
-    # 00:15:00 PST (Silicon Valley CA) == 08:15:00 GMT == 02:15:00 CST (Austin)
-    #---------------------------------------------------------------------------
-    if [ ${DBBACKUP} -gt 0 ]; then
-        HR=$(date +%H)
-        MN=$(date +%M)
-        # echo "HR = ${HR}, MN = ${MN}"
-        if [ ${HR} = ${TRIGGERHR} -a ${MN} = ${TRIGGERMN} -a ${BACKUPCOMPLETED} -eq 0 ]; then
-        # echo "TIME TO DO A BACKUP"
-            ./pbbkup >dailyDBbackup.log &
-            DOW=$(date +%u)
-            if [ ${DOW} = "6" ]; then
-                ./pbbkup -f >weeklyDBfullbackup.log &
-            fi
-            BACKUPCOMPLETED=1
-        fi
+    # Since we went behind a load balancer and since we centralized the db, we need
+    # a different approach here.
+    # #---------------------------------------------------------------------------
+    # # Check for database backup needed
+    # # Do the backups at 00:15:00 PST every day
+    # # 00:15:00 PST (Silicon Valley CA) == 08:15:00 GMT == 02:15:00 CST (Austin)
+    # #---------------------------------------------------------------------------
+    # if [ ${DBBACKUP} -gt 0 ]; then
+    #     HR=$(date +%H)
+    #     MN=$(date +%M)
+    #     # echo "HR = ${HR}, MN = ${MN}"
+    #     if [ ${HR} = ${TRIGGERHR} -a ${MN} = ${TRIGGERMN} -a ${BACKUPCOMPLETED} -eq 0 ]; then
+    #     # echo "TIME TO DO A BACKUP"
+    #         ./pbbkup >dailyDBbackup.log &
+    #         DOW=$(date +%u)
+    #         if [ ${DOW} = "6" ]; then
+    #             ./pbbkup -f >weeklyDBfullbackup.log &
+    #         fi
+    #         BACKUPCOMPLETED=1
+    #     fi
 
-        if [ ${HR} = ${TRIGGERHR} -a ${MN} = ${RESETMN} -a ${BACKUPCOMPLETED} -eq 1 ]; then
-            BACKUPCOMPLETED=0
-        fi
+    #     if [ ${HR} = ${TRIGGERHR} -a ${MN} = ${RESETMN} -a ${BACKUPCOMPLETED} -eq 1 ]; then
+    #         BACKUPCOMPLETED=0
+    #     fi
+    # fi
+
+    #---------------------------------------------------------------------------
+    # Increment the picsync counter and see if it's time to sync pictures...
+    #---------------------------------------------------------------------------
+    ((PICSYNCCOUNT += CHECKINGPERIOD))
+    if ((PICSYNCCOUNT >= PICSYNCINTERVAL)); then
+        PICSYNCCOUNT=0
+        ./picsync.sh >> picsync.log
     fi
 
     #---------------------------------------------------------------------------
