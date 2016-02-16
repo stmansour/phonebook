@@ -24,7 +24,7 @@
 	    		"IsTest": false,
 	    		"ActivateOpts": "-b",
 				"AppRes": {
-					"Cmd": "/usr/local/accord/bin/getfile.sh -m 400 accord/db/config.json"
+					"Cmd": "./activate.sh makeprod"
 				}
 	    	}
 	    ]
