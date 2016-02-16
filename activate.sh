@@ -12,7 +12,7 @@ STARTPBONLY=0
 WATCHDOGOPTS=""
 QA=0
 GETFILE="/usr/local/accord/bin/getfile.sh"
-PHONEBOOKHOME="~ec2-user/apps/phonebook"
+PHONEBOOKHOME="/home/ec2-user/apps/phonebook"
 DBNAME="accord"
 DBUSER="ec2-user"
 IAM=$(whoami)
@@ -81,7 +81,7 @@ stopwatchdog() {
 }
 
 makeProdNode() {
-	${GETFILE} /accord/db/config.json
+	${GETFILE} accord/db/config.json
 }
 
 #--------------------------------------------------------------
@@ -228,7 +228,7 @@ while getopts ":p:qih:N:Tb" o; do
 done
 shift $((OPTIND-1))
 
-cd ${PHONEBOOKHOME}
+cd "${PHONEBOOKHOME}"
 
 for arg do
 	# echo '--> '"\`$arg'"
