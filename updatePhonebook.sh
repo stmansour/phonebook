@@ -52,7 +52,7 @@ updateImages() {
     /usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz
     rm -rf images
     gunzip -f pbimages.tar.gz
-    tar xvf pbimages.tar
+    tar xf pbimages.tar
 }
 
 loadAccordTools() {
@@ -62,7 +62,7 @@ loadAccordTools() {
     artf_get ext-tools/utils accord-linux.tar.gz
     echo "Installing /usr/local/accord" >>${LOGFILE}
     cd /usr/local
-    tar xvzf ~ec2-user/accord-linux.tar.gz
+    tar xzf ~ec2-user/accord-linux.tar.gz
     chown -R ec2-user:ec2-user accord
     cd ~ec2-user/
 }
@@ -83,22 +83,23 @@ if [ ${user} != "root" ]; then
     exit 1
 fi
 
-$(./activate.sh stop)
-echo "shutdown initiated..."
-sleep 6
-cd ..
-echo "Retrieving latest phonebook..."
+echo -n "Shutting down phonebook server."; $(./activate.sh stop) >/dev/null 2>&1
+echo -n "."
+echo -n "."; sleep 6
+echo -n "."; cd ..
+echo -n "Retrieving latest phonebook..."
 /usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/phonebook.tar.gz
 # gunzip tgo.tar.gz;tar xf tgo.tar
-gunzip -f phonebook.tar.gz;tar xvf phonebook.tar
-chown -R ec2-user:ec2-user phonebook
-cd phonebook/
-updateImages
-chmod u+s phonebook pbwatchdog
-echo "starting..."
-./activate.sh -b start
-sleep 3
-status=$(./activate.sh ready)
+echo -n "."; gunzip -f phonebook.tar.gz
+echo -n "."; tar xf phonebook.tar
+echo -n "."; chown -R ec2-user:ec2-user phonebook
+echo -n "."; cd phonebook/
+echo -n "."; updateImages
+echo -n "."; chmod u+s phonebook pbwatchdog
+echo -n "."; echo -n "starting..."
+echo -n "."; ./activate.sh -b start
+echo -n "."; sleep 3
+echo -n "."; status=$(./activate.sh ready)
 if [ ${status} == "OK" ]; then
     echo "Activation successful"
 else
