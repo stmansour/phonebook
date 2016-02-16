@@ -323,7 +323,7 @@ func (s *session) sessionBecome(uid int) {
 		}
 	}
 
-	ulog("user %d to BECOME user %d")
+	ulog("user %d to BECOME user %d", s.UIDorig, s.UID)
 }
 
 //=====================================================================================
