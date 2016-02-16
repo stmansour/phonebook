@@ -312,6 +312,9 @@ func (s *session) sessionBecome(uid int) {
 	adminReadDetails(&d)
 
 	s.Firstname = d.FirstName
+	if 0 < len(d.PreferredName) {
+		s.Firstname = d.PreferredName
+	}
 	s.UID = uid
 	s.Username = d.UserName
 	s.ImageURL = getImageFilename(uid)
