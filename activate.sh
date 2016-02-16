@@ -11,7 +11,8 @@ PORT=8250
 STARTPBONLY=0
 WATCHDOGOPTS=""
 QA=0
-
+GETFILE="/usr/local/accord/bin/getfile.sh"
+PHONEBOOKHOME="~ec2-user/apps/phonebook"
 DBNAME="accord"
 DBUSER="ec2-user"
 IAM=$(whoami)
@@ -34,7 +35,9 @@ OPTIONS:
 -q           (start as qa version)
 -T           (use this option to indicate testing rather than production)
 
-CMD is one of: start | stop | status | restart | ready | reload | condrestart | images
+CMD is one of: start | stop | status | restart | ready | reload | condrestart | images | makeprod
+
+
 
 Examples:
 Command to start phonebook:
@@ -77,7 +80,39 @@ stopwatchdog() {
     fi      
 }
 
+makeProdNode() {
+	${GETFILE} /accord/db/config.json
+}
+
+#--------------------------------------------------------------
+#  For QA, Sandbox, and Production nodes, do some ease of
+#  use setup...
+#--------------------------------------------------------------
+setupAppNode() {
+	cat >> ~ec2-user/.bashrc <<ZZ123EOF
+alias ll='ls -al'
+alias la='ls -a'
+alias ls='ls -C --color'
+alias gop='cd ~/apps/phonebook'
+alias prmysql='/usr/bin/mysql -h phbk.cjkdwqbdvxyu.us-east-1.rds.amazonaws.com -P 3306'
+alias prmysqldump='/usr/bin/mysqldump -h phbk.cjkdwqbdvxyu.us-east-1.rds.amazonaws.com -P 3306'
+alias mysql='/usr/bin/mysql --no-defaults'
+alias mysqldump='/usr/bin/mysqldump --no-defaults'
+alias setpst='cp /usr/share/zoneinfo/America/Los_Angeles /etc/localtime'
+ZZ123EOF
+	chown ec2-user ~ec2-user/.bashrc
+	${GETFILE} accord/db/mycnf
+	mv mycnf ~ec2-user/.my.cnf
+	chmod 600 ~ec2-user/.my.cnf
+	chown ec2-user ~ec2-user/.my.cnf
+}
+
 start() {
+	# handle first time
+	x=$(grep prmysql ~/.bashrc | grep -v grep | wc -l)
+	if (( x == 0 )); then
+		setupAppNode
+	fi
 	if [ 0 -eq ${QA} ]; then
 		if [ ${IAM} == "root" ]; then
 			chown -R ec2-user *
@@ -154,6 +189,12 @@ reload() {
 	ST=$(curl -s http://${HOST}:${PORT}/status/)
 }
 
+restart() {
+	stop
+	sleep 10
+	start
+}
+
 while getopts ":p:qih:N:Tb" o; do
     case "${o}" in
        b)
@@ -187,9 +228,7 @@ while getopts ":p:qih:N:Tb" o; do
 done
 shift $((OPTIND-1))
 
-if [ ${IAM} == "root" ]; then
-	cd ~ec2-user/apps/phonebook
-fi
+cd ${PHONEBOOKHOME}
 
 for arg do
 	# echo '--> '"\`$arg'"
@@ -218,7 +257,7 @@ for arg do
 		status
 		;;
 	"restart")
-		stop; sleep 10; start
+		restart
 		echo "OK"
 		exit 0
 		;;
@@ -228,11 +267,11 @@ for arg do
 		;;
 	"condrestart")
 		if [ -f /var/lock/phonebook ] ; then
-			stop
-			# avoid race
-			sleep 3
-			start
+			restart
 		fi
+		;;
+	"makeprod")
+		makeProdNode
 		;;
 	*)
 		echo "Unrecognized command: $arg"
