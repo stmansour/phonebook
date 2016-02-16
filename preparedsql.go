@@ -19,7 +19,7 @@ func buildPreparedStatements() {
 			"jobcode,hire,termination," + // 29
 			"mgruid,deptcode,cocode,StateOfEmployment," + // 33
 			"CountryOfEmployment,PreferredName," + // 35
-			"EmergencyContactName,EmergencyContactPhone,RID " + // 38
+			"EmergencyContactName,EmergencyContactPhone,RID,username " + // 38
 			"from people where uid=?")
 	errcheck(err)
 	Phonebook.prepstmt.classInfo, err = Phonebook.db.Prepare("select classcode,Name,Designation,Description from classes where classcode=?")

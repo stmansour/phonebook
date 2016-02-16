@@ -7,19 +7,21 @@ import (
 )
 
 type session struct {
-	Token       string         // this is the md5 hash, unique id
-	Username    string         // associated username
-	Firstname   string         // user's first name
-	UID         int            // user's db uid
-	Urole       Role           // user's role for permissions
-	CoCode      int            // logged in user's company
-	ImageURL    string         // user's picture
-	Expire      time.Time      // when does the cookie expire
-	Pp          map[string]int // quick way to reference person permissions based on field name
-	Pco         map[string]int // quick way to reference company permissions based on field name
-	Pcl         map[string]int // quick way to reference class permissions based on field name
-	Ppr         map[string]int
-	Breadcrumbs []Crumb // where is the user in the screen hierarchy
+	Token        string         // this is the md5 hash, unique id
+	Username     string         // associated username
+	Firstname    string         // user's first name
+	UID          int            // user's db uid
+	UIDorig      int            // original uid (for use with method sessionBecome())
+	UsernameOrig string         // original username
+	Urole        Role           // user's role for permissions
+	CoCode       int            // logged in user's company
+	ImageURL     string         // user's picture
+	Expire       time.Time      // when does the cookie expire
+	Breadcrumbs  []Crumb        // where is the user in the screen hierarchy
+	Pp           map[string]int // quick way to reference person permissions based on field name
+	Pco          map[string]int // quick way to reference company permissions based on field name
+	Pcl          map[string]int // quick way to reference class permissions based on field name
+	Ppr          map[string]int
 }
 
 var sessions map[string]*session
@@ -271,6 +273,7 @@ func sessionNew(token, username, firstname string, uid int, rid int) *session {
 	s.Username = username
 	s.Firstname = firstname
 	s.UID = uid
+	s.UIDorig = uid
 	s.ImageURL = getImageFilename(uid)
 	s.Breadcrumbs = make([]Crumb, 0)
 	getRoleInfo(rid, s)
@@ -298,6 +301,29 @@ func sessionNew(token, username, firstname string, uid int, rid int) *session {
 	sulog("New Session: %s\n", s.ToString())
 	sulog("session.Urole.perms = %+v\n", s.Urole.Perms)
 	return s
+}
+
+// Privileged function allowing one user to become another user. This is meant
+// to be used by Administrators or User Support personnel.
+func (s *session) sessionBecome(uid int) {
+	var d personDetail
+	d.Reports = make([]person, 0)
+	d.UID = uid
+	adminReadDetails(&d)
+
+	s.Firstname = d.FirstName
+	s.UID = uid
+	s.Username = d.UserName
+	s.ImageURL = getImageFilename(uid)
+	getRoleInfo(d.RID, s)
+
+	if Phonebook.SecurityDebug {
+		for i := 0; i < len(s.Urole.Perms); i++ {
+			ulog("f: %s,  perm: %02x\n", s.Urole.Perms[i].Field, s.Urole.Perms[i].Perm)
+		}
+	}
+
+	ulog("user %d to BECOME user %d")
 }
 
 //=====================================================================================

@@ -123,7 +123,7 @@ func adminReadDetails(d *personDetail) {
 			&d.JobCode, &d.Hire, &d.Termination,
 			&d.MgrUID, &d.DeptCode, &d.CoCode, &d.StateOfEmployment,
 			&d.CountryOfEmployment, &d.PreferredName,
-			&d.EmergencyContactName, &d.EmergencyContactPhone, &d.RID))
+			&d.EmergencyContactName, &d.EmergencyContactPhone, &d.RID, &d.UserName))
 	}
 	errcheck(rows.Err())
 

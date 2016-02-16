@@ -653,6 +653,7 @@ func initHTTP() {
 	http.HandleFunc("/adminEditCo/", adminEditCompanyHandler)
 	http.HandleFunc("/adminView/", adminViewHandler)
 	http.HandleFunc("/adminViewBtn/", adminViewBtnHandler)
+	http.HandleFunc("/become/", adminBecomeHandler)
 	http.HandleFunc("/class/", classHandler)
 	http.HandleFunc("/company/", companyHandler)
 	http.HandleFunc("/delClass/", delClassHandler)

@@ -43,6 +43,7 @@
 		<div class="DetailPerson">{{.D.FirstName}} {{.D.LastName}}</div><br>
 		<div class="EmployerC"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></div>
 		<div class="JobTitleC">{{.D.JobTitle}}</div>
+		<br>Username: {{.X.Username}}
 		<br>Role: {{.X.Urole.Name}}
 		</td>
 	</tr>
@@ -104,7 +105,7 @@
 </script>
 
 
-<table border=0>
+<table border=1>
 	<tr>
 		<td width="50px"> </td>
 		<td rowspan="3">
@@ -120,7 +121,7 @@
 		<td class="Attrib" align="right">NEW PASSWORD</td>
 		<td><input type="password" id="idpw1" name="password" value="" maxlength="25" 
 			onkeyup="checkPasswd(); return false;" size="15"></td>
-		<td rowspan="3">Good passwords should:
+		<td rowspan="">Good passwords should:
 		<ul class="helper-text">
 			<li id="length">be at least 8 characters long</li>
 			<li id="lowercase">contain at least one lowercase letter</li>
