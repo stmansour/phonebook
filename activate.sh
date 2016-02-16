@@ -109,7 +109,7 @@ ZZ123EOF
 
 start() {
 	# handle first time
-	if [ ${IAM} == "root " ]; then
+	if [ ${IAM} == "root" ]; then
 		x=$(grep prmysql ~/.bashrc | grep -v grep | wc -l)
 		if (( x == 0 )); then
 			setupAppNode
