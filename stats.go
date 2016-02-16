@@ -18,12 +18,15 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	breadcrumbAdd(sess, "Stats", "/stats/")
 
 	var MyCounters UsageCounters
+	var MyiCounters UsageCounters
 	Phonebook.ReqCountersMem <- 1 // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck // make sure we got it
-	MyCounters = Counters
+	MyCounters = TotCounters
+	MyiCounters = Counters
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	ui.K = &MyCounters
+	ui.Ki = &MyiCounters
 
 	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqSessionMemAck // make sure we got it

@@ -109,10 +109,13 @@ ZZ123EOF
 
 start() {
 	# handle first time
-	x=$(grep prmysql ~/.bashrc | grep -v grep | wc -l)
-	if (( x == 0 )); then
-		setupAppNode
+	if [ ${IAM} == "root " ]; then
+		x=$(grep prmysql ~/.bashrc | grep -v grep | wc -l)
+		if (( x == 0 )); then
+			setupAppNode
+		fi
 	fi
+
 	if [ 0 -eq ${QA} ]; then
 		if [ ${IAM} == "root" ]; then
 			chown -R ec2-user *
@@ -228,7 +231,9 @@ while getopts ":p:qih:N:Tb" o; do
 done
 shift $((OPTIND-1))
 
-cd "${PHONEBOOKHOME}"
+# cd "${PHONEBOOKHOME}"
+PBPATH=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
+cd ${PBPATH}
 
 for arg do
 	# echo '--> '"\`$arg'"

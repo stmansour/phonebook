@@ -39,23 +39,50 @@
 
 <p></p>
 <table>
-	<tr><td width="20"></td><td>SearchPeople</td><td><div align="right">{{.K.SearchPeople}}</span></td></tr>
-	<tr><td width="20"></td><td>SearchClasses</td><td><div align="right">{{.K.SearchClasses}}</span></td></tr>
-	<tr><td width="20"></td><td>SearchCompanies</td><td><div align="right">{{.K.SearchCompanies}}</span></td></tr>
-	<tr><td width="20"></td><td>EditPerson</td><td><div align="right">{{.K.EditPerson}}</span></td></tr>
-	<tr><td width="20"></td><td>ViewPerson</td><td><div align="right">{{.K.ViewPerson}}</span></td></tr>
-	<tr><td width="20"></td><td>ViewClass</td><td><div align="right">{{.K.ViewClass}}</span></td></tr>
-	<tr><td width="20"></td><td>ViewCompany</td><td><div align="right">{{.K.ViewCompany}}</span></td></tr>
-	<tr><td width="20"></td><td>AdminEditPerson</td><td><div align="right">{{.K.AdminEditPerson}}</span></td></tr>
-	<tr><td width="20"></td><td>AdminEditClass</td><td><div align="right">{{.K.AdminEditClass}}</span></td></tr>
-	<tr><td width="20"></td><td>AdminEditCompany</td><td><div align="right">{{.K.AdminEditCompany}}</span></td></tr>
-	<tr><td width="20"></td><td>DeletePerson</td><td><div align="right">{{.K.DeletePerson}}</span></td></tr>
-	<tr><td width="20"></td><td>DeleteClass</td><td><div align="right">{{.K.DeleteClass}}</span></td></tr>
-	<tr><td width="20"></td><td>DeleteCompany</td><td><div align="right">{{.K.DeleteCompany}}</span></td></tr>
-	<tr><td width="20"></td><td>SignIn</td><td><div align="right">{{.K.SignIn}}</span></td></tr>
-	<tr><td width="20"></td><td>Logoff</td><td><div align="right">{{.K.Logoff}}</span></td></tr>
+<tr>
+<td>
+  <table border=0>
+  	<tr><td colspan="3" nowrap="true"><strong>Totals across all instances</strong></td></tr>
+	<tr><td width="20"></td><td><span align="right">SearchPeople</span></td><td>{{.K.SearchPeople}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">SearchClasses</span></td><td>{{.K.SearchClasses}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">SearchCompanies</span></td><td>{{.K.SearchCompanies}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">EditPerson</span></td><td>{{.K.EditPerson}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">ViewPerson</span></td><td>{{.K.ViewPerson}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">ViewClass</span></td><td>{{.K.ViewClass}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">ViewCompany</span></td><td>{{.K.ViewCompany}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">AdminEditPerson</span></td><td>{{.K.AdminEditPerson}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">AdminEditClass</span></td><td>{{.K.AdminEditClass}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">AdminEditCompany</span></td><td>{{.K.AdminEditCompany}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">DeletePerson</span></td><td>{{.K.DeletePerson}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">DeleteClass</span></td><td>{{.K.DeleteClass}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">DeleteCompany</span></td><td>{{.K.DeleteCompany}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">SignIn</span></td><td>{{.K.SignIn}}</td></tr>
+	<tr><td width="20"></td><td><span align="right">Logoff</span></td><td>{{.K.Logoff}}</td></tr>
+  </table>
+</td>
+<td width="20"></td>
+<td>
+  <table border=0>
+  	<tr><td colspan="3" nowrap="true"><strong>Incremental values this instance</strong></td></tr>
+	<tr><td width="20"></td><td>SearchPeople</td><td><div align="right">{{.Ki.SearchPeople}}</div></td></tr>
+	<tr><td width="20"></td><td>SearchClasses</td><td><div align="right">{{.Ki.SearchClasses}}</div></td></tr>
+	<tr><td width="20"></td><td>SearchCompanies</td><td><div align="right">{{.Ki.SearchCompanies}}</div></td></tr>
+	<tr><td width="20"></td><td>EditPerson</td><td><div align="right">{{.Ki.EditPerson}}</div></td></tr>
+	<tr><td width="20"></td><td>ViewPerson</td><td><div align="right">{{.Ki.ViewPerson}}</div></td></tr>
+	<tr><td width="20"></td><td>ViewClass</td><td><div align="right">{{.Ki.ViewClass}}</div></td></tr>
+	<tr><td width="20"></td><td>ViewCompany</td><td><div align="right">{{.Ki.ViewCompany}}</div></td></tr>
+	<tr><td width="20"></td><td>AdminEditPerson</td><td><div align="right">{{.Ki.AdminEditPerson}}</div></td></tr>
+	<tr><td width="20"></td><td>AdminEditClass</td><td><div align="right">{{.Ki.AdminEditClass}}</div></td></tr>
+	<tr><td width="20"></td><td>AdminEditCompany</td><td><div align="right">{{.Ki.AdminEditCompany}}</div></td></tr>
+	<tr><td width="20"></td><td>DeletePerson</td><td><div align="right">{{.Ki.DeletePerson}}</div></td></tr>
+	<tr><td width="20"></td><td>DeleteClass</td><td><div align="right">{{.Ki.DeleteClass}}</div></td></tr>
+	<tr><td width="20"></td><td>DeleteCompany</td><td><div align="right">{{.Ki.DeleteCompany}}</div></td></tr>
+	<tr><td width="20"></td><td>SignIn</td><td><div align="right">{{.Ki.SignIn}}</div></td></tr>
+	<tr><td width="20"></td><td>Logoff</td><td><div align="right">{{.Ki.Logoff}}</div></td></tr>
+  </table>
+</td>
+</tr>
 </table>
-
 
 <h3>Sessions</h3>
 <table cellpadding="2">

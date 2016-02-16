@@ -302,6 +302,7 @@ type uiSupport struct {
 	L                *searchClassResults
 	X                *session
 	K                *UsageCounters
+	Ki               *UsageCounters
 	N                []session
 }
 
@@ -392,8 +393,12 @@ type UsageCounters struct {
 
 // Counters stores the number of times each function was executed
 // The numbers are cumulative over server restarts and maintained
-// in the database.
+// in the database. Counters is the - incremental update -- the number
+// of operations done since the last save.
 var Counters UsageCounters
+
+// TotCounters is the total number of the counters across all servers
+var TotCounters UsageCounters
 
 var funcMap map[string]interface{}
 
@@ -630,15 +635,24 @@ func loadMaps() {
 		PhonebookUI.Months[i] = fmtMonths[i]
 	}
 
-	errcheck(Phonebook.db.QueryRow("select SearchPeople,SearchClasses,SearchCompanies,"+
-		"EditPerson,ViewPerson,ViewClass,ViewCompany,"+
-		"AdminEditPerson,AdminEditClass,AdminEditCompany,"+
-		"DeletePerson,DeleteClass,DeleteCompany,SignIn,Logoff from counters").Scan(
-		&Counters.SearchPeople, &Counters.SearchClasses, &Counters.SearchCompanies,
-		&Counters.EditPerson, &Counters.ViewPerson, &Counters.ViewClass, &Counters.ViewCompany,
-		&Counters.AdminEditPerson, &Counters.AdminEditClass, &Counters.AdminEditCompany,
-		&Counters.DeletePerson, &Counters.DeleteClass, &Counters.DeleteCompany,
-		&Counters.SignIn, &Counters.Logoff))
+	ReadTotalCounters()
+
+	Counters.SearchPeople = 0
+	Counters.SearchClasses = 0
+	Counters.SearchCompanies = 0
+	Counters.EditPerson = 0
+	Counters.ViewPerson = 0
+	Counters.ViewClass = 0
+	Counters.ViewCompany = 0
+	Counters.AdminEditPerson = 0
+	Counters.AdminEditClass = 0
+	Counters.AdminEditCompany = 0
+	Counters.DeletePerson = 0
+	Counters.DeleteClass = 0
+	Counters.DeleteCompany = 0
+	Counters.SignIn = 0
+	Counters.Logoff = 0
+
 }
 
 func initHTTP() {
