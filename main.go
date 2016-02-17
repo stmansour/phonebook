@@ -601,6 +601,8 @@ func loadMaps() {
 		"datetimeToString":     datetimeToString,
 		"phoneURL":             phoneURL,
 		"mapURL":               mapURL,
+		"getVersionNo":         getVersionNo,
+		"getBuildTime":         getBuildTime,
 	}
 	loadCompanies()
 	loadClasses()

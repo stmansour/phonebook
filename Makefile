@@ -5,6 +5,7 @@ phonebook: *.go
 	cd test;make
 	go vet
 	golint
+	./mkver.sh
 	go build
 
 .PHONY:  test
