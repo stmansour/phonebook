@@ -4,6 +4,7 @@ FULL=0
 GET="/usr/local/accord/bin/getfile.sh"
 RESTORE="/usr/local/accord/testtools/restoreMySQLdb.sh"
 DATABASE="accord"
+MYSQLOPTS=""
 
 ##############################################################
 #   USAGE
@@ -19,6 +20,7 @@ OPTIONS:
                   last month's data.
 -f 	full restore -- includes pictures. Default is data only
 -h	print this help message
+-n  force --no-defaults onto all mysql commands
 
 Examples:
 Command to restore data only
@@ -41,7 +43,7 @@ DBfile=$2
 echo "DROP DATABASE IF EXISTS ${DB}; CREATE DATABASE ${DB}; USE ${DB};" > restore.sql
 echo "source ${DBfile}" >> restore.sql
 echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
-mysql < restore.sql
+mysql ${MYSQLOPTS} < restore.sql
 
 }
 
@@ -65,7 +67,7 @@ restoreFull() {
 	echo "DROP DATABASE IF EXISTS ${DATABASE}; CREATE DATABASE ${DATABASE}; USE ${DATABASE};" > restore.sql
 	echo "source ${DATABASE}db.sql" >> restore.sql
 	echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
-	mysql < restore.sql
+	mysql ${MYSQLOPTS} < restore.sql
 	echo "Done."
 
 	echo "Cleaning up..."
@@ -92,7 +94,7 @@ restoreData() {
 	echo "DROP DATABASE IF EXISTS ${DATABASE}; CREATE DATABASE ${DATABASE}; USE ${DATABASE};" > restore.sql
 	echo "source ${DATABASE}db.sql" >> restore.sql
 	echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
-	mysql < restore.sql
+	mysql ${MYSQLOPTS} < restore.sql
 	echo "Done."
 
 	echo "Cleaning up..."
@@ -104,7 +106,7 @@ restoreData() {
 ##############################################################
 #   MAIN ROUTINE
 ##############################################################
-while getopts ":d:fhN:" o; do
+while getopts ":d:fhnN:" o; do
     case "${o}" in
         d)
             DOM=${OPTARG}
@@ -126,6 +128,9 @@ while getopts ":d:fhN:" o; do
         N)
 			DATABASE=${OPTARG}
             ;;
+        n)
+			MYSQLOPTS="--no-defaults"
+			;;
         *)
 			echo "UNRECOGNIZED OPTION:  ${o}"
             usage

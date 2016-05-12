@@ -715,8 +715,14 @@ func readCommandLineArgs() {
 	dbnmPtr := flag.String("N", "accord", "database name")
 	portPtr := flag.Int("p", 8250, "port on which Phonebook listens")
 	sbugPtr := flag.Bool("s", false, "security debug mode - includes security debugging info in logfile")
+	vPtr := flag.Bool("v", false, "version request - dumps version to stdout")
 
 	flag.Parse()
+
+	if *vPtr {
+		fmt.Printf("Version: %s\n", getVersionNo())
+		os.Exit(0)
+	}
 
 	Phonebook.Port = *portPtr
 	Phonebook.Debug = *dbugPtr
