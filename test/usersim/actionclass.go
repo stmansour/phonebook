@@ -112,8 +112,8 @@ func viewClass(d *personDetail, atr *TestResults) bool {
 	tr.Failures = make([]TestFailure, 0)
 
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord Phonebook - Class") && d.SessionCookie != nil {
-		pageName := "Class Detail"
+	if strings.Contains(m, "Accord Phonebook - Business Unit") && d.SessionCookie != nil {
+		pageName := "Business Unit Detail"
 		var c class
 		getClassInfo(d.UID, &c) // yes, we're getting the Class with cocode == d.UID
 

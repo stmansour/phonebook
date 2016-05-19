@@ -15,19 +15,19 @@
 <td width=20></td>
 <td><a href="/search/"><img src="/{{index .Images "logo"}}" height="50"></a></td>
 <td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
-<td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=20></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=20></td><td><a href="/searchcl/"><span class="MenuCmd">Classes</span></a></td>
+<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
+<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
+<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
 {{if showAdminButton .X.Token}}
-<td width=20></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
+<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
-<td width=50></td>
+<td width=15></td>
 <td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
 <td width=4></td>
 <td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=20></td>
+<td width=15></td>
 <td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=20></td>
+<td width=15></td>
 </tr>
 <tr>
 <td width=20></td>
@@ -201,7 +201,7 @@
 				{{if hasPERMMODaccess .X.Token 1 "DeptCode"}}{{else}}disabled="disabled"{{end}}>
 				{{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
 				<td width=10></td>
-				<td class="edAttrib">CLASS</td><td>
+				<td class="edAttrib">BUSINESS UNIT</td><td>
 					<select class="HR" name="ClassCode" 
 					{{if hasPERMMODaccess .X.Token 1 "ClassCode"}}{{else}}disabled="disabled"{{end}}>
 					{{range $name, $classcode := .NameToClassCode}}

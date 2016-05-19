@@ -167,8 +167,8 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 			{"Validate Preferred Name", &s, "PREFERRED NAME", "EMAIL", true, d.PreferredName},
 			{"Validate Primary Email", &s, "EMAIL", "PHONE &", true, d.PrimaryEmail},
 			{"Validate Office Phone", &s, "PHONE &", "CELL", true, d.OfficePhone},
-			{"Validate Cell Phone", &s, "CELL", "CLASS", true, d.CellPhone},
-			{"Validate Class", &s, "CLASS", "DEPARTMENT", true, d.Class},
+			{"Validate Cell Phone", &s, "CELL", "BUSINESS UNIT", true, d.CellPhone},
+			{"Validate Class", &s, "BUSINESS UNIT", "DEPARTMENT", true, d.Class},
 			{"Validate Department", &s, "DEPARTMENT", "MANAGER", true, d.DeptName},
 		}
 		var tc testContext
@@ -299,8 +299,8 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 			/* 19 */ {pageName + ": validate ManagerUID", &s, `>MANAGER UID<`, `>STATE OF EMPLOYMENT<`, false, `value="` + fmt.Sprintf("%d", d.MgrUID) + `"`},
 			/* 20 */ {pageName + ": validate StateOfEmployment", &s, `>STATE OF EMPLOYMENT<`, `>COUNTRY OF EMPLOYMENT<`, false, `value="` + d.StateOfEmployment + `"`},
 			/* 21 */ {pageName + ": validate CountryOfEmployment", &s, `>COUNTRY OF EMPLOYMENT<`, `>DEPARTMENT<`, false, `value="` + d.CountryOfEmployment + `"`},
-			/* 22 */ {pageName + ": validate Department", &s, `>DEPARTMENT<`, `>CLASS<`, false, fmt.Sprintf("option value=\"%d\"selected>", d.DeptCode)},
-			/* 23 */ {pageName + ": validate Class", &s, `>CLASS<`, `>POSITION CONTROL NUMBER`, false, fmt.Sprintf("option value=\"%d\"selected>", d.ClassCode)},
+			/* 22 */ {pageName + ": validate Department", &s, `>DEPARTMENT<`, `>BUSINESS UNIT<`, false, fmt.Sprintf("option value=\"%d\"selected>", d.DeptCode)},
+			/* 23 */ {pageName + ": validate Class", &s, `>BUSINESS UNIT<`, `>POSITION CONTROL NUMBER`, false, fmt.Sprintf("option value=\"%d\"selected>", d.ClassCode)},
 			/* 24 */ {pageName + ": validate PositionControlNumber", &s, `>POSITION CONTROL NUMBER`, `>HIRE DATE<`, false, fmt.Sprintf("value=\"%s\"", d.PositionControlNumber)},
 			/* 25 */ {pageName + ": validate Hire Date", &s, `>HIRE DATE<`, `>STATUS<`, false, fmt.Sprintf("value=\"%s\"", sHire)},
 			/* 26 */ {pageName + ": validate Status", &s, `>STATUS<`, `>ELIGIBLE FOR REHIRE`, false, fmt.Sprintf("option value=\"%s\" selected>", activeToString(d.Status))},

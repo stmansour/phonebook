@@ -13,19 +13,19 @@
 <td width=20></td>
 <td><a href="/search/"><img src="/{{index .Images "logo"}}" height="50"></a></td>
 <td ><a href="/search/"><span class="AppName">PHONEBOOK</span></a></td>
-<td width=50></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=20></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=20></td><td><a href="/searchcl/"><span class="MenuCmd">Classes</span></a></td>
+<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
+<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
+<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
 {{if showAdminButton .X.Token}}
-<td width=20></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
+<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
-<td width=50></td>
+<td width=15></td>
 <td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
 <td width=4></td>
 <td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=20></td>
+<td width=15></td>
 <td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=20></td>
+<td width=15></td>
 </tr>
 <tr>
 <td width=20></td>
@@ -59,7 +59,7 @@
 <tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td><td class="AttribVal"><a href="{{phoneURL .D.OfficePhone}}">{{.D.OfficePhone}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td><td class="AttribVal"><a href="{{phoneURL .D.CellPhone}}">{{.D.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">FAX &nbsp;</td><td class="AttribVal"><a href="{{phoneURL .D.OfficeFax}}">{{.D.OfficeFax}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">CLASS &nbsp;</td>
+<tr><td width=20 class="bd"></td><td class="Attribbd">BUSINESS UNIT &nbsp;</td>
 	<td class="AttribVal"><a href="/class/{{.D.ClassCode}}">{{.D.Class}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">DEPARTMENT &nbsp;</td><td class="AttribVal">{{.D.DeptName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
 <tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td><td class="AttribVal"><a href="/detailpop/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
