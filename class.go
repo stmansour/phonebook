@@ -24,6 +24,10 @@ func getClassInfo(classcode int, c *class) {
 		errcheck(rows.Scan(&c.ClassCode, &c.CoCode, &c.Name, &c.Designation, &c.Description))
 	}
 	errcheck(rows.Err())
+
+	if c.CoCode > 0 {
+		errcheck(Phonebook.prepstmt.companyInfo.QueryRow(c.CoCode).Scan(&c.C.CoCode, &c.C.LegalName, &c.C.CommonName, &c.C.Address, &c.C.Address2, &c.C.City, &c.C.State, &c.C.PostalCode, &c.C.Country, &c.C.Phone, &c.C.Fax, &c.C.Email, &c.C.Designation, &c.C.Active, &c.C.EmploysPersonnel))
+	}
 }
 
 func classHandler(w http.ResponseWriter, r *http.Request) {

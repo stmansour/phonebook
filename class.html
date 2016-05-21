@@ -31,7 +31,7 @@
 </tr>
 <tr>
 <td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
+<td colspan="9">You are here: &nbsp;{{getBreadcrumb .X.Token}}</td>
 </tr>
 </table>
 
@@ -42,6 +42,7 @@
 <tr><td width="50px"></td><td colspan="2"><span class="LastName">{{.A.Name}}</span></td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION </td><td>{{.A.Designation}}</td><td width="50px"></td></tr>
 <tr><td width="50px"></td><td class="Attrib" align="right">DESCRIPTION </td><td>{{.A.Description}}</td><td width="50px"></td></tr>
+<tr><td width="50px"></td><td class="Attrib" align="right">COMPANY </td><td><a href="/company/{{.A.C.CoCode}}">{{.A.C.Designation}}</a></td><td width="50px"></td></tr>
 
 <tr><td width="50px"></td><td colspan="2"><p></p><hr><p></p></td><td width="50px"></td></tr>
 

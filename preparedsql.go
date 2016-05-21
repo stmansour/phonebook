@@ -117,4 +117,6 @@ func buildPreparedStatements() {
 	errcheck(err)
 	Phonebook.prepstmt.loginInfo, err = Phonebook.db.Prepare("select uid,firstname,preferredname,passhash,rid from people where username=?")
 	errcheck(err)
+	Phonebook.prepstmt.CompanyClasses, err = Phonebook.db.Prepare("select ClassCode,CoCode,Name,Designation,Description,LastModTime,LastModBy from classes where CoCode=?")
+	errcheck(err)
 }

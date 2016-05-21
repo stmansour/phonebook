@@ -169,6 +169,7 @@ func errcheck(err error) {
 }
 
 func createRoleTables(db *sql.DB) {
+	fmt.Printf("Creating new tables for roles, fieldperms\n")
 	ps, err := db.Prepare("DROP TABLE IF EXISTS roles,fieldperms,role,fieldperm")
 	errcheck(err)
 	_, err = ps.Exec()
@@ -274,6 +275,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "The parent company for this business unit"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -349,7 +351,8 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCOMPANY, "ElemEntity", PERMNONE, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMPRINT, "def"},
-		{ELEMCLASS, "Name", PERMVIEW | PERMPRINT, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW | PERMPRINT, "def"},
+		{ELEMCLASS, "Name", PERMVIEW | PERMPRINT, "The parent company for this business unit"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMPRINT, "def"},
 		{ELEMCLASS, "ElemEntity", PERMNONE, "def"},
@@ -424,6 +427,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "ElemEntity", PERMNONE, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "The parent company for this business unit"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -498,6 +502,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "Active", PERMVIEW, "def"},
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW, "The parent company for this business unit"},
 		{ELEMCLASS, "Name", PERMVIEW, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW, "def"},
 		{ELEMCLASS, "Description", PERMVIEW, "def"},
@@ -573,6 +578,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "The parent company for this business unit"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMNONE, "def"},
@@ -648,6 +654,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "ElemEntity", PERMNONE, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "The parent company for this business unit"},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -723,6 +730,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMCOMPANY, "EmploysPersonnel", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "ClassCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
+		{ELEMCLASS, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "The parent company of this business unit."},
 		{ELEMCLASS, "Name", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Designation", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCLASS, "Description", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
@@ -812,7 +820,7 @@ func readAccessRoles(db *sql.DB) {
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
-	rolePtr := flag.Bool("r", false, "Preset accord employee roles")
+	rolePtr := flag.Bool("r", false, "List current database roles")
 
 	flag.Parse()
 
@@ -828,7 +836,7 @@ func main() {
 	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	lib.ReadConfig()
 	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
-	fmt.Printf("DBOPEN:  %s\n", s)
+	// fmt.Printf("DBOPEN:  %s\n", s)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)
@@ -839,10 +847,12 @@ func main() {
 	if nil != err {
 		fmt.Printf("App.db.Ping: Error = %v\n", err)
 	}
+	fmt.Printf("Successfully opened database %s as user %s\n", App.DBName, App.DBUser)
 
 	createRoleTables(App.db)
 	makeDefaultRoles(App.db)
-	addRoleToPeople(App.db)
+	fmt.Printf("Added roles and fieldperms\n")
+	//addRoleToPeople(App.db)
 
 	if App.presetRoles {
 		readAccessRoles(App.db)

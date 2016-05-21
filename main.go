@@ -38,6 +38,7 @@ type company struct {
 	Designation      string
 	Active           int
 	EmploysPersonnel int
+	C                []class // an array of classes for the business units of this company
 }
 
 type myComp struct {
@@ -257,6 +258,9 @@ type class struct {
 	Name        string
 	Designation string
 	Description string
+	LastModTime time.Time
+	LastModBy   int
+	C           company // parent company
 }
 
 type searchResults struct {
@@ -347,6 +351,7 @@ type PrepSQL struct {
 	accessRoles        *sql.Stmt // read access roles
 	getUserCoCode      *sql.Stmt // read the cocode for a person
 	loginInfo          *sql.Stmt // read info for login
+	CompanyClasses     *sql.Stmt // read a list of classes that belong to a company
 }
 
 // Phonebook is the global application structure providing

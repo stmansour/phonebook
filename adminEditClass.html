@@ -43,12 +43,15 @@
 		<tr>
 			<td class="edAttrib">NAME</td>
 			<td class="edAttrib">DESIGNATION</td>
+			<td class="edAttrib">COMPANY</td>
 		</tr>
 		<tr>
 			<td><input type=text name="Name" value="{{.A.Name}}" size="25" maxlength="25" 
 				{{if hasPERMMODaccess .X.Token 3 "Name"}}{{else}}disabled="disabled"{{end}}></td>
 			<td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required" maxlength="3" 
 				{{if hasPERMMODaccess .X.Token 3 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
+			<td><input type="number" min="0" max="9999" name="CoCode" value="{{.A.CoCode}}" size="7" maxlength="3" 
+				{{if hasPERMMODaccess .X.Token 3 "CoCode"}}{{else}}disabled="disabled"{{end}}></td>
 		</tr>
 	</table>
 	<table>

@@ -53,6 +53,16 @@ func getCompanyInfo(cocode int, c *company) {
 		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Address, &c.Address2, &c.City, &c.State, &c.PostalCode, &c.Country, &c.Phone, &c.Fax, &c.Email, &c.Designation, &c.Active, &c.EmploysPersonnel))
 	}
 	errcheck(rows.Err())
+
+	rows, err = Phonebook.prepstmt.CompanyClasses.Query(cocode)
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		var cl class
+		errcheck(rows.Scan(&cl.ClassCode, &cl.CoCode, &cl.Name, &cl.Designation, &cl.Description, &cl.LastModTime, &cl.LastModBy))
+		c.C = append(c.C, cl)
+	}
+	errcheck(rows.Err())
 }
 
 func companyHandler(w http.ResponseWriter, r *http.Request) {

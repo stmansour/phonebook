@@ -54,6 +54,10 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		if len(c.Designation) > 3 {
 			c.Designation = c.Designation[0:3]
 		}
+		c.CoCode, err = strconv.Atoi(r.FormValue("CoCode"))
+		if err != nil {
+			c.CoCode = 0
+		}
 
 		//-------------------------------
 		// SECURITY
