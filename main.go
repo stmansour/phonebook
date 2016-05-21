@@ -253,6 +253,7 @@ var adminScreenFields = []dataFields{
 
 type class struct {
 	ClassCode   int
+	CoCode      int
 	Name        string
 	Designation string
 	Description string

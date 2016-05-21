@@ -223,7 +223,7 @@ func login(d *personDetail) bool {
 	m2 := reTitleEnd.FindStringIndex(s)
 	m := s[m1[1]:m2[0]]
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Phonebook") && strings.Contains(m, "Search") && d.SessionCookie.Name == "accord" {
+	if strings.Contains(m, "Directory") && strings.Contains(m, "Search") && d.SessionCookie.Name == "accord" {
 		// fmt.Printf("Login successful\n")
 		return true
 	}

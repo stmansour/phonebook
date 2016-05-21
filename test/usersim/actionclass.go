@@ -15,7 +15,7 @@ func getClassInfo(classcode int, c *class) {
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		errcheck(rows.Scan(&c.ClassCode, &c.Name, &c.Designation, &c.Description))
+		errcheck(rows.Scan(&c.ClassCode, &c.CoCode, &c.Name, &c.Designation, &c.Description))
 	}
 	errcheck(rows.Err())
 }
@@ -112,7 +112,7 @@ func viewClass(d *personDetail, atr *TestResults) bool {
 	tr.Failures = make([]TestFailure, 0)
 
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord Phonebook - Business Unit") && d.SessionCookie != nil {
+	if strings.Contains(m, "Accord Directory - Business Unit") && d.SessionCookie != nil {
 		pageName := "Business Unit Detail"
 		var c class
 		getClassInfo(d.UID, &c) // yes, we're getting the Class with cocode == d.UID
@@ -217,7 +217,7 @@ func adminEditClass(d *personDetail, atr *TestResults) bool {
 	tr.Failures = make([]TestFailure, 0)
 
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord Phonebook - Edit Class") && d.SessionCookie != nil {
+	if strings.Contains(m, "Accord Directory - Edit Class") && d.SessionCookie != nil {
 		var c class
 		getClassInfo(d.UID, &c) // yes, we're getting the Class with cocode == d.UID
 

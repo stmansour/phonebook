@@ -22,7 +22,7 @@ func buildPreparedStatements() {
 			"EmergencyContactName,EmergencyContactPhone,RID " + // 38
 			"from people where uid=?")
 	errcheck(err)
-	App.prepstmt.classInfo, err = App.db.Prepare("select classcode,Name,Designation,Description from classes where classcode=?")
+	App.prepstmt.classInfo, err = App.db.Prepare("select classcode,CoCode,Name,Designation,Description from classes where classcode=?")
 	errcheck(err)
 	App.prepstmt.companyInfo, err = App.db.Prepare("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies where cocode=?")
 	errcheck(err)
@@ -84,11 +84,11 @@ func buildPreparedStatements() {
 	errcheck(err)
 	App.prepstmt.insertDeduct, err = App.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
 	errcheck(err)
-	App.prepstmt.insertClass, err = App.db.Prepare("INSERT INTO classes (Name,Designation,Description,lastmodby) VALUES(?,?,?,?)")
+	App.prepstmt.insertClass, err = App.db.Prepare("INSERT INTO classes (CoCode,Name,Designation,Description,lastmodby) VALUES(?,?,?,?,?)")
 	errcheck(err)
 	App.prepstmt.classReadBack, err = App.db.Prepare("select ClassCode from classes where Name=? and Designation=?")
 	errcheck(err)
-	App.prepstmt.updateClass, err = App.db.Prepare("update classes set Name=?,Designation=?,Description=?,lastmodby=? where ClassCode=?")
+	App.prepstmt.updateClass, err = App.db.Prepare("update classes set CoCode=?, Name=?,Designation=?,Description=?,lastmodby=? where ClassCode=?")
 	errcheck(err)
 	App.prepstmt.insertCompany, err = App.db.Prepare("INSERT INTO companies (LegalName,CommonName,Designation," +
 		"Email,Phone,Fax,Active,EmploysPersonnel,Address,Address2,City,State,PostalCode,Country,lastmodby) " +

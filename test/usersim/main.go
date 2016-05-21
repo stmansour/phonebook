@@ -100,6 +100,7 @@ type FieldPerm struct {
 
 type class struct {
 	ClassCode   int
+	CoCode      int
 	Name        string
 	Designation string
 	Description string

@@ -21,7 +21,7 @@ func getClassInfo(classcode int, c *class) {
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		errcheck(rows.Scan(&c.ClassCode, &c.Name, &c.Designation, &c.Description))
+		errcheck(rows.Scan(&c.ClassCode, &c.CoCode, &c.Name, &c.Designation, &c.Description))
 	}
 	errcheck(rows.Err())
 }

@@ -22,7 +22,7 @@ func buildPreparedStatements() {
 			"EmergencyContactName,EmergencyContactPhone,RID,username " + // 38
 			"from people where uid=?")
 	errcheck(err)
-	Phonebook.prepstmt.classInfo, err = Phonebook.db.Prepare("select classcode,Name,Designation,Description from classes where classcode=?")
+	Phonebook.prepstmt.classInfo, err = Phonebook.db.Prepare("select classcode,CoCode,Name,Designation,Description from classes where classcode=?")
 	errcheck(err)
 	Phonebook.prepstmt.companyInfo, err = Phonebook.db.Prepare("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies where cocode=?")
 	errcheck(err)
@@ -87,11 +87,11 @@ func buildPreparedStatements() {
 	errcheck(err)
 	Phonebook.prepstmt.insertDeduct, err = Phonebook.db.Prepare("INSERT INTO deductions (uid,deduction) VALUES(?,?)")
 	errcheck(err)
-	Phonebook.prepstmt.insertClass, err = Phonebook.db.Prepare("INSERT INTO classes (Name,Designation,Description,lastmodby) VALUES(?,?,?,?)")
+	Phonebook.prepstmt.insertClass, err = Phonebook.db.Prepare("INSERT INTO classes (CoCode,Name,Designation,Description,lastmodby) VALUES(?,?,?,?,?)")
 	errcheck(err)
 	Phonebook.prepstmt.classReadBack, err = Phonebook.db.Prepare("select ClassCode from classes where Name=? and Designation=?")
 	errcheck(err)
-	Phonebook.prepstmt.updateClass, err = Phonebook.db.Prepare("update classes set Name=?,Designation=?,Description=?,lastmodby=? where ClassCode=?")
+	Phonebook.prepstmt.updateClass, err = Phonebook.db.Prepare("update classes set CoCode=?,Name=?,Designation=?,Description=?,lastmodby=? where ClassCode=?")
 	errcheck(err)
 	Phonebook.prepstmt.insertCompany, err = Phonebook.db.Prepare("INSERT INTO companies (LegalName,CommonName,Designation," +
 		"Email,Phone,Fax,Active,EmploysPersonnel,Address,Address2,City,State,PostalCode,Country,lastmodby) " +
