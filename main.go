@@ -38,7 +38,7 @@ type company struct {
 	Designation      string
 	Active           int
 	EmploysPersonnel int
-	C                []class // an array of classes for the business units of this company
+	C                []class // an array of classes for the business units of this
 }
 
 type myComp struct {
@@ -298,6 +298,7 @@ type uiSupport struct {
 	Months           []string          // a map for month number to month name
 	Roles            []Role            // list of roles -- fields are not initialized
 	Images           map[string]string // interface images
+	CompanyList      []company         // list of all company structs
 	C                *company
 	A                *class
 	D                *personDetail
@@ -352,6 +353,7 @@ type PrepSQL struct {
 	getUserCoCode      *sql.Stmt // read the cocode for a person
 	loginInfo          *sql.Stmt // read info for login
 	CompanyClasses     *sql.Stmt // read a list of classes that belong to a company
+	GetAllCompanies    *sql.Stmt // query to select all companies
 }
 
 // Phonebook is the global application structure providing
@@ -546,18 +548,21 @@ func Dispatcher() {
 }
 
 func loadCompanies() {
-	var code int
-	var name string
 	PhonebookUI.CoCodeToName = make(map[int]string)
 	PhonebookUI.NameToCoCode = make(map[string]int)
 
-	rows, err := Phonebook.db.Query("select cocode,CommonName from companies")
+	rows, err := Phonebook.prepstmt.GetAllCompanies.Query()
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		errcheck(rows.Scan(&code, &name))
-		PhonebookUI.CoCodeToName[code] = name
-		PhonebookUI.NameToCoCode[name] = code
+		var c company
+		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Address, &c.Address2, &c.City, &c.State, &c.PostalCode, &c.Country, &c.Phone, &c.Fax, &c.Email, &c.Designation, &c.Active, &c.EmploysPersonnel))
+		PhonebookUI.CompanyList = append(PhonebookUI.CompanyList, c)
+		if c.EmploysPersonnel != 0 {
+			PhonebookUI.CoCodeToName[c.CoCode] = c.LegalName
+			PhonebookUI.NameToCoCode[c.LegalName] = c.CoCode
+		}
+
 	}
 	errcheck(rows.Err())
 }

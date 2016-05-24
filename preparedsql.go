@@ -26,6 +26,8 @@ func buildPreparedStatements() {
 	errcheck(err)
 	Phonebook.prepstmt.companyInfo, err = Phonebook.db.Prepare("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies where cocode=?")
 	errcheck(err)
+	Phonebook.prepstmt.GetAllCompanies, err = Phonebook.db.Prepare("select cocode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel from companies")
+	errcheck(err)
 	Phonebook.prepstmt.countersUpdate, err = Phonebook.db.Prepare("update counters set SearchPeople=SearchPeople+?,SearchClasses=SearchClasses+?," +
 		"SearchCompanies=SearchCompanies+?,EditPerson=EditPerson+?,ViewPerson=ViewPerson+?,ViewClass=ViewClass+?,ViewCompany=ViewCompany+?," +
 		"AdminEditPerson=AdminEditPerson+?,AdminEditClass=AdminEditClass+?,AdminEditCompany=AdminEditCompany+?,DeletePerson=DeletePerson+?," +

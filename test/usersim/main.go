@@ -270,6 +270,7 @@ var App struct {
 	Roles            []Role          // the roles saved in the database
 	JCLo, JCHi       int             // lo and high indeces for jobcode
 	DeptLo, DeptHi   int             // lo and high indeces for department
+	CompanyList      []company       // array of company structs for all defined companies
 }
 
 func fillUserFields(v *personDetail) {
@@ -296,7 +297,15 @@ func fillUserFields(v *personDetail) {
 	v.SecondaryEmail = randomEmail(v.LastName, v.FirstName)
 
 	v.ClassCode = 1 + rand.Intn(len(App.NameToClassCode))
-	v.CoCode = 1 + rand.Intn(len(App.NameToCoCode))
+
+	// select a random company, but be sure it employs people.
+	for {
+		i := rand.Intn(len(App.CompanyList))
+		if App.CompanyList[i].EmploysPersonnel > 0 {
+			v.CoCode = App.CompanyList[i].CoCode
+			break
+		}
+	}
 }
 
 func createUser(v *personDetail) {
@@ -345,6 +354,18 @@ func loadUsers() {
 	errcheck(rows.Err())
 }
 
+func loadCompanyList() {
+	rows, err := App.db.Query("SELECT CoCode,LegalName,CommonName,Address,Address2,City,State,PostalCode,Country,Phone,Fax,Email,Designation,Active,EmploysPersonnel FROM companies")
+	errcheck(err)
+	defer rows.Close()
+	for rows.Next() {
+		var m company
+		errcheck(rows.Scan(&m.CoCode, &m.LegalName, &m.CommonName, &m.Address, &m.Address2, &m.City, &m.State, &m.PostalCode, &m.Country, &m.Phone, &m.Fax, &m.Email, &m.Designation, &m.Active, &m.EmploysPersonnel))
+		App.CompanyList = append(App.CompanyList, m)
+	}
+	errcheck(rows.Err())
+}
+
 func main() {
 	readCommandLineArgs()
 
@@ -375,6 +396,7 @@ func main() {
 	initProfiles()
 
 	loadUsers()
+	loadCompanyList()
 	if App.TestUsers > len(App.Peeps) {
 		for i := 0; i < App.TestUsers-len(App.Peeps); i++ {
 			var v personDetail

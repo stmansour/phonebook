@@ -50,8 +50,17 @@
 				{{if hasPERMMODaccess .X.Token 3 "Name"}}{{else}}disabled="disabled"{{end}}></td>
 			<td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required" maxlength="3" 
 				{{if hasPERMMODaccess .X.Token 3 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
-			<td><input type="number" min="0" max="9999" name="CoCode" value="{{.A.CoCode}}" size="7" maxlength="3" 
-				{{if hasPERMMODaccess .X.Token 3 "CoCode"}}{{else}}disabled="disabled"{{end}}></td>
+			<td>
+				{{$comp := .A.CoCode}}
+				<select class="HR" name="CoCode"
+					{{if hasPERMMODaccess .X.Token 3 "CoCode"}}{{else}}disabled="disabled"{{end}}>
+					<option value="0" {{if eq 0 $comp}}selected{{end}}>Not Set</option>
+					{{range .CompanyList}}
+				<option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.LegalName}}</option>{{end}}</select>
+<!-- 			<input type="number" min="0" max="9999" name="CoCode" value="{{.A.CoCode}}" size="7" maxlength="3" 
+				{{if hasPERMMODaccess .X.Token 3 "CoCode"}}{{else}}disabled="disabled"{{end}}>
+ -->				
+ 			</td>
 		</tr>
 	</table>
 	<table>

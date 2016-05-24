@@ -44,6 +44,12 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 
 	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 	initUIData(&ui)
+
+	// this interface needs the complete list of companies
+	for i := 0; i < len(PhonebookUI.CompanyList); i++ {
+		ui.CompanyList = append(ui.CompanyList, PhonebookUI.CompanyList[i])
+	}
+
 	//fmt.Printf("ui.A = %#v\n", ui.A)
 	err = t.Execute(w, &ui)
 	if nil != err {
