@@ -1,0 +1,12 @@
+[mysqldump]
+user=adbuser
+password=4c60r9n1s
+
+[mysqldiff]
+user=adbuser
+password=4c60r9n1s
+
+[mysql]
+user=adbuser
+password=4c60r9n1s
+

@@ -15,7 +15,7 @@ clean:
 	cd dbtools;make clean
 	cd test;make clean
 	cd admintools;make clean
-	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* *.out *.log x.sh*
+	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* *.out *.log x.sh* ver.go
 	go clean
 
 test:
