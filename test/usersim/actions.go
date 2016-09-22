@@ -107,7 +107,7 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 	errcheck(err)
 
 	hdrs := []KeyVal{
-		{"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
+		// {"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
 		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		{"Accept-Encoding", "gzip, deflate"},
 		{"Accept-Language", "en-US,en;q=0.8"},
@@ -119,6 +119,7 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 	for i := 0; i < len(hdrs); i++ {
 		req.Header.Add(hdrs[i].key, hdrs[i].value)
 	}
+	// fmt.Printf("adding session cookie: Expires = %s, d.SessionCookie = %#v,\n", d.SessionCookie.Expires.Format("2006-01-02 15:04:00 MST"), d.SessionCookie)
 	req.AddCookie(d.SessionCookie)
 	resp, err := hc.Do(req)
 	errcheck(err)
@@ -126,6 +127,18 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 
 	// fmt.Printf("viewPersonDetail: hc.Do(req) returned err = %v\n", err)
 
+	// Check that the server actually sent compressed data
+	var reader io.ReadCloser
+	switch resp.Header.Get("Content-Encoding") {
+	case "gzip":
+		fmt.Printf("gzip response\n")
+		reader, err = gzip.NewReader(resp.Body)
+		defer reader.Close()
+	default:
+		reader = resp.Body
+	}
+
+	// Look for the cookie...
 	cookies := resp.Cookies()
 	// fmt.Printf("viewPersonDetail: Cookies:  %+v\n", cookies)
 	d.SessionCookie = nil
@@ -139,21 +152,13 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 		fmt.Printf("d.SessionCookie is nil after executing: %s\n", URL)
 	}
 
-	// Check that the server actually sent compressed data
-	var reader io.ReadCloser
-	switch resp.Header.Get("Content-Encoding") {
-	case "gzip":
-		fmt.Printf("gzip response\n")
-		reader, err = gzip.NewReader(resp.Body)
-		defer reader.Close()
-	default:
-		reader = resp.Body
-	}
-
 	// Verify that we were sent to the Sign In page...
 	htmlData, err := ioutil.ReadAll(reader)
 	errcheck(err)
 	s := string(htmlData)
+
+	// fmt.Printf("Response = %s\n", s)
+
 	m1 := reTitle.FindStringIndex(s)
 	m2 := reTitleEnd.FindStringIndex(s)
 	m := s[m1[1]:m2[0]]
@@ -198,7 +203,7 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 	errcheck(err)
 
 	hdrs := []KeyVal{
-		{"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
+		// {"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
 		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		{"Accept-Encoding", "gzip, deflate"},
 		{"Accept-Language", "en-US,en;q=0.8"},

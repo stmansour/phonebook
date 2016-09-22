@@ -51,7 +51,7 @@ func viewClass(d *personDetail, atr *TestResults) bool {
 	errcheck(err)
 
 	hdrs := []KeyVal{
-		{"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
+		// {"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
 		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		{"Accept-Encoding", "gzip, deflate"},
 		{"Accept-Language", "en-US,en;q=0.8"},
@@ -156,7 +156,7 @@ func adminEditClass(d *personDetail, atr *TestResults) bool {
 	errcheck(err)
 
 	hdrs := []KeyVal{
-		{"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
+		// {"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
 		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		{"Accept-Encoding", "gzip, deflate"},
 		{"Accept-Language", "en-US,en;q=0.8"},

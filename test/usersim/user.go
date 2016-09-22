@@ -78,7 +78,7 @@ func logoff(d *personDetail) bool {
 	errcheck(err)
 
 	hdrs := []KeyVal{
-		{"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
+		// {"Host:", fmt.Sprintf("%s:%d", App.Host, App.Port)},
 		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		{"Accept-Encoding", "gzip, deflate"},
 		{"Accept-Language", "en-US,en;q=0.8"},
@@ -147,7 +147,7 @@ func login(d *personDetail) bool {
 	errcheck(err)
 
 	hdrs := []KeyVal{
-		{"Host:", "localhost:8250"},
+		// {"Host:", "localhost:8250"},
 		{"Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"},
 		{"Accept-Encoding", "gzip, deflate"},
 		{"Accept-Language", "en-US,en;q=0.8"},
@@ -186,12 +186,14 @@ func login(d *personDetail) bool {
 	// Verify if the response was ok
 	if resp.StatusCode != http.StatusOK {
 		fmt.Printf("login:  Server return non-200 status: %v\n", resp.Status)
+		// os.Exit(1)
 	}
 
-	// dump headers...
-	// fmt.Printf("Headers:\n")
-	// for k, v := range resp.Header {
-	// 	fmt.Println("key:", k, "value:", v)
+	// if 1 > 0 {
+	// 	fmt.Printf("Headers:\n")
+	// 	for k, v := range resp.Header {
+	// 		fmt.Println("key:", k, "value:", v)
+	// 	}
 	// }
 
 	// cookies:
