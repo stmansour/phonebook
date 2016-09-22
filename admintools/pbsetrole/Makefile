@@ -1,4 +1,6 @@
 pbsetrole: *.go
+	go vet
+	golint
 	go build
 
 clean:

@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"html/template"
+)
 
 // Crumb is a screen the user is visiting. A list of Crumbs provides a path indicating
 // where the user is in the screen hierarchy
@@ -33,7 +36,7 @@ func breadcrumbToString(sess *session) string {
 	return s
 }
 
-func breadcrumbToHTMLString(sess *session) string {
+func breadcrumbToHTMLString(sess *session) template.HTML {
 	var s string
 	L := len(sess.Breadcrumbs)
 	if L < 1 {
@@ -51,7 +54,7 @@ func breadcrumbToHTMLString(sess *session) string {
 			s += fmt.Sprintf(" / <a href=\"/pop/%d\">%s</a>", L-i, sess.Breadcrumbs[i].Name)
 		}
 	}
-	return s
+	return template.HTML(s)
 }
 
 func breadcrumbAdd(sess *session, name string, url string) {
@@ -73,7 +76,7 @@ func getBreadcrumb(token string) string {
 	return breadcrumbToString(s)
 }
 
-func getHTMLBreadcrumb(token string) string {
+func getHTMLBreadcrumb(token string) template.HTML {
 	s, ok := sessions[token]
 	if !ok {
 		fmt.Printf("getHTMLBreadcrumb:  Could not find session for %s\n", token)
