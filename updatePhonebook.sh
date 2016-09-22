@@ -100,7 +100,7 @@ echo -n "."; echo -n "starting..."
 echo -n "."; ./activate.sh -b start
 echo -n "."; sleep 3
 echo -n "."; status=$(./activate.sh ready)
-if [ ${status} == "OK" ]; then
+if [ "${status}" = "OK" ]; then
     echo "Activation successful"
 else
     echo "Problems activating phonebook.  Status = ${status}"

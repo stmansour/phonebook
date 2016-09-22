@@ -102,6 +102,31 @@ restoreData() {
 	echo "Done."
 }
 
+#####################################################################################
+#  UPDATE SCHEMA
+#  After the initial release of Phonebook, the schema was updated.  This routine
+#  checks the schema of the database just restored.  If the schema needs to be
+#  updated, it will make the updates.
+#####################################################################################
+updateSchema() {
+# Generate the mysql commands needed to validate...
+cat >xxqq <<EOF
+use accord;
+describe classes;
+EOF
+
+	mysql <xxqq >xxqqout
+	rm -f xxqq
+	HASCOCODE=$(grep CoCode xxqqout | wc -l)
+	rm -f xxqqout
+	if [ ${HASCOCODE} -ne 1 ]; then
+cat >xxqq <<EOF
+use accord;
+ALTER TABLE classes ADD CoCode MEDIUMINT NOT NULL DEFAULT 0 AFTER ClassCode;
+EOF		
+		mysql <xxqq >xxqqout
+	fi
+}
 
 ##############################################################
 #   MAIN ROUTINE
@@ -146,3 +171,6 @@ elif [ ${FULL} -eq 1 ]; then
 	echo "Restore data and pictures..."
 	restoreFull
 fi
+
+# this will update the schema only if necessary...
+updateSchema
