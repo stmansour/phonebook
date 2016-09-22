@@ -125,6 +125,7 @@ use accord;
 ALTER TABLE classes ADD CoCode MEDIUMINT NOT NULL DEFAULT 0 AFTER ClassCode;
 EOF
 		mysql ${MYSQLOPTS} <xxqq >xxqqout
+		./roleinit >roleinit.log
 	fi
 }
 

@@ -742,49 +742,49 @@ func makeDefaultRoles(db *sql.DB) {
 	makeNewRole(db, &r)
 }
 
-func addRoleToPeople(db *sql.DB) {
+// func addRoleToPeople(db *sql.DB) {
 
-	// alter, err := db.Prepare("ALTER TABLE people drop column RID")
-	// _, err = alter.Exec()
-	// if err != nil {
-	// 	fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
-	// }
+// 	// alter, err := db.Prepare("ALTER TABLE people drop column RID")
+// 	// _, err = alter.Exec()
+// 	// if err != nil {
+// 	// 	fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
+// 	// }
 
-	// alter, err = db.Prepare("ALTER TABLE people add column RID MEDIUMINT")
-	// _, err = alter.Exec()
-	// if err != nil {
-	// 	fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
-	// }
+// 	// alter, err = db.Prepare("ALTER TABLE people add column RID MEDIUMINT")
+// 	// _, err = alter.Exec()
+// 	// if err != nil {
+// 	// 	fmt.Printf("Note: could not add column 'RID'. It may already exist.\n")
+// 	// }
 
-	update, err := db.Prepare("Update people set RID=4") // everyone starts with ReadOnly
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-	update, err = db.Prepare("Update people set RID=1 where UID=211") // Steve gets Admin
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-	update, err = db.Prepare("Update people set RID=1 where UID=198") // Joe gets Admin
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-	update, err = db.Prepare("Update people set RID=6 where UID=202") // Stacey gets Office Administrator
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-	update, err = db.Prepare("Update people set RID=7 where UID=200") // Darla gets Finance
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-	update, err = db.Prepare("Update people set RID=5 where UID=3") //  vagers gets Tester
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-	update, err = db.Prepare("Update people set RID=2 where UID=207") //  mwheeler gets HR
-	errcheck(err)
-	_, err = update.Exec()
-	errcheck(err)
-}
+// 	update, err := db.Prepare("Update people set RID=4") // everyone starts with ReadOnly
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// 	update, err = db.Prepare("Update people set RID=1 where UID=211") // Steve gets Admin
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// 	update, err = db.Prepare("Update people set RID=1 where UID=198") // Joe gets Admin
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// 	update, err = db.Prepare("Update people set RID=6 where UID=202") // Stacey gets Office Administrator
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// 	update, err = db.Prepare("Update people set RID=7 where UID=200") // Darla gets Finance
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// 	update, err = db.Prepare("Update people set RID=5 where UID=3") //  vagers gets Tester
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// 	update, err = db.Prepare("Update people set RID=2 where UID=207") //  mwheeler gets HR
+// 	errcheck(err)
+// 	_, err = update.Exec()
+// 	errcheck(err)
+// }
 
 func readFieldPerms(db *sql.DB, r *Role) {
 	rows, err := db.Query("select Elem,Field,Perm,Descr from fieldperms where RID=?", r.RID)

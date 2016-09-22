@@ -56,7 +56,11 @@
 					{{if hasPERMMODaccess .X.Token 3 "CoCode"}}{{else}}disabled="disabled"{{end}}>
 					<option value="0" {{if eq 0 $comp}}selected{{end}}>Not Set</option>
 					{{range .CompanyList}}
-				<option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.LegalName}}</option>{{end}}</select>
+					{{if gt .Active 0}}
+					<option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.LegalName}}</option>
+					{{end}}
+					{{end}}
+				</select>
 <!-- 			<input type="number" min="0" max="9999" name="CoCode" value="{{.A.CoCode}}" size="7" maxlength="3" 
 				{{if hasPERMMODaccess .X.Token 3 "CoCode"}}{{else}}disabled="disabled"{{end}}>
  -->				
