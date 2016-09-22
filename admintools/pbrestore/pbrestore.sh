@@ -115,7 +115,7 @@ use accord;
 describe classes;
 EOF
 
-	mysql <xxqq >xxqqout
+	mysql ${MYSQLOPTS} <xxqq >xxqqout
 	rm -f xxqq
 	HASCOCODE=$(grep CoCode xxqqout | wc -l)
 	rm -f xxqqout
@@ -123,8 +123,8 @@ EOF
 cat >xxqq <<EOF
 use accord;
 ALTER TABLE classes ADD CoCode MEDIUMINT NOT NULL DEFAULT 0 AFTER ClassCode;
-EOF		
-		mysql <xxqq >xxqqout
+EOF
+		mysql ${MYSQLOPTS} <xxqq >xxqqout
 	fi
 }
 
