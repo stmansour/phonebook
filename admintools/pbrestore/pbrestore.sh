@@ -172,5 +172,7 @@ elif [ ${FULL} -eq 1 ]; then
 	restoreFull
 fi
 
+#------------------------------------------------------
 # this will update the schema only if necessary...
+#------------------------------------------------------
 updateSchema

@@ -27,7 +27,7 @@ func (c *company) filterSecurityRead(sess *session, permRequired int) {
 	filterSecurityRead(c, ELEMCOMPANY, sess, permRequired, 0)
 }
 
-// Accord's key for using google maps
+// MapKey is Accord's key for using google maps
 var MapKey = string("AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4")
 
 func mapURL(addr, city, state, zip, country string) string {
