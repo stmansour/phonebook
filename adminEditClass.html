@@ -57,7 +57,7 @@
 					<option value="0" {{if eq 0 $comp}}selected{{end}}>Not Set</option>
 					{{range .CompanyList}}
 					{{if gt .Active 0}}
-					<option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.LegalName}}</option>
+					<option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.Designation}} - {{.LegalName}}</option>
 					{{end}}
 					{{end}}
 				</select>
