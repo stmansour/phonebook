@@ -16,7 +16,7 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess = ui.X
-	breadcrumbReset(sess, "Search Classes", "/searchcl/")
+	breadcrumbReset(sess, "Search Business Units", "/searchcl/")
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.SearchClasses++         // initialize our data

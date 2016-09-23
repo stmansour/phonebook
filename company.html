@@ -66,7 +66,7 @@ function gomap() {
 <tr><td width="15px"></td><td class="Attrib" align="right">ACTIVE</td><td>{{if gt .C.Active 0}}Yes{{else}}No{{end}}</a></td><td width="15px"></td></tr>
 <tr><td width="15px"></td><td class="Attrib" align="right">EMPLOYS PEOPLE</td><td>{{if gt .C.EmploysPersonnel 0}}Yes{{else}}No{{end}}</a></td><td width="15px"></td></tr>
 <tr><td width="15px"></td><td class="Attrib" align="right">BUSINESS UNITS</td>
-    <td>{{range .C.C}}<a href="/class/{{.ClassCode}}">{{.Designation}}</a>{{end}}</td><td width="15px"></td>
+    <td>{{range .C.C}}<a href="/class/{{.ClassCode}}">{{.Designation}}</a>&nbsp;&nbsp;{{end}}</td><td width="15px"></td>
 </tr>
 <tr><td width="15px"></td><td colspan="2"><p></p><hr><p></p></td><td width="15px"></td></tr>
 
