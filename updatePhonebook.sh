@@ -87,9 +87,8 @@ echo -n "Shutting down phonebook server."; $(./activate.sh stop) >/dev/null 2>&1
 echo -n "."
 echo -n "."; sleep 6
 echo -n "."; cd ..
-echo -n "Retrieving latest phonebook..."
-/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/phonebook.tar.gz
-# gunzip tgo.tar.gz;tar xf tgo.tar
+echo -n "Retrieving latest production phonebook..."
+/usr/local/accord/bin/getfile.sh accord/phonebook/1.0/phonebook.tar.gz
 echo -n "."; gunzip -f phonebook.tar.gz
 echo -n "."; tar xf phonebook.tar
 echo -n "."; chown -R ec2-user:ec2-user phonebook
