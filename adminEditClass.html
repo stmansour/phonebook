@@ -36,7 +36,7 @@
 
 
 
-<p class="AppHeading">Admin Edit - {{if eq .A.ClassCode 0}}New Class{{else}}{{.A.Designation}} ({{.A.ClassCode}}){{end}}</p>
+<p class="AppHeading">Admin Edit - {{if eq .A.ClassCode 0}}New Business Unit{{else}}{{.A.Designation}} ({{.A.ClassCode}}){{end}}</p>
 
 <form action="/saveAdminEditClass/{{.A.ClassCode}}" method="POST">
 	<table>

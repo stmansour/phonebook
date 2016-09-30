@@ -11,6 +11,8 @@ func adminAddClassHandler(w http.ResponseWriter, r *http.Request) {
 	var sess *session
 	var ui uiSupport
 	sess = nil
+
+	loadCompanies()
 	if 0 < initHandlerSession(sess, &ui, w, r) {
 		return
 	}
@@ -22,29 +24,17 @@ func adminAddClassHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	breadcrumbAdd(sess, "Add Class", "/adminAddClass/")
+	breadcrumbAdd(sess, "Add Business Unit", "/adminAddClass/")
 
 	var c class
 	c.ClassCode = 0
 	c.Designation = ""
 	c.Description = ""
 
-	// funcMap := template.FuncMap{
-	// 	"compToString":      compensationTypeToString,
-	// 	"acceptIntToString": acceptIntToString,
-	// 	"dateToString":      dateToString,
-	// 	"dateYear":          dateYear,
-	// 	"monthStringToInt":  monthStringToInt,
-	// 	"add":               add,
-	// 	"sub":               sub,
-	// 	"rmd":               rmd,
-	// 	"mul":               mul,
-	// 	"div":               div,
-	// }
-
 	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 
 	ui.A = &c
+	ui.CompanyList = PhonebookUI.CompanyList
 	err := t.Execute(w, &ui)
 	if nil != err {
 		errmsg := fmt.Sprintf("adminAddClassHandler: err = %v\n", err)
