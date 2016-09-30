@@ -1,5 +1,5 @@
 {
-    "EnvName": "Phonebook Sandbox",
+    "EnvName": "Phonebook Production",
     "Instances": [
 	{
 	    "InstName": "PhonebookProductionNode",
@@ -19,7 +19,7 @@
 	    	{
 	    		"UID": "pb01",
 	    		"Name": "phonebook",
-	    		"Repo": "jenkins-snapshot/phonebook/latest",
+	    		"Repo": "accord/phonebook/1.0",
 	    		"UPort": 8250,
 	    		"IsTest": false,
 	    		"ActivateOpts": "-b",
