@@ -550,6 +550,7 @@ func Dispatcher() {
 func loadCompanies() {
 	PhonebookUI.CoCodeToName = make(map[int]string)
 	PhonebookUI.NameToCoCode = make(map[string]int)
+	PhonebookUI.CompanyList = PhonebookUI.CompanyList[:0] // empty it first
 
 	rows, err := Phonebook.prepstmt.GetAllCompanies.Query()
 	errcheck(err)

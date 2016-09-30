@@ -105,7 +105,6 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 			errcheck(rows.Err())
 			CoCode = nCoCode
 			c.CoCode = CoCode
-			loadCompanies() // This is a new company, we've saved it, now we need to reload our company list...
 		} else {
 			_, err = Phonebook.prepstmt.updateCompany.Exec(c.LegalName, c.CommonName, c.Designation, c.Email, c.Phone,
 				c.Fax, c.EmploysPersonnel, c.Active, c.Address, c.Address2, c.City, c.State,
@@ -119,5 +118,6 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
+	loadCompanies() // It may be a new company, or its active/inactive status may have changed.
 	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
 }
