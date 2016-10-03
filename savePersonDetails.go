@@ -121,7 +121,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//=================================================================
-	// SECURITY
+	//  SECURITY
 	//=================================================================
 	if !sess.elemPermsAny(ELEMPERSON, PERMOWNERMOD) {
 		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
@@ -157,7 +157,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//=================================================================
-		// handle image
+		//  handle image
 		//=================================================================
 		file, header, err := r.FormFile("picturefile")
 		// fmt.Printf("file: %v, header: %v, err: %v\n", file, header, err)
@@ -173,7 +173,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//=================================================================
-		// Do the update
+		//  Do the update
 		//=================================================================
 		_, err = Phonebook.prepstmt.updateMyDetails.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
 			d.EmergencyContactName, d.EmergencyContactPhone,

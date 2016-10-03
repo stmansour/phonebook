@@ -66,7 +66,7 @@ restoreFull() {
 	
 	echo "DROP DATABASE IF EXISTS ${DATABASE}; CREATE DATABASE ${DATABASE}; USE ${DATABASE};" > restore.sql
 	echo "source ${DATABASE}db.sql" >> restore.sql
-	echo "GRANT ALL PRIVILEGES ON accord TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
+	echo "GRANT ALL PRIVILEGES ON ${DATABASE} TO 'ec2-user'@'localhost' WITH GRANT OPTION;" >> restore.sql
 	mysql ${MYSQLOPTS} < restore.sql
 	echo "Done."
 
@@ -129,6 +129,22 @@ EOF
 	fi
 }
 
+#####################################################################################
+#  UPDATE COCODE
+#  For the first month, the links will not be in place between classes and companies
+#  In order for the sample data to work correctly, this is being introduced as a
+#  TEMPORARY hack to establish some important links. This function should be 
+#  removed on or about November 1, 2016
+#####################################################################################
+updateCoCode() {
+cat >xxqq1 <<EOF
+use accord;
+update classes set CoCode=24 where ClassCode=10;
+update classes set CoCode=24 where ClassCode=12;
+EOF
+		mysql ${MYSQLOPTS} <xxqq1
+}
+
 ##############################################################
 #   MAIN ROUTINE
 ##############################################################
@@ -177,3 +193,6 @@ fi
 # this will update the schema only if necessary...
 #------------------------------------------------------
 updateSchema
+
+# Remove this line after November 1, 2016
+updateCoCode
