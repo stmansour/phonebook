@@ -146,7 +146,7 @@ var stillNeedHelp = string(`<a href="#" onclick="return alert('For assistance wi
 // Note that there is no session when this handler is called. The user
 // cannot get logged in
 func resetpwHandler(w http.ResponseWriter, r *http.Request) {
-	var firstname, preferredname, email, passhash string
+	var firstname, preferredname, emailAddr, passhash string
 	var uid, RID int
 	var err error
 
@@ -162,7 +162,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	//-------------------------------------
 	// validate that myusername exists
 	//-------------------------------------
-	err = Phonebook.prepstmt.loginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
+	err = Phonebook.prepstmt.loginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &emailAddr, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
 		errmsg := fmt.Sprintf("Username %s was not found\n", myusername) + stillNeedHelp
@@ -173,7 +173,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 		showResetPwPage(w, r, errmsg)
 		return
 	}
-	if email == "" {
+	if emailAddr == "" {
 		errmsg := fmt.Sprintf("Error: No email address for user: %s", myusername) + stillNeedHelp
 		showResetPwPage(w, r, errmsg)
 		return
@@ -184,9 +184,9 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	//-------------------------------------
 	errmsg := ""
 	domain := ""
-	k := strings.LastIndex(email, "@")
+	k := strings.LastIndex(emailAddr, "@")
 	if k > 0 {
-		domain = email[k+1:]
+		domain = emailAddr[k+1:]
 	}
 	found := false
 	for i := 0; i < len(supportedDomains); i++ {
@@ -218,13 +218,13 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	//------------------------------------------------------------------------------
 	m := gomail.NewMessage()
 	m.SetHeader("From", "sman@accordinterests.com")
-	m.SetHeader("To", "sman@stevemansour.com")
+	m.SetHeader("To", emailAddr)
 	msg := fmt.Sprintf("Hello %s,<br><br>Your password has been set to:  %s<br><br>", myusername, password)
 	msg += `Please log into <a href="https://directory.airoller.com/">https://directory.airoller.com/</a> to log in.`
 	m.SetHeader("Subject", "Your password has been updated")
 	m.SetBody("text/html", msg)
 	if err := lib.SMTPDialAndSend(m); err != nil {
-		errmsg += fmt.Sprintf("Error sending email = %s", err.Error())
+		errmsg += fmt.Sprintf("Error sending emailAddr = %s", err.Error())
 	}
 
 	//-------------------------------------
