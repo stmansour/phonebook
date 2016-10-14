@@ -218,6 +218,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	//------------------------------------------------------------------------------
 	m := gomail.NewMessage()
 	m.SetHeader("From", "sman@accordinterests.com")
+	ulog("To address is set to: \"%s\"\n", emailAddr)
 	m.SetHeader("To", emailAddr)
 	msg := fmt.Sprintf("Hello %s,<br><br>Your password has been set to:  %s<br><br>", myusername, password)
 	msg += `Please log into <a href="https://directory.airoller.com/">https://directory.airoller.com/</a> to log in.`

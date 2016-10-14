@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -15,9 +16,9 @@ import (
 	"runtime/debug"
 	"strings"
 	"time"
-)
 
-import _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 //--------------------------------------------------------------------
 //  FINANCE
@@ -749,6 +750,8 @@ func readCommandLineArgs() {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano()) // We need this for generating random passwords, probably other random things too.
+
 	//=============================
 	//  Hardcoded defaults...
 	//=============================
