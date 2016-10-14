@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +14,6 @@ import (
 	"phonebook/lib"
 	"runtime/debug"
 	"strings"
-	"text/template"
 	"time"
 )
 
@@ -310,6 +310,7 @@ type uiSupport struct {
 	K                *UsageCounters
 	Ki               *UsageCounters
 	N                []session
+	ErrMsg           template.HTML // if the caller wants to convey an error message
 }
 
 // PhonebookUI is the instance of uiSupport used by this app
@@ -534,6 +535,7 @@ func initUIData(u *uiSupport) {
 		u.Roles[i].Name = Phonebook.Roles[i].Name
 		u.Roles[i].RID = Phonebook.Roles[i].RID
 	}
+	u.ErrMsg = ""
 }
 
 // Dispatcher controls access to shared resources.
@@ -698,6 +700,7 @@ func initHTTP() {
 	http.HandleFunc("/inactivatePerson/", inactivatePersonHandler)
 	http.HandleFunc("/logoff/", logoffHandler)
 	http.HandleFunc("/pop/", popHandler)
+	http.HandleFunc("/resetpw/", resetpwHandler)
 	http.HandleFunc("/restart/", restartHandler)
 	http.HandleFunc("/saveAdminEdit/", saveAdminEditHandler)
 	http.HandleFunc("/saveAdminEditClass/", saveAdminEditClassHandler)

@@ -47,6 +47,7 @@ form:after {
 	clear: both;
 	visibility: hidden;
 }
+
 .ErrMsg {
 	color: red;
 }
@@ -176,7 +177,7 @@ form:after {
 	margin: 20px 0 35px 15px;
 	position: relative;
 	text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-	width: 120px;
+	width: 180px;
 }
 #content form input[type="submit"]:hover {
 	background: rgb(254,193,81);
@@ -219,3 +220,4 @@ form:after {
 	border-top: 1px solid #CFD5D9;
 	padding: 15px 0;
 }
+

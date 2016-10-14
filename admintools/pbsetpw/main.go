@@ -3,7 +3,6 @@
 package main
 
 import (
-	"crypto/sha512"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -36,16 +35,6 @@ func errcheck(err error) {
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,?()#@!~|")
-
-func randStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
 
 func getUserName() {
@@ -127,27 +116,13 @@ func main() {
 	}
 
 	if len(App.password) == 0 {
-		App.password = randStringRunes(8)
+		App.password = lib.RandPasswordStringRunes(8)
 	}
 
-	sha := sha512.Sum512([]byte(App.password))
-	passhash := fmt.Sprintf("%x", sha)
-	update, err := App.db.Prepare("update people set passhash=? where username=?")
+	err = lib.UpdateUserPassword(App.user, App.password, App.db)
 	if nil != err {
 		fmt.Printf("error = %v\n", err)
 		os.Exit(1)
 	}
-	// t, err := update.Exec(passhash, App.user)
-	_, err = update.Exec(passhash, App.user)
-	if nil != err {
-		fmt.Printf("error = %v\n", err)
-	} else {
-		// n, _ := t.RowsAffected()
-		// if 0 == n {
-		// 	fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.user)
-		// 	os.Exit(1)
-		// }
-		fmt.Printf("%s\nusername: %s\npassword: %s\nOK\n", getRealName(), App.user, App.password)
-	}
-
+	fmt.Printf("%s\nusername: %s\npassword: %s\nOK\n", getRealName(), App.user, App.password)
 }
