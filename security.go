@@ -155,7 +155,7 @@ func (d *person) filterSecurityRead(sess *session, permRequired int) {
 
 //=========================================================================================
 // SYNOPSIS:
-//      filterSecurityMerge merges the data in dNew with that of d based on the permissions
+//      filterSecurityMerge merges the data in with that of d based on the permissions
 //      in the session. The fields in d will be updated to the values
 //		in dNew provided the field permission allows it. The net result is that the values
 //		in d are merged with values of dNew where it is allowed. The resulting d is

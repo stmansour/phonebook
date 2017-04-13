@@ -22,6 +22,8 @@ test:
 	cd test;make test
 	@echo "*** TESTING COMPLETE, ALL TESTS PASSED ***"
 
+all: clean phonebook test
+
 dbmake:
 	#cd ../dir/obfuscate;./obfuscate
 	mysqldump accord > testdb.sql
