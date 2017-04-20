@@ -4,13 +4,14 @@ package main
 
 import (
 	"database/sql"
+	"extres"
 	"flag"
 	"fmt"
 	"os"
 	"phonebook/lib"
-)
 
-import _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 // Role defines a collection of FieldPerms that can be assigned to a person
 type Role struct {
@@ -63,7 +64,7 @@ func main() {
 	// s := "<awsdbusername>:<password>@tcp(<rdsinstancename>:3306)/accord"
 	var err error
 	lib.ReadConfig()
-	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
+	s := extres.GetSQLOpenString(App.DBName, &lib.AppConfig)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)

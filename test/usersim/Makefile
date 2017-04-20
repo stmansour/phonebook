@@ -1,4 +1,4 @@
-usersim: *.go
+usersim: *.go config.json
 	go vet
 	golint
 	go build
@@ -7,7 +7,11 @@ test: usersim
 	./functest1.sh
 
 clean:
-	rm -f usersim
+	rm -f usersim conf*.json
+
+config.json:
+	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json
+	@cp confdev.json config.json
 
 packageqa:
 	mkdir -p ../../tmp/phonebookqa/test/usersim

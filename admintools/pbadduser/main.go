@@ -6,14 +6,15 @@ package main
 import (
 	"crypto/sha512"
 	"database/sql"
+	"extres"
 	"flag"
 	"fmt"
 	"os"
 	"phonebook/lib"
 	"strings"
-)
 
-import _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 // Role defines a collection of FieldPerms that can be assigned to a person
 type Role struct {
@@ -110,7 +111,7 @@ func main() {
 	var err error
 	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	lib.ReadConfig()
-	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
+	s := extres.GetSQLOpenString(App.DBName, &lib.AppConfig)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open: Error = %v\n", err)

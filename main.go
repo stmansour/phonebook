@@ -4,6 +4,7 @@ package main
 
 import (
 	"database/sql"
+	"extres"
 	"flag"
 	"fmt"
 	"html/template"
@@ -785,7 +786,7 @@ func main() {
 	//==============================================
 	// dbopenparms := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", Phonebook.DBUser, Phonebook.DBName)
 	lib.ReadConfig()
-	dbopenparms := lib.GetSQLOpenString(Phonebook.DBUser, Phonebook.DBName)
+	dbopenparms := extres.GetSQLOpenString(Phonebook.DBName, &lib.AppConfig)
 	db, err := sql.Open("mysql", dbopenparms)
 	lib.Errcheck(err)
 	defer db.Close()

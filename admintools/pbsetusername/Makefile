@@ -1,10 +1,14 @@
-pbsetusername: *.go
+pbsetusername: *.go config.json
 	go vet
 	golint
 	go build
 
 clean:
-	rm -f pbsetusername
+	rm -f pbsetusername conf*.json
+
+config.json:
+	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json
+	@cp confdev.json config.json
 
 install: pbsetusername
 	cp pbsetusername /usr/local/accord/bin

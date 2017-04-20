@@ -2,13 +2,15 @@ package main
 
 import (
 	"database/sql"
+	"extres"
 	"flag"
 	"fmt"
 	"os"
 	"phonebook/lib"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
-import _ "github.com/go-sql-driver/mysql"
 
 type company struct {
 	CoCode           int
@@ -835,7 +837,7 @@ func main() {
 	var err error
 	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	lib.ReadConfig()
-	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
+	s := extres.GetSQLOpenString(App.DBName, &lib.AppConfig)
 	// fmt.Printf("DBOPEN:  %s\n", s)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {

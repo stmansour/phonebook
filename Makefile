@@ -1,4 +1,4 @@
-phonebook: *.go
+phonebook: *.go ver.go config.json
 	cd lib;make
 	cd admintools;make
 	cd dbtools;make
@@ -10,13 +10,19 @@ phonebook: *.go
 
 .PHONY:  test
 
+ver.go:
+	./mkver.sh
 clean:
 	cd lib;make clean
 	cd dbtools;make clean
 	cd test;make clean
 	cd admintools;make clean
-	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* *.out *.log x.sh* ver.go
+	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* *.out *.log x.sh* ver.go conf*.json
 	go clean
+
+config.json:
+	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json
+	@cp confdev.json config.json
 
 test:
 	cd test;make test

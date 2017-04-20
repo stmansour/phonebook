@@ -1,10 +1,14 @@
-pbsetpw: *.go
+pbsetpw: *.go config.json
 	go vet
 	golint
 	go build
 
 clean:
-	rm -f pbsetpw
+	rm -f pbsetpw conf*.json
+
+config.json:
+	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json
+	@cp confdev.json config.json
 
 install: pbsetpw
 	cp pbsetpw /usr/local/accord/bin

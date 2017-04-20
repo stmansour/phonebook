@@ -1,10 +1,14 @@
-pbupdateallpw: *.go
+pbupdateallpw: *.go config.json
 	go vet
 	golint
 	go build
 
 clean:
-	rm -f pbupdateallpw
+	rm -f pbupdateallpw conf*.json
+
+config.json:
+	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json
+	@cp confdev.json config.json
 
 install: pbupdateallpw
 	cp pbupdateallpw /usr/local/accord/bin

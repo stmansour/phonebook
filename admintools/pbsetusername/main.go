@@ -4,15 +4,16 @@ package main
 
 import (
 	"database/sql"
+	"extres"
 	"flag"
 	"fmt"
 	"os"
 	"phonebook/lib"
 	"strconv"
 	"strings"
-)
 
-import _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 // App is the global data structure for this app
 var App struct {
@@ -62,7 +63,7 @@ func main() {
 	var err error
 	// s := fmt.Sprintf("ec2-user:@/%s?charset=utf8&parseTime=True", App.DBName)
 	lib.ReadConfig()
-	s := lib.GetSQLOpenString(App.DBUser, App.DBName)
+	s := extres.GetSQLOpenString(App.DBName, &lib.AppConfig)
 	App.db, err = sql.Open("mysql", s)
 	if nil != err {
 		fmt.Printf("sql.Open for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
