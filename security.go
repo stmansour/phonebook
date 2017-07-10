@@ -73,7 +73,7 @@ func readAccessRoles() {
 // RETURNS:
 //      ret val = the permissions found logically ANDed with permRequired.  This can be
 //				  useful for determining whether or not to check the OWNER uid to that of
-//				  the data being accessed. For example, if the data is accessable because of
+//				  the data being accessed. For example, if the data is accessible because of
 //				  PERMOWNERMOD, the caller can compare the return value to PERMOWNERMOD. If
 //				  equal, it needs to further check that the session uid matches the uid of the
 //				  data being edited before it allows the edit to proceed.
