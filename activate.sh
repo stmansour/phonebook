@@ -107,6 +107,17 @@ ZZ123EOF
 	mv mycnf ~ec2-user/.my.cnf
 	chmod 600 ~ec2-user/.my.cnf
 	chown ec2-user ~ec2-user/.my.cnf
+	#-----------------------------------------------------------------
+	#  If no config.json exists, pull the development environment
+	#  version and use it.  The Env values mean the following:
+	#    0 = development environment
+	#    1 = production environment
+	#    2 = QA environment
+	#-----------------------------------------------------------------
+	if [ ! -f ./config.json ]; then
+		${GETFILE} accord/db/confdev.json
+		mv confdev.json config.json
+	fi
 }
 
 start() {
