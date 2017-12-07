@@ -1,17 +1,14 @@
-phonebook: *.go ver.go config.json
+phonebook: *.go config.json
 	cd lib;make
 	cd admintools;make
 	cd dbtools;make
 	cd test;make
 	go vet
 	golint
-	./mkver.sh
 	go build
 
 .PHONY:  test
 
-ver.go:
-	./mkver.sh
 clean:
 	cd lib;make clean
 	cd dbtools;make clean
@@ -43,10 +40,10 @@ package: phonebook
 	mkdir -p tmp/phonebook
 	mkdir -p tmp/phonebook/man/man1/
 	cp *.1 tmp/phonebook/man/man1/
+	cp config.json tmp/phonebook/
 	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	cd admintools;make package
 	cd dbtools;make package
-	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
 
 packageqa: phonebook
 	#cd admintools;make
@@ -65,7 +62,10 @@ install: package
 
 
 publish: package
+	if [ -f tmp/phonebook/config.json ]; then mv tmp/phonebook/config.json tmp/config.json; fi
+	cd tmp;tar cvf phonebook.tar phonebook; gzip phonebook.tar
 	cd tmp;/usr/local/accord/bin/deployfile.sh phonebook.tar.gz jenkins-snapshot/phonebook/latest
+	if [ -f tmp/config.json ]; then mv tmp/config.json tmp/phonebook/config.json; fi
 
 publishqa: packageqa
 	cd tmp;/usr/local/accord/bin/deployfile.sh phonebookqa.tar.gz jenkins-snapshot/phonebook/latest

@@ -5,6 +5,7 @@ test:
 	cd usersim;make test
 
 clean:
+	rm -f testreport.txt
 	cd usersim;make clean
 
 packageqa:

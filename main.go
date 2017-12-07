@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"phonebook/lib"
+	"phonebook/ws"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -617,8 +618,8 @@ func loadMaps() {
 		"datetimeToString":     datetimeToString,
 		"phoneURL":             phoneURL,
 		"mapURL":               mapURL,
-		"getVersionNo":         getVersionNo,
-		"getBuildTime":         getBuildTime,
+		"GetVersionNo":         ws.GetVersionNo,
+		"GetBuildTime":         ws.GetBuildTime,
 	}
 	loadCompanies()
 	loadClasses()
@@ -718,6 +719,8 @@ func initHTTP() {
 	http.HandleFunc("/status/", statusHandler)
 	http.HandleFunc("/stats/", statsHandler)
 	http.HandleFunc("/weblogin/", webloginHandler)
+	http.HandleFunc("/v1/", ws.V1ServiceHandler)
+
 }
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {
@@ -737,7 +740,7 @@ func readCommandLineArgs() {
 	flag.Parse()
 
 	if *vPtr {
-		fmt.Printf("Version: %s\n", getVersionNo())
+		fmt.Printf("Version: %s\n", ws.GetVersionNo())
 		os.Exit(0)
 	}
 
@@ -822,6 +825,7 @@ func main() {
 	go SessionCleanup()
 
 	initHTTP()
+	ws.InitServices(Phonebook.db)
 	sessionInit()
 
 	ulog("Phonebook initiating HTTP service on port %d\n", Phonebook.Port)
