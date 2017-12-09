@@ -16,6 +16,13 @@ type AuthenticateData struct {
 	Pass string `json:"pass"`
 }
 
+// AuthSuccessResponse will be the response structure used when
+// authentication is successful
+type AuthSuccessResponse struct {
+	Status string `json:"status"`
+	UID    int64  `json:"uid"`
+}
+
 // SvcAuthenticate generates a password hash from the supplied POST info and
 //     along with the user name compares it to what is in the database. If
 //     there is a match, then the response is {status: success}.  If it fails
@@ -49,13 +56,18 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	lib.Console("User = %s\n", foo.User)
 	lib.Console("Pass = %s\n", foo.Pass)
 
-	ok, err := DoAuthentication(foo.User, foo.Pass)
+	UID, err := DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
 		SvcErrorReturn(w, err, funcname)
 		return
 	}
-	if ok {
-		SvcSuccessReturn(w)
+	if UID > 0 {
+		g := AuthSuccessResponse{
+			Status: "success",
+			UID:    UID,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		SvcWriteResponse(&g, w)
 	} else {
 		err := fmt.Errorf("login failed")
 		SvcErrorReturn(w, err, funcname)
@@ -71,23 +83,24 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 //  Pass = user's password
 //
 // RETURNS:
-//  bool =  true if the login was successful, false otherwise
-func DoAuthentication(User, Pass string) (bool, error) {
+//  int64 =  UID if the login was successful, 0 otherwise
+func DoAuthentication(User, Pass string) (int64, error) {
 	myusername := strings.ToLower(User)
 	password := []byte(Pass)
 	sha := sha512.Sum512(password)
 	mypasshash := fmt.Sprintf("%x", sha)
 
 	// lookup the user
-	q := fmt.Sprintf("SELECT passhash FROM People WHERE UserName=%q", myusername)
+	q := fmt.Sprintf("SELECT UID,passhash FROM people WHERE UserName=%q", myusername)
 	var passhash string
-	err := SvcCtx.db.QueryRow(q).Scan(&passhash)
+	var UID int64
+	err := SvcCtx.db.QueryRow(q).Scan(&UID, &passhash)
 	if err != nil {
-		return false, err
+		return int64(0), err
 	}
 	if passhash != mypasshash {
 		err := fmt.Errorf("login failed")
-		return false, err
+		return int64(0), err
 	}
-	return true, nil // login is successful
+	return UID, nil // login is successful
 }
