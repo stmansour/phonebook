@@ -19,8 +19,10 @@ type AuthenticateData struct {
 // AuthSuccessResponse will be the response structure used when
 // authentication is successful
 type AuthSuccessResponse struct {
-	Status string `json:"status"`
-	UID    int64  `json:"uid"`
+	Status   string `json:"status"`
+	UID      int64  `json:"uid"`
+	Name     string `json:"Name"`
+	ImageURL string `json:"ImageURL"`
 }
 
 // SvcAuthenticate generates a password hash from the supplied POST info and
@@ -56,15 +58,17 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	lib.Console("User = %s\n", foo.User)
 	lib.Console("Pass = %s\n", foo.Pass)
 
-	UID, err := DoAuthentication(foo.User, foo.Pass)
+	UID, Name, err := DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
 		SvcErrorReturn(w, err, funcname)
 		return
 	}
 	if UID > 0 {
 		g := AuthSuccessResponse{
-			Status: "success",
-			UID:    UID,
+			Status:   "success",
+			UID:      UID,
+			Name:     Name,
+			ImageURL: "",
 		}
 		w.Header().Set("Content-Type", "application/json")
 		SvcWriteResponse(&g, w)
@@ -74,9 +78,9 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	}
 }
 
-// DoAuthentication builds a password hash out of the supplied user and password
-// information. It then looks up the user in the database. If the password hashes
-// match, then the login is successful
+// DoAuthentication builds a password hash out of the supplied user and
+// password information. It then looks up the user in the database. If the
+// password hashes match, then the login is successful
 //
 // INPUTS:
 //  User = username
@@ -84,23 +88,30 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 //
 // RETURNS:
 //  int64 =  UID if the login was successful, 0 otherwise
-func DoAuthentication(User, Pass string) (int64, error) {
+//  name  = user's first name (or preferred name if it exists)
+//  error = any error encountered
+//-----------------------------------------------------------------------------
+func DoAuthentication(User, Pass string) (int64, string, error) {
 	myusername := strings.ToLower(User)
 	password := []byte(Pass)
 	sha := sha512.Sum512(password)
 	mypasshash := fmt.Sprintf("%x", sha)
 
 	// lookup the user
-	q := fmt.Sprintf("SELECT UID,passhash FROM people WHERE UserName=%q", myusername)
+	q := fmt.Sprintf("SELECT UID,FirstName,PreferredName,passhash FROM people WHERE UserName=%q", myusername)
 	var passhash string
 	var UID int64
-	err := SvcCtx.db.QueryRow(q).Scan(&UID, &passhash)
+	var first, preferred string
+	err := SvcCtx.db.QueryRow(q).Scan(&UID, &first, &preferred, &passhash)
 	if err != nil {
-		return int64(0), err
+		return int64(0), first, err
 	}
 	if passhash != mypasshash {
 		err := fmt.Errorf("login failed")
-		return int64(0), err
+		return int64(0), first, err
 	}
-	return UID, nil // login is successful
+	if len(preferred) > 0 {
+		first = preferred
+	}
+	return UID, preferred, nil // login is successful
 }
