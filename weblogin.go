@@ -221,7 +221,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	ulog("To address is set to: \"%s\"\n", emailAddr)
 	m.SetHeader("To", emailAddr)
 	msg := fmt.Sprintf("Hello %s,<br><br>Your password has been set to:  %s<br><br>", myusername, password)
-	msg += `Please log into <a href="https://directory.airoller.com/">https://directory.airoller.com/</a> to log in.`
+	msg += `Please log into <a href="https://directory.airoller.com/">https://directory.airoller.com/</a>`
 	m.SetHeader("Subject", "Your password has been updated")
 	m.SetBody("text/html", msg)
 	if err := lib.SMTPDialAndSend(m); err != nil {

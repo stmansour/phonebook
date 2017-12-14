@@ -36,7 +36,7 @@ func RandPasswordStringRunes(n int) string {
 func UpdateUserPassword(user, password string, db *sql.DB) error {
 	sha := sha512.Sum512([]byte(password))
 	passhash := fmt.Sprintf("%x", sha)
-	update, err := db.Prepare("update people set passhash=? where username=?")
+	update, err := db.Prepare("UPDATE people SET passhash=? WHERE UserName=?")
 	if nil != err {
 		return err
 	}

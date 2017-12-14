@@ -63,6 +63,7 @@ var Svcs = []ServiceHandler{
 	{"authenticate", SvcAuthenticate},
 	{"discon", SvcDisableConsole},
 	{"encon", SvcEnableConsole},
+	{"resetpw", SvcResetPWHandler},
 	{"version", SvcHandlerVersion},
 }
 
@@ -132,9 +133,9 @@ func V1ServiceHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if !found {
-		fmt.Printf("**** YIPES! **** %s - Handler not found\n", r.RequestURI)
+		lib.Console("**** YIPES! **** %s - Handler not found\n", r.RequestURI)
 		e := fmt.Errorf("Service not recognized: %s", d.Service)
-		fmt.Printf("***ERROR IN URL***  %s", e.Error())
+		lib.Console("***ERROR IN URL***  %s", e.Error())
 		SvcErrorReturn(w, e, funcname)
 		return
 	}
@@ -229,11 +230,11 @@ func SvcSuccessReturn(w http.ResponseWriter) {
 
 // SvcErrorReturn formats an error return to the grid widget and sends it
 func SvcErrorReturn(w http.ResponseWriter, err error, funcname string) {
-	// fmt.Printf("<Function>: %s | <Error>: %s\n", funcname, err.Error())
-	fmt.Printf("%s: %s\n", funcname, err.Error())
+	// lib.Console("<Function>: %s | <Error>: %s\n", funcname, err.Error())
+	lib.Console("%s: %s\n", funcname, err.Error())
 	var e SvcError
 	e.Status = "error"
-	e.Message = fmt.Sprintf("Error: %s\n", err.Error())
+	e.Message = fmt.Sprintf("Error: %s", err.Error())
 	w.Header().Set("Content-Type", "application/json")
 	b, _ := json.Marshal(e)
 	SvcWrite(w, b)
