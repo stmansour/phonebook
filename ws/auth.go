@@ -122,5 +122,5 @@ func DoAuthentication(User, Pass string) (int64, string, error) {
 	if len(preferred) > 0 {
 		first = preferred
 	}
-	return UID, preferred, nil // login is successful
+	return UID, first, nil // login is successful
 }
