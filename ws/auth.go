@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"phonebook/lib"
 	"strings"
 )
@@ -64,11 +65,19 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 	if UID > 0 {
+		m, err := filepath.Glob(fmt.Sprintf("./pictures/%d.*", UID))
+		fname := ""
+		if nil != err {
+			SvcErrorReturn(w, err, funcname)
+		}
+		if len(m) > 0 {
+			fname = m[0]
+		}
 		g := AuthSuccessResponse{
 			Status:   "success",
 			UID:      UID,
 			Name:     Name,
-			ImageURL: "",
+			ImageURL: fname,
 		}
 		w.Header().Set("Content-Type", "application/json")
 		SvcWriteResponse(&g, w)
