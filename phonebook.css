@@ -267,3 +267,51 @@ textarea:disabled,
 select:disabled {
 	background-color:#DDD;
 }
+
+nav {
+    display: block;
+    list-style-type: none;
+    height: 40px;
+    font: 400 14px/40px sans-serif;
+}
+
+nav li {
+    display: block;
+    float: left;
+    position: relative;
+}
+
+nav li a {
+    display: block;
+    color: #aaaaaa;
+    text-decoration: none;
+    padding: 13px 10px;
+    line-height: 14px;
+    background-color: #4a4a4a;
+    -webkit-transition: background-color 0.2s linear;
+}
+
+nav li a:hover {
+    background-color: gray;
+    -webkit-transition: none;
+}
+
+nav nav {
+    visibility: hidden;
+    position: absolute;
+    opacity: 0;
+    -webkit-transition: all 0.25s linear;
+    height: 0;
+    margin-top: -10px;
+}
+
+nav nav li {
+    float: none;
+}
+
+nav li:hover nav {
+    margin-top: 0;
+    visibility: visible;
+    opacity: 1;
+}
+
