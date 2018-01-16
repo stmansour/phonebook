@@ -18,20 +18,21 @@ function submitform()
 		<form action="/weblogin/" method="POST" id="signinform">
 		<input type="hidden" name="pagename" value="signin">
 		<input type="hidden" name="lostpw" id="formlostpw" value="">
-		<img src="/{{index .Images "signinlogo"}}" height="200">
+		<!-- <img src="/{{index .Images "signinlogo"}}" height="200"> -->
+		<img src="/images/airlogo.png" width="350">
 			<p><br><br></p>
 			<center>
 				<table align="center"><tr valign="center">
 					<td><img src="/images/directory-48.png"></td>
 					<td width="10"></td>
-					<td><h1>Sign in to use AIRoller</h1></td>
+					<td><p style="font-size: 18pt;font-weight: bold;color: #777777;">Sign in to use AIRoller</p></td>
 				</tr></table>
 			</center>
 			<div>
-				<input type="text" name="username" placeholder="Username" required="" id="username" maxlength="25" />
+				<input type="text" name="username" placeholder="Username" required="" id="username" maxlength="35" />
 			</div>
 			<div>
-				<input type="password" name="password" placeholder="Password" required="" id="password" maxlength="25" />
+				<input type="password" name="password" placeholder="Password" required="" id="password" maxlength="35" />
 			</div>
 			{{if gt .S.ErrNo 0}}<br><p class="ErrMsg">{{.S.ErrMsg}}</p><br>{{end}}
 			<div>
