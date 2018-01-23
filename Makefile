@@ -21,7 +21,7 @@ config.json:
 	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json
 	@cp confdev.json config.json
 
-test:
+test: package
 	cd test;make test
 	@echo "*** TESTING COMPLETE, ALL TESTS PASSED ***"
 

@@ -13,8 +13,9 @@ import (
 // AuthenticateData is the struct with the username and password
 // used for authentication
 type AuthenticateData struct {
-	User string `json:"user"`
-	Pass string `json:"pass"`
+	User  string `json:"user"`
+	Pass  string `json:"pass"`
+	FLAGS uint64 `json:"flags"`
 }
 
 // AuthSuccessResponse will be the response structure used when

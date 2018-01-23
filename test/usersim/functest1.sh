@@ -73,6 +73,7 @@ if [ ${L} -ne 1 ]; then
 fi
 
 usrsimout=$(${USERSIM})
+echo "${usrsimout}" > usersim.out
 
 echo "Shutting down phonebook service..."
 stopPhonebook

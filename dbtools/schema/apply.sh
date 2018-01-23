@@ -1,5 +1,6 @@
 #!/bin/bash
-DBNAME=accordtest
+# DBNAME=accordtest
+DBNAME=accord
 HOST=localhost
 PORT=8250
 PEOPLEOPT=""

@@ -618,8 +618,8 @@ func loadMaps() {
 		"datetimeToString":     datetimeToString,
 		"phoneURL":             phoneURL,
 		"mapURL":               mapURL,
-		"GetVersionNo":         ws.GetVersionNo,
-		"GetBuildTime":         ws.GetBuildTime,
+		"GetVersionNo":         lib.GetVersionNo,
+		"GetBuildTime":         lib.GetBuildTime,
 	}
 	loadCompanies()
 	loadClasses()
@@ -740,7 +740,7 @@ func readCommandLineArgs() {
 	flag.Parse()
 
 	if *vPtr {
-		fmt.Printf("Version: %s\n", ws.GetVersionNo())
+		fmt.Printf("Version: %s\n", lib.GetVersionNo())
 		os.Exit(0)
 	}
 

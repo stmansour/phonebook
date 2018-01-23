@@ -2,7 +2,7 @@ TOP=..
 BINDIR=${TOP}/tmp/phonebook
 THISDIR="ws"
 
-ws: ver.go *.go
+ws: *.go
 	@touch fail
 	go vet
 	golint
@@ -11,9 +11,6 @@ ws: ver.go *.go
 	go install
 	@rm -f fail
 	@echo "*** ${THISDIR}: completed build ***"
-
-ver.go:
-	./mkver.sh
 
 webdoc:
 	rm -rf doc

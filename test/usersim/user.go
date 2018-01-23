@@ -255,41 +255,53 @@ func testResult(v *personDetail, testname string, success bool, tr *TestResults)
 func usersimDoTest(v *personDetail, tr *TestResults) {
 	// there should be no session in v now
 	if testResult(v, "login", login(v), tr) {
+		fmt.Printf("FAILED LOGIN\n")
 		return
 	}
 	if testResult(v, "detail", viewPersonDetail(v, tr), tr) {
+		fmt.Printf("FAILED detail\n")
 		return
 	}
 	if testResult(v, "adminView", adminViewTest(v, tr), tr) {
+		fmt.Printf("FAILED adminView\n")
 		return
 	}
 	if testResult(v, "adminEdit", adminEditTest(v, tr), tr) {
+		fmt.Printf("FAILED adminEdit\n")
 		return
 	}
 	if testResult(v, "saveAdminEdit", saveAdminEdit(v, tr), tr) {
+		fmt.Printf("FAILED saveAdminEdit\n")
 		return
 	}
 	if testResult(v, "viewCompany", viewCompany(v, tr), tr) {
+		fmt.Printf("FAILED viewCompany\n")
 		return
 	}
 	if testResult(v, "adminEditCompany", adminEditCompany(v, tr), tr) {
+		fmt.Printf("FAILED adminEditCompany\n")
 		return
 	}
 	if testResult(v, "saveAdminEditCo", saveAdminEditCo(v, tr), tr) {
+		fmt.Printf("FAILED saveAdminEditCo\n")
 		return
 	}
 	if testResult(v, "viewClass", viewClass(v, tr), tr) {
+		fmt.Printf("FAILED viewClass\n")
 		return
 	}
 	if testResult(v, "adminEditClass", adminEditClass(v, tr), tr) {
+		fmt.Printf("FAILED adminEditClass\n")
 		return
 	}
 	if testResult(v, "saveAdminEditClass", saveAdminEditClass(v, tr), tr) {
+		fmt.Printf("FAILED saveAdminEditClass\n")
 		return
 	}
 
 	// after logoff, the session in v should be removed
 	if testResult(v, "logoff", logoff(v), tr) {
+		fmt.Printf("FAILED logoff\n")
 		return
 	}
 }

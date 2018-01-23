@@ -279,5 +279,7 @@ func SvcWriteSuccessResponse(w http.ResponseWriter) {
 //  @Response version number
 // wsdoc }
 func SvcHandlerVersion(w http.ResponseWriter, r *http.Request, d *ServiceData) {
-	fmt.Fprintf(w, "%s", GetVersionNo())
+	util.Ulog("Entered SvcHandlerVersion\n")
+	util.Ulog("lib.GetVersionNo() returns %s\n", lib.GetVersionNo())
+	fmt.Fprintf(w, "%s", lib.GetVersionNo())
 }
