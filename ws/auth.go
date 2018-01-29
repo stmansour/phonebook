@@ -82,6 +82,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		SvcWriteResponse(&g, w)
+		lib.Ulog("user %s successfully logged in\n", foo.User)
 	} else {
 		err := fmt.Errorf("login failed")
 		SvcErrorReturn(w, err, funcname)

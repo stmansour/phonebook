@@ -4,6 +4,7 @@ import (
 	"crypto/sha512"
 	"database/sql"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"runtime/debug"
@@ -19,6 +20,12 @@ func Errcheck(err error) {
 		fmt.Printf("Error = %v\n", err)
 		os.Exit(1)
 	}
+}
+
+// Ulog is Phonebooks's standard logger
+func Ulog(format string, a ...interface{}) {
+	p := fmt.Sprintf(format, a...)
+	log.Print(p)
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,?()#@!~|")
