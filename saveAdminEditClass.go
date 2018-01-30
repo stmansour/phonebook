@@ -3,26 +3,28 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"strings"
 )
 
 func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.AdminEditClass++        // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCLASS, PERMMOD) {
-		ulog("Permissions refuse saveAdminEditClass page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMMOD) {
+		ulog("Permissions refuse saveAdminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -62,13 +64,13 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
-		var co class                              // container for current information
-		co.ClassCode = ClassCode                  // initialize
-		getClassInfo(ClassCode, &co)              // get the rest of the info
-		co.filterSecurityMerge(sess, PERMMOD, &c) // merge new info based on permissions
+		var co class                                   // container for current information
+		co.ClassCode = ClassCode                       // initialize
+		getClassInfo(ClassCode, &co)                   // get the rest of the info
+		co.filterSecurityMerge(ssn, authz.PERMMOD, &c) // merge new info based on permissions
 
 		if 0 == ClassCode {
-			_, err = Phonebook.prepstmt.insertClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, sess.UID)
+			_, err = Phonebook.prepstmt.insertClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, ssn.UID)
 			errcheck(err)
 
 			// read this record back to get the ClassCode...
@@ -87,7 +89,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			c.ClassCode = ClassCode
 			loadClasses() // This is a new class, we've saved it, now we need to reload our company list...
 		} else {
-			_, err = Phonebook.prepstmt.updateClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, sess.UID, ClassCode)
+			_, err = Phonebook.prepstmt.updateClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, ssn.UID, ClassCode)
 			if nil != err {
 				errmsg := fmt.Sprintf("saveAdminEditClassHandler: Phonebook.prepstmt.adminUpdatePerson.Exec: err = %v\n", err)
 				ulog(errmsg)
@@ -96,5 +98,5 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
+	http.Redirect(w, r, breadcrumbBack(ssn, 2), http.StatusFound)
 }

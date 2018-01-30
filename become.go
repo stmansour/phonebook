@@ -2,17 +2,18 @@ package main
 
 import (
 	"net/http"
+	"phonebook/sess"
 	"strconv"
 )
 
 func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewPerson++            // initialize our data
@@ -25,14 +26,14 @@ func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
 		uid, _ = strconv.Atoi(uidstr)
 	}
 
-	// fmt.Printf("Current session = %s\n", sess.ToString())
-	var tmp session
+	// fmt.Printf("Current session = %s\n", ssn.ToString())
+	var tmp sess.Session
 	var d personDetail
 	d.Reports = make([]person, 0)
-	d.UID = sess.UIDorig
+	d.UID = ssn.UIDorig
 	adminReadDetails(&d)
 	getRoleInfo(d.RID, &tmp)
-	// fmt.Printf("UIDorig = %d,  role name = %s, RID = %d\n", sess.UIDorig, tmp.Urole.Name, tmp.Urole.RID)
+	// fmt.Printf("UIDorig = %d,  role name = %s, RID = %d\n", ssn.UIDorig, tmp.Urole.Name, tmp.Urole.RID)
 
 	//============================================================
 	// SECURITY
@@ -42,6 +43,6 @@ func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sess.sessionBecome(uid)
+	sessionBecome(ssn, uid)
 	searchHandler(w, r)
 }

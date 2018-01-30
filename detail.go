@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"strings"
 	"text/template"
@@ -78,7 +80,7 @@ func getImageFilename(uid int) string {
 }
 
 func detailpopHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var sess *sess.Session
 	var ui uiSupport
 	sess = nil
 	if 0 < initHandlerSession(sess, &ui, w, r) {
@@ -114,7 +116,7 @@ func getPersonDetail(d *personDetail, uid int) int {
 
 func detailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var sess *sess.Session
 	var ui uiSupport
 	sess = nil
 	if 0 < initHandlerSession(sess, &ui, w, r) {
@@ -146,7 +148,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	//=================================================================
 	// SECURITY
 	//=================================================================
-	if !sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMOWNERVIEW) {
+	if !sess.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMOWNERVIEW) {
 		ulog("ViewPersonDetail: Permission refusal on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -176,7 +178,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.New("detail.html").Funcs(funcMap).ParseFiles("detail.html")
 	ui.D = &d
 
-	d.filterSecurityRead(sess, PERMVIEW)
+	d.filterSecurityRead(sess, authz.PERMVIEW)
 	err := t.Execute(w, &ui)
 	if nil != err {
 		errmsg := fmt.Sprintf("detailHandler: err = %v\n", err)

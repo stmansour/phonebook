@@ -3,16 +3,18 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strings"
 	"text/template"
 )
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
+	ssn = nil
 
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
 
@@ -21,8 +23,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	Counters.SearchPeople++          // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
-	sess = ui.X
-	breadcrumbReset(sess, "Search People", "/search/")
+	ssn = ui.X
+	breadcrumbReset(ssn, "Search People", "/search/")
 	w.Header().Set("Content-Type", "text/html")
 
 	var d searchResults
@@ -100,7 +102,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.OfficeFax, &m.CellPhone, &m.DeptCode))
 		m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 		pm := &m
-		pm.filterSecurityRead(sess, PERMVIEW|PERMMOD)
+		pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
 		d.Matches = append(d.Matches, m)
 	}
 	errcheck(rows.Err())

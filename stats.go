@@ -3,19 +3,20 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/sess"
 	"text/template"
 )
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var mysession *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	mysession = nil
+	if 0 < initHandlerSession(mysession, &ui, w, r) {
 		return
 	}
-	sess = ui.X
-	breadcrumbAdd(sess, "Stats", "/stats/")
+	mysession = ui.X
+	breadcrumbAdd(mysession, "Stats", "/stats/")
 
 	var MyCounters UsageCounters
 	var MyiCounters UsageCounters
@@ -28,11 +29,11 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	ui.K = &MyCounters
 	ui.Ki = &MyiCounters
 
-	Phonebook.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
-	<-Phonebook.ReqSessionMemAck // make sure we got it
-	var p []session
-	for _, v := range sessions {
-		s := session{}
+	sess.SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-sess.SessionManager.ReqSessionMemAck // make sure we got it
+	var p []sess.Session
+	for _, v := range sess.Sessions {
+		s := sess.Session{}
 		s.Token = v.Token
 		s.Firstname = v.Firstname
 		s.ImageURL = v.ImageURL
@@ -41,7 +42,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		s.Expire = v.Expire
 		p = append(p, s)
 	}
-	Phonebook.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+	sess.SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 
 	ui.N = p
 

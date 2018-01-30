@@ -3,19 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"text/template"
 )
 
 func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
-	breadcrumbReset(sess, "Search Companies", "/searchco/")
+	ssn = ui.X
+	breadcrumbReset(ssn, "Search Companies", "/searchco/")
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.SearchCompanies++       // initialize our data
@@ -43,7 +45,7 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		var c company
 		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Phone, &c.Fax, &c.Email, &c.Designation))
 		pc := &c
-		pc.filterSecurityRead(sess, PERMVIEW)
+		pc.filterSecurityRead(ssn, authz.PERMVIEW)
 		d.Matches = append(d.Matches, c)
 	}
 	errcheck(rows.Err())

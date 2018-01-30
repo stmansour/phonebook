@@ -3,23 +3,25 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
 
 func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCLASS, PERMMOD) {
-		ulog("Permissions refuse adminEditClass page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMMOD) {
+		ulog("Permissions refuse adminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -36,11 +38,11 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting classcode to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
-	breadcrumbAdd(sess, "AdminEdit Class", fmt.Sprintf("/adminEditClass/%d", ClassCode))
+	breadcrumbAdd(ssn, "AdminEdit Class", fmt.Sprintf("/adminEditClass/%d", ClassCode))
 	d.ClassCode = ClassCode
 	getClassInfo(ClassCode, &d)
 	ui.A = &d
-	ui.A.filterSecurityRead(sess, PERMVIEW|PERMMOD)
+	ui.A.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
 
 	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 	initUIData(&ui)

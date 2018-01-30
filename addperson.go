@@ -3,26 +3,28 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"text/template"
 )
 
 func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMPERSON, PERMCREATE) {
-		ulog("Permissions refuse AddPerson page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMCREATE) {
+		ulog("Permissions refuse AddPerson page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	breadcrumbAdd(sess, "Add Person", "/adminAddPerson/")
+	breadcrumbAdd(ssn, "Add Person", "/adminAddPerson/")
 
 	var d personDetail
 	d.Reports = make([]person, 0)
@@ -42,7 +44,7 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	d.PreferredName = ""
 	d.EmergencyContactName = ""
 	d.EmergencyContactPhone = ""
-	d.CoCode = sess.CoCode // if this is done by an HR, the person should default to the same company
+	d.CoCode = ssn.CoCode // if this is done by an HR, the person should default to the same company
 	d.JobCode = 0
 	d.DeptCode = 0
 	d.PositionControlNumber = ""

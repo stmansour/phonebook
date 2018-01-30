@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"strings"
 )
@@ -95,13 +97,13 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 }
 
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.EditPerson++            // initialize our data
@@ -123,13 +125,13 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	//=================================================================
 	//  SECURITY
 	//=================================================================
-	if !sess.elemPermsAny(ELEMPERSON, PERMOWNERMOD) {
-		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) {
+		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	if uid != sess.UID {
-		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", sess.UID, sess.Firstname, sess.Urole.Name, uid)
+	if uid != ssn.UID {
+		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", ssn.UID, ssn.Firstname, ssn.Urole.Name, uid)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -151,9 +153,9 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		d.HomeCountry = r.FormValue("HomeCountry")
 
 		if 0 == len(d.PreferredName) {
-			sess.Firstname = d.FirstName
+			ssn.Firstname = d.FirstName
 		} else {
-			sess.Firstname = d.PreferredName
+			ssn.Firstname = d.PreferredName
 		}
 
 		//=================================================================
@@ -167,7 +169,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 			if nil != err {
 				ulog("uploadImageFile returned error: %v\n", err)
 			}
-			sess.ImageURL = getImageFilename(uid)
+			ssn.ImageURL = getImageFilename(uid)
 		} else {
 			ulog("err loading picture: %v\n", err)
 		}
@@ -177,7 +179,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		//=================================================================
 		_, err = Phonebook.prepstmt.updateMyDetails.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
 			d.EmergencyContactName, d.EmergencyContactPhone,
-			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, sess.UID,
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, ssn.UID,
 			uid)
 		if nil != err {
 			errmsg := fmt.Sprintf("savePersonDetailsHandler: Phonebook.prepstmt.updateMyDetails.Exec: err = %v\n", err)
@@ -199,5 +201,5 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
+	http.Redirect(w, r, breadcrumbBack(ssn, 2), http.StatusFound)
 }

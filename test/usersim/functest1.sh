@@ -16,6 +16,7 @@ TESTSUMMARY="AIR Directory User Simulation"
 
 DBTOOLSDIR="../../dbtools"
 USERSIMDIR="."
+USERCOUNT=3
 USERSIM="${USERSIMDIR}/usersim"
 
 DBNAME="accordtest"
@@ -211,7 +212,7 @@ if [ ${L} -ne 1 ]; then
 	exit 1
 fi
 
-usrsimout=$(${USERSIM})
+usrsimout=$(${USERSIM} -u ${USERCOUNT})
 echo "${usrsimout}" > usersim.out
 
 echo "Shutting down phonebook service..."

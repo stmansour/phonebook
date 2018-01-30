@@ -2,24 +2,25 @@ package main
 
 import (
 	"net/http"
+	"phonebook/sess"
 	"strconv"
 	"strings"
 )
 
 func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	action := strings.ToLower(r.FormValue("action"))
 	// fmt.Printf("action = %s\n", action)
 
 	if action == "done" {
-		s := breadcrumbBack(sess, 2)
+		s := breadcrumbBack(ssn, 2)
 		// fmt.Printf("breadcrumbBack redirects to: %s\n", s)
 		http.Redirect(w, r, s, http.StatusFound)
 	} else if action == "adminedit" || action == "adminview" || action == "add person" ||
@@ -38,18 +39,18 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func popHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	path := "/pop/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
 		n, _ := strconv.Atoi(uidstr)
-		http.Redirect(w, r, breadcrumbBack(sess, n), http.StatusFound)
+		http.Redirect(w, r, breadcrumbBack(ssn, n), http.StatusFound)
 	} else {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 	}

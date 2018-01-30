@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 )
 
@@ -23,8 +25,8 @@ func companyInit(c *company) {
 	c.Active = 0
 }
 
-func (c *company) filterSecurityRead(sess *session, permRequired int) {
-	filterSecurityRead(c, ELEMCOMPANY, sess, permRequired, 0)
+func (c *company) filterSecurityRead(ssn *sess.Session, permRequired int) {
+	filterSecurityRead(c, authz.ELEMCOMPANY, ssn, permRequired, 0)
 }
 
 // MapKey is Accord's key for using google maps
@@ -67,17 +69,17 @@ func getCompanyInfo(cocode int, c *company) {
 
 func companyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCOMPANY, PERMVIEW) {
-		ulog("Permissions refuse company view page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMVIEW) {
+		ulog("Permissions refuse company view page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -87,11 +89,11 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		cocode, _ := strconv.Atoi(costr)
-		breadcrumbAdd(sess, "Company", fmt.Sprintf("/company/%d", cocode))
+		breadcrumbAdd(ssn, "Company", fmt.Sprintf("/company/%d", cocode))
 		getCompanyInfo(cocode, &c)
 		t, _ := template.New("company.html").Funcs(funcMap).ParseFiles("company.html")
 		ui.C = &c
-		ui.C.filterSecurityRead(sess, PERMVIEW)
+		ui.C.filterSecurityRead(ssn, authz.PERMVIEW)
 		err := t.Execute(w, &ui)
 		if nil != err {
 			errmsg := fmt.Sprintf("companyHandler: err = %v\n", err)

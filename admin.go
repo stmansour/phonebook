@@ -5,27 +5,29 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"phonebook/authz"
+	"phonebook/sess"
 	"text/template"
 	"time"
 )
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
-	breadcrumbReset(sess, "Admin", "/admin/")
+	ssn = ui.X
+	breadcrumbReset(ssn, "Admin", "/admin/")
 
 	// SECURITY
-	if !(sess.elemPermsAny(ELEMPERSON, PERMCREATE) ||
-		sess.elemPermsAny(ELEMCOMPANY, PERMCREATE) ||
-		sess.elemPermsAny(ELEMCLASS, PERMCREATE) ||
-		sess.elemPermsAny(ELEMPBSVC, PERMEXEC)) {
-		ulog("Permissions refuse admin page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !(ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMCREATE) ||
+		ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMCREATE) ||
+		ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMCREATE) ||
+		ssn.ElemPermsAny(authz.ELEMPBSVC, authz.PERMEXEC)) {
+		ulog("Permissions refuse admin page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -42,19 +44,19 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func restartHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
-	perm, ok := sess.Ppr["Restart"]
+	perm, ok := ssn.Ppr["Restart"]
 	// fmt.Printf("restartHandler: perm=0x%02x\n", perm)
 	if ok {
-		if perm&PERMEXEC != 0 {
-			ulog("restart invoked by UID %d, %s\n", sess.UID, sess.Username)
+		if perm&authz.PERMEXEC != 0 {
+			ulog("restart invoked by UID %d, %s\n", ssn.UID, ssn.Username)
 			cmd := "restart"
 			out, err := exec.Command("./activate.sh", cmd).Output()
 			if err != nil {
@@ -69,17 +71,17 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/search/", http.StatusFound)
 }
 func shutdownHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
-	perm, ok := sess.Ppr["Shutdown"]
+	perm, ok := ssn.Ppr["Shutdown"]
 	if ok {
-		if perm&PERMEXEC != 0 {
+		if perm&authz.PERMEXEC != 0 {
 			ulog("shutdownHandler successfully invoked\n")
 			extAdminShutdown(w, r)
 			return

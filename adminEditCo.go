@@ -3,23 +3,25 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
 
 func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCOMPANY, PERMMOD) {
-		ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMMOD) {
+		ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -36,10 +38,10 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error converting Company Code to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
 	}
-	breadcrumbAdd(sess, "AdminEdit Company", fmt.Sprintf("/adminEditCo/%d", CoCode))
+	breadcrumbAdd(ssn, "AdminEdit Company", fmt.Sprintf("/adminEditCo/%d", CoCode))
 	getCompanyInfo(CoCode, &c)
 	ui.C = &c
-	ui.C.filterSecurityRead(sess, PERMMOD)
+	ui.C.filterSecurityRead(ssn, authz.PERMMOD)
 
 	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
 	err = t.Execute(w, &ui)

@@ -3,19 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
 
 func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	var d personDetail
 	d.Reports = make([]person, 0)
@@ -33,19 +35,19 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	d.UID = uid
 
 	adminReadDetails(&d)
-	breadcrumbAdd(sess, "AdminEdit Person", fmt.Sprintf("/adminEdit/%d", uid))
+	breadcrumbAdd(ssn, "AdminEdit Person", fmt.Sprintf("/adminEdit/%d", uid))
 
 	//---------------------------------------------------------------------
 	// SECURITY
-	//		Access to the screen requires PERMMOD permission.  The data
+	//		Access to the screen requires authz.PERMMOD permission.  The data
 	//		in personDetail includes those fields with VIEW and MOD perms
 	//---------------------------------------------------------------------
-	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
-		fmt.Printf("adminEditHandler:  sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMMOD) returned 0\n")
+	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
+		fmt.Printf("adminEditHandler:  ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMMOD) returned 0\n")
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
+	d.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
 	ui.D = &d
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	initUIData(&ui)

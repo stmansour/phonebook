@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 )
 
-func (c *class) filterSecurityRead(sess *session, permRequired int) {
-	filterSecurityRead(c, ELEMCLASS, sess, permRequired, 0)
+func (c *class) filterSecurityRead(ssn *sess.Session, permRequired int) {
+	filterSecurityRead(c, authz.ELEMCLASS, ssn, permRequired, 0)
 }
 
 func getClassInfo(classcode int, c *class) {
@@ -32,17 +34,17 @@ func getClassInfo(classcode int, c *class) {
 
 func classHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCLASS, PERMVIEW) {
-		ulog("Permissions refuse class page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMVIEW) {
+		ulog("Permissions refuse class page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -52,10 +54,10 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		classcode, _ := strconv.Atoi(costr)
-		breadcrumbAdd(sess, "Class", fmt.Sprintf("/class/%d", classcode))
+		breadcrumbAdd(ssn, "Class", fmt.Sprintf("/class/%d", classcode))
 		getClassInfo(classcode, &c)
 		ui.A = &c
-		ui.A.filterSecurityRead(sess, PERMVIEW)
+		ui.A.filterSecurityRead(ssn, authz.PERMVIEW)
 		t, _ := template.New("class.html").Funcs(funcMap).ParseFiles("class.html")
 		err := t.Execute(w, &ui)
 		if nil != err {

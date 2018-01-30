@@ -3,19 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
 
 func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	var d personDetail
 	d.Reports = make([]person, 0)
@@ -32,14 +34,14 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d.UID = uid
-	breadcrumbAdd(sess, "Personal Edit", fmt.Sprintf("/editDetail/%d", uid))
+	breadcrumbAdd(ssn, "Personal Edit", fmt.Sprintf("/editDetail/%d", uid))
 
 	//=================================================================================
 	// SECURITY
 	//=================================================================================
-	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
-		if !(sess.elemPermsAny(ELEMPERSON, PERMOWNERMOD) && sess.UID == uid) {
-			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
+		if !(ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) && ssn.UID == uid) {
+			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 			http.Redirect(w, r, "/search/", http.StatusFound)
 			return
 		}
@@ -59,8 +61,8 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	errcheck(rows.Err())
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMPERSON, PERMMOD|PERMOWNERMOD) {
-		ulog("Permissions refuse editDetail page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD|authz.PERMOWNERMOD) {
+		ulog("Permissions refuse editDetail page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}

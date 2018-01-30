@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"net/http"
 	"phonebook/lib"
+	"phonebook/sess"
 	"strings"
 	"time"
 
@@ -25,22 +26,22 @@ func handlerInitUIDate(ui *uiSupport) {
 // it also initializes the uiSession variable
 // RETURNS:  0 = no problems
 //           1 = redirected
-func initHandlerSession(sess *session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
+func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
 	var ok bool
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
-		sess, ok = sessionGet(cookie.Value)
-		if !ok || sess == nil {
+		ssn, ok = sessionGet(cookie.Value)
+		if !ok || ssn == nil {
 			http.Redirect(w, r, "/signin/", http.StatusFound)
 			return 1
 		}
-		sess.refresh(w, r)
+		ssn.Refresh(w, r)
 	} else {
 		//fmt.Printf("REDIRECT to signin\n")
 		http.Redirect(w, r, "/signin/", http.StatusFound)
 		return 1
 	}
-	ui.X = sess
+	ui.X = ssn
 	handlerInitUIDate(ui)
 	return 0
 }
@@ -90,7 +91,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		ulog("user %s logged in\n", myusername)
 		expiration := time.Now().Add(10 * time.Minute)
 		//=================================================================================
-		// There could be multiple sessions from the same user on different browsers.
+		// There could be multiple ssn.Sessions from the same user on different browsers.
 		// These could be on the same or separate machines. We need the IP and the browser
 		// to guarantee uniqueness...
 		//=================================================================================
@@ -123,9 +124,9 @@ func showResetPwPage(w http.ResponseWriter, r *http.Request, errmsg string) {
 	t, _ := template.New("resetpw.html").Funcs(funcMap).ParseFiles("resetpw.html")
 	var ui uiSupport
 	handlerInitUIDate(&ui)
-	var sess session
-	sess.Username = r.FormValue("username")
-	ui.X = &sess
+	var ssn sess.Session
+	ssn.Username = r.FormValue("username")
+	ui.X = &ssn
 	ui.ErrMsg = template.HTML(errmsg)
 	err := t.Execute(w, &ui)
 	if nil != err {
@@ -234,9 +235,9 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.New("pwreset.html").Funcs(funcMap).ParseFiles("pwreset.html")
 	var ui uiSupport
 	handlerInitUIDate(&ui)
-	var sess session
-	sess.Username = myusername
-	ui.X = &sess
+	var ssn sess.Session
+	ssn.Username = myusername
+	ui.X = &ssn
 	ui.ErrMsg = template.HTML(errmsg)
 	err = t.Execute(w, &ui)
 	if nil != err {

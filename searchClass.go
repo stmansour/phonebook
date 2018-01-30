@@ -3,20 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/sess"
 	"text/template"
 )
 
 func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 	var s string
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
-	breadcrumbReset(sess, "Search Business Units", "/searchcl/")
+	ssn = ui.X
+	breadcrumbReset(ssn, "Search Business Units", "/searchcl/")
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.SearchClasses++         // initialize our data

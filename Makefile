@@ -1,8 +1,7 @@
+DIRS=lib authz ui sess dbtools admintools test
+
 phonebook: *.go config.json
-	cd lib;make
-	cd admintools;make
-	cd dbtools;make
-	cd test;make
+	for dir in $(DIRS); do make -C $$dir;done
 	go vet
 	golint
 	go build
@@ -10,10 +9,7 @@ phonebook: *.go config.json
 .PHONY:  test
 
 clean:
-	cd lib;make clean
-	cd dbtools;make clean
-	cd test;make clean
-	cd admintools;make clean
+	for dir in $(DIRS); do make -C $$dir clean;done
 	rm -rf phonebook pbbkup pbrestore pbwatchdog tmp Phonebook.log pbimages.tar* *.out *.log x.sh* ver.go conf*.json
 	go clean
 
@@ -35,18 +31,15 @@ dbrestore:
 	restoreMySQLdb.sh accord testdb.sql
 
 package: phonebook
-	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebook
 	mkdir -p tmp/phonebook/man/man1/
 	cp *.1 tmp/phonebook/man/man1/
 	cp config.json tmp/phonebook/
 	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
-	cd admintools;make package
-	cd dbtools;make package
+	for dir in $(DIRS); do make -C $$dir package;done
 
 packageqa: phonebook
-	#cd admintools;make
 	rm -rf tmp
 	mkdir -p tmp/phonebookqa/man/man1/
 	cp *.1 tmp/phonebookqa/man/man1/

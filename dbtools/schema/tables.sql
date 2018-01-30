@@ -141,5 +141,12 @@ CREATE TABLE roles (
     PRIMARY KEY(RID)
 );
 
+CREATE TABLE sessions (
+    UID BIGINT NOT NULL,
+    SKey VARCHAR(256) NOT NULL DEFAULT '',
+    Expire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    PRIMARY KEY(UID)
+);
+
 -- Add the Administrator as the first and only user
 -- INSERT INTO people (UserName,FirstName,LastName) VALUES("administrator","Administrator","Administrator");

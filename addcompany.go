@@ -3,26 +3,28 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"text/template"
 )
 
 func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCOMPANY, PERMCREATE) {
-		ulog("Permissions refuse AddCompany page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMCREATE) {
+		ulog("Permissions refuse AddCompany page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	breadcrumbAdd(sess, "Add Company", "/adminAddCompany/")
+	breadcrumbAdd(ssn, "Add Company", "/adminAddCompany/")
 
 	var c company
 	c.CoCode = 0

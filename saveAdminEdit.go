@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"strings"
 )
@@ -30,21 +32,21 @@ func parseDeductions(d *personDetail) {
 }
 
 func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.AdminEditPerson++       // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMPERSON, PERMMOD) {
-		ulog("Permissions refuse saveAdminEdit page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
+		ulog("Permissions refuse saveAdminEdit page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -114,7 +116,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.StateOfEmployment = r.FormValue("StateOfEmployment")
 		d.CountryOfEmployment = r.FormValue("CountryOfEmployment")
 
-		if hasAccess(sess, ELEMPERSON, "Role", PERMMOD) {
+		if hasAccess(ssn, authz.ELEMPERSON, "Role", authz.PERMMOD) {
 			d.RID = strToInt(r.FormValue("Role"))
 		}
 
@@ -159,13 +161,13 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		do.filterSecurityMerge(sess, PERMMOD, &d) // merge in new data
+		do.filterSecurityMerge(ssn, authz.PERMMOD, &d) // merge in new data
 
-		if uid == sess.UID {
+		if uid == ssn.UID {
 			if 0 == len(do.PreferredName) {
-				sess.Firstname = do.FirstName
+				ssn.Firstname = do.FirstName
 			} else {
-				sess.Firstname = do.PreferredName
+				ssn.Firstname = do.PreferredName
 			}
 		}
 
@@ -214,7 +216,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance, // 27
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode, // 30
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment, // 35
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), do.RID, sess.UID, do.UserName) // 37
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), do.RID, ssn.UID, do.UserName) // 37
 			errcheck(err)
 
 			// read this record back to get the UID...
@@ -245,7 +247,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 				do.Status, do.EligibleForRehire, do.Accepted401K, do.AcceptedDentalInsurance, do.AcceptedHealthInsurance,
 				dateToDBStr(do.Hire), dateToDBStr(do.Termination), do.ClassCode,
 				do.BirthMonth, do.BirthDOM, do.MgrUID, do.StateOfEmployment, do.CountryOfEmployment,
-				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), sess.UID, do.RID,
+				dateToDBStr(do.LastReview), dateToDBStr(do.NextReview), ssn.UID, do.RID,
 				uid)
 
 			if nil != err {
@@ -288,6 +290,6 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	s := breadcrumbBack(sess, 2)
+	s := breadcrumbBack(ssn, 2)
 	http.Redirect(w, r, s, http.StatusFound)
 }

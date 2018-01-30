@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"strings"
 )
@@ -14,21 +16,21 @@ var LEGALNAMESIZE = 50
 var COMMONNAMESIZE = 50
 
 func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.AdminEditCompany++      // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !sess.elemPermsAny(ELEMCOMPANY, PERMMOD) {
-		ulog("Permissions refuse saveAdminEditCo page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMMOD) {
+		ulog("Permissions refuse saveAdminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -80,15 +82,15 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
-		var co company                            // container for current information
-		co.CoCode = CoCode                        // initialize
-		getCompanyInfo(CoCode, &co)               // fetch all its data
-		co.filterSecurityMerge(sess, PERMMOD, &c) // merge
+		var co company                                 // container for current information
+		co.CoCode = CoCode                             // initialize
+		getCompanyInfo(CoCode, &co)                    // fetch all its data
+		co.filterSecurityMerge(ssn, authz.PERMMOD, &c) // merge
 
 		if 0 == CoCode {
 			_, err = Phonebook.prepstmt.insertCompany.Exec(c.LegalName, c.CommonName, c.Designation,
 				c.Email, c.Phone, c.Fax, c.Active, c.EmploysPersonnel,
-				c.Address, c.Address2, c.City, c.State, c.PostalCode, c.Country, sess.UID)
+				c.Address, c.Address2, c.City, c.State, c.PostalCode, c.Country, ssn.UID)
 			errcheck(err)
 
 			// read this record back to get the CoCode...
@@ -108,7 +110,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			_, err = Phonebook.prepstmt.updateCompany.Exec(c.LegalName, c.CommonName, c.Designation, c.Email, c.Phone,
 				c.Fax, c.EmploysPersonnel, c.Active, c.Address, c.Address2, c.City, c.State,
-				c.PostalCode, c.Country, sess.UID, CoCode)
+				c.PostalCode, c.Country, ssn.UID, CoCode)
 			if nil != err {
 				errmsg := fmt.Sprintf("saveAdminEditCoHandler: Phonebook.prepstmt.updateCompany.Exec: err = %v\n", err)
 				ulog(errmsg)
@@ -119,5 +121,5 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	loadCompanies() // It may be a new company, or its active/inactive status may have changed.
-	http.Redirect(w, r, breadcrumbBack(sess, 2), http.StatusFound)
+	http.Redirect(w, r, breadcrumbBack(ssn, 2), http.StatusFound)
 }

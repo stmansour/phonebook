@@ -3,83 +3,78 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"phonebook/sess"
+	"phonebook/ui"
 )
 
-// Crumb is a screen the user is visiting. A list of Crumbs provides a path indicating
-// where the user is in the screen hierarchy
-type Crumb struct {
-	URL  string
-	Name string
-}
-
-func breadcrumbBack(sess *session, n int) string {
+func breadcrumbBack(ssn *sess.Session, n int) string {
 	var s string
-	m := len(sess.Breadcrumbs)
+	m := len(ssn.Breadcrumbs)
 	if n <= m {
-		s = sess.Breadcrumbs[m-n].URL
-		sess.Breadcrumbs = sess.Breadcrumbs[0 : m-n]
+		s = ssn.Breadcrumbs[m-n].URL
+		ssn.Breadcrumbs = ssn.Breadcrumbs[0 : m-n]
 	} else {
 		s = "/search/"
 	}
 	return s
 }
 
-func breadcrumbToString(sess *session) string {
-	L := len(sess.Breadcrumbs)
+func breadcrumbToString(ssn *sess.Session) string {
+	L := len(ssn.Breadcrumbs)
 	if L < 1 {
 		return ""
 	}
-	s := sess.Breadcrumbs[0].Name
-	for i := 1; i < len(sess.Breadcrumbs); i++ {
-		s += fmt.Sprintf(" / %s", sess.Breadcrumbs[i].Name)
+	s := ssn.Breadcrumbs[0].Name
+	for i := 1; i < len(ssn.Breadcrumbs); i++ {
+		s += fmt.Sprintf(" / %s", ssn.Breadcrumbs[i].Name)
 	}
 	return s
 }
 
-func breadcrumbToHTMLString(sess *session) template.HTML {
+func breadcrumbToHTMLString(ssn *sess.Session) template.HTML {
 	var s string
-	L := len(sess.Breadcrumbs)
+	L := len(ssn.Breadcrumbs)
 	if L < 1 {
 		return ""
 	}
 	if L == 1 {
-		s = sess.Breadcrumbs[0].Name
+		s = ssn.Breadcrumbs[0].Name
 	} else {
-		s = fmt.Sprintf("<a href=\"/pop/%d\">%s</a>", L, sess.Breadcrumbs[0].Name)
+		s = fmt.Sprintf("<a href=\"/pop/%d\">%s</a>", L, ssn.Breadcrumbs[0].Name)
 	}
 	for i := 1; i < L; i++ {
 		if i == L-1 {
-			s += " / " + sess.Breadcrumbs[i].Name
+			s += " / " + ssn.Breadcrumbs[i].Name
 		} else {
-			s += fmt.Sprintf(" / <a href=\"/pop/%d\">%s</a>", L-i, sess.Breadcrumbs[i].Name)
+			s += fmt.Sprintf(" / <a href=\"/pop/%d\">%s</a>", L-i, ssn.Breadcrumbs[i].Name)
 		}
 	}
 	return template.HTML(s)
 }
 
-func breadcrumbAdd(sess *session, name string, url string) {
-	c := Crumb{url, name}
-	sess.Breadcrumbs = append(sess.Breadcrumbs, c)
+func breadcrumbAdd(ssn *sess.Session, name string, url string) {
+	c := ui.Crumb{URL: url, Name: name}
+	ssn.Breadcrumbs = append(ssn.Breadcrumbs, c)
 }
 
-func breadcrumbReset(sess *session, name string, url string) {
-	sess.Breadcrumbs = make([]Crumb, 0)
-	breadcrumbAdd(sess, name, url)
+func breadcrumbReset(ssn *sess.Session, name string, url string) {
+	ssn.Breadcrumbs = make([]ui.Crumb, 0)
+	breadcrumbAdd(ssn, name, url)
 }
 
 func getBreadcrumb(token string) string {
-	s, ok := sessions[token]
+	s, ok := sess.Sessions[token]
 	if !ok {
-		fmt.Printf("getBreadcrumb:  Could not find session for %s\n", token)
+		fmt.Printf("getBreadcrumb:  Could not find sess.Session for %s\n", token)
 		return "-/-"
 	}
 	return breadcrumbToString(s)
 }
 
 func getHTMLBreadcrumb(token string) template.HTML {
-	s, ok := sessions[token]
+	s, ok := sess.Sessions[token]
 	if !ok {
-		fmt.Printf("getHTMLBreadcrumb:  Could not find session for %s\n", token)
+		fmt.Printf("getHTMLBreadcrumb:  Could not find sess.Session for %s\n", token)
 		return "-/-"
 	}
 	return breadcrumbToHTMLString(s)

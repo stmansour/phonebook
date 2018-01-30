@@ -26,3 +26,6 @@ clean:
 packageqa:
 	cd usersim;make packageqa
 	cd phonebookqa;make packageqa
+
+package:
+	echo "*** Package completed in test"

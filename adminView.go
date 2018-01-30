@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/authz"
+	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
@@ -139,13 +141,13 @@ func adminReadDetails(d *personDetail) {
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *session
+	var ssn *sess.Session
 	var ui uiSupport
-	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	ssn = nil
+	if 0 < initHandlerSession(ssn, &ui, w, r) {
 		return
 	}
-	sess = ui.X
+	ssn = ui.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewPerson++            // initialize our data
@@ -159,21 +161,21 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
 		d.UID = uid
-		breadcrumbAdd(sess, "AdminView Person", fmt.Sprintf("/adminView/%d", uid))
+		breadcrumbAdd(ssn, "AdminView Person", fmt.Sprintf("/adminView/%d", uid))
 		adminReadDetails(&d)
 	}
 
 	//============================================================
 	// SECURITY
 	//============================================================
-	if !sess.elemPermsAll(ELEMPERSON, PERMVIEW|PERMMOD) {
-		fmt.Printf("sess.elemPermsAny(ELEMPERSON, PERMVIEW|PERMMOD) returned 0\n")
+	if !ssn.ElemPermsAll(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMMOD) {
+		fmt.Printf("ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMMOD) returned 0\n")
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 	// Ensure that the user has permissions to view everything we're about
 	// to display.
-	d.filterSecurityRead(sess, PERMVIEW|PERMMOD)
+	d.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
 
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d

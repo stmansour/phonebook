@@ -1,57 +1,12 @@
 Test Name:    Directory Usersim
 Test Purpose: AIR Directory User Simulation
-Date/Time:    Mon Jan 29 16:48:52 PST 2018
+Date/Time:    Mon Jan 29 19:51:06 PST 2018
 
-2018/01/29 16:48:53 *** usersim ***
-2018/01/29 16:49:04 *** usersim ***
-2018/01/29 16:49:05 Database Name: accordtest
-2018/01/29 16:49:05 Database User: ec2-user
-2018/01/29 16:49:05 User simulation count: 1
-2018/01/29 16:49:05 Initiate simulation
-2018/01/29 16:49:05 Entered executeSimulation
-2018/01/29 16:49:05 Requested test duration: 0s
-2018/01/29 16:49:05 Usersim 0,  UID = 1, username = mlong, iterations = 1
-2018/01/29 16:49:05 finish time = January 29, 2018
-2018/01/29 16:49:05 usersim based on iterations: 1
-2018/01/29 16:49:05 Entering usersimDoTest: UserName = mlong (1)
-2018/01/29 16:49:05 tr initial values: SimUserID = 1, Pass = 0, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = login, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: LOGIN.   SimUserID = 1, Pass = 1, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = detail, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: detail.   SimUserID = 1, Pass = 9, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = adminView, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: adminView.   SimUserID = 1, Pass = 60, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = adminEdit, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: adminEdit.   SimUserID = 1, Pass = 111, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = saveAdminEdit, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: saveAdminEdit.   SimUserID = 1, Pass = 112, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = viewCompany, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: viewCompany.   SimUserID = 1, Pass = 124, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = adminEditCompany, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: adminEditCompany.   SimUserID = 1, Pass = 139, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = saveAdminEditCo, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: saveAdminEditCo.   SimUserID = 1, Pass = 140, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = viewClass, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: viewClass.   SimUserID = 1, Pass = 144, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = adminEditClass, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: adminEditClass.   SimUserID = 1, Pass = 149, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = saveAdminEditClass, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: saveAdminEditClass.   SimUserID = 1, Pass = 150, Fail = 0
-2018/01/29 16:49:05 entered testResult: testname = logoff, success = true, tr.Fail = 0
-2018/01/29 16:49:05 after success check: tr.Fail = 0
-2018/01/29 16:49:05 Passed: logoff
-2018/01/29 16:49:05 usersimDoTest completed.  SimUserID = 1, Pass = 151, Fail = 0
-2018/01/29 16:49:06 executeSimulation: received tr results.  SimUserID = 1, Pass = 151, Fail = 0
-2018/01/29 16:49:06 Simulation completed
-Test completed: Mon Jan 29 16:49:08 PST 2018
+2018/01/29 19:51:07 *** usersim ***
+2018/01/29 19:51:19 *** usersim ***
+2018/01/29 19:51:19 Database Name: accordtest
+2018/01/29 19:51:19 Database User: ec2-user
+2018/01/29 19:51:19 User simulation count: 3
+2018/01/29 19:51:19 Initiate simulation
+2018/01/29 19:51:21 Simulation completed
+Test completed: Mon Jan 29 19:51:23 PST 2018

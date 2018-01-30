@@ -238,127 +238,127 @@ func login(d *personDetail) bool {
 // returns true if the session cookie is nil
 // otherwise returns false
 func testResult(v *personDetail, testname string, success bool, tr *TestResults) bool {
-	lib.Ulog("entered testResult: testname = %s, success = %t, tr.Fail = %d\n", testname, success, tr.Fail)
+	// lib.Ulog("entered testResult: testname = %s, success = %t, tr.Fail = %d\n", testname, success, tr.Fail)
 	if success {
 		tr.Pass++
 	} else {
 		tr.Fail++
 	}
-	lib.Ulog("after success check: tr.Fail = %d\n", tr.Fail)
+	// lib.Ulog("after success check: tr.Fail = %d\n", tr.Fail)
 
 	if nil == v.SessionCookie && testname != "logoff" {
 		fmt.Printf("usersim: could not find accord cookie after %s!\n", testname)
-		lib.Ulog("usersim: could not find accord cookie after %s!\n", testname)
+		// lib.Ulog("usersim: could not find accord cookie after %s!\n", testname)
 		return true
 	}
 	if nil != v.SessionCookie && testname == "logoff" {
 		fmt.Printf("usersim: session cookie was not removed after %s!\n", testname)
-		lib.Ulog("usersim: session cookie was not removed after %s!\n", testname)
+		// lib.Ulog("usersim: session cookie was not removed after %s!\n", testname)
 		return true
 	}
 	return false
 }
 
 func usersimDoTest(v *personDetail, tr *TestResults) {
-	lib.Ulog("Entering usersimDoTest: UserName = %s (%d)\n", v.UserName, v.UID)
-	lib.Ulog("tr initial values: SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Entering usersimDoTest: UserName = %s (%d)\n", v.UserName, v.UID)
+	// lib.Ulog("tr initial values: SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	// there should be no session in v now
 	if testResult(v, "login", login(v), tr) {
 		fmt.Printf("FAILED LOGIN\n")
-		lib.Ulog("FAILED LOGIN\n")
+		// lib.Ulog("FAILED LOGIN\n")
 		return
 	}
-	lib.Ulog("Passed: LOGIN.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: LOGIN.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 
 	if testResult(v, "detail", viewPersonDetail(v, tr), tr) {
 		fmt.Printf("FAILED detail\n")
-		lib.Ulog("FAILED detail\n")
+		// lib.Ulog("FAILED detail\n")
 		return
 	}
-	lib.Ulog("Passed: detail.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: detail.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "adminView", adminViewTest(v, tr), tr) {
 		fmt.Printf("FAILED adminView\n")
-		lib.Ulog("FAILED adminView\n")
+		// lib.Ulog("FAILED adminView\n")
 		return
 	}
-	lib.Ulog("Passed: adminView.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: adminView.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "adminEdit", adminEditTest(v, tr), tr) {
 		fmt.Printf("FAILED adminEdit\n")
-		lib.Ulog("FAILED adminEdit\n")
+		// lib.Ulog("FAILED adminEdit\n")
 		return
 	}
-	lib.Ulog("Passed: adminEdit.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: adminEdit.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "saveAdminEdit", saveAdminEdit(v, tr), tr) {
 		fmt.Printf("FAILED saveAdminEdit\n")
-		lib.Ulog("FAILED saveAdminEdit\n")
+		// lib.Ulog("FAILED saveAdminEdit\n")
 		return
 	}
-	lib.Ulog("Passed: saveAdminEdit.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: saveAdminEdit.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "viewCompany", viewCompany(v, tr), tr) {
 		fmt.Printf("FAILED viewCompany\n")
-		lib.Ulog("FAILED viewCompany\n")
+		// lib.Ulog("FAILED viewCompany\n")
 		return
 	}
-	lib.Ulog("Passed: viewCompany.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: viewCompany.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "adminEditCompany", adminEditCompany(v, tr), tr) {
 		fmt.Printf("FAILED adminEditCompany\n")
-		lib.Ulog("FAILED adminEditCompany\n")
+		// lib.Ulog("FAILED adminEditCompany\n")
 		return
 	}
-	lib.Ulog("Passed: adminEditCompany.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: adminEditCompany.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "saveAdminEditCo", saveAdminEditCo(v, tr), tr) {
 		fmt.Printf("FAILED saveAdminEditCo\n")
-		lib.Ulog("FAILED saveAdminEditCo\n")
+		// lib.Ulog("FAILED saveAdminEditCo\n")
 		return
 	}
-	lib.Ulog("Passed: saveAdminEditCo.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: saveAdminEditCo.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "viewClass", viewClass(v, tr), tr) {
 		fmt.Printf("FAILED viewClass\n")
-		lib.Ulog("FAILED viewClass\n")
+		// lib.Ulog("FAILED viewClass\n")
 		return
 	}
-	lib.Ulog("Passed: viewClass.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: viewClass.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "adminEditClass", adminEditClass(v, tr), tr) {
 		fmt.Printf("FAILED adminEditClass\n")
-		lib.Ulog("FAILED adminEditClass\n")
+		// lib.Ulog("FAILED adminEditClass\n")
 		return
 	}
-	lib.Ulog("Passed: adminEditClass.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: adminEditClass.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 	if testResult(v, "saveAdminEditClass", saveAdminEditClass(v, tr), tr) {
 		fmt.Printf("FAILED saveAdminEditClass\n")
-		lib.Ulog("FAILED saveAdminEditClass\n")
+		// lib.Ulog("FAILED saveAdminEditClass\n")
 		return
 	}
-	lib.Ulog("Passed: saveAdminEditClass.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("Passed: saveAdminEditClass.   SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 
 	// after logoff, the session in v should be removed
 	if testResult(v, "logoff", logoff(v), tr) {
 		fmt.Printf("FAILED logoff\n")
-		lib.Ulog("FAILED logoff\n")
+		// lib.Ulog("FAILED logoff\n")
 		return
 	}
-	lib.Ulog("Passed: logoff\n")
+	// lib.Ulog("Passed: logoff\n")
 }
 
 func usersim(userindex, iterations int, finishTime time.Time, TestResChan chan TestResults, TestResChanAck chan int) {
 	v := App.Peeps[userindex]
 	tr := TestResults{v.UID, 0, 0, nil}
-	lib.Ulog("Usersim %d,  UID = %d, username = %s, iterations = %d\n", userindex, v.UID, v.UserName, iterations)
-	lib.Ulog("finish time = %s\n", finishTime.Format("January 2, 2006"))
+	// lib.Ulog("Usersim %d,  UID = %d, username = %s, iterations = %d\n", userindex, v.UID, v.UserName, iterations)
+	// lib.Ulog("finish time = %s\n", finishTime.Format("January 2, 2006"))
 
 	if App.TestDuration.Seconds() == 0 {
-		lib.Ulog("usersim based on iterations: %d\n", iterations)
+		// lib.Ulog("usersim based on iterations: %d\n", iterations)
 		for i := 0; i < iterations; i++ {
 			usersimDoTest(v, &tr)
 		}
 	} else {
-		lib.Ulog("usersim based on time\n")
+		// lib.Ulog("usersim based on time\n")
 		for time.Now().Before(finishTime) {
 			usersimDoTest(v, &tr)
 		}
 	}
 
-	lib.Ulog("usersimDoTest completed.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+	// lib.Ulog("usersimDoTest completed.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 
 	TestResChan <- tr // push our results to the simulation executor
 	<-TestResChanAck  // wait for receipt before continuing
@@ -372,8 +372,8 @@ func executeSimulation() {
 	finishTime := StartTime
 
 	// fmt.Printf("Requested test duration: %v\n", App.TestDuration)
-	lib.Ulog("Entered executeSimulation\n")
-	lib.Ulog("Requested test duration: %v\n", App.TestDuration)
+	// lib.Ulog("Entered executeSimulation\n")
+	// lib.Ulog("Requested test duration: %v\n", App.TestDuration)
 
 	if App.TestDuration.Seconds() > 0 {
 		finishTime = time.Now().Add(App.TestDuration)
@@ -389,7 +389,7 @@ func executeSimulation() {
 		case tr := <-TestResChan: // get the data the usersim collected
 			totTR.Fail += tr.Fail // update cumulative totals
 			totTR.Pass += tr.Pass // update cumulative totals
-			lib.Ulog("executeSimulation: received tr results.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+			// lib.Ulog("executeSimulation: received tr results.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
 			for j := 0; j < len(tr.Failures); j++ {
 				totTR.Failures = append(totTR.Failures, tr.Failures[j])
 			}

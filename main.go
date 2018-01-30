@@ -13,7 +13,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"phonebook/authz"
 	"phonebook/lib"
+	"phonebook/sess"
 	"phonebook/ws"
 	"runtime/debug"
 	"strings"
@@ -54,43 +56,6 @@ type aDeduction struct {
 	DCode  int    // code for this deduction
 	Name   string // name for this deduction
 	HaveIt int    // 0 = does not have it, 1 = has it
-}
-
-//--------------------------------------------------------------------
-//  ROLE SECURITY
-//--------------------------------------------------------------------
-const (
-	PERMNONE       = 0      // no permissions to see, view, modify, delete, print, or anything to this field
-	PERMVIEW       = 1 << 0 // OK to view   this field for any element (Person, Company, Class)
-	PERMCREATE     = 1 << 1 // OK to create   "
-	PERMMOD        = 1 << 2 // OK to modify   "
-	PERMDEL        = 1 << 3 // OK to delete   "
-	PERMPRINT      = 1 << 4 // OK to print    "
-	PERMOWNERVIEW  = 1 << 5 // OK for the owner to view this field  (applies to Person elements)
-	PERMOWNERMOD   = 1 << 6 // OK for the owner to modify this field
-	PERMOWNERPRINT = 1 << 7 // OK for the owner to modify this field
-	PERMEXEC       = 1 << 8 // OK to execute
-
-	ELEMPERSON  = 1 // people
-	ELEMCOMPANY = 2 // companies
-	ELEMCLASS   = 3 // classes
-	ELEMPBSVC   = 4 // the executable service
-)
-
-// FieldPerm defines how a specific element field can be accessed
-type FieldPerm struct {
-	Elem  int    // Element: Person, Company, or Class
-	Field string // field within the Element
-	Perm  int    // 'logical or' of all permissions on this field
-	Descr string // description of the field
-}
-
-// Role defines a collection of FieldPerms that can be assigned to a person
-type Role struct {
-	RID   int         // assigned by DB
-	Name  string      // role name
-	Descr string      // role description
-	Perms []FieldPerm // permissions for all fields, all entities
 }
 
 //--------------------------------------------------------------------
@@ -184,75 +149,75 @@ type dataFields struct {
 }
 
 var adminScreenFields = []dataFields{
-	{ELEMPERSON, "Status", false, "Indicates whether the person is an active employee."},
-	{ELEMPERSON, "EligibleForRehire", false, "Indicates whether a past employee can be rehired."},
-	{ELEMPERSON, "UID", false, "A unique identifier associated with the employee. Once created, it never changes."},
-	{ELEMPERSON, "Salutation", false, "'Mr.', 'Mrs.', 'Ms.', etc."},
-	{ELEMPERSON, "FirstName", false, "The person's common name."},
-	{ELEMPERSON, "MiddleName", false, "The person's middle name."},
-	{ELEMPERSON, "LastName", false, "The person's surname or last name."},
-	{ELEMPERSON, "PreferredName", false, "Less formal name but more commonly used, for example 'Mike' rather than 'Michael'."},
-	{ELEMPERSON, "PrimaryEmail", false, "The primary email address to use for this person."},
-	{ELEMPERSON, "OfficePhone", false, "This person's office telephone number."},
-	{ELEMPERSON, "CellPhone", false, "This person's cellphone number."},
-	{ELEMPERSON, "EmergencyContactName", true, "Name of someone to contact in the event of an emergency."},
-	{ELEMPERSON, "EmergencyContactPhone", true, "Phone number for the emergency contact."},
-	{ELEMPERSON, "HomeStreetAddress", true, "def"},
-	{ELEMPERSON, "HomeStreetAddress2", true, "def"},
-	{ELEMPERSON, "HomeCity", true, "def"},
-	{ELEMPERSON, "HomeState", true, "def"},
-	{ELEMPERSON, "HomePostalCode", true, "def"},
-	{ELEMPERSON, "HomeCountry", true, "def"},
-	{ELEMPERSON, "PrimaryEmail", true, "def"},
-	{ELEMPERSON, "SecondaryEmail", true, "def"},
-	{ELEMPERSON, "OfficePhone", true, "def"},
-	{ELEMPERSON, "OfficeFax", true, "def"},
-	{ELEMPERSON, "CellPhone", true, "def"},
-	{ELEMPERSON, "BirthDOM", true, "def"},
-	{ELEMPERSON, "BirthMonth", true, "def"},
-	{ELEMPERSON, "CoCode", true, "The company code associated with this user."},
-	{ELEMPERSON, "JobCode", true, "def"},
-	{ELEMPERSON, "ClassCode", true, "def"},
-	{ELEMPERSON, "DeptCode", true, "def"},
-	{ELEMPERSON, "PositionControlNumber", true, "def"},
-	{ELEMPERSON, "MgrUID", true, "def"},
-	{ELEMPERSON, "Accepted401K", true, "def"},
-	{ELEMPERSON, "AcceptedDentalInsurance", true, "def"},
-	{ELEMPERSON, "AcceptedHealthInsurance", true, "def"},
-	{ELEMPERSON, "Hire", true, "def"},
-	{ELEMPERSON, "Termination", true, "def"},
-	{ELEMPERSON, "LastReview", true, "def"},
-	{ELEMPERSON, "NextReview", true, "def"},
-	{ELEMPERSON, "StateOfEmployment", false, "def"},
-	{ELEMPERSON, "CountryOfEmployment", false, "def"},
-	{ELEMPERSON, "Comps", true, "def"},
-	{ELEMPERSON, "Deductions", true, "def"},
-	{ELEMPERSON, "MyDeductions", true, "def"},
-	{ELEMPERSON, "RID", true, "role identifier"},
-	{ELEMPERSON, "ElemEntity", true, "The entire entity"},
-	{ELEMCOMPANY, "CoCode", false, "def"},
-	{ELEMCOMPANY, "LegalName", false, "def"},
-	{ELEMCOMPANY, "CommonName", false, "def"},
-	{ELEMCOMPANY, "Address", false, "def"},
-	{ELEMCOMPANY, "Address2", false, "def"},
-	{ELEMCOMPANY, "City", false, "def"},
-	{ELEMCOMPANY, "State", false, "def"},
-	{ELEMCOMPANY, "PostalCode", false, "def"},
-	{ELEMCOMPANY, "Country", false, "def"},
-	{ELEMCOMPANY, "Phone", false, "def"},
-	{ELEMCOMPANY, "Fax", false, "def"},
-	{ELEMCOMPANY, "Email", false, "def"},
-	{ELEMCOMPANY, "Designation", false, "def"},
-	{ELEMCOMPANY, "Active", false, "def"},
-	{ELEMCOMPANY, "EmploysPersonnel", false, "def"},
-	{ELEMCOMPANY, "ElemEntity", true, "The entire entity"},
-	{ELEMCLASS, "ClassCode", false, "def"},
-	{ELEMCLASS, "Name", false, "def"},
-	{ELEMCLASS, "Designation", false, "def"},
-	{ELEMCLASS, "Description", false, "def"},
-	{ELEMCLASS, "ElemEntity", true, "The entire entity"},
-	{ELEMPBSVC, "Shutdown", true, "Shut down the running Phonebook service"},
-	{ELEMPBSVC, "Restart", true, "Restart the running Phonebook service"},
+	{authz.ELEMPERSON, "Status", false, "Indicates whether the person is an active employee."},
+	{authz.ELEMPERSON, "EligibleForRehire", false, "Indicates whether a past employee can be rehired."},
+	{authz.ELEMPERSON, "UID", false, "A unique identifier associated with the employee. Once created, it never changes."},
+	{authz.ELEMPERSON, "Salutation", false, "'Mr.', 'Mrs.', 'Ms.', etc."},
+	{authz.ELEMPERSON, "FirstName", false, "The person's common name."},
+	{authz.ELEMPERSON, "MiddleName", false, "The person's middle name."},
+	{authz.ELEMPERSON, "LastName", false, "The person's surname or last name."},
+	{authz.ELEMPERSON, "PreferredName", false, "Less formal name but more commonly used, for example 'Mike' rather than 'Michael'."},
+	{authz.ELEMPERSON, "PrimaryEmail", false, "The primary email address to use for this person."},
+	{authz.ELEMPERSON, "OfficePhone", false, "This person's office telephone number."},
+	{authz.ELEMPERSON, "CellPhone", false, "This person's cellphone number."},
+	{authz.ELEMPERSON, "EmergencyContactName", true, "Name of someone to contact in the event of an emergency."},
+	{authz.ELEMPERSON, "EmergencyContactPhone", true, "Phone number for the emergency contact."},
+	{authz.ELEMPERSON, "HomeStreetAddress", true, "def"},
+	{authz.ELEMPERSON, "HomeStreetAddress2", true, "def"},
+	{authz.ELEMPERSON, "HomeCity", true, "def"},
+	{authz.ELEMPERSON, "HomeState", true, "def"},
+	{authz.ELEMPERSON, "HomePostalCode", true, "def"},
+	{authz.ELEMPERSON, "HomeCountry", true, "def"},
+	{authz.ELEMPERSON, "PrimaryEmail", true, "def"},
+	{authz.ELEMPERSON, "SecondaryEmail", true, "def"},
+	{authz.ELEMPERSON, "OfficePhone", true, "def"},
+	{authz.ELEMPERSON, "OfficeFax", true, "def"},
+	{authz.ELEMPERSON, "CellPhone", true, "def"},
+	{authz.ELEMPERSON, "BirthDOM", true, "def"},
+	{authz.ELEMPERSON, "BirthMonth", true, "def"},
+	{authz.ELEMPERSON, "CoCode", true, "The company code associated with this user."},
+	{authz.ELEMPERSON, "JobCode", true, "def"},
+	{authz.ELEMPERSON, "ClassCode", true, "def"},
+	{authz.ELEMPERSON, "DeptCode", true, "def"},
+	{authz.ELEMPERSON, "PositionControlNumber", true, "def"},
+	{authz.ELEMPERSON, "MgrUID", true, "def"},
+	{authz.ELEMPERSON, "Accepted401K", true, "def"},
+	{authz.ELEMPERSON, "AcceptedDentalInsurance", true, "def"},
+	{authz.ELEMPERSON, "AcceptedHealthInsurance", true, "def"},
+	{authz.ELEMPERSON, "Hire", true, "def"},
+	{authz.ELEMPERSON, "Termination", true, "def"},
+	{authz.ELEMPERSON, "LastReview", true, "def"},
+	{authz.ELEMPERSON, "NextReview", true, "def"},
+	{authz.ELEMPERSON, "StateOfEmployment", false, "def"},
+	{authz.ELEMPERSON, "CountryOfEmployment", false, "def"},
+	{authz.ELEMPERSON, "Comps", true, "def"},
+	{authz.ELEMPERSON, "Deductions", true, "def"},
+	{authz.ELEMPERSON, "MyDeductions", true, "def"},
+	{authz.ELEMPERSON, "RID", true, "role identifier"},
+	{authz.ELEMPERSON, "ElemEntity", true, "The entire entity"},
+	{authz.ELEMCOMPANY, "CoCode", false, "def"},
+	{authz.ELEMCOMPANY, "LegalName", false, "def"},
+	{authz.ELEMCOMPANY, "CommonName", false, "def"},
+	{authz.ELEMCOMPANY, "Address", false, "def"},
+	{authz.ELEMCOMPANY, "Address2", false, "def"},
+	{authz.ELEMCOMPANY, "City", false, "def"},
+	{authz.ELEMCOMPANY, "State", false, "def"},
+	{authz.ELEMCOMPANY, "PostalCode", false, "def"},
+	{authz.ELEMCOMPANY, "Country", false, "def"},
+	{authz.ELEMCOMPANY, "Phone", false, "def"},
+	{authz.ELEMCOMPANY, "Fax", false, "def"},
+	{authz.ELEMCOMPANY, "Email", false, "def"},
+	{authz.ELEMCOMPANY, "Designation", false, "def"},
+	{authz.ELEMCOMPANY, "Active", false, "def"},
+	{authz.ELEMCOMPANY, "EmploysPersonnel", false, "def"},
+	{authz.ELEMCOMPANY, "ElemEntity", true, "The entire entity"},
+	{authz.ELEMCLASS, "ClassCode", false, "def"},
+	{authz.ELEMCLASS, "Name", false, "def"},
+	{authz.ELEMCLASS, "Designation", false, "def"},
+	{authz.ELEMCLASS, "Description", false, "def"},
+	{authz.ELEMCLASS, "ElemEntity", true, "The entire entity"},
+	{authz.ELEMPBSVC, "Shutdown", true, "Shut down the running Phonebook service"},
+	{authz.ELEMPBSVC, "Restart", true, "Restart the running Phonebook service"},
 }
 
 type class struct {
@@ -299,7 +264,7 @@ type uiSupport struct {
 	NameToClassCode  map[string]int    // class designation to classcode
 	ClassCodeToName  map[int]string    // index by classcode to get the name
 	Months           []string          // a map for month number to month name
-	Roles            []Role            // list of roles -- fields are not initialized
+	Roles            []authz.Role      // list of roles -- fields are not initialized
 	Images           map[string]string // interface images
 	CompanyList      []company         // list of all company structs
 	C                *company
@@ -309,10 +274,10 @@ type uiSupport struct {
 	S                *signin
 	T                *searchCoResults
 	L                *searchClassResults
-	X                *session
+	X                *sess.Session
 	K                *UsageCounters
 	Ki               *UsageCounters
-	N                []session
+	N                []sess.Session
 	ErrMsg           template.HTML // if the caller wants to convey an error message
 }
 
@@ -369,11 +334,9 @@ var Phonebook struct {
 	DBName             string        // name of database to use
 	DBUser             string        // user phonebook should use for accessing db
 	LogFile            *os.File      // where to log messages
-	Roles              []Role        // the roles saved in the database
+	Roles              []authz.Role  // the roles saved in the database
 	ReqMem             chan int      // request to access UI data memory
 	ReqMemAck          chan int      // done with memory
-	ReqSessionMem      chan int      // request to access Session data memory
-	ReqSessionMemAck   chan int      // done with Session datamemory
 	ReqCountersMem     chan int      // request to access counters
 	ReqCountersMemAck  chan int      // done with counters mem
 	DebugToScreen      bool          // show logged messages to screen
@@ -532,9 +495,9 @@ func initUIData(u *uiSupport) {
 	for i := 0; i < len(PhonebookUI.Months); i++ {
 		u.Months[i] = PhonebookUI.Months[i]
 	}
-	u.Roles = make([]Role, len(Phonebook.Roles))
+	u.Roles = make([]authz.Role, len(Phonebook.Roles))
 	for i := 0; i < len(Phonebook.Roles); i++ {
-		u.Roles[i] = Role{}
+		u.Roles[i] = authz.Role{}
 		u.Roles[i].Name = Phonebook.Roles[i].Name
 		u.Roles[i].RID = Phonebook.Roles[i].RID
 	}
@@ -761,12 +724,10 @@ func main() {
 	//=============================
 	Phonebook.ReqMem = make(chan int)
 	Phonebook.ReqMemAck = make(chan int)
-	Phonebook.ReqSessionMem = make(chan int)
-	Phonebook.ReqSessionMemAck = make(chan int)
 	Phonebook.ReqCountersMem = make(chan int)
 	Phonebook.ReqCountersMemAck = make(chan int)
-	Phonebook.Roles = make([]Role, 0)
-	Phonebook.SessionTimeout = 120    // minutes
+	Phonebook.Roles = make([]authz.Role, 0)
+	Phonebook.SessionTimeout = 15     // minutes
 	Phonebook.SessionCleanupTime = 10 // minutes
 
 	//==============================================
@@ -818,11 +779,10 @@ func main() {
 	// On with the show...
 	//==============================================
 	initUI()
+	sess.InitSessionManager(Phonebook.SessionCleanupTime, Phonebook.SessionTimeout)
 	go Dispatcher()
 	go CounterDispatcher()
 	go UpdateCounters()
-	go SessionDispatcher()
-	go SessionCleanup()
 
 	initHTTP()
 	ws.InitServices(Phonebook.db)
