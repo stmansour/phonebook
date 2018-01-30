@@ -15,6 +15,7 @@ BASHDIR=${TOOLSDIR}/bashtools
 PHONEBOOKDIR="../../tmp/phonebook"
 STARTPHONEBOOKCMD="./phonebook"
 STOPPHONEBOOKCMD="./activate.sh stop"
+LOGFILE="log"
 
 #############################################################################
 # Set default values
@@ -22,7 +23,6 @@ STOPPHONEBOOKCMD="./activate.sh stop"
 SECONDS=0
 ERRFILE="err.txt"
 UNAME=$(uname)
-LOGFILE="log"
 MYSQLOPTS=""
 MYSQL=$(which mysql)
 TESTCOUNT=0			## this is an internal counter, your external script should not touch it
@@ -38,9 +38,6 @@ fi
 
 if [ "x${MANAGESERVER}" = "x" ]; then
 	MANAGESERVER=1
-fi
-if [ "x${CREATENEWDB}" = "x" ]; then
-	CREATENEWDB=1
 fi
 if [ "x${RRPORT}" = "x" ]; then
 	RRPORT="8270"
@@ -61,22 +58,6 @@ SKIPCOMPARE=0
 FORCEGOOD=0
 ASKBEFOREEXIT=0
 TESTCOUNT=0
-
-if [ "x" == "x${RRDATERANGE}" ]; then
-	echo "RRDATERANGE not set.  Setting to default = -j 2016-01-01 -k 2016-02-01"
-	RRDATERANGE="-j 2016-03-01 -k 2016-04-01"
-fi
-
-if [ "x" == "${BUD}x" ]; then
-	echo "BUD not set.  Setting to default = REX"
-	BUD="REX"
-fi
-
-if [ "x" == "x${CSVDATERANGE}" ]; then
-	echo "CSVDATERANGE not set.  Setting to default = -g 1/1/16,2/1/16"
-	CSVDATERANGE="-G ${BUD} -g 1/1/16,2/1/16"
-fi
-
 
 #############################################################################
 #  This code ensures that mysql does not touch production databases.
@@ -128,164 +109,6 @@ checkPause() {
 	if [ "${PAUSE}" = "1" ]; then
 		pause
 	fi
-}
-
-csvload() {
-	echo "command is:  ${CSVLOAD} ${1}"
-	echo
-	${CSVLOAD} ${1}
-}
-
-app() {
-	echo "command is:  ${RENTROLL} ${RRDATERANGE} -b ${BUD} ${1}"
-	${RENTROLL} ${RRDATERANGE} -b ${BUD} ${1}
-}
-
-# #############################################################################
-# # doReport()
-# #   Description:
-# #		Run database reports based on user selection
-# #############################################################################
-# doReport () {
-# while :
-# do
-# 	clear
-# 	cat <<EOF
-# -----------------------------------------
-#    R E N T R O L L  --  R E P O R T S
-# -----------------------------------------
-# A)   Assessments
-# B)   Business
-# C)   Chart of Accounts
-# CA)  Custom Attributes
-# D)   Delinquency
-# DE)  Deposits
-# DM)  Deposit Methods
-# DY)  Depositories
-# G)   GSR
-# I)   Invoice
-# IR)  Invoice Report
-# J)   Journal
-# L)   Ledger
-# LA)  Ledger Activity
-# LB)  Ledger Balance
-# MR)  Market Rate for Rentable
-# NT)  Note Types
-# P)   People
-# PE)  Pets
-# PT)  Payment Types
-# R)   Receipts
-# RA)  Rental Agreements
-# RAB) Rental Agreement Account Balance
-# RC)  Rentable Count by Rentable Type
-# RE)  Rentables
-# RP)  RatePlans
-# RR)  RentRoll
-# RPR) RatePlanRef
-# RS)  Rentable Specialty Assignments
-# RT)  Rentable Types
-# S)   Rentable Specialties
-# SA)  Specialty Assignments
-# SO)  Sources
-# ST)  Statements
-# T)   Rental Agreement Templates
-# U)   Custom Attribute Assignments
-
-
-# X) Exit
-
-# input is case insensitive
-# EOF
-
-# 	read -p "Enter choice: " choice
-# 	choice=$(echo "${choice}" | tr "[:upper:]" "[:lower:]")
-# 	case ${choice} in
-# 		  d) app "-b ${BUD} -r 14,2015-05-25" ;;
-# 		 ir) app "-b ${BUD} -r 9,IN00001" ;;
-# 		  j) app "-b ${BUD} -r 1" ;;
-# 		  l) app "-b ${BUD} -r 2" ;;
-# 		 la) app "-b ${BUD} -r 10" ;;
-# 		 lb) app "-b ${BUD} -r 17" ;;
-# 		 mr) app "-b ${BUD} -r 20,R001" ;;
-# 		  a) csvload "-L 11,${BUD}" ;;
-# 		  b) csvload "-L 3" ;;
-# 		  c) csvload "-L 10,${BUD}" ;;
-# 		 ca) csvload "-L 14" ;;
-# 		 de) csvload "${CSVDATERANGE} -L 19,${BUD}" ;;
-# 		 dm) csvload "-L 23,${BUD}" ;;
-# 		 dy) csvload "-L 18,${BUD}" ;;
-# 		  g) app "-b ${BUD} -r 11" ;;
-# 		  i) csvload "-L 20,${BUD}" ;;
-# 		 nt) csvload "-L 17,${BUD}" ;;
-# 		  p) csvload "-L 7,${BUD}" ;;
-# 		 pe) csvload "-L 16,RA0002" ;;
-# 		 pt) csvload "-L 12,${BUD}" ;;
-# 		  q) exit 0 ;;
-# 		  r) csvload "-L 13,${BUD}" ;;
-# 		 ra) csvload "-L 9,${BUD}" ;;
-# 		rab) app "-b ${BUD} -r 12,11,RA001,2016-07-04"; app "-b ${BUD} -r 12,9,RA001,2016-07-04" ;;
-# 		 rc) app "-b ${BUD} -r 7" ;;
-# 		 re) csvload "-L 6,${BUD}" ;;
-# 		 rp) csvload "-L 26,${BUD}" ;;
-# 		rpr) csvload "-L 27,${BUD}" ;;
-# 		 rr) app "-b ${BUD} -r 4" ;;
-# 		 rs) csvload "-L 22,${BUD}" ;;
-# 		 rt) csvload "-L 5,${BUD}" ;;
-# 		  s) csvload "-L 21,${BUD}" ;;
-# 		 sa) csvload "-L 22,${BUD}" ;;
-# 		 so) csvload "-L 24,${BUD}" ;;
-# 		 st) app "-b ${BUD} -r 8" ;;
-# 		  t) csvload "-L 8,${BUD}" ;;
-# 		  u) csvload "-L 15" ;;
-# 		  x)	exit 0 ;;
-# 		  *)	echo "Unknown report: ${choice}"
-# 	esac
-# 	pause
-# done
-# }
-
-usage() {
-	cat <<EOF
-
-SYNOPSIS
-	$0 [-c -f -o -r]
-
-	Rentroll test script. Compare the output of each step to its associated
-	.gold known-good output. If they miscompare, fail and stop the script.
-	If they match, keep going until all tasks are completed.
-
-OPTIONS
-	-a  If a test fails, pause after showing diffs from gold files, prompt
-	    for what to do next:  [Enter] to continue, m to move the output file
-	    into gold/ , or Q / X to exit.
-
-	-c  Show each command that was executed.
-
-	-f  Executes all the steps of the test but does not compare the output
-	    to the known-good files. This is useful when making a slight change
-	    to something just to see how it will work.
-
-	-m  Do not run any server mgmt commands. Typically, this is used to
-		run the test commands against an already-running server.
-
-	-n  Do not create a new database, use the current database and simply
-	    add to it.
-
-	-o  Regenerate the .gold files based on the output from this run. Only
-	    use this option if you're sure the output is correct. This option
-	    can be a huge time saver, but use it with caution. All .gold files
-	    are maintained in the ./${GOLD}/ directory.
-
-	-p  Causes execution to pause between tests so that you can perform
-	    checks in the database, or in logfiles, or any other output that
-	    the tests cause.
-
-	-r  Run the script in interactive REPORT mode. A menu of report options
-	    is displayed. Type in the letter(s) for the the report you want and
-	    it will run. When the report completes, the script will pause for you
-	    to review the output. Pressing Return will go back to the menu of
-	    reports.
-EOF
 }
 
 ##########################################################################
@@ -1354,70 +1177,46 @@ doCasperUITest () {
 	fi
 }
 
-#############################################################################
-# newDB  - I just remember this name better.
-#############################################################################
-function newDB() {
-	createDB
-}
-
-#############################################################################
-# createDB
-#############################################################################
-function createDB() {
-	echo -n "Create new database... " >> ${LOGFILE} 2>&1
-	${RRBIN}/rrnewdb
-	if [ $? -eq 0 ]; then
-		echo " successful" >> ${LOGFILE} 2>&1
-	else
-		echo " ERROR" >> ${LOGFILE} 2>&1
-		echo "Failed to create new database" > ${ERRFILE}
-		cat ${ERRFILE}
-		failmsg
-		exit 1
-	fi
-}
-
-#--------------------------------------------------------------------------
-#  Handle command line options...
-#--------------------------------------------------------------------------
-tdir
-while getopts "acfmoprnR:" o; do
-	echo "o = ${o}"
-	case "${o}" in
-		a)	ASKBEFOREEXIT=1
-			echo "WILL ASK BEFORE EXITING ON ERROR"
-			;;
-		c | C)
-			SHOWCOMMAND=1
-			echo "SHOWCOMMAND"
-			;;
-		r | R)
-			doReport
-			exit 0
-			;;
-		p | P)
-			PAUSE=1
-			echo "PAUSE BETWEEN COMMANDS"
-			;;
-		f)  SKIPCOMPARE=1
-			echo "SKIPPING COMPARES..."
-			;;
-		m)  MANAGESERVER=0
-			echo "SKIPPING SERVER MGMT CMDS..."
-			;;
-		n)	CREATENEWDB=0
-			echo "DATA WILL BE ADDED TO CURRENT DB"
-			;;
-		o)	FORCEGOOD=1
-			echo "OUTPUT OF THIS RUN IS SAVED AS *.GOLD"
-			;;
-		*) 	usage
-			exit 1
-			;;
-	esac
-done
-shift $((OPTIND-1))
+# #--------------------------------------------------------------------------
+# #  Handle command line options...
+# #--------------------------------------------------------------------------
+# tdir
+# while getopts "acfmoprnR:" o; do
+# 	echo "o = ${o}"
+# 	case "${o}" in
+# 		a)	ASKBEFOREEXIT=1
+# 			echo "WILL ASK BEFORE EXITING ON ERROR"
+# 			;;
+# 		c | C)
+# 			SHOWCOMMAND=1
+# 			echo "SHOWCOMMAND"
+# 			;;
+# 		r | R)
+# 			doReport
+# 			exit 0
+# 			;;
+# 		p | P)
+# 			PAUSE=1
+# 			echo "PAUSE BETWEEN COMMANDS"
+# 			;;
+# 		f)  SKIPCOMPARE=1
+# 			echo "SKIPPING COMPARES..."
+# 			;;
+# 		m)  MANAGESERVER=0
+# 			echo "SKIPPING SERVER MGMT CMDS..."
+# 			;;
+# 		n)	CREATENEWDB=0
+# 			echo "DATA WILL BE ADDED TO CURRENT DB"
+# 			;;
+# 		o)	FORCEGOOD=1
+# 			echo "OUTPUT OF THIS RUN IS SAVED AS *.GOLD"
+# 			;;
+# 		*) 	usage
+# 			exit 1
+# 			;;
+# 	esac
+# done
+# shift $((OPTIND-1))
 
 
 rm -f ${ERRFILE}
@@ -1426,9 +1225,5 @@ echo    "Test Purpose: ${TESTSUMMARY}" >> ${LOGFILE}
 echo -n "Date/Time:    " >>${LOGFILE}
 date >> ${LOGFILE}
 echo >>${LOGFILE}
-
-if [ ${CREATENEWDB} -eq 1 ]; then
-	createDB
-fi
 
 

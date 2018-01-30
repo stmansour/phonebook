@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"extres"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -36,6 +37,9 @@ type testContext struct {
 	cl       *class
 	testtype int
 }
+
+// ProductName is the name of the product that appears in the header of all html.
+var ProductName = string("AIR Directory")
 
 //--------------------------------------------------------------------
 //  FINANCE
@@ -272,6 +276,7 @@ var App struct {
 	JCLo, JCHi       int             // lo and high indeces for jobcode
 	DeptLo, DeptHi   int             // lo and high indeces for department
 	CompanyList      []company       // array of company structs for all defined companies
+	LogFile          *os.File        // where to log messages
 }
 
 func fillUserFields(v *personDetail) {
@@ -370,12 +375,21 @@ func loadCompanyList() {
 func main() {
 	readCommandLineArgs()
 
+	//==============================================
+	// Now open the logfile and the database...
+	//==============================================
+	var err error
+	App.LogFile, err = os.OpenFile("usersim.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	lib.Errcheck(err)
+	defer App.LogFile.Close()
+	log.SetOutput(App.LogFile)
+	lib.Ulog("*** usersim ***\n")
+
 	if App.TestUsers > 100 && !App.UpdateDBOnly {
 		fmt.Printf("Maximum users per simulation is 100.  You specified %d. Please reduce user count.\n", App.TestUsers)
 		os.Exit(1)
 	}
 
-	var err error
 	// s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
 	lib.ReadConfig()
 	s := extres.GetSQLOpenString(App.DBName, &lib.AppConfig)
@@ -408,6 +422,11 @@ func main() {
 	}
 
 	if !App.UpdateDBOnly {
+		lib.Ulog("Database Name: %s\n", App.DBName)
+		lib.Ulog("Database User: %s\n", App.DBUser)
+		lib.Ulog("User simulation count: %d\n", App.TestUsers)
+		lib.Ulog("Initiate simulation\n")
 		executeSimulation()
+		lib.Ulog("Simulation completed\n")
 	}
 }

@@ -89,7 +89,7 @@ func viewCompany(d *personDetail, atr *TestResults) bool {
 	tr.Failures = make([]TestFailure, 0)
 
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord") && strings.Contains(m, "Company") && d.SessionCookie != nil {
+	if strings.Contains(m, ProductName) && strings.Contains(m, "Company") && d.SessionCookie != nil {
 		var c company
 		getCompanyInfo(d.UID, &c) // yes, we're getting the company with cocode == d.UID
 
@@ -204,7 +204,7 @@ func adminEditCompany(d *personDetail, atr *TestResults) bool {
 	tr.Failures = make([]TestFailure, 0)
 
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord") && strings.Contains(m, "Admin Edit") && d.SessionCookie != nil {
+	if strings.Contains(m, ProductName) && strings.Contains(m, "Admin Edit") && d.SessionCookie != nil {
 		var c company
 		getCompanyInfo(d.UID, &c) // yes, we're getting the company with cocode == d.UID
 

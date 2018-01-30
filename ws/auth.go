@@ -43,7 +43,6 @@ type AuthSuccessResponse struct {
 //     nothing at this time
 //-----------------------------------------------------------------------------
 func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
-
 	var funcname = "saveReceipt"
 	var err error
 	var foo AuthenticateData

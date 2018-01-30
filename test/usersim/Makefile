@@ -7,7 +7,7 @@ test: usersim
 	./functest1.sh
 
 clean:
-	rm -f usersim conf*.json
+	rm -f usersim conf*.json usersim.log usersim.out errors.txt log
 
 config.json:
 	@/usr/local/accord/bin/getfile.sh accord/db/confdev.json

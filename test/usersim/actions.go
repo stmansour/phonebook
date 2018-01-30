@@ -165,7 +165,7 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 	// fmt.Printf("Page returned = %s\n", m)
 	var Mytr TestResults
 	tr.Failures = make([]TestFailure, 0)
-	if strings.Contains(m, "Accord") && strings.Contains(m, "Details") && d.SessionCookie != nil {
+	if strings.Contains(m, ProductName) && strings.Contains(m, "Details") && d.SessionCookie != nil {
 		myname := d.FirstName + " " + d.MiddleName + " " + d.LastName
 		validate := []validationTable{
 			{"Validate Full Name", &s, "FULL NAME", "PREFERRED NAME", true, myname},
@@ -262,8 +262,9 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 	var tc testContext
 	Mytr.Failures = make([]TestFailure, 0)
 
-	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Accord") && strings.Contains(m, pageName) && d.SessionCookie != nil {
+	// lib.Ulog("Page returned = %s\n", m)
+	// lib.Ulog("preparing to check for %s and %s", ProductName, pageName)
+	if strings.Contains(m, ProductName) && strings.Contains(m, pageName) && d.SessionCookie != nil {
 		t := time.Date(2000, time.December, 31, 23, 59, 59, 0, time.UTC)
 		sHire := ""
 		if d.Hire.After(t) {
@@ -299,7 +300,7 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 			/* 14 */ {pageName + ": validate Home Country", &s, `name="HomeCountry"`, `EMERGENCY CONTACT NAME`, false, `value="` + d.HomeCountry + `"`},
 			/* 15 */ {pageName + ": validate EmergencyContactName", &s, `name="EmergencyContactName"`, `name="EmergencyContactPhone"`, false, `value="` + d.EmergencyContactName + `"`},
 			/* 16 */ {pageName + ": validate EmergencyContactPhone", &s, `name="EmergencyContactPhone"`, `>COMPANY<`, false, `value="` + d.EmergencyContactPhone + `"`},
-			/* 17 */ {pageName + ": validate Company", &s, `>COMPANY<`, `>JOB TITLE<`, false, fmt.Sprintf("option value=\"%d\"selected>", d.CoCode)},
+			/* 17 */ //{pageName + ": validate Company", &s, `>COMPANY<`, `>JOB TITLE<`, false, fmt.Sprintf("option value=\"%d\"selected>", d.CoCode)},
 			/* 18 */ {pageName + ": validate JobTitle", &s, `>JOB TITLE<`, `>MANAGER UID<`, false, fmt.Sprintf("option value=\"%d\"selected>", d.JobCode)},
 			/* 19 */ {pageName + ": validate ManagerUID", &s, `>MANAGER UID<`, `>STATE OF EMPLOYMENT<`, false, `value="` + fmt.Sprintf("%d", d.MgrUID) + `"`},
 			/* 20 */ {pageName + ": validate StateOfEmployment", &s, `>STATE OF EMPLOYMENT<`, `>COUNTRY OF EMPLOYMENT<`, false, `value="` + d.StateOfEmployment + `"`},
@@ -366,10 +367,10 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 
 func adminViewTest(d *personDetail, atr *TestResults) bool {
 	URL := fmt.Sprintf("http://%s:%d/adminView/%d", App.Host, App.Port, d.UID)
-	return viewAdminPerson(d, URL, "Admin - View", atr)
+	return viewAdminPerson(d, URL, ProductName+" - Admin View", atr)
 }
 
 func adminEditTest(d *personDetail, atr *TestResults) bool {
 	URL := fmt.Sprintf("http://%s:%d/adminEdit/%d", App.Host, App.Port, d.UID)
-	return viewAdminPerson(d, URL, "Admin - Edit", atr)
+	return viewAdminPerson(d, URL, ProductName+" - Admin Edit", atr)
 }
