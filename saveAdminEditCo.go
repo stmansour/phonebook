@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"strings"
@@ -30,12 +31,12 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMMOD) {
-		ulog("Permissions refuse saveAdminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse saveAdminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var c company
+	var c db.Company
 	path := "/saveAdminEditCo/"
 	CoCodestr := r.RequestURI[len(path):]
 	if len(CoCodestr) == 0 {
@@ -82,10 +83,14 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
-		var co company                                 // container for current information
-		co.CoCode = CoCode                             // initialize
-		getCompanyInfo(CoCode, &co)                    // fetch all its data
-		co.filterSecurityMerge(ssn, authz.PERMMOD, &c) // merge
+		var co db.Company           // container for current information
+		co.CoCode = CoCode          // initialize
+		getCompanyInfo(CoCode, &co) // fetch all its data
+
+		// func (c *company) filterSecurityMerge(ssn *sess.Session, permRequired int, cNew *company) {
+		// 	filterSecurityMerge(c, ssn, authz.ELEMCOMPANY, permRequired, cNew, 0)
+		// }
+		filterSecurityMerge(&co, ssn, authz.ELEMCOMPANY, authz.PERMMOD, &c, 0) // merge
 
 		if 0 == CoCode {
 			_, err = Phonebook.prepstmt.insertCompany.Exec(c.LegalName, c.CommonName, c.Designation,

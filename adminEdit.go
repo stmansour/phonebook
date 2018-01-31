@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"text/template"
@@ -19,12 +20,12 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ssn = ui.X
 
-	var d personDetail
-	d.Reports = make([]person, 0)
+	var d db.PersonDetail
+	d.Reports = make([]db.Person, 0)
 	path := "/adminEdit/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) == 0 {
-		fmt.Fprintf(w, "the RequestURI needs to know the person's uid. It was not found on the URI:  %s\n", r.RequestURI)
+		fmt.Fprintf(w, "the RequestURI needs to know the db.Person's uid. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
 	uid, err := strconv.Atoi(uidstr)
@@ -40,14 +41,14 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	//---------------------------------------------------------------------
 	// SECURITY
 	//		Access to the screen requires authz.PERMMOD permission.  The data
-	//		in personDetail includes those fields with VIEW and MOD perms
+	//		in db.PersonDetail includes those fields with VIEW and MOD perms
 	//---------------------------------------------------------------------
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
 		fmt.Printf("adminEditHandler:  ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMMOD) returned 0\n")
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	d.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+	PDetFilterSecurityRead(&d, ssn, authz.PERMVIEW|authz.PERMMOD)
 	ui.D = &d
 	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	initUIData(&ui)

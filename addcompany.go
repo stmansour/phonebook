@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"text/template"
 )
@@ -20,13 +21,13 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMCREATE) {
-		ulog("Permissions refuse AddCompany page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse AddCompany page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 	breadcrumbAdd(ssn, "Add Company", "/adminAddCompany/")
 
-	var c company
+	var c db.Company
 	c.CoCode = 0
 	c.Active = YES
 	c.EmploysPersonnel = NO

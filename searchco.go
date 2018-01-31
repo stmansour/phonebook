@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"text/template"
 )
@@ -42,10 +43,13 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var c company
+		var c db.Company
 		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Phone, &c.Fax, &c.Email, &c.Designation))
 		pc := &c
-		pc.filterSecurityRead(ssn, authz.PERMVIEW)
+		// func (c *db.Company) filterSecurityRead(ssn *sess.Session, permRequired int) {
+		// 	filterSecurityRead(c, authz.ELEMCOMPANY, ssn, permRequired, 0)
+		// }
+		filterSecurityRead(pc, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
 		d.Matches = append(d.Matches, c)
 	}
 	errcheck(rows.Err())

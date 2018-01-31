@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"text/template"
@@ -21,12 +22,12 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMMOD) {
-		ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var c company
+	var c db.Company
 	path := "/adminEditCo/"
 	CoCodestr := r.RequestURI[len(path):]
 	if len(CoCodestr) == 0 {
@@ -41,7 +42,7 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	breadcrumbAdd(ssn, "AdminEdit Company", fmt.Sprintf("/adminEditCo/%d", CoCode))
 	getCompanyInfo(CoCode, &c)
 	ui.C = &c
-	ui.C.filterSecurityRead(ssn, authz.PERMMOD)
+	filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMMOD, 0)
 
 	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
 	err = t.Execute(w, &ui)

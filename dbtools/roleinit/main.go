@@ -811,9 +811,7 @@ func readAccessRoles(db *sql.DB) {
 		var r Role
 		r.Perms = make([]FieldPerm, 0)
 		errcheck(rows.Scan(&r.RID, &r.Name, &r.Descr))
-		// fmt.Println(r.Name)
 		readFieldPerms(db, &r)
-		// Phonebook.Roles = append(Phonebook.Roles, r)
 	}
 
 	errcheck(rows.Err())

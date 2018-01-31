@@ -9,7 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
+	"phonebook/ui"
 	"strconv"
 	"strings"
 )
@@ -98,18 +100,18 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	var ssn *sess.Session
-	var ui uiSupport
+	var uis uiSupport
 	ssn = nil
-	if 0 < initHandlerSession(ssn, &ui, w, r) {
+	if 0 < initHandlerSession(ssn, &uis, w, r) {
 		return
 	}
-	ssn = ui.X
+	ssn = uis.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.EditPerson++            // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
-	var d personDetail
+	var d db.PersonDetail
 	path := "/savePersonDetails/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) == 0 {
@@ -126,12 +128,12 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	//  SECURITY
 	//=================================================================
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) {
-		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 	if uid != ssn.UID {
-		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", ssn.UID, ssn.Firstname, ssn.Urole.Name, uid)
+		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name, uid)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -169,7 +171,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 			if nil != err {
 				ulog("uploadImageFile returned error: %v\n", err)
 			}
-			ssn.ImageURL = getImageFilename(uid)
+			ssn.ImageURL = ui.GetImageFilename(uid)
 		} else {
 			ulog("err loading picture: %v\n", err)
 		}

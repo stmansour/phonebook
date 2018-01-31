@@ -102,7 +102,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 			name = preferredname
 		}
 
-		s := sessionNew(cval, myusername, name, uid, RID)
+		s := sess.NewSession(cval, myusername, name, uid, RID)
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)

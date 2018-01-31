@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"text/template"
 )
@@ -20,14 +21,14 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMCREATE) {
-		ulog("Permissions refuse AddPerson page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse AddPerson page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 	breadcrumbAdd(ssn, "Add Person", "/adminAddPerson/")
 
-	var d personDetail
-	d.Reports = make([]person, 0)
+	var d db.PersonDetail
+	d.Reports = make([]db.Person, 0)
 	initMyDeductions(&d)
 	initMyComps(&d)
 

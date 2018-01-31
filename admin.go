@@ -27,7 +27,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMCREATE) ||
 		ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMCREATE) ||
 		ssn.ElemPermsAny(authz.ELEMPBSVC, authz.PERMEXEC)) {
-		ulog("Permissions refuse admin page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse admin page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -52,7 +52,7 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ssn = ui.X
 
-	perm, ok := ssn.Ppr["Restart"]
+	perm, ok := ssn.PMap.Ppr["Restart"]
 	// fmt.Printf("restartHandler: perm=0x%02x\n", perm)
 	if ok {
 		if perm&authz.PERMEXEC != 0 {
@@ -79,7 +79,7 @@ func shutdownHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ssn = ui.X
 
-	perm, ok := ssn.Ppr["Shutdown"]
+	perm, ok := ssn.PMap.Ppr["Shutdown"]
 	if ok {
 		if perm&authz.PERMEXEC != 0 {
 			ulog("shutdownHandler successfully invoked\n")

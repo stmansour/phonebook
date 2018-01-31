@@ -4,7 +4,6 @@ package main
 
 import (
 	"database/sql"
-	"extres"
 	"flag"
 	"fmt"
 	"html/template"
@@ -14,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/lib"
 	"phonebook/sess"
 	"phonebook/ws"
@@ -23,119 +23,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
-
-//--------------------------------------------------------------------
-//  FINANCE
-//--------------------------------------------------------------------
-type company struct {
-	CoCode           int
-	LegalName        string
-	CommonName       string
-	Address          string
-	Address2         string
-	City             string
-	State            string
-	PostalCode       string
-	Country          string
-	Phone            string
-	Fax              string
-	Email            string
-	Designation      string
-	Active           int
-	EmploysPersonnel int
-	C                []class // an array of classes for the business units of this
-}
-
-type myComp struct {
-	CompCode int    // code for this comp type
-	Name     string // name for this code
-	HaveIt   int    // 0 = does not have it, 1 = has it
-}
-
-type aDeduction struct {
-	DCode  int    // code for this deduction
-	Name   string // name for this deduction
-	HaveIt int    // 0 = does not have it, 1 = has it
-}
-
-//--------------------------------------------------------------------
-//  PEOPLE-RELATED STRUCTURES
-//--------------------------------------------------------------------
-type person struct {
-	UID           int
-	LastName      string
-	FirstName     string
-	PreferredName string
-	PrimaryEmail  string
-	JobCode       int
-	OfficePhone   string
-	CellPhone     string
-	OfficeFax     string
-	DeptCode      int
-	DeptName      string
-	Employer      string
-}
-
-type personDetail struct {
-	UID                     int
-	UserName                string
-	LastName                string
-	FirstName               string
-	PrimaryEmail            string
-	JobCode                 int
-	OfficePhone             string
-	CellPhone               string
-	DeptName                string
-	MiddleName              string
-	Salutation              string
-	Status                  int
-	PositionControlNumber   string
-	OfficeFax               string
-	SecondaryEmail          string
-	EligibleForRehire       int
-	LastReview              time.Time
-	NextReview              time.Time
-	Birthdate               string
-	BirthMonth              int
-	BirthDOM                int
-	HomeStreetAddress       string
-	HomeStreetAddress2      string
-	HomeCity                string
-	HomeState               string
-	HomePostalCode          string
-	HomeCountry             string
-	StateOfEmployment       string
-	CountryOfEmployment     string
-	PreferredName           string
-	Comps                   []int  // an array of CompensationType values (ints)
-	RID                     int    // security role assigned to this person
-	CompensationStr         string //used in the admin edit interface
-	DeptCode                int
-	Company                 company
-	CoCode                  int
-	MgrUID                  int
-	JobTitle                string
-	Class                   string
-	ClassCode               int
-	MgrName                 string
-	Image                   string // ptr to image -- URI
-	Reports                 []person
-	Deductions              []int
-	DeductionsStr           string
-	EmergencyContactName    string
-	EmergencyContactPhone   string
-	AcceptedHealthInsurance int
-	AcceptedDentalInsurance int
-	Accepted401K            int
-	Hire                    time.Time
-	Termination             time.Time
-	NameToCoCode            map[string]int
-	NameToJobCode           map[string]int
-	AcceptCodeToName        map[int]string
-	NameToDeptCode          map[string]int // department name to dept code
-	MyComps                 []myComp
-	MyDeductions            []aDeduction
-}
 
 // dataFields lists all the field names and other information
 // about the field:
@@ -220,30 +107,19 @@ var adminScreenFields = []dataFields{
 	{authz.ELEMPBSVC, "Restart", true, "Restart the running Phonebook service"},
 }
 
-type class struct {
-	ClassCode   int
-	CoCode      int
-	Name        string
-	Designation string
-	Description string
-	LastModTime time.Time
-	LastModBy   int
-	C           company // parent company
-}
-
 type searchResults struct {
 	Query   string
-	Matches []person
+	Matches []db.Person
 }
 
 type searchCoResults struct {
 	Query   string
-	Matches []company
+	Matches []db.Company
 }
 
 type searchClassResults struct {
 	Query   string
-	Matches []class
+	Matches []db.Class
 }
 
 type signin struct {
@@ -261,15 +137,15 @@ type uiSupport struct {
 	NameToJobCode    map[string]int    // jobtitle to jobcode
 	AcceptCodeToName map[int]string    // Acceptance to jobcode
 	NameToDeptCode   map[string]int    // department name to dept code
-	NameToClassCode  map[string]int    // class designation to classcode
+	NameToClassCode  map[string]int    // db.Class designation to classcode
 	ClassCodeToName  map[int]string    // index by classcode to get the name
 	Months           []string          // a map for month number to month name
 	Roles            []authz.Role      // list of roles -- fields are not initialized
 	Images           map[string]string // interface images
-	CompanyList      []company         // list of all company structs
-	C                *company
-	A                *class
-	D                *personDetail
+	CompanyList      []db.Company      // list of all company structs
+	C                *db.Company
+	A                *db.Class
+	D                *db.PersonDetail
 	R                *searchResults
 	S                *signin
 	T                *searchCoResults
@@ -291,10 +167,10 @@ type PrepSQL struct {
 	getComps           *sql.Stmt // compensations associated with a user
 	myDeductions       *sql.Stmt // deductions for a specific user
 	adminPersonDetails *sql.Stmt // for AdminView and AdminEdit
-	classInfo          *sql.Stmt // get class attributes
+	classInfo          *sql.Stmt // get db.Class attributes
 	companyInfo        *sql.Stmt // company attributes
 	countersUpdate     *sql.Stmt // feature usage counters update
-	delClass           *sql.Stmt // deletes a class
+	delClass           *sql.Stmt // deletes a db.Class
 	delCompany         *sql.Stmt // deletes a company
 	delPerson          *sql.Stmt // deletes a person
 	delPersonComp      *sql.Stmt // part of delperson
@@ -309,9 +185,9 @@ type PrepSQL struct {
 	adminUpdatePerson  *sql.Stmt // admin update person
 	insertComp         *sql.Stmt // part of admin update person
 	insertDeduct       *sql.Stmt // part of admin update person
-	insertClass        *sql.Stmt // adding a new class
-	classReadBack      *sql.Stmt // read back newly written class
-	updateClass        *sql.Stmt // update a class
+	insertClass        *sql.Stmt // adding a new db.Class
+	classReadBack      *sql.Stmt // read back newly written db.Class
+	updateClass        *sql.Stmt // update a db.Class
 	insertCompany      *sql.Stmt // insert a new company
 	companyReadback    *sql.Stmt // read back newly written company
 	updateCompany      *sql.Stmt // update a company
@@ -334,7 +210,6 @@ var Phonebook struct {
 	DBName             string        // name of database to use
 	DBUser             string        // user phonebook should use for accessing db
 	LogFile            *os.File      // where to log messages
-	Roles              []authz.Role  // the roles saved in the database
 	ReqMem             chan int      // request to access UI data memory
 	ReqMemAck          chan int      // done with memory
 	ReqCountersMem     chan int      // request to access counters
@@ -495,11 +370,11 @@ func initUIData(u *uiSupport) {
 	for i := 0; i < len(PhonebookUI.Months); i++ {
 		u.Months[i] = PhonebookUI.Months[i]
 	}
-	u.Roles = make([]authz.Role, len(Phonebook.Roles))
-	for i := 0; i < len(Phonebook.Roles); i++ {
+	u.Roles = make([]authz.Role, len(authz.Authz.Roles))
+	for i := 0; i < len(authz.Authz.Roles); i++ {
 		u.Roles[i] = authz.Role{}
-		u.Roles[i].Name = Phonebook.Roles[i].Name
-		u.Roles[i].RID = Phonebook.Roles[i].RID
+		u.Roles[i].Name = authz.Authz.Roles[i].Name
+		u.Roles[i].RID = authz.Authz.Roles[i].RID
 	}
 	u.ErrMsg = ""
 }
@@ -524,7 +399,7 @@ func loadCompanies() {
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		var c company
+		var c db.Company
 		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Address, &c.Address2, &c.City, &c.State, &c.PostalCode, &c.Country, &c.Phone, &c.Fax, &c.Email, &c.Designation, &c.Active, &c.EmploysPersonnel))
 		PhonebookUI.CompanyList = append(PhonebookUI.CompanyList, c)
 		if c.EmploysPersonnel != 0 {
@@ -556,6 +431,13 @@ func loadClasses() {
 	errcheck(rows.Err())
 }
 
+func getVer() string {
+	return lib.GetVersionNo()
+}
+func getBTime() string {
+	return lib.GetBuildTime()
+}
+
 func loadMaps() {
 	var code int
 	var name string
@@ -581,8 +463,8 @@ func loadMaps() {
 		"datetimeToString":     datetimeToString,
 		"phoneURL":             phoneURL,
 		"mapURL":               mapURL,
-		"GetVersionNo":         lib.GetVersionNo,
-		"GetBuildTime":         lib.GetBuildTime,
+		"GetVersionNo":         getVer,
+		"GetBuildTime":         getBTime,
 	}
 	loadCompanies()
 	loadClasses()
@@ -726,9 +608,9 @@ func main() {
 	Phonebook.ReqMemAck = make(chan int)
 	Phonebook.ReqCountersMem = make(chan int)
 	Phonebook.ReqCountersMemAck = make(chan int)
-	Phonebook.Roles = make([]authz.Role, 0)
 	Phonebook.SessionTimeout = 15     // minutes
 	Phonebook.SessionCleanupTime = 10 // minutes
+	authz.Init(Phonebook.SecurityDebug)
 
 	//==============================================
 	// There may be some command line overrides...
@@ -745,25 +627,26 @@ func main() {
 	log.SetOutput(Phonebook.LogFile)
 	ulog("*** Accord PHONEBOOK ***\n")
 
-	//==============================================
-	// And the database...
-	//==============================================
-	// dbopenparms := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", Phonebook.DBUser, Phonebook.DBName)
+	// lib.ReadConfig()
+	// db.Init(Phonebook.DBName)
+	// Phonebook.db = db.DB.DirDB
+	// buildPreparedStatements()
 	lib.ReadConfig()
-	dbopenparms := extres.GetSQLOpenString(Phonebook.DBName, &lib.AppConfig)
-	db, err := sql.Open("mysql", dbopenparms)
+	dbopenparms := lib.GetSQLOpenString(Phonebook.DBUser, Phonebook.DBName)
+	pbdb, err := sql.Open("mysql", dbopenparms)
 	lib.Errcheck(err)
-	defer db.Close()
-	err = db.Ping()
+	defer pbdb.Close()
+	err = pbdb.Ping()
 	if nil != err {
-		ulog("db.Ping: Error = %v\n", err)
-		s := fmt.Sprintf("Could not establish database connection to db: %s, dbuser: %s\n", Phonebook.DBName, Phonebook.DBUser)
+		ulog("pbdb.Ping: Error = %v\n", err)
+		s := fmt.Sprintf("Could not establish database connection to pbdb: %s, dbuser: %s\n", Phonebook.DBName, Phonebook.DBUser)
 		ulog(s)
 		fmt.Println(s)
 		os.Exit(2)
 	}
 	ulog("MySQL database opened with \"%s\"\n", dbopenparms)
-	Phonebook.db = db
+	Phonebook.db = pbdb
+	db.DB.DirDB = pbdb
 	buildPreparedStatements()
 
 	//==============================================
@@ -779,14 +662,13 @@ func main() {
 	// On with the show...
 	//==============================================
 	initUI()
-	sess.InitSessionManager(Phonebook.SessionCleanupTime, Phonebook.SessionTimeout)
+	sess.InitSessionManager(Phonebook.SessionCleanupTime, Phonebook.SessionTimeout, pbdb, Phonebook.SecurityDebug)
 	go Dispatcher()
 	go CounterDispatcher()
 	go UpdateCounters()
 
 	initHTTP()
 	ws.InitServices(Phonebook.db)
-	sessionInit()
 
 	ulog("Phonebook initiating HTTP service on port %d\n", Phonebook.Port)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", Phonebook.Port), nil)

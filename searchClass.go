@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/db"
 	"phonebook/sess"
 	"text/template"
 )
@@ -41,7 +42,7 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var c class
+		var c db.Class
 		errcheck(rows.Scan(&c.ClassCode, &c.Name, &c.Designation, &c.Description))
 		d.Matches = append(d.Matches, c)
 	}

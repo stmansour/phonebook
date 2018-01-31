@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"strings"
@@ -33,14 +34,15 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
 		uid, _ := strconv.Atoi(uidstr)
-		var pd personDetail
+		var pd db.PersonDetail
 		if 0 != getPersonDetail(&pd, uid) {
 			ulog("%s: Error retrieving person information for userid=%d\n", path, uid)
 			http.Redirect(w, r, "/search/", http.StatusFound)
 			return
 		}
 		ui.D = &pd
-		ui.D.filterSecurityRead(ssn, authz.PERMVIEW)
+		// ui.D.filterSecurityRead(ssn, authz.PERMVIEW)
+		PDetFilterSecurityRead(ui.D, ssn, authz.PERMVIEW)
 		breadcrumbAdd(ssn, "Inactivate Person", fmt.Sprintf("/inactivatePerson/%d", uid))
 
 		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where status=1 and mgruid=%d", uid)
@@ -51,11 +53,11 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 		var d searchResults
 
 		for rows.Next() {
-			var m person
+			var m db.Person
 			errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 			m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 			pm := &m
-			pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+			filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
 			d.Matches = append(d.Matches, m)
 		}
 		errcheck(rows.Err())
@@ -114,12 +116,12 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !hasAccess(ssn, authz.ELEMPERSON, "ElemEntity", authz.PERMDEL) {
-		ulog("Permissions refuse delPersonHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse delPersonHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	// var d personDetail
+	// var d db.PersonDetail
 	c := "delPersonHandler"
 	m := strings.Split(r.RequestURI, "/")
 	uidstr := m[len(m)-1]
@@ -186,10 +188,11 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		classcode, _ := strconv.Atoi(costr)
-		var c class
+		var c db.Class
 		getClassInfo(classcode, &c)
 		ui.A = &c
-		ui.A.filterSecurityRead(ssn, authz.PERMVIEW)
+		// ui.A.filterSecurityRead(ssn, authz.PERMVIEW)
+		filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW, 0)
 
 		breadcrumbAdd(ssn, "Delete Class", fmt.Sprintf("/delClassRefErr/%d", classcode))
 
@@ -200,11 +203,12 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 		var d searchResults
 
 		for rows.Next() {
-			var m person
+			var m db.Person
 			errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 			m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 			pm := &m
-			pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+			// pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+			filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
 			d.Matches = append(d.Matches, m)
 		}
 		errcheck(rows.Err())
@@ -237,7 +241,7 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !hasAccess(ssn, authz.ELEMCLASS, "ElemEntity", authz.PERMDEL) {
-		ulog("Permissions refuse delCoHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse delCoHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -256,7 +260,7 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//===============================================================
-	//  Check for references to this class before deleting
+	//  Check for references to this db.Class before deleting
 	//===============================================================
 	s := fmt.Sprintf("select uid from people where classcode=%d", ClassCode)
 	rows, err := Phonebook.db.Query(s)
@@ -290,7 +294,7 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 	if delCheckError(c, ssn, err, s, w, r) {
 		return
 	}
-	// we've deleted it, now we need to reload our class list...
+	// we've deleted it, now we need to reload our db.Class list...
 	loadClasses()
 	http.Redirect(w, r, "/searchcl/", http.StatusFound)
 }
@@ -309,10 +313,11 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
 		cocode, _ := strconv.Atoi(costr)
-		var c company
+		var c db.Company
 		getCompanyInfo(cocode, &c)
 		ui.C = &c
-		ui.C.filterSecurityRead(ssn, authz.PERMVIEW)
+		// ui.C.filterSecurityRead(ssn, authz.PERMVIEW)
+		filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
 
 		breadcrumbAdd(ssn, "Delete Company", fmt.Sprintf("/delCoRefErr/%d", cocode))
 
@@ -323,11 +328,12 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 		var d searchResults
 
 		for rows.Next() {
-			var m person
+			var m db.Person
 			errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 			m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 			pm := &m
-			pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+			// pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+			filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
 			d.Matches = append(d.Matches, m)
 		}
 		errcheck(rows.Err())
@@ -360,7 +366,7 @@ func delCoHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !hasAccess(ssn, authz.ELEMCOMPANY, "ElemEntity", authz.PERMDEL) {
-		ulog("Permissions refuse delCoHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse delCoHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -379,7 +385,7 @@ func delCoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//===============================================================
-	//  Check for references to this class before deleting
+	//  Check for references to this db.Class before deleting
 	//===============================================================
 	s := fmt.Sprintf("select uid from people where CoCode=%d", CoCode)
 	rows, err := Phonebook.db.Query(s)

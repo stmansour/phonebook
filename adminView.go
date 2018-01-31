@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
 
-func getCompensations(d *personDetail) {
+func getCompensations(d *db.PersonDetail) {
 	rows, err := Phonebook.prepstmt.getComps.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
@@ -21,7 +22,7 @@ func getCompensations(d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func getCompensationStr(d *personDetail) {
+func getCompensationStr(d *db.PersonDetail) {
 	getCompensations(d)
 	d.CompensationStr = ""
 	for i := 0; i < len(d.Comps); i++ {
@@ -32,10 +33,10 @@ func getCompensationStr(d *personDetail) {
 	}
 }
 
-func initMyComps(d *personDetail) {
-	d.MyComps = make([]myComp, 0)
+func initMyComps(d *db.PersonDetail) {
+	d.MyComps = make([]db.MyComp, 0)
 	for i := CTUNSET + 1; i < CTEND; i++ {
-		var c myComp
+		var c db.MyComp
 		c.CompCode = i
 		c.Name = compensationTypeToString(i)
 		c.HaveIt = 0
@@ -43,7 +44,7 @@ func initMyComps(d *personDetail) {
 	}
 }
 
-func buildMyCompsMap(d *personDetail) {
+func buildMyCompsMap(d *db.PersonDetail) {
 	getCompensations(d)
 	initMyComps(d)
 	for i := 0; i < len(d.MyComps); i++ {
@@ -55,7 +56,7 @@ func buildMyCompsMap(d *personDetail) {
 	}
 }
 
-func getDeductions(d *personDetail) {
+func getDeductions(d *db.PersonDetail) {
 	rows, err := Phonebook.prepstmt.deductList.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
@@ -67,7 +68,7 @@ func getDeductions(d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func getDeductionsStr(d *personDetail) {
+func getDeductionsStr(d *db.PersonDetail) {
 	//getDeductions(d)
 	d.DeductionsStr = ""
 	for i := 0; i < len(d.Deductions); i++ {
@@ -78,13 +79,13 @@ func getDeductionsStr(d *personDetail) {
 	}
 }
 
-func initMyDeductions(d *personDetail) {
+func initMyDeductions(d *db.PersonDetail) {
 	rows, err := Phonebook.prepstmt.myDeductions.Query()
 	errcheck(err)
 	defer rows.Close()
-	d.MyDeductions = make([]aDeduction, 0)
+	d.MyDeductions = make([]db.ADeduction, 0)
 	for rows.Next() {
-		var b aDeduction
+		var b db.ADeduction
 		errcheck(rows.Scan(&b.DCode, &b.Name))
 		if b.DCode == DDUNKNOWN {
 			continue
@@ -94,7 +95,7 @@ func initMyDeductions(d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func loadDeductionList(d *personDetail) {
+func loadDeductionList(d *db.PersonDetail) {
 	getDeductions(d)
 	initMyDeductions(d)
 	for i := 0; i < len(d.MyDeductions); i++ {
@@ -106,7 +107,7 @@ func loadDeductionList(d *personDetail) {
 	}
 }
 
-func adminReadDetails(d *personDetail) {
+func adminReadDetails(d *db.PersonDetail) {
 	//-----------------------------------------------------------
 	// query for all the fields in table People
 	//-----------------------------------------------------------
@@ -153,8 +154,8 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	Counters.ViewPerson++            // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
-	var d personDetail
-	d.Reports = make([]person, 0)
+	var d db.PersonDetail
+	d.Reports = make([]db.Person, 0)
 	d.Image = "/images/anon.png"
 	path := "/adminView/"
 	uidstr := r.RequestURI[len(path):]
@@ -175,7 +176,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Ensure that the user has permissions to view everything we're about
 	// to display.
-	d.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+	PDetFilterSecurityRead(&d, ssn, authz.PERMVIEW|authz.PERMMOD)
 
 	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d

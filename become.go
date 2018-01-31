@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 )
@@ -28,17 +30,17 @@ func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Printf("Current session = %s\n", ssn.ToString())
 	var tmp sess.Session
-	var d personDetail
-	d.Reports = make([]person, 0)
+	var d db.PersonDetail
+	d.Reports = make([]db.Person, 0)
 	d.UID = ssn.UIDorig
 	adminReadDetails(&d)
-	getRoleInfo(d.RID, &tmp)
+	authz.GetRoleInfo(d.RID, &tmp.PMap)
 	// fmt.Printf("UIDorig = %d,  role name = %s, RID = %d\n", ssn.UIDorig, tmp.Urole.Name, tmp.Urole.RID)
 
 	//============================================================
 	// SECURITY
 	//============================================================
-	if tmp.Urole.Name != "Administrator" {
+	if tmp.PMap.Urole.Name != "Administrator" {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}

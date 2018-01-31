@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"text/template"
@@ -21,12 +22,12 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMMOD) {
-		ulog("Permissions refuse adminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse adminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var d class
+	var d db.Class
 	path := "/adminEditClass/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) == 0 {
@@ -42,7 +43,7 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	d.ClassCode = ClassCode
 	getClassInfo(ClassCode, &d)
 	ui.A = &d
-	ui.A.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+	filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW|authz.PERMMOD, 0)
 
 	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 	initUIData(&ui)

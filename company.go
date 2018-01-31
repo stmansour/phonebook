@@ -5,11 +5,12 @@ import (
 	"html/template"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 )
 
-func companyInit(c *company) {
+func companyInit(c *db.Company) {
 	c.LegalName = ""
 	c.CommonName = ""
 	c.Address = ""
@@ -25,9 +26,9 @@ func companyInit(c *company) {
 	c.Active = 0
 }
 
-func (c *company) filterSecurityRead(ssn *sess.Session, permRequired int) {
-	filterSecurityRead(c, authz.ELEMCOMPANY, ssn, permRequired, 0)
-}
+// func (c *db.Company) filterSecurityRead(ssn *sess.Session, permRequired int) {
+// 	filterSecurityRead(c, authz.ELEMCOMPANY, ssn, permRequired, 0)
+// }
 
 // MapKey is Accord's key for using google maps
 var MapKey = string("AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4")
@@ -39,11 +40,11 @@ func mapURL(addr, city, state, zip, country string) string {
 	return s
 }
 
-func (c *company) mapURL() string {
-	return mapURL(c.Address, c.City, c.State, c.PostalCode, c.Country)
-}
+// func (c *db.Company) mapURL() string {
+// 	return mapURL(c.Address, c.City, c.State, c.PostalCode, c.Country)
+// }
 
-func getCompanyInfo(cocode int, c *company) {
+func getCompanyInfo(cocode int, c *db.Company) {
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewCompany++           // initialize our data
@@ -60,7 +61,7 @@ func getCompanyInfo(cocode int, c *company) {
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		var cl class
+		var cl db.Class
 		errcheck(rows.Scan(&cl.ClassCode, &cl.CoCode, &cl.Name, &cl.Designation, &cl.Description, &cl.LastModTime, &cl.LastModBy))
 		c.C = append(c.C, cl)
 	}
@@ -79,12 +80,12 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMVIEW) {
-		ulog("Permissions refuse company view page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse company view page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var c company
+	var c db.Company
 	path := "/company/"
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
@@ -93,7 +94,7 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 		getCompanyInfo(cocode, &c)
 		t, _ := template.New("company.html").Funcs(funcMap).ParseFiles("company.html")
 		ui.C = &c
-		ui.C.filterSecurityRead(ssn, authz.PERMVIEW)
+		filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
 		err := t.Execute(w, &ui)
 		if nil != err {
 			errmsg := fmt.Sprintf("companyHandler: err = %v\n", err)

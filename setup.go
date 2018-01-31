@@ -27,7 +27,7 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !(sess.ElemPermsAny(authz.ELEMPBSVC, authz.PERMEXEC)) {
-		ulog("Permissions refuse setup page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		ulog("Permissions refuse setup page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
@@ -175,7 +175,7 @@ func saveSetupHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !(sess.ElemPermsAny(authz.ELEMPBSVC, authz.PERMEXEC)) {
-		ulog("Permissions refuse setup page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		ulog("Permissions refuse setup page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}

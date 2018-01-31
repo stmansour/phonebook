@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"strings"
@@ -24,12 +25,12 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMMOD) {
-		ulog("Permissions refuse saveAdminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse saveAdminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var c class
+	var c db.Class
 	path := "/saveAdminEditClass/"
 	ClassCodestr := r.RequestURI[len(path):]
 	if len(ClassCodestr) == 0 {
@@ -64,10 +65,14 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
-		var co class                                   // container for current information
-		co.ClassCode = ClassCode                       // initialize
-		getClassInfo(ClassCode, &co)                   // get the rest of the info
-		co.filterSecurityMerge(ssn, authz.PERMMOD, &c) // merge new info based on permissions
+		var co db.Class              // container for current information
+		co.ClassCode = ClassCode     // initialize
+		getClassInfo(ClassCode, &co) // get the rest of the info
+
+		// func (c *db.Class) filterSecurityMerge(ssn *sess.Session, permRequired int, cNew *db.Class) {
+		// 	filterSecurityMerge(c, ssn, authz.ELEMCLASS, permRequired, cNew, 0)
+		// }
+		filterSecurityMerge(&co, ssn, authz.ELEMCLASS, authz.PERMMOD, &c, 0) // merge new info based on permissions
 
 		if 0 == ClassCode {
 			_, err = Phonebook.prepstmt.insertClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, ssn.UID)
@@ -77,7 +82,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			rows, err := Phonebook.prepstmt.classReadBack.Query(co.Name, co.Designation)
 			errcheck(err)
 			defer rows.Close()
-			nClassCode := 0 // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest class added
+			nClassCode := 0 // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest db.Class added
 			for rows.Next() {
 				errcheck(rows.Scan(&ClassCode))
 				if ClassCode > nClassCode {
@@ -87,7 +92,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			errcheck(rows.Err())
 			ClassCode = nClassCode
 			c.ClassCode = ClassCode
-			loadClasses() // This is a new class, we've saved it, now we need to reload our company list...
+			loadClasses() // This is a new db.Class, we've saved it, now we need to reload our company list...
 		} else {
 			_, err = Phonebook.prepstmt.updateClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, ssn.UID, ClassCode)
 			if nil != err {

@@ -1,4 +1,4 @@
-DIRS=lib authz ui sess dbtools admintools test
+DIRS=lib db authz ui sess dbtools admintools test
 
 phonebook: *.go config.json
 	for dir in $(DIRS); do make -C $$dir;done
@@ -20,6 +20,10 @@ config.json:
 test: package
 	cd test;make test
 	@echo "*** TESTING COMPLETE, ALL TESTS PASSED ***"
+
+try:	clean phonebook
+	mysql --no-defaults accord < accord.sql
+
 
 all: clean phonebook test
 

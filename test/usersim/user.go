@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"phonebook/lib"
 	"regexp"
 	"strings"
 	"time"
@@ -200,7 +199,7 @@ func login(d *personDetail) bool {
 
 	// cookies:
 	cookies := resp.Cookies()
-	lib.Console("Cookies:value: %v\n", cookies)
+	// lib.Console("Cookies:value: %v\n", cookies)
 	for i := 0; i < len(cookies); i++ {
 		if cookies[i].Name == "accord" {
 			d.SessionCookie = cookies[i]

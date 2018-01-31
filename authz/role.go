@@ -1,5 +1,7 @@
 package authz
 
+import "phonebook/lib"
+
 //--------------------------------------------------------------------
 //  ROLE SECURITY
 //--------------------------------------------------------------------
@@ -35,4 +37,85 @@ type Role struct {
 	Name  string      // role name
 	Descr string      // role description
 	Perms []FieldPerm // permissions for all fields, all entities
+}
+
+// PermMaps provides maps for quick access to a field.
+// This is a handy structure for a session.
+//-----------------------------------------------------------------------------
+type PermMaps struct {
+	Urole Role           // user's role
+	Pp    map[string]int // quick way to reference person permissions based on field name
+	Pco   map[string]int // quick way to reference company permissions based on field name
+	Pcl   map[string]int // quick way to reference db.Class permissions based on field name
+	Ppr   map[string]int
+}
+
+// Authz is the context structure for the authorization framework
+//-----------------------------------------------------------------------------
+var Authz struct {
+	Roles         []Role
+	SecurityDebug bool // push security debug messages to the logfile
+}
+
+// Init initializes the authorization framework
+//-----------------------------------------------------------------------------
+func Init(debug bool) {
+	Authz.Roles = make([]Role, 0)
+	Authz.SecurityDebug = debug
+}
+
+// GetRoleInfo populates the PermMaps
+//-----------------------------------------------------------------------------
+func GetRoleInfo(rid int, s *PermMaps) {
+	found := -1
+	idx := -1
+
+	// try to find the requested index
+	// lib.Ulog("len(Authz.Roles)=%d\n", len(Authz.Roles))
+	// lib.Ulog("GetRoleInfo - looking for rid=%d\n", rid)
+	for i := 0; i < len(Authz.Roles); i++ {
+		// lib.Ulog("Authz.Roles[%d] = %+v\n", i, Authz.Roles[i])
+		if rid == Authz.Roles[i].RID {
+			found = i
+			idx = i
+			s.Urole.Name = Authz.Roles[i].Name
+			s.Urole.RID = rid
+			break
+		}
+	}
+
+	if found < 0 {
+		idx = 0
+		lib.Ulog("Did not find rid == %d, all permissions set to read-only\n", rid)
+	}
+
+	r := Authz.Roles[idx]
+	s.Pp = make(map[string]int)
+	s.Pco = make(map[string]int)
+	s.Pcl = make(map[string]int)
+	s.Ppr = make(map[string]int)
+
+	for i := 0; i < len(r.Perms); i++ {
+		var f FieldPerm
+		f.Elem = r.Perms[i].Elem
+		f.Field = r.Perms[i].Field
+		if found < 0 {
+			f.Perm = PERMVIEW
+		} else {
+			f.Perm = r.Perms[i].Perm
+		}
+		s.Urole.Perms = append(s.Urole.Perms, f)
+
+		// fast access maps:
+		switch f.Elem {
+		case ELEMPERSON:
+			s.Pp[f.Field] = f.Perm
+		case ELEMCOMPANY:
+			s.Pco[f.Field] = f.Perm
+		case ELEMCLASS:
+			s.Pcl[f.Field] = f.Perm
+		case ELEMPBSVC:
+			s.Ppr[f.Field] = f.Perm
+		}
+	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strings"
 	"text/template"
@@ -98,11 +99,14 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var m person
+		var m db.Person
 		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.OfficeFax, &m.CellPhone, &m.DeptCode))
 		m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 		pm := &m
-		pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
+		// func (d *person) filterSecurityRead(sess *session, permRequired int) {
+		// 	filterSecurityRead(d, ELEMPERSON, sess, permRequired, d.UID)
+		// }
+		filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
 		d.Matches = append(d.Matches, m)
 	}
 	errcheck(rows.Err())

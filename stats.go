@@ -10,12 +10,12 @@ import (
 func statsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	var mysession *sess.Session
-	var ui uiSupport
+	var uis uiSupport
 	mysession = nil
-	if 0 < initHandlerSession(mysession, &ui, w, r) {
+	if 0 < initHandlerSession(mysession, &uis, w, r) {
 		return
 	}
-	mysession = ui.X
+	mysession = uis.X
 	breadcrumbAdd(mysession, "Stats", "/stats/")
 
 	var MyCounters UsageCounters
@@ -26,8 +26,8 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	MyiCounters = Counters
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
-	ui.K = &MyCounters
-	ui.Ki = &MyiCounters
+	uis.K = &MyCounters
+	uis.Ki = &MyiCounters
 
 	sess.SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
 	<-sess.SessionManager.ReqSessionMemAck // make sure we got it
@@ -44,10 +44,10 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	sess.SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 
-	ui.N = p
+	uis.N = p
 
 	t, _ := template.New("stats.html").Funcs(funcMap).ParseFiles("stats.html")
-	err := t.Execute(w, &ui)
+	err := t.Execute(w, &uis)
 
 	if nil != err {
 		errmsg := fmt.Sprintf("statsHandler: err = %v\n", err)

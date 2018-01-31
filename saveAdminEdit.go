@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"strings"
@@ -23,7 +24,7 @@ func strToInt(s string) int {
 }
 
 // This is a short term function. Should be replaced by a multi instanced dropdown selector
-func parseDeductions(d *personDetail) {
+func parseDeductions(d *db.PersonDetail) {
 	ca := strings.Split(d.DeductionsStr, ",")
 	d.Deductions = d.Deductions[:0] // clear it
 	for i := 0; i < len(ca); i++ {
@@ -46,12 +47,12 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
-		ulog("Permissions refuse saveAdminEdit page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse saveAdminEdit page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var d personDetail
+	var d db.PersonDetail
 	path := "/saveAdminEdit/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) == 0 {
@@ -145,9 +146,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		//-------------------------------
 		// SECURITY
 		//-------------------------------
-		var do personDetail   // container for current info
-		do.UID = uid          // init
-		adminReadDetails(&do) //read current data
+		var do db.PersonDetail // container for current info
+		do.UID = uid           // init
+		adminReadDetails(&do)  //read current data
 
 		//----------------------------------------------------------------------------
 		// If we're changing Status to Inactive, then it's like a delete. We'll have
@@ -161,7 +162,10 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		do.filterSecurityMerge(ssn, authz.PERMMOD, &d) // merge in new data
+		// func (d *db.PersonDetail) filterSecurityMerge(ssn *sess.Session, permRequired int, dNew *db.PersonDetail) {
+		// 	filterSecurityMerge(d, ssn, authz.ELEMPERSON, permRequired, dNew, d.UID)
+		// }
+		filterSecurityMerge(&do, ssn, authz.ELEMPERSON, authz.PERMMOD, &d, do.UID) // merge in new data
 
 		if uid == ssn.UID {
 			if 0 == len(do.PreferredName) {

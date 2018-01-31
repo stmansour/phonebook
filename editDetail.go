@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 	"text/template"
@@ -19,8 +20,8 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ssn = ui.X
 
-	var d personDetail
-	d.Reports = make([]person, 0)
+	var d db.PersonDetail
+	d.Reports = make([]db.Person, 0)
 	path := "/editDetail/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) == 0 {
@@ -41,7 +42,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	//=================================================================================
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
 		if !(ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) && ssn.UID == uid) {
-			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 			http.Redirect(w, r, "/search/", http.StatusFound)
 			return
 		}
@@ -62,7 +63,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD|authz.PERMOWNERMOD) {
-		ulog("Permissions refuse editDetail page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse editDetail page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}

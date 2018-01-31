@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
+	"phonebook/ui"
 	"strconv"
 	"strings"
 	"text/template"
@@ -53,30 +54,17 @@ func getDepartmentFromDeptCode(deptcode int) string {
 	return name
 }
 
-func getReports(uid int, d *personDetail) {
+func getReports(uid int, d *db.PersonDetail) {
 	//s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
 	rows, err := Phonebook.prepstmt.directReports.Query(uid)
 	errcheck(err)
 	defer rows.Close()
 	for rows.Next() {
-		var m person
+		var m db.Person
 		errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone))
 		d.Reports = append(d.Reports, m)
 	}
 	errcheck(rows.Err())
-}
-
-func getImageFilename(uid int) string {
-	pat := fmt.Sprintf("pictures/%d.*", uid)
-	matches, err := filepath.Glob(pat)
-	if err != nil {
-		fmt.Printf("filepath.Glob(%s) returned error: %v\n", pat, err)
-		return "/images/anon.png"
-	}
-	if len(matches) > 0 {
-		return "/" + matches[0]
-	}
-	return "/images/anon.png"
 }
 
 func detailpopHandler(w http.ResponseWriter, r *http.Request) {
@@ -96,8 +84,8 @@ func detailpopHandler(w http.ResponseWriter, r *http.Request) {
 //  to get detailed person information on a particular user
 //  returns 0 if success, err number otherwise
 //===========================================================
-func getPersonDetail(d *personDetail, uid int) int {
-	d.Image = getImageFilename(uid)
+func getPersonDetail(d *db.PersonDetail, uid int) int {
+	d.Image = ui.GetImageFilename(uid)
 	err := Phonebook.prepstmt.personDetail.QueryRow(uid).Scan(&d.LastName, &d.MiddleName,
 		&d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
 		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
@@ -117,19 +105,19 @@ func getPersonDetail(d *personDetail, uid int) int {
 func detailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	var sess *sess.Session
-	var ui uiSupport
+	var uis uiSupport
 	sess = nil
-	if 0 < initHandlerSession(sess, &ui, w, r) {
+	if 0 < initHandlerSession(sess, &uis, w, r) {
 		return
 	}
-	sess = ui.X
+	sess = uis.X
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewPerson++            // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
-	var d personDetail
-	d.Reports = make([]person, 0)
+	var d db.PersonDetail
+	d.Reports = make([]db.Person, 0)
 
 	var path string
 	if strings.Contains(r.RequestURI, "pop") {
@@ -149,13 +137,13 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	// SECURITY
 	//=================================================================
 	if !sess.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMOWNERVIEW) {
-		ulog("ViewPersonDetail: Permission refusal on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.Urole.Name)
+		ulog("ViewPersonDetail: Permission refusal on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
 	if uid > 0 {
-		d.Image = getImageFilename(uid)
+		d.Image = ui.GetImageFilename(uid)
 		rows, err := Phonebook.prepstmt.personDetail.Query(uid)
 		errcheck(err)
 		defer rows.Close()
@@ -173,13 +161,13 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		d.JobTitle = getJobTitle(d.JobCode)
 		getCompanyInfo(d.CoCode, &d.Company)
 		getReports(uid, &d)
-		d.Class = ui.ClassCodeToName[d.ClassCode]
+		d.Class = uis.ClassCodeToName[d.ClassCode]
 	}
 	t, _ := template.New("detail.html").Funcs(funcMap).ParseFiles("detail.html")
-	ui.D = &d
+	uis.D = &d
 
-	d.filterSecurityRead(sess, authz.PERMVIEW)
-	err := t.Execute(w, &ui)
+	filterSecurityRead(uis.D, authz.ELEMPERSON, sess, authz.PERMVIEW, d.UID)
+	err := t.Execute(w, &uis)
 	if nil != err {
 		errmsg := fmt.Sprintf("detailHandler: err = %v\n", err)
 		ulog(errmsg)

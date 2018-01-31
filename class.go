@@ -5,15 +5,16 @@ import (
 	"html/template"
 	"net/http"
 	"phonebook/authz"
+	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
 )
 
-func (c *class) filterSecurityRead(ssn *sess.Session, permRequired int) {
-	filterSecurityRead(c, authz.ELEMCLASS, ssn, permRequired, 0)
-}
+// func (c *db.Class) filterSecurityRead(ssn *sess.Session, permRequired int) {
+// 	filterSecurityRead(c, authz.ELEMCLASS, ssn, permRequired, 0)
+// }
 
-func getClassInfo(classcode int, c *class) {
+func getClassInfo(classcode int, c *db.Class) {
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewClass++             // initialize our data
@@ -44,12 +45,12 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 
 	// SECURITY
 	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMVIEW) {
-		ulog("Permissions refuse class page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.Urole.Name)
+		ulog("Permissions refuse class page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
-	var c class
+	var c db.Class
 	path := "/class/"
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
@@ -57,7 +58,7 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 		breadcrumbAdd(ssn, "Class", fmt.Sprintf("/class/%d", classcode))
 		getClassInfo(classcode, &c)
 		ui.A = &c
-		ui.A.filterSecurityRead(ssn, authz.PERMVIEW)
+		filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW, 0)
 		t, _ := template.New("class.html").Funcs(funcMap).ParseFiles("class.html")
 		err := t.Execute(w, &ui)
 		if nil != err {
