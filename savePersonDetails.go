@@ -132,7 +132,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	if uid != ssn.UID {
+	if int64(uid) != ssn.UID {
 		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name, uid)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return

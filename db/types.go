@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"phonebook/lib"
 	"time"
 )
 
@@ -138,6 +139,45 @@ type PersonDetail struct {
 	MyDeductions            []ADeduction
 }
 
+// SessionCookie defines the struct for the database table where session
+// cookies are managed.
+type SessionCookie struct {
+	UID      int64     // uid of the user
+	UserName string    // username for the user
+	Cookie   string    // the cookie value
+	Expire   time.Time // that timestamp when it expires
+}
+
+// PrepStmts are the sql prepared statements
+var PrepStmts struct {
+	DeleteSessionCookie  *sql.Stmt
+	DeleteExpiredCookies *sql.Stmt
+	GetSessionCookie     *sql.Stmt
+	InsertSessionCookie  *sql.Stmt
+	UpdateSessionCookie  *sql.Stmt
+	LoginInfo            *sql.Stmt
+}
+
+// CreatePreparedStmts creates prepared sql statements
+func CreatePreparedStmts() {
+	var err error
+	var flds string
+	flds = "UID,UserName,Cookie,Expire"
+	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?)")
+	lib.Errcheck(err)
+	PrepStmts.GetSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE Cookie=?")
+	lib.Errcheck(err)
+	PrepStmts.UpdateSessionCookie, err = DB.DirDB.Prepare("UPDATE sessions SET Expire=? WHERE Cookie=?")
+	lib.Errcheck(err)
+	PrepStmts.DeleteSessionCookie, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE Cookie=?")
+	lib.Errcheck(err)
+	PrepStmts.DeleteExpiredCookies, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE Expire <= ?")
+	lib.Errcheck(err)
+
+	PrepStmts.LoginInfo, err = DB.DirDB.Prepare("SELECT uid,firstname,preferredname,PrimaryEmail,passhash,rid FROM people WHERE UserName=?")
+	lib.Errcheck(err)
+}
+
 // Init initializes the database infrastructure
 //
 // INPUTS
@@ -145,25 +185,55 @@ type PersonDetail struct {
 //          if its length is > 0
 // RETURNS
 //  error - any error encountered
-// //-----------------------------------------------------------------------------
-// func Init(overridename string) error {
-// 	name := lib.AppConfig.Dbname
-// 	if len(overridename) > 0 {
-// 		name = overridename
-// 	}
-// 	dbopenparms := extres.GetSQLOpenString(name, &lib.AppConfig)
-// 	db, err := sql.Open("mysql", dbopenparms)
-// 	lib.Errcheck(err)
-// 	defer db.Close()
-// 	err = db.Ping()
-// 	if nil != err {
-// 		lib.Ulog("db.Ping: Error = %v\n", err)
-// 		s := fmt.Sprintf("Could not establish database connection to db: %s, dbuser: %s\n", name, lib.AppConfig.Dbuser)
-// 		lib.Ulog(s)
-// 		fmt.Println(s)
-// 		os.Exit(2)
-// 	}
-// 	lib.Ulog("MySQL database opened with \"%s\"\n", dbopenparms)
-// 	DB.DirDB = db
-// 	return nil
-// }
+//-----------------------------------------------------------------------------
+func Init() error {
+	CreatePreparedStmts()
+	return nil
+}
+
+// GetSessionCookie searches the session table for the speified cookie.
+//
+// INPUTS
+//  cookie - the Web Cookie value string. If err == nil then it is filled
+//           with all the info associated with the session table record.
+//           If it is not found, then len(c.Cookie) == 0
+//
+// RETURNS
+//  SessionCookie - if err == nil then a SessionCookie filled out with the
+//           information in the session table record. If err != nil, then
+//           the SessionCookie value will have len() == 0
+//
+//  err      Any errors encountered
+//-----------------------------------------------------------------------------
+func GetSessionCookie(cookie string) (SessionCookie, error) {
+	var c SessionCookie
+	err := PrepStmts.GetSessionCookie.QueryRow(cookie).Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire)
+	if nil != err {
+		if !lib.IsSQLNoResultsError(err) {
+			lib.Ulog("UpdateSessionCookie: error updating expire time:  %v\n", err)
+			lib.Ulog("cookie = %s\n", cookie)
+			return c, err
+		}
+	}
+	return c, nil
+}
+
+// UpdateSessionCookie updates the specified cookie with the new expire time
+func UpdateSessionCookie(cookie string, dt *time.Time) error {
+	_, err := PrepStmts.UpdateSessionCookie.Exec(*dt, cookie)
+	if nil != err {
+		lib.Ulog("UpdateSessionCookie: error updating expire time:  %v\n", err)
+		lib.Ulog("cookie = %s\n", cookie)
+	}
+	return err
+}
+
+// InsertSessionCookie inserts a new session cookie into the sessions table
+func InsertSessionCookie(UID int64, user string, cookie string, dt *time.Time) error {
+	_, err := PrepStmts.InsertSessionCookie.Exec(UID, user, cookie, *dt)
+	if nil != err {
+		lib.Ulog("InsertSessionCookie: error inserting Cookie:  %v\n", err)
+		lib.Ulog("UID = %d, user = %s, cookie = %s\n", UID, user, cookie)
+	}
+	return err
+}

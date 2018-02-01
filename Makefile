@@ -43,6 +43,9 @@ package: phonebook
 	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	for dir in $(DIRS); do make -C $$dir package;done
 
+accorddb:
+	mysql --no-defaults accord < accord.sql
+
 packageqa: phonebook
 	rm -rf tmp
 	mkdir -p tmp/phonebookqa/man/man1/

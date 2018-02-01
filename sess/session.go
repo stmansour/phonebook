@@ -27,8 +27,8 @@ type Session struct {
 	Token        string         // this is the md5 hash, unique id
 	Username     string         // associated username
 	Firstname    string         // user's first name
-	UID          int            // user's db uid
-	UIDorig      int            // original uid (for use with method sessionBecome())
+	UID          int64          // user's db uid
+	UIDorig      int64          // original uid (for use with method sessionBecome())
 	UsernameOrig string         // original username
 	CoCode       int            // logged in user's company
 	ImageURL     string         // user's picture
@@ -39,6 +39,12 @@ type Session struct {
 
 // Sessions is the map of Session structs indexed by the SessionKey (the browser cookie value)
 var Sessions map[string]*Session
+
+// SessionGet returns the in memory session with the supplied token
+func SessionGet(token string) (*Session, bool) {
+	s, ok := Sessions[token]
+	return s, ok
+}
 
 // InitSessionManager initializes the Session infrastructure
 //
@@ -58,6 +64,7 @@ func InitSessionManager(clean, timeout time.Duration, db *sql.DB, debug bool) {
 	SessionManager.db = db
 	go SessionDispatcher()
 	go SessionCleanup()
+	go ExpiredCookieCleaner()
 }
 
 // SessionDispatcher controls access to shared memory.
@@ -120,35 +127,76 @@ func DumpSessions() {
 // Refresh updates the cookie and Session with a new expire time.
 //-----------------------------------------------------------------------------
 func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
+	lib.Console("Entered Session.Refresh\n")
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
+		lib.Console("Cookie found: %s\n", cookie.Value)
 		cookie.Expires = time.Now().Add(SessionManager.SessionTimeout * time.Minute)
+		lib.Console("Setting expire time to: %v\n", cookie.Expires)
 		SessionManager.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
 		<-SessionManager.ReqSessionMemAck    // make sure we got it
 		s.Expire = cookie.Expires            // update the Session information
 		SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 		cookie.Path = "/"
 		http.SetCookie(w, cookie)
+		lib.Console("Session.Expire = %v\n", s.Expire)
+		UpdateSessionCookie(s)
 		return 0
 	}
 	return 1
 }
 
-// NewSession returns a new session
+// NewSessionFromCookie - Creates a new in-memory session based on a cookie
+// that exists in the session table. There are several circumstances which
+// cause us to get here:
+//		a) the login may have come from a separate running instance of
+//		   this server
+//		b) this server may have been restarted
+//		c) the user may have logged into another AIR app in the suite
+//
+// RETURNS
+//  *Session - it will be empty if there was any problem. Otherwise it will
+//		have all required session information
 //-----------------------------------------------------------------------------
-func NewSession(token, username, firstname string, uid int, rid int) *Session {
+func NewSessionFromCookie(c *db.SessionCookie) *Session {
+	var email, passhash, firstname, preferredname string
+	var uid, RID int
+
+	err := db.PrepStmts.LoginInfo.QueryRow(c.UserName).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
+	if err != nil {
+		s := new(Session)
+		lib.Ulog("Error reading person with username %s: %s", c.UserName, err.Error())
+		return s // it's empty because of the error
+	}
+	if len(preferredname) > 0 {
+		firstname = preferredname
+	}
+	return pvtNewSession(c, firstname, RID, false)
+}
+
+// NewSession returns a new session.  This entry point requires an update
+// to the session table.
+//-----------------------------------------------------------------------------
+func NewSession(c *db.SessionCookie, firstname string, rid int) *Session {
+	return pvtNewSession(c, firstname, rid, true)
+}
+
+// pvtNewSession creates a new session, updates the session table if necessary,
+// adds the new session to the in-memory session table, and returns the session
+//-----------------------------------------------------------------------------
+func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSessionTable bool) *Session {
 	// lib.Ulog("Entering NewSession: %s (%d)\n", username, uid)
+	uid := int(c.UID)
 	s := new(Session)
-	s.Token = token
-	s.Username = username
+	s.Token = c.Cookie
+	s.Username = c.UserName
 	s.Firstname = firstname
-	s.UID = uid
-	s.UIDorig = uid
+	s.UID = c.UID
+	s.UIDorig = c.UID
 	s.ImageURL = ui.GetImageFilename(uid)
 	s.Breadcrumbs = make([]ui.Crumb, 0)
+	s.Expire = c.Expire
 	authz.GetRoleInfo(rid, &s.PMap)
-
-	// lib.Ulog("NewSession: s = %#v\n", s)
 
 	if authz.Authz.SecurityDebug {
 		for i := 0; i < len(s.PMap.Urole.Perms); i++ {
@@ -164,13 +212,17 @@ func NewSession(token, username, firstname string, uid int, rid int) *Session {
 		lib.Ulog("Unable to read CoCode for userid=%d,  err = %v\n", uid, err)
 	}
 
+	if updateSessionTable {
+		err = InsertSessionCookie(s)
+		if err != nil {
+			lib.Ulog("Unable to save session for UID = %d to database,  err = %s\n", uid, err.Error())
+		}
+	}
+
 	SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
 	<-SessionManager.ReqSessionMemAck // make sure we got it
-	Sessions[token] = s
+	Sessions[c.Cookie] = s
 	SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
-
-	// lib.Ulog("New Session: %s\n", s.ToString())
-	// lib.Ulog("Session.Urole.perms = %+v\n", s.PMap.Urole.Perms)
 
 	return s
 }

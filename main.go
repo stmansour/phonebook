@@ -196,7 +196,6 @@ type PrepSQL struct {
 	readFieldPerms     *sql.Stmt // read field permissions
 	accessRoles        *sql.Stmt // read access roles
 	getUserCoCode      *sql.Stmt // read the cocode for a person
-	loginInfo          *sql.Stmt // read info for login
 	CompanyClasses     *sql.Stmt // read a list of classes that belong to a company
 	GetAllCompanies    *sql.Stmt // query to select all companies
 }
@@ -608,8 +607,8 @@ func main() {
 	Phonebook.ReqMemAck = make(chan int)
 	Phonebook.ReqCountersMem = make(chan int)
 	Phonebook.ReqCountersMemAck = make(chan int)
-	Phonebook.SessionTimeout = 15     // minutes
-	Phonebook.SessionCleanupTime = 10 // minutes
+	Phonebook.SessionTimeout = 15    // minutes
+	Phonebook.SessionCleanupTime = 1 // minutes
 	authz.Init(Phonebook.SecurityDebug)
 
 	//==============================================
@@ -648,6 +647,7 @@ func main() {
 	Phonebook.db = pbdb
 	db.DB.DirDB = pbdb
 	buildPreparedStatements()
+	db.Init()
 
 	//==============================================
 	// Load some of the database info...

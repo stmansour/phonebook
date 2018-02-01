@@ -31,11 +31,6 @@ func hasAccess(s *sess.Session, el int, fieldName string, access int) bool {
 
 }
 
-func sessionGet(token string) (*sess.Session, bool) {
-	s, ok := sess.Sessions[token]
-	return s, ok
-}
-
 func hasFieldAccess(token string, el int, fieldName string, access int) bool {
 	s, ok := sess.Sessions[token]
 	if !ok {
@@ -127,6 +122,7 @@ func pvtShowAdminButton(s *sess.Session) bool {
 	}
 	return false
 }
+
 func showAdminButton(token string) bool {
 	s, ok := sess.Sessions[token]
 	if !ok {
@@ -152,7 +148,7 @@ func sessionBecome(s *sess.Session, uid int) {
 	if 0 < len(d.PreferredName) {
 		s.Firstname = d.PreferredName
 	}
-	s.UID = uid
+	s.UID = int64(uid)
 	s.Username = d.UserName
 	s.ImageURL = ui.GetImageFilename(uid)
 	authz.GetRoleInfo(d.RID, &s.PMap)

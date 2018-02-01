@@ -1,14 +1,15 @@
 package main
 
 import (
-	"crypto/md5"
 	"crypto/sha512"
 	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
+	"phonebook/db"
 	"phonebook/lib"
 	"phonebook/sess"
+	"rentroll/rlib"
 	"strings"
 	"time"
 
@@ -27,23 +28,58 @@ func handlerInitUIDate(ui *uiSupport) {
 // RETURNS:  0 = no problems
 //           1 = redirected
 func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
+	rlib.Console("Entered initHandlerSession\n")
 	var ok bool
 	cookie, err := r.Cookie("accord")
-	if nil != cookie && err == nil {
-		ssn, ok = sessionGet(cookie.Value)
-		if !ok || ssn == nil {
-			http.Redirect(w, r, "/signin/", http.StatusFound)
-			return 1
-		}
-		ssn.Refresh(w, r)
-	} else {
-		//fmt.Printf("REDIRECT to signin\n")
+	if err != nil {
+		lib.Ulog("Error getting cookie from http.Request: %s\n", err.Error())
 		http.Redirect(w, r, "/signin/", http.StatusFound)
 		return 1
 	}
-	ui.X = ssn
-	handlerInitUIDate(ui)
-	return 0
+
+	if nil != cookie {
+		//--------------------------------------------------------------
+		// Found a cookie in the browser.  Let's see if we can find it
+		// in the in-memory session table...
+		//--------------------------------------------------------------
+		ssn, ok = sess.SessionGet(cookie.Value)
+		if ok && ssn != nil {
+			ssn.Refresh(w, r) // Found it.
+			ui.X = ssn
+			handlerInitUIDate(ui)
+			return 0
+		}
+
+		//--------------------------------------------------------------
+		// OK, it's not in the in-memory session table. It may have been
+		// from a login on another app in the suite. Or, we may have
+		// restarted the server. In either case, we check to see if
+		// the cookie is in the sessions table. If so, it is still a
+		// valid session and we will honor it.
+		//--------------------------------------------------------------
+		c, err := sess.GetSessionCookie(cookie.Value)
+		if err != nil {
+			lib.Ulog("Error getting cookie from http.Request: %s\n", err.Error())
+			http.Redirect(w, r, "/signin/", http.StatusFound)
+			return 1
+		}
+		if len(c.Cookie) > 0 {
+			//--------------------------------------------------------------
+			// Found a valid session. Add it to our in-memory table
+			// and continue...
+			//--------------------------------------------------------------
+			s := sess.NewSessionFromCookie(&c)
+			if len(s.Username) > 0 {
+				ui.X = ssn
+				handlerInitUIDate(ui)
+				return 0
+			}
+		}
+	}
+
+	//fmt.Printf("REDIRECT to signin\n")
+	http.Redirect(w, r, "/signin/", http.StatusFound)
+	return 1
 }
 
 func webloginHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +110,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var passhash, firstname, preferredname string
 	var uid, RID int
-	err := Phonebook.prepstmt.loginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
+	err := db.PrepStmts.LoginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
 		ulog("No user with username = %s\n", myusername)
@@ -89,20 +125,19 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	if passhash == mypasshash {
 		loggedIn = true
 		ulog("user %s logged in\n", myusername)
-		expiration := time.Now().Add(10 * time.Minute)
 		//=================================================================================
 		// There could be multiple ssn.Sessions from the same user on different browsers.
 		// These could be on the same or separate machines. We need the IP and the browser
 		// to guarantee uniqueness...
 		//=================================================================================
-		key := myusername + r.Header.Get("User-Agent") + r.RemoteAddr
-		cval := fmt.Sprintf("%x", md5.Sum([]byte(key)))
+		expiration := time.Now().Add(10 * time.Minute)
+		c := sess.GenerateSessionCookie(int64(uid), myusername, r.Header.Get("User-Agent"), r.RemoteAddr)
 		name := firstname
 		if len(preferredname) > 0 {
 			name = preferredname
 		}
 
-		s := sess.NewSession(cval, myusername, name, uid, RID)
+		s := sess.NewSession(&c, name, RID)
 		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)
@@ -163,7 +198,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	//-------------------------------------
 	// validate that myusername exists
 	//-------------------------------------
-	err = Phonebook.prepstmt.loginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &emailAddr, &passhash, &RID)
+	err = db.PrepStmts.LoginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &emailAddr, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
 		errmsg := fmt.Sprintf("Username %s was not found\n", myusername) + stillNeedHelp

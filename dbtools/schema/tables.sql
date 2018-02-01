@@ -143,9 +143,9 @@ CREATE TABLE roles (
 
 CREATE TABLE sessions (
     UID BIGINT NOT NULL,
-    SKey VARCHAR(256) NOT NULL DEFAULT '',
-    Expire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
-    PRIMARY KEY(UID)
+    UserName VARCHAR(40) NOT NULL DEFAULT '',
+    Cookie VARCHAR(40) NOT NULL DEFAULT '',
+    Expire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00'
 );
 
 -- Add the Administrator as the first and only user

@@ -23,7 +23,7 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie("accord")
 	if nil != cookie && err == nil {
-		ssn, ok = sessionGet(cookie.Value)
+		ssn, ok = sess.SessionGet(cookie.Value)
 		if ok {
 			sessionDelete(ssn)
 		}

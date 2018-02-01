@@ -41,7 +41,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	// SECURITY
 	//=================================================================================
 	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
-		if !(ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) && ssn.UID == uid) {
+		if !(ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) && ssn.UID == int64(uid)) {
 			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 			http.Redirect(w, r, "/search/", http.StatusFound)
 			return

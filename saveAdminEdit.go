@@ -167,7 +167,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 		filterSecurityMerge(&do, ssn, authz.ELEMPERSON, authz.PERMMOD, &d, do.UID) // merge in new data
 
-		if uid == ssn.UID {
+		if int64(uid) == ssn.UID {
 			if 0 == len(do.PreferredName) {
 				ssn.Firstname = do.FirstName
 			} else {

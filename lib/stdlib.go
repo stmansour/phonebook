@@ -3,22 +3,43 @@ package lib
 import (
 	"crypto/sha512"
 	"database/sql"
+	"extres"
 	"fmt"
 	"log"
 	"math/rand"
-	"os"
 	"runtime/debug"
 	"strconv"
 	"strings"
 )
 
-// Errcheck simplifies error handling by putting all the generic
-// code in one place.
+// // Errcheck simplifies error handling by putting all the generic
+// // code in one place.
+// func Errcheck(err error) {
+// 	if nil != err {
+// 		debug.PrintStack()
+// 		fmt.Printf("Error = %v\n", err)
+// 		os.Exit(1)
+// 	}
+// }
+
+// IsSQLNoResultsError returns true if the error provided is a sql err indicating no rows in the solution set.
+func IsSQLNoResultsError(err error) bool {
+	return err == sql.ErrNoRows
+}
+
+// Errcheck - saves a bunch of typing, prints error if it exists
+//            and provides a traceback as well
+// Note that the error is printed only if the environment is NOT production.
 func Errcheck(err error) {
-	if nil != err {
+	if err != nil {
+		if IsSQLNoResultsError(err) {
+			return
+		}
+		if extres.APPENVPROD != AppConfig.Env {
+			fmt.Printf("error = %v\n", err)
+		}
 		debug.PrintStack()
-		fmt.Printf("Error = %v\n", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 

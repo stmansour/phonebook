@@ -32,7 +32,7 @@ func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
 	var tmp sess.Session
 	var d db.PersonDetail
 	d.Reports = make([]db.Person, 0)
-	d.UID = ssn.UIDorig
+	d.UID = int(ssn.UIDorig)
 	adminReadDetails(&d)
 	authz.GetRoleInfo(d.RID, &tmp.PMap)
 	// fmt.Printf("UIDorig = %d,  role name = %s, RID = %d\n", ssn.UIDorig, tmp.Urole.Name, tmp.Urole.RID)

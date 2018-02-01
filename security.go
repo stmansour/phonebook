@@ -116,7 +116,7 @@ func filterSecurityRead(d interface{}, el int, ssn *sess.Session, permRequired i
 		pcheck = permRequired & perm                                       // and it with the required permissions
 		ok = 0 != pcheck                                                   // if the result is non-zero, the first test passes
 		if el == authz.ELEMPERSON && ok && pcheck == authz.PERMOWNERVIEW { // if this was an ownerView result...
-			ok = dataUID == ssn.UID // the session uid needs to match the data uid
+			ok = int64(dataUID) == ssn.UID // the session uid needs to match the data uid
 		}
 		if ok {
 			sulog("    requested permission granted\n")
@@ -196,7 +196,7 @@ func filterSecurityMerge(d interface{}, ssn *sess.Session, el int, permRequired 
 		pcheck := permRequired & perm                                     // AND it with the required permissions
 		ok = 0 != pcheck                                                  // if the result is non-zero, the first test passes
 		if el == authz.ELEMPERSON && ok && pcheck == authz.PERMOWNERMOD { // if we passed it still may be an ownerMOD result...
-			ok = UID == ssn.UID // if so, the session uid needs to match the data uid to proceed
+			ok = int64(UID) == ssn.UID // if so, the session uid needs to match the data uid to proceed
 		}
 
 		if ok && field.IsValid() {

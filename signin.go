@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/sess"
 	"strconv"
 	"text/template"
 )
@@ -21,7 +22,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	cookie, _ := r.Cookie("accord")
 	if nil != cookie {
-		s, ok := sessionGet(cookie.Value)
+		s, ok := sess.SessionGet(cookie.Value)
 		if ok {
 			if s.Token == cookie.Value {
 				// fmt.Printf("FOUND session, redirecting\n")
