@@ -20,7 +20,7 @@ var ErrMsgs = []string{
 func signinHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	cookie, _ := r.Cookie("accord")
+	cookie, _ := r.Cookie(sess.SessionCookieName)
 	if nil != cookie {
 		s, ok := sess.SessionGet(cookie.Value)
 		if ok {

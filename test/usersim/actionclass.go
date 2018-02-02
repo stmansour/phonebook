@@ -29,6 +29,8 @@ var classHTMLEscaper = strings.NewReplacer(
 	`+`, "&#43;",
 )
 
+var sessionCookieName = string("air")
+
 func escapeString(s string) string {
 	return classHTMLEscaper.Replace(s)
 }
@@ -76,7 +78,7 @@ func viewClass(d *personDetail, atr *TestResults) bool {
 
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}
@@ -181,7 +183,7 @@ func adminEditClass(d *personDetail, atr *TestResults) bool {
 
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}

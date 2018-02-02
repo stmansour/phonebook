@@ -21,7 +21,7 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	ssn = ui.X
 
-	cookie, err := r.Cookie("accord")
+	cookie, err := r.Cookie(sess.SessionCookieName)
 	if nil != cookie && err == nil {
 		ssn, ok = sess.SessionGet(cookie.Value)
 		if ok {

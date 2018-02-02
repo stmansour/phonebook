@@ -53,7 +53,7 @@ func viewCompany(d *personDetail, atr *TestResults) bool {
 
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}
@@ -168,7 +168,7 @@ func adminEditCompany(d *personDetail, atr *TestResults) bool {
 
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}

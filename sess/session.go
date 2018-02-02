@@ -128,7 +128,7 @@ func DumpSessions() {
 //-----------------------------------------------------------------------------
 func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
 	lib.Console("Entered Session.Refresh\n")
-	cookie, err := r.Cookie("accord")
+	cookie, err := r.Cookie(SessionCookieName)
 	if nil != cookie && err == nil {
 		lib.Console("Cookie found: %s\n", cookie.Value)
 		cookie.Expires = time.Now().Add(SessionManager.SessionTimeout * time.Minute)

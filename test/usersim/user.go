@@ -98,7 +98,7 @@ func logoff(d *personDetail) bool {
 	// fmt.Printf("Cookies:value: %+v\n", cookies)
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}
@@ -201,7 +201,7 @@ func login(d *personDetail) bool {
 	cookies := resp.Cookies()
 	// lib.Console("Cookies:value: %v\n", cookies)
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}
@@ -226,7 +226,7 @@ func login(d *personDetail) bool {
 	m2 := reTitleEnd.FindStringIndex(s)
 	m := s[m1[1]:m2[0]]
 	// fmt.Printf("Page returned = %s\n", m)
-	if strings.Contains(m, "Directory") && strings.Contains(m, "Search") && d.SessionCookie.Name == "accord" {
+	if strings.Contains(m, "Directory") && strings.Contains(m, "Search") && d.SessionCookie.Name == sessionCookieName {
 		// fmt.Printf("Login successful\n")
 		return true
 	}

@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// SessionCookieName is a string holding the cookie name for browser cookies
+// throughout the air suite.
+//---------------------------------------------------------------------------
+var SessionCookieName = string("air")
+
 // Cookie management for web client and web services
 
 // GenerateSessionCookie - create a new cookie

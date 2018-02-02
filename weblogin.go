@@ -30,7 +30,7 @@ func handlerInitUIDate(ui *uiSupport) {
 func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
 	rlib.Console("Entered initHandlerSession\n")
 	var ok bool
-	cookie, err := r.Cookie("accord")
+	cookie, err := r.Cookie(sess.SessionCookieName)
 	if err != nil {
 		lib.Ulog("Error getting cookie from http.Request: %s\n", err.Error())
 		http.Redirect(w, r, "/signin/", http.StatusFound)
@@ -138,7 +138,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		s := sess.NewSession(&c, name, RID)
-		cookie := http.Cookie{Name: "accord", Value: s.Token, Expires: expiration}
+		cookie := http.Cookie{Name: sess.SessionCookieName, Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)
 		r.AddCookie(&cookie) // need this so that the redirect to search finds the cookie

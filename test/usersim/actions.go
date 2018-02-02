@@ -143,7 +143,7 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 	// fmt.Printf("viewPersonDetail: Cookies:  %+v\n", cookies)
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}
@@ -228,7 +228,7 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 
 	d.SessionCookie = nil
 	for i := 0; i < len(cookies); i++ {
-		if cookies[i].Name == "accord" {
+		if cookies[i].Name == sessionCookieName {
 			d.SessionCookie = cookies[i]
 			break
 		}
