@@ -161,25 +161,3 @@ func sessionBecome(s *sess.Session, uid int) {
 
 	ulog("user %d to BECOME user %d", s.UIDorig, s.UID)
 }
-
-// remove the supplied sess.Session.
-// if there is a better idiomatic way to do this, please let me know.
-func sessionDelete(s *sess.Session) {
-	// fmt.Printf("Session being deleted: %s\n", s.ToString())
-	// fmt.Printf("sess.Sessions before delete:\n")
-	// dumpSessions()
-
-	ss := make(map[string]*sess.Session, 0)
-
-	sess.SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
-	<-sess.SessionManager.ReqSessionMemAck // make sure we got it
-	for k, v := range sess.Sessions {
-		if s.Token != k {
-			ss[k] = v
-		}
-	}
-	sess.Sessions = ss
-	sess.SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
-	// fmt.Printf("sess.Sessions after delete:\n")
-	// dumpSessions()
-}

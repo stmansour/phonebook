@@ -218,9 +218,10 @@ func GetSessionCookie(cookie string) (SessionCookie, error) {
 	return c, nil
 }
 
-// UpdateSessionCookie updates the specified cookie with the new expire time
-func UpdateSessionCookie(cookie string, dt *time.Time) error {
-	_, err := PrepStmts.UpdateSessionCookie.Exec(*dt, cookie)
+// DeleteSessionCookie updates the specified cookie with the new expire time
+//-----------------------------------------------------------------------------
+func DeleteSessionCookie(cookie string) error {
+	_, err := PrepStmts.DeleteSessionCookie.Exec(cookie)
 	if nil != err {
 		lib.Ulog("UpdateSessionCookie: error updating expire time:  %v\n", err)
 		lib.Ulog("cookie = %s\n", cookie)
@@ -229,11 +230,22 @@ func UpdateSessionCookie(cookie string, dt *time.Time) error {
 }
 
 // InsertSessionCookie inserts a new session cookie into the sessions table
+//-----------------------------------------------------------------------------
 func InsertSessionCookie(UID int64, user string, cookie string, dt *time.Time) error {
 	_, err := PrepStmts.InsertSessionCookie.Exec(UID, user, cookie, *dt)
 	if nil != err {
 		lib.Ulog("InsertSessionCookie: error inserting Cookie:  %v\n", err)
 		lib.Ulog("UID = %d, user = %s, cookie = %s\n", UID, user, cookie)
+	}
+	return err
+}
+
+// UpdateSessionCookie inserts a new session cookie into the sessions table
+//-----------------------------------------------------------------------------
+func UpdateSessionCookie(cookie string, dt *time.Time) error {
+	_, err := PrepStmts.UpdateSessionCookie.Exec(*dt, cookie)
+	if nil != err {
+		lib.Ulog("UpdateSessionCookie: error updating Cookie:  %v\n", err)
 	}
 	return err
 }

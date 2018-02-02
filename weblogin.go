@@ -43,9 +43,9 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 		// in the in-memory session table...
 		//--------------------------------------------------------------
 		ssn, ok = sess.SessionGet(cookie.Value)
+		ui.X = ssn
 		if ok && ssn != nil {
 			ssn.Refresh(w, r) // Found it.
-			ui.X = ssn
 			handlerInitUIDate(ui)
 			return 0
 		}
@@ -54,7 +54,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 		// OK, it's not in the in-memory session table. It may have been
 		// from a login on another app in the suite. Or, we may have
 		// restarted the server. In either case, we check to see if
-		// the cookie is in the sessions table. If so, it is still a
+		// the cookie is in the db sessions table. If so, it is still a
 		// valid session and we will honor it.
 		//--------------------------------------------------------------
 		c, err := sess.GetSessionCookie(cookie.Value)
@@ -70,7 +70,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 			//--------------------------------------------------------------
 			s := sess.NewSessionFromCookie(&c)
 			if len(s.Username) > 0 {
-				ui.X = ssn
+				ui.X = s
 				handlerInitUIDate(ui)
 				return 0
 			}

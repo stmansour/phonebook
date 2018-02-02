@@ -25,7 +25,7 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 	if nil != cookie && err == nil {
 		ssn, ok = sess.SessionGet(cookie.Value)
 		if ok {
-			sessionDelete(ssn)
+			sess.SessionDelete(ssn)
 		}
 	}
 	http.Redirect(w, r, "/signin/", http.StatusFound)

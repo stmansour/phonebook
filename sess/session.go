@@ -227,6 +227,34 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 	return s
 }
 
+// SessionDelete removes the supplied sess.Session.
+// If there is a better idiomatic way to do this, please let me know.
+// It also removes the session from the db sessions table.
+//-----------------------------------------------------------------------------
+func SessionDelete(s *Session) {
+	// fmt.Printf("Session being deleted: %s\n", s.ToString())
+	// fmt.Printf("sess.Sessions before delete:\n")
+	// dumpSessions()
+
+	if err := db.DeleteSessionCookie(s.Token); err != nil {
+		lib.Ulog("Error deleteing session cookie: %s\n", err.Error())
+	}
+
+	ss := make(map[string]*Session, 0)
+
+	SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-SessionManager.ReqSessionMemAck // make sure we got it
+	for k, v := range Sessions {
+		if s.Token != k {
+			ss[k] = v
+		}
+	}
+	Sessions = ss
+	SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+	// fmt.Printf("sess.Sessions after delete:\n")
+	// dumpSessions()
+}
+
 //=====================================================================================
 // pvtElemPermsAny determines whether or not the Session has permissions to perform the
 // requested operations.  NOTE:  This interface does check the UID to fully cover
