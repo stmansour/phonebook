@@ -146,9 +146,12 @@ logcheck() {
 }
 
 
+#---------------------------------
+# Generate a new database...
+#---------------------------------
 initDB() {
 	pushd ${DBTOOLSDIR} >/dev/null
-	./apply.sh > /dev/null
+	./apply.sh -N ${DBNAME} > /dev/null
 	popd >/dev/null
 	${USERSIM} -f -u 300 -c 70 -C 70
 }
