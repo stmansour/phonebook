@@ -19,7 +19,8 @@ var SessionManager struct {
 	SessionCleanupTime time.Duration
 	SecurityDebug      bool
 	SessionTimeout     time.Duration
-	db                 *sql.DB // the database connection
+	db                 *sql.DB        // the database connection
+	ZoneUTC            *time.Location // what timezone should the server use?
 }
 
 // Session is the generic Session
@@ -55,6 +56,7 @@ func SessionGet(token string) (*Session, bool) {
 //  nothing
 //-----------------------------------------------------------------------------
 func InitSessionManager(clean, timeout time.Duration, db *sql.DB, debug bool) {
+	var err error
 	SessionManager.ReqSessionMem = make(chan int)
 	SessionManager.ReqSessionMemAck = make(chan int)
 	SessionManager.SessionCleanupTime = clean
@@ -62,6 +64,10 @@ func InitSessionManager(clean, timeout time.Duration, db *sql.DB, debug bool) {
 	Sessions = make(map[string]*Session)
 	SessionManager.SecurityDebug = debug
 	SessionManager.db = db
+	SessionManager.ZoneUTC, err = time.LoadLocation("UTC")
+	if err != nil {
+		lib.Ulog("InitSessionManager: error reading timezone: ", err.Error())
+	}
 	go SessionDispatcher()
 	go SessionCleanup()
 	go ExpiredCookieCleaner()

@@ -21,7 +21,7 @@ test: package
 	cd test;make test
 	@echo "*** TESTING COMPLETE, ALL TESTS PASSED ***"
 
-try:	clean phonebook
+try:	clean phonebook package
 	mysql --no-defaults accord < accord.sql
 
 

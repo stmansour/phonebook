@@ -6,16 +6,20 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"phonebook/db"
 	"phonebook/lib"
+	"phonebook/sess"
 	"strings"
 )
 
 // AuthenticateData is the struct with the username and password
 // used for authentication
 type AuthenticateData struct {
-	User  string `json:"user"`
-	Pass  string `json:"pass"`
-	FLAGS uint64 `json:"flags"`
+	User       string `json:"user"`
+	Pass       string `json:"pass"`
+	FLAGS      uint64 `json:"flags"`
+	UserAgent  string `json:"useragent"`
+	RemoteAddr string `json:"remoteaddr"`
 }
 
 // AuthSuccessResponse will be the response structure used when
@@ -25,7 +29,14 @@ type AuthSuccessResponse struct {
 	UID      int64  `json:"uid"`
 	Name     string `json:"Name"`
 	ImageURL string `json:"ImageURL"`
+	Token    string `json:"Token"`
+	Expire   string `json:"Expire"` // DATETIMEFMT in this format "2006-01-02T15:04 "
 }
+
+const (
+	// JSONDATETIME is format roller and others use for datetime over json
+	JSONDATETIME = "2006-01-02T15:04:00Z"
+)
 
 // SvcAuthenticate generates a password hash from the supplied POST info and
 //     along with the user name compares it to what is in the database. If
@@ -73,15 +84,25 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		if len(m) > 0 {
 			fname = m[0]
 		}
+
+		c := sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
+
 		g := AuthSuccessResponse{
 			Status:   "success",
 			UID:      UID,
 			Name:     Name,
 			ImageURL: fname,
+			Token:    c.Cookie,
+			Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 		}
+		lib.Console("g = %#v\n", g)
 		w.Header().Set("Content-Type", "application/json")
 		SvcWriteResponse(&g, w)
 		lib.Ulog("user %s successfully logged in\n", foo.User)
+		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire)
+		if err == nil {
+			return
+		}
 	} else {
 		err := fmt.Errorf("login failed")
 		SvcErrorReturn(w, err, funcname)

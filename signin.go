@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/lib"
 	"phonebook/sess"
 	"strconv"
 	"text/template"
@@ -20,12 +21,32 @@ var ErrMsgs = []string{
 func signinHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
+	lib.Console("Entered signinHandler.  Looking for cookie named: %s\n", sess.SessionCookieName)
 	cookie, _ := r.Cookie(sess.SessionCookieName)
 	if nil != cookie {
+		lib.Console("Cookie named %s found.  value = %s\n", sess.SessionCookieName, cookie.Value)
 		s, ok := sess.SessionGet(cookie.Value)
 		if ok {
 			if s.Token == cookie.Value {
 				// fmt.Printf("FOUND session, redirecting\n")
+				http.Redirect(w, r, "/search/", http.StatusFound)
+				return
+			}
+		}
+		//----------------------------------------------------------------
+		// The login may have come from another AIR application. Create a
+		// session
+		//----------------------------------------------------------------
+		lib.Console("Cookie named %s was not found in the session table\n", sess.SessionCookieName)
+		lib.Console("Creating new session...\n")
+		c, err := sess.GetSessionCookie(cookie.Value)
+		lib.Console("session cookie:  %#v\n", c)
+		if err != nil {
+			lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
+		} else if len(c.Cookie) > 0 {
+			s := sess.NewSessionFromCookie(&c)
+			lib.Console("Creating new session from cookie. s.Username = %s\n", s.Username)
+			if len(s.Username) > 0 {
 				http.Redirect(w, r, "/search/", http.StatusFound)
 				return
 			}
