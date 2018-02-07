@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"phonebook/sess"
+	"time"
 )
 
 func logoffHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,6 +28,11 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			sess.SessionDelete(ssn)
 		}
+		// force the cookie to expire
+		cookie.Expires = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+		cookie.Path = "/"
+		http.SetCookie(w, cookie)
+		r.AddCookie(cookie) // need this so that the redirect to search finds the cookie
 	}
 	http.Redirect(w, r, "/signin/", http.StatusFound)
 }

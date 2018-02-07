@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"mime"
 	"mime/multipart"
-	"mojo/util"
 	"net/http"
 	"net/url"
 	"phonebook/lib"
@@ -63,7 +62,9 @@ var Svcs = []ServiceHandler{
 	{"authenticate", SvcAuthenticate},
 	{"discon", SvcDisableConsole},
 	{"encon", SvcEnableConsole},
+	{"logoff", SvcLogoff},
 	{"resetpw", SvcResetPWHandler},
+	{"validatecookie", SvcValidateCookie},
 	{"version", SvcHandlerVersion},
 }
 
@@ -243,10 +244,11 @@ func SvcErrorReturn(w http.ResponseWriter, err error, funcname string) {
 // SvcWriteResponse finishes the transaction with the W2UI client
 func SvcWriteResponse(g interface{}, w http.ResponseWriter) {
 	funcname := "SvcWriteResponse"
+	w.Header().Set("Content-Type", "application/json")
 	b, err := json.Marshal(g)
 	if err != nil {
 		e := fmt.Errorf("Error marshaling json data: %s", err.Error())
-		util.Ulog("%s: %s\n", funcname, err.Error())
+		lib.Ulog("%s: %s\n", funcname, err.Error())
 		SvcErrorReturn(w, e, funcname)
 		return
 	}
@@ -256,7 +258,7 @@ func SvcWriteResponse(g interface{}, w http.ResponseWriter) {
 // SvcWrite is a general write routine for service calls... it is a bottleneck
 // where we can place debug statements as needed.
 func SvcWrite(w http.ResponseWriter, b []byte) {
-	util.Console("first 300 chars of response: %-300.300s\n", string(b))
+	lib.Console("first 300 chars of response: %-300.300s\n", string(b))
 	// util.Console("\nResponse Data:  %s\n\n", string(b))
 	w.Write(b)
 }
@@ -279,7 +281,7 @@ func SvcWriteSuccessResponse(w http.ResponseWriter) {
 //  @Response version number
 // wsdoc }
 func SvcHandlerVersion(w http.ResponseWriter, r *http.Request, d *ServiceData) {
-	util.Ulog("Entered SvcHandlerVersion\n")
-	util.Ulog("lib.GetVersionNo() returns %s\n", lib.GetVersionNo())
+	lib.Ulog("Entered SvcHandlerVersion\n")
+	lib.Ulog("lib.GetVersionNo() returns %s\n", lib.GetVersionNo())
 	fmt.Fprintf(w, "%s", lib.GetVersionNo())
 }

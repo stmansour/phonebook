@@ -768,6 +768,7 @@ doPlainPOST () {
 		declare -a out_filters=(
 			's/(^[ \t]+"LastModTime":).*/$1 TIMESTAMP/'
 			's/(^[ \t]+"CreateTS":).*/$1 TIMESTAMP/'
+			's/("Expire":)"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(.*)/$1 TIMESTAMP $2/'
 		)
 		cp gold/${3}.gold qqx
 		cp ${3} qqy
