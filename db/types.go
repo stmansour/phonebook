@@ -162,16 +162,16 @@ var PrepStmts struct {
 func CreatePreparedStmts() {
 	var err error
 	var flds string
-	flds = "UID,UserName,Cookie,Expire"
+	flds = "UID,UserName,Cookie,DtExpire"
 	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?)")
 	lib.Errcheck(err)
 	PrepStmts.GetSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE Cookie=?")
 	lib.Errcheck(err)
-	PrepStmts.UpdateSessionCookie, err = DB.DirDB.Prepare("UPDATE sessions SET Expire=? WHERE Cookie=?")
+	PrepStmts.UpdateSessionCookie, err = DB.DirDB.Prepare("UPDATE sessions SET DtExpire=? WHERE Cookie=?")
 	lib.Errcheck(err)
 	PrepStmts.DeleteSessionCookie, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE Cookie=?")
 	lib.Errcheck(err)
-	PrepStmts.DeleteExpiredCookies, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE Expire <= ?")
+	PrepStmts.DeleteExpiredCookies, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE DtExpire <= ?")
 	lib.Errcheck(err)
 
 	PrepStmts.LoginInfo, err = DB.DirDB.Prepare("SELECT uid,firstname,preferredname,PrimaryEmail,passhash,rid FROM people WHERE UserName=?")
