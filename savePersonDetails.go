@@ -110,7 +110,7 @@ const (
 	PUBLIC_ACL        = "public-read"                         // This parameter make S3 bucket's object readable
 	IMAGE_UPLOAD_PATH = ""                                    // This parameter define in which folder have to upload image
 	AWS_PROFILE_NAME  = "akshay"                              // define profile name to get credentials
-	S3_HOST           = "https://s3.ap-south-1.amazonaws.com" // define host to access images from the s3
+	S3_HOST           = "https://s3.ap-south-1.amazonaws.com" // define host to access images from the s3. TODO(Akshay): Move this Host to config file
 )
 
 func generateFileName(uid int) string {
@@ -252,8 +252,11 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 			if nil != err {
 				ulog("uploadImageFile returned error: %v\n", err)
 			}
-			fmt.Println(imageLocation)
-			fmt.Println(imagePath)
+
+			d.ProfileImagePath = imagePath
+			d.ProfileImageURL = imageLocation
+
+			// Store imageLocation into session
 			ssn.ImageURL = imageLocation
 		} else {
 			ulog("err loading picture: %v\n", err)
@@ -264,7 +267,8 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		//=================================================================
 		_, err = Phonebook.prepstmt.updateMyDetails.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
 			d.EmergencyContactName, d.EmergencyContactPhone,
-			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, ssn.UID,
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
+			ssn.UID, d.ProfileImagePath,
 			uid)
 		if nil != err {
 			errmsg := fmt.Sprintf("savePersonDetailsHandler: Phonebook.prepstmt.updateMyDetails.Exec: err = %v\n", err)
