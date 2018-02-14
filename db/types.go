@@ -74,6 +74,7 @@ type Person struct {
 	DeptCode      int
 	DeptName      string
 	Employer      string
+	ImageURL      string
 }
 
 // PersonDetail defines all details version of the Person table
@@ -137,6 +138,7 @@ type PersonDetail struct {
 	NameToDeptCode          map[string]int // department name to dept code
 	MyComps                 []MyComp
 	MyDeductions            []ADeduction
+	ImageURL                string
 }
 
 // SessionCookie defines the struct for the database table where session
