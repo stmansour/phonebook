@@ -2,7 +2,9 @@ package ui
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
+	"phonebook/db"
 )
 
 // GetImageFilename returns the path to an image for the specified user.
@@ -19,4 +21,22 @@ func GetImageFilename(uid int) string {
 		return "/" + matches[0]
 	}
 	return "/images/anon.png"
+}
+
+// GetImageLocation returns the ImageURL for the specified user.
+func GetImageLocation(uid int) string {
+	var imagePath string
+
+	const (
+		S3_BUCKET = "upload-images-test"                  // This parameter define the bucket name in S3 TODO(Akshay): Move this parameter to config file
+		S3_HOST   = "https://s3.ap-south-1.amazonaws.com" // define host to access images from the s3. TODO(Akshay): Move this Host to config file
+	)
+
+	err := db.PrepStmts.GetImagePath.QueryRow(uid).Scan(&imagePath)
+	if err != nil {
+		// Something went wrong
+		fmt.Println(err) // TODO(Akshay): Proper log statement
+	}
+
+	return path.Join(S3_HOST, S3_BUCKET, imagePath)
 }

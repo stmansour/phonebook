@@ -199,7 +199,8 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 	s.Firstname = firstname
 	s.UID = c.UID
 	s.UIDorig = c.UID
-	s.ImageURL = ui.GetImageFilename(uid)
+	//s.ImageURL = ui.GetImageFilename(uid)
+	s.ImageURL = ui.GetImageLocation(uid)
 	s.Breadcrumbs = make([]ui.Crumb, 0)
 	s.Expire = c.Expire
 	authz.GetRoleInfo(rid, &s.PMap)

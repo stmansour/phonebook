@@ -160,6 +160,7 @@ var PrepStmts struct {
 	InsertSessionCookie  *sql.Stmt
 	UpdateSessionCookie  *sql.Stmt
 	LoginInfo            *sql.Stmt
+	GetImagePath         *sql.Stmt
 }
 
 // CreatePreparedStmts creates prepared sql statements
@@ -179,6 +180,10 @@ func CreatePreparedStmts() {
 	lib.Errcheck(err)
 
 	PrepStmts.LoginInfo, err = DB.DirDB.Prepare("SELECT uid,firstname,preferredname,PrimaryEmail,passhash,rid FROM people WHERE UserName=?")
+	lib.Errcheck(err)
+
+	// get image path from the people table
+	PrepStmts.GetImagePath, err = DB.DirDB.Prepare("SELECT ImagePath from people WHERE UID=?")
 	lib.Errcheck(err)
 }
 

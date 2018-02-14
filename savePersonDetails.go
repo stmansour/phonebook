@@ -106,7 +106,7 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 
 const (
 	S3_REGION         = "ap-south-1"                          // This parameter define the region of bucket
-	S3_BUCKET         = "upload-images-test"                  // This parameter define the bucket name in S3
+	S3_BUCKET         = "upload-images-test"                  // This parameter define the bucket name in S3 TODO(Akshay): Move this parameter to config file
 	PUBLIC_ACL        = "public-read"                         // This parameter make S3 bucket's object readable
 	IMAGE_UPLOAD_PATH = ""                                    // This parameter define in which folder have to upload image
 	AWS_PROFILE_NAME  = "akshay"                              // define profile name to get credentials
