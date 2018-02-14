@@ -3,17 +3,23 @@ package main
 import (
 	"crypto/sha512"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awsutil"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/sess"
-	"phonebook/ui"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -98,6 +104,80 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 	return nil
 }
 
+const (
+	S3_REGION         = "ap-south-1"                          // This parameter define the region of bucket
+	S3_BUCKET         = "upload-images-test"                  // This parameter define the bucket name in S3
+	PUBLIC_ACL        = "public-read"                         // This parameter make S3 bucket's object readable
+	IMAGE_UPLOAD_PATH = ""                                    // This parameter define in which folder have to upload image
+	AWS_PROFILE_NAME  = "akshay"                              // define profile name to get credentials
+	S3_HOST           = "https://s3.ap-south-1.amazonaws.com" // define host to access images from the s3
+)
+
+func generateFileName(uid int) string {
+	// get timestamps
+	timestamps := time.Now().UTC()
+
+	// id of user, and timestamps
+	s := []string{strconv.Itoa(uid), timestamps.Format("20160102150405")}
+
+	// generate filename to save on s3/db
+	filename := strings.Join(s, "_")
+
+	return filename
+}
+
+func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
+
+	// generate filename to save on s3/db
+	filename := generateFileName(uid)
+
+	// setup credential
+	// reading credential from the aws config
+	creds := credentials.NewSharedCredentials("", AWS_PROFILE_NAME)
+	_, err := creds.Get()
+	if err != nil {
+		fmt.Printf("Bad credentials: %s", err)
+	}
+
+	// Set up configuration
+	cfg := aws.NewConfig().WithRegion(S3_REGION).WithCredentials(creds)
+
+	// Set up session
+	sess, err := session.NewSession(cfg)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Create new s3 instance
+	svc := s3.New(sess)
+
+	// Path after the bucket name
+	imagePath := path.Join(IMAGE_UPLOAD_PATH, filename)
+
+	// define parameters to upload image to S3
+	params := &s3.PutObjectInput{
+		Bucket:               aws.String(S3_BUCKET),
+		Key:                  aws.String(imagePath), // it include filename
+		Body:                 usrfile,               // data of file
+		ServerSideEncryption: aws.String("AES256"),
+		ContentType:          aws.String(usrfname.Header["Content-Type"][0]),
+		CacheControl:         aws.String("max-age=86400"),
+		ACL:                  aws.String(PUBLIC_ACL),
+	}
+
+	// Upload image to s3 bucket
+	resp, err := svc.PutObject(params)
+	if err != nil {
+		fmt.Printf("bad response: %s", err)
+	}
+
+	fmt.Printf("response %s", awsutil.StringValue(resp))
+	fmt.Printf("Image location: %s", path.Join(S3_HOST, S3_BUCKET, imagePath))
+	imageLocation := path.Join(S3_HOST, S3_BUCKET, imagePath)
+
+	return imagePath, imageLocation
+}
+
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	var ssn *sess.Session
 	var uis uiSupport
@@ -167,11 +247,14 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Printf("file: %v, header: %v, err: %v\n", file, header, err)
 		if nil == err {
 			defer file.Close()
-			err = uploadImageFile(header.Filename, &file, uid)
+			//err = uploadImageFile(header.Filename, &file, uid) // Upload image on local disk space
+			imagePath, imageLocation := uploadImageFileToS3(header, file, uid) // Upload image to AWS S3
 			if nil != err {
 				ulog("uploadImageFile returned error: %v\n", err)
 			}
-			ssn.ImageURL = ui.GetImageFilename(uid)
+			fmt.Println(imageLocation)
+			fmt.Println(imagePath)
+			ssn.ImageURL = imageLocation
 		} else {
 			ulog("err loading picture: %v\n", err)
 		}
