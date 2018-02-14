@@ -62,19 +62,20 @@ type Company struct {
 // Person defines a low-details version of the Person table
 //--------------------------------------------------------------------
 type Person struct {
-	UID           int
-	LastName      string
-	FirstName     string
-	PreferredName string
-	PrimaryEmail  string
-	JobCode       int
-	OfficePhone   string
-	CellPhone     string
-	OfficeFax     string
-	DeptCode      int
-	DeptName      string
-	Employer      string
-	ImageURL      string
+	UID              int
+	LastName         string
+	FirstName        string
+	PreferredName    string
+	PrimaryEmail     string
+	JobCode          int
+	OfficePhone      string
+	CellPhone        string
+	OfficeFax        string
+	DeptCode         int
+	DeptName         string
+	Employer         string
+	ProfileImageURL  string
+	ProfileImagePath string
 }
 
 // PersonDetail defines all details version of the Person table
@@ -138,7 +139,8 @@ type PersonDetail struct {
 	NameToDeptCode          map[string]int // department name to dept code
 	MyComps                 []MyComp
 	MyDeductions            []ADeduction
-	ImageURL                string
+	ProfileImageURL         string
+	ProfileImagePath        string
 }
 
 // SessionCookie defines the struct for the database table where session
