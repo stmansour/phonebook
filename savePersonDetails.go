@@ -16,11 +16,11 @@ import (
 	"path/filepath"
 	"phonebook/authz"
 	"phonebook/db"
+	"phonebook/lib"
 	"phonebook/sess"
 	"strconv"
 	"strings"
 	"time"
-	"phonebook/lib"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -106,10 +106,10 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 }
 
 const (
-	S3_REGION         = "ap-south-1"                          // This parameter define the region of bucket
-	PUBLIC_ACL        = "public-read"                         // This parameter make S3 bucket's object readable
-	IMAGE_UPLOAD_PATH = ""                                    // This parameter define in which folder have to upload image
-	AWS_PROFILE_NAME  = "akshay"                              // define profile name to get credentials
+	S3_REGION         = "ap-south-1"  // This parameter define the region of bucket
+	PUBLIC_ACL        = "public-read" // This parameter make S3 bucket's object readable
+	IMAGE_UPLOAD_PATH = ""            // This parameter define in which folder have to upload image
+	AWS_PROFILE_NAME  = "akshay"      // define profile name to get credentials
 )
 
 func generateFileName(uid int) string {
@@ -170,9 +170,10 @@ func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File,
 		fmt.Printf("bad response: %s", err)
 	}
 
-	fmt.Printf("response %s", awsutil.StringValue(resp)) // TODO(Akshay): Add log statement
-	fmt.Printf("Image location: %s", path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)) // TODO(Akshay): Add log statement
 	imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+
+	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
+	ulog("Image location: %s", imageLocation)
 
 	return imagePath, imageLocation
 }
