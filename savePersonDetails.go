@@ -109,7 +109,6 @@ const (
 	S3_REGION         = "ap-south-1"  // This parameter define the region of bucket
 	PUBLIC_ACL        = "public-read" // This parameter make S3 bucket's object readable
 	IMAGE_UPLOAD_PATH = ""            // This parameter define in which folder have to upload image
-	AWS_PROFILE_NAME  = "akshay"      // define profile name to get credentials
 )
 
 func generateFileName(uid int) string {
@@ -132,7 +131,7 @@ func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File,
 
 	// setup credential
 	// reading credential from the aws config
-	creds := credentials.NewSharedCredentials("", AWS_PROFILE_NAME)
+	creds := credentials.NewStaticCredentials(lib.AppConfig.AWSAccessKeyID, lib.AppConfig.AWSSecretKey, "")
 	_, err := creds.Get()
 	if err != nil {
 		fmt.Printf("Bad credentials: %s", err)
