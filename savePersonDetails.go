@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"phonebook/lib"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -106,11 +107,9 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 
 const (
 	S3_REGION         = "ap-south-1"                          // This parameter define the region of bucket
-	S3_BUCKET         = "upload-images-test"                  // This parameter define the bucket name in S3 TODO(Akshay): Move this parameter to config file
 	PUBLIC_ACL        = "public-read"                         // This parameter make S3 bucket's object readable
 	IMAGE_UPLOAD_PATH = ""                                    // This parameter define in which folder have to upload image
 	AWS_PROFILE_NAME  = "akshay"                              // define profile name to get credentials
-	S3_HOST           = "https://s3.ap-south-1.amazonaws.com" // define host to access images from the s3. TODO(Akshay): Move this Host to config file
 )
 
 func generateFileName(uid int) string {
@@ -156,7 +155,7 @@ func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File,
 
 	// define parameters to upload image to S3
 	params := &s3.PutObjectInput{
-		Bucket:               aws.String(S3_BUCKET),
+		Bucket:               aws.String(lib.AppConfig.S3BucketName),
 		Key:                  aws.String(imagePath), // it include filename
 		Body:                 usrfile,               // data of file
 		ServerSideEncryption: aws.String("AES256"),
@@ -171,9 +170,9 @@ func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File,
 		fmt.Printf("bad response: %s", err)
 	}
 
-	fmt.Printf("response %s", awsutil.StringValue(resp))
-	fmt.Printf("Image location: %s", path.Join(S3_HOST, S3_BUCKET, imagePath))
-	imageLocation := path.Join(S3_HOST, S3_BUCKET, imagePath)
+	fmt.Printf("response %s", awsutil.StringValue(resp)) // TODO(Akshay): Add log statement
+	fmt.Printf("Image location: %s", path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)) // TODO(Akshay): Add log statement
+	imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
 
 	return imagePath, imageLocation
 }

@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"phonebook/db"
+	"phonebook/lib"
 )
 
 // GetImageFilename returns the path to an image for the specified user.
@@ -27,16 +28,18 @@ func GetImageFilename(uid int) string {
 func GetImageLocation(uid int) string {
 	var imagePath string
 
-	const (
-		S3_BUCKET = "upload-images-test"                  // This parameter define the bucket name in S3 TODO(Akshay): Move this parameter to config file
-		S3_HOST   = "https://s3.ap-south-1.amazonaws.com" // define host to access images from the s3. TODO(Akshay): Move this Host to config file
-	)
+	defaultImageName := "usericon.png"
 
 	err := db.PrepStmts.GetImagePath.QueryRow(uid).Scan(&imagePath)
 	if err != nil {
-		// Something went wrong
-		fmt.Println(err) // TODO(Akshay): Proper log statement
+		//ulog(err) // TODO(Akshay): Add proper log statment
+		return path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, defaultImageName) // If something went wrong than display default image
 	}
 
-	return path.Join(S3_HOST, S3_BUCKET, imagePath)
+	if imagePath != "" {
+		return path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+	} else {
+		return path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, defaultImageName) // If database doesn't have imagePath than assign default image
+	}
+
 }

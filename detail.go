@@ -85,7 +85,6 @@ func detailpopHandler(w http.ResponseWriter, r *http.Request) {
 //  returns 0 if success, err number otherwise
 //===========================================================
 func getPersonDetail(d *db.PersonDetail, uid int) int {
-	//d.Image = ui.GetImageFilename(uid) TODO(Akshay): Remove this statment after working GetImageLocation
 	d.Image = ui.GetImageLocation(uid)
 	err := Phonebook.prepstmt.personDetail.QueryRow(uid).Scan(&d.LastName, &d.MiddleName,
 		&d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
