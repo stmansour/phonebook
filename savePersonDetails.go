@@ -106,28 +106,30 @@ func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
 }
 
 const (
-	S3_REGION         = "ap-south-1"  // This parameter define the region of bucket
-	PUBLIC_ACL        = "public-read" // This parameter make S3 bucket's object readable
-	IMAGE_UPLOAD_PATH = ""            // This parameter define in which folder have to upload image
+	S3_REGION         = "ap-south-1" // This parameter define the region of bucket
+	IMAGE_UPLOAD_PATH = ""           // This parameter define in which folder have to upload image
 )
 
-func generateFileName(uid int) string {
+func generateFileName(uid int, defaultFileName string) string {
+	// get file extenstion
+	fileExtension := path.Ext(defaultFileName)
+
 	// get timestamps
 	timestamps := time.Now().UTC()
 
-	// id of user, and timestamps
+	// make filename using uid(user id) and current timestamps
 	s := []string{strconv.Itoa(uid), timestamps.Format("20160102150405")}
 
 	// generate filename to save on s3/db
 	filename := strings.Join(s, "_")
 
-	return filename
+	return strings.Join([]string{filename, fileExtension}, "") // return file name with extension e.g., <uid>_<timestamps>.<fileExtension>
 }
 
-func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
+func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
 
 	// generate filename to save on s3/db
-	filename := generateFileName(uid)
+	filename := generateFileName(uid, fileHeader.Filename)
 
 	// setup credential
 	// reading credential from the aws config
@@ -158,9 +160,9 @@ func uploadImageFileToS3(usrfname *multipart.FileHeader, usrfile multipart.File,
 		Key:                  aws.String(imagePath), // it include filename
 		Body:                 usrfile,               // data of file
 		ServerSideEncryption: aws.String("AES256"),
-		ContentType:          aws.String(usrfname.Header["Content-Type"][0]),
+		ContentType:          aws.String(fileHeader.Header["Content-Type"][0]),
 		CacheControl:         aws.String("max-age=86400"),
-		ACL:                  aws.String(PUBLIC_ACL),
+		ACL:                  aws.String("public-read"),
 	}
 
 	// Upload image to s3 bucket
