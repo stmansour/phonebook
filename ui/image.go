@@ -10,7 +10,7 @@ import (
 func GetImageLocation(uid int) string {
 	var imagePath string
 
-	defaultImageName := "usericon.png"
+	defaultImageName := "defaultProfileImage.png"
 
 	err := db.PrepStmts.GetImagePath.QueryRow(uid).Scan(&imagePath)
 	if err != nil {
