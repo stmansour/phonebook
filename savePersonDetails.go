@@ -20,7 +20,6 @@ import (
 	"phonebook/sess"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -113,17 +112,7 @@ const (
 func generateFileName(uid int, defaultFileName string) string {
 	// get file extenstion
 	fileExtension := path.Ext(defaultFileName)
-
-	// get timestamps
-	timestamps := time.Now().UTC()
-
-	// make filename using uid(user id) and current timestamps
-	s := []string{strconv.Itoa(uid), timestamps.Format("20160102150405")}
-
-	// generate filename to save on s3/db
-	filename := strings.Join(s, "_")
-
-	return strings.Join([]string{filename, fileExtension}, "") // return file name with extension e.g., <uid>_<timestamps>.<fileExtension>
+	return strings.Join([]string{strconv.Itoa(uid), fileExtension}, "") // return file name with extension e.g., <uid>.<fileExtension>
 }
 
 func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
