@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
 	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/lib"
@@ -38,87 +37,29 @@ func uploadFileCopy(from *multipart.File, toname string) error {
 	return err
 }
 
-// uploadImageFile handles the uploading of a user's picture file and its
-// placement in the pictures directory.
-//
-// Params
-// usrfname - name of the file on the user's local system
-// usrfile - the open file from the form return in the user's browser
-// uid - uid of the user for whom the image applies
-//
-// Returns:  err from any os file function
-func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
-	// use the same filetype for the final filename
-	ftype := filepath.Ext(usrfname)
-	// ulog("user file type: %s\n", ftype)
-
-	// the file name we'll use for this user's picture...
-	picturefilename := fmt.Sprintf("pictures/%d%s", uid, ftype)
-	// ulog("picturefilename: %s\n", picturefilename)
-
-	//  delete old tmp file if exists:
-	tmpFile := fmt.Sprintf("pictures/%d.tmp", uid)
-	// ulog("tmpFile to delete if exists: %s\n", tmpFile)
-
-	finfo, err := os.Stat(tmpFile)
-	if os.IsNotExist(err) {
-		ulog("%s was not found. Nothing to delete\n", tmpFile)
-	} else {
-		ulog("os.Stat(%s) returns:  err=%v,  finfo=%#v\n", tmpFile, err, finfo)
-		err = os.Remove(tmpFile)
-		ulog("os.Remove(%s) returns err=%v\n", tmpFile, err)
-	}
-
-	// copy the requested file to "<uid>.tmp"
-	err = uploadFileCopy(usrfile, tmpFile)
-	if nil != err {
-		ulog("uploadFileCopy returned error: %v\n", err)
-		return err
-	}
-
-	// see if there are any files that match the old filename MINUS the filetype...
-	m, err := filepath.Glob(fmt.Sprintf("./pictures/%d.*", uid))
-	if nil != err {
-		ulog("filepath.Glob returned error: %v\n", err)
-		return err
-	}
-	// ulog("filepath.Glob returned the following matches: %v\n", m)
-	for i := 0; i < len(m); i++ {
-		if filepath.Ext(m[i]) != ".tmp" {
-			ulog("removing %s\n", m[i])
-			err = os.Remove(m[i])
-			if nil != err {
-				ulog("error removing file: %s  err = %v\n", m[i], err)
-				return err
-			}
-		}
-	}
-
-	// now move our newly uploaded picture into its proper name...
-	err = os.Rename(tmpFile, picturefilename)
-	if nil != err {
-		ulog("os.Rename(%s,%s):  err = %v\n", tmpFile, picturefilename, err)
-		return err
-	}
-
-	return nil
-}
-
 const (
 	S3_REGION         = "ap-south-1" // This parameter define the region of bucket
 	IMAGE_UPLOAD_PATH = ""           // This parameter define in which folder have to upload image
 )
 
-func generateFileName(uid int, defaultFileName string) string {
-	// get file extenstion
-	fileExtension := path.Ext(defaultFileName)
-	return strings.Join([]string{strconv.Itoa(uid), fileExtension}, "") // return file name with extension e.g., <uid>.<fileExtension>
+// generateFileName generate file name with uid
+func generateFileName(uid int) string {
+	return strings.Join([]string{strconv.Itoa(uid)}, "") // return file name with extension e.g., <uid>
 }
 
+// uploadImageFileToS3 upload image to AWS S3 bucket
+// params
+// fileHeader: It contains header information of file. e.g., filename, file type
+// usrfile: It contains file data/information
+// uid: UID of user
+//
+// return
+// imagePath : 211.jpg
+// imageLocation: <host>/<bucket>/211/jpg
 func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
 
 	// generate filename to save on s3/db
-	filename := generateFileName(uid, fileHeader.Filename)
+	filename := generateFileName(uid)
 
 	// setup credential
 	// reading credential from the aws config
@@ -160,6 +101,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 		fmt.Printf("bad response: %s", err)
 	}
 
+	// get image location
 	imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
 
 	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
