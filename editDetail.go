@@ -7,7 +7,7 @@ import (
 	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
-	"text/template"
+	"html/template"
 )
 
 func editDetailHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,8 +76,20 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	d.Class = ui.ClassCodeToName[d.ClassCode]
 	ui.D = &d
 
-	t, _ := template.New("editDetail.html").Funcs(funcMap).ParseFiles("editDetail.html")
-	err = t.Execute(w, &ui)
+	fmt.Println("Ohowo!!!!!")
+	fmt.Println(r.URL.Path)
+
+	t, err := template.New("base.html").Funcs(funcMap).ParseFiles("base.html", "header.html", "editDetail.html")
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	err = t.ExecuteTemplate(w, "base", &ui)
+
+
+	fmt.Println("Holooo!!!!!")
+
 	if nil != err {
 		errmsg := fmt.Sprintf("editDetailHandler: err = %v\n", err)
 		ulog(errmsg)

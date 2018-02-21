@@ -1,59 +1,19 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-</head>
-<body style='background-image: url("/{{index .Images "editDetail"}}")'>
-
-
-
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
+{{define "title" }}
+AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
+{{ end }}
+{{ define "content" }}
 
 <table>
-	<tr><td height="50"></td></tr>
-	<tr><td width="50px"></td>
-		<td>
-		<div class="DetailPerson">{{.D.FirstName}} {{.D.LastName}}</div><br>
-		<div class="EmployerC"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></div>
-		<div class="JobTitleC">{{.D.JobTitle}}</div>
-		<br>Username: {{.X.Username}}
-		<br>Role: {{.X.PMap.Urole.Name}}
-		</td>
-	</tr>
+    <tr><td height="50"></td></tr>
+    <tr><td width="50px"></td>
+        <td>
+            <div class="DetailPerson">{{.D.FirstName}} {{.D.LastName}}</div><br>
+            <div class="EmployerC"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></div>
+            <div class="JobTitleC">{{.D.JobTitle}}</div>
+            <br>Username: {{.X.Username}}
+            <br>Role: {{.X.PMap.Urole.Name}}
+        </td>
+    </tr>
 </table>
 
 <br>
@@ -61,175 +21,173 @@
 
 <form action="/savePersonDetails/{{.D.UID}}" method="POST" enctype="multipart/form-data">
 
-<script type="text/javascript">
-  function checkPasswd(){
-  var pw1 = document.getElementById('idpw1');
-  var pw2 = document.getElementById('idpw2');
-  var fb = document.getElementById('feedbackArea');
-  var r1 = document.getElementById('length');
-  var r2 = document.getElementById('lowercase');
-  var r3 = document.getElementById('uppercase');
-  var r4 = document.getElementById('numeric');
-  var r5 = document.getElementById('special');
-  var colorMatch = "#4C4";
-  var colorMismatch = "#F44";
-  var colorEmpty = "#ffffd1";
-  var LCregex  = /^(?=.*[a-z]).+$/;
-  var UCregex  = /^(?=.*[A-Z]).+$/;
-  var NUMregex = /^(?=.*[0-9]).+$/;
-  var SPregex  = /^(?=.*[_\W]).+$/;
+    <script type="text/javascript">
+        function checkPasswd(){
+            var pw1 = document.getElementById('idpw1');
+            var pw2 = document.getElementById('idpw2');
+            var fb = document.getElementById('feedbackArea');
+            var r1 = document.getElementById('length');
+            var r2 = document.getElementById('lowercase');
+            var r3 = document.getElementById('uppercase');
+            var r4 = document.getElementById('numeric');
+            var r5 = document.getElementById('special');
+            var colorMatch = "#4C4";
+            var colorMismatch = "#F44";
+            var colorEmpty = "#ffffd1";
+            var LCregex  = /^(?=.*[a-z]).+$/;
+            var UCregex  = /^(?=.*[A-Z]).+$/;
+            var NUMregex = /^(?=.*[0-9]).+$/;
+            var SPregex  = /^(?=.*[_\W]).+$/;
 
-  // if both fields are empty, erase everything
-  if (0 === pw1.value.length && 0 === pw2.value.length){
-  	fb.innerHTML = '';
-  	pw2.style.backgroundColor = colorEmpty;
-    r1.style.color = "black";
-    r2.style.color = "black";
-    r3.style.color = "black";
-    r4.style.color = "black";
-    r5.style.color = "black";
-  } else {
-    //  Check for matching passwords
-  	if(pw1.value == pw2.value){
-      //The passwords match. 
-      pw2.style.backgroundColor = colorMatch;
-      fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="20" alt="Passwords Match">';
-    } else {
-	    //The passwords do not match.
-	    pw2.style.backgroundColor = colorMismatch;
-	    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="20" alt="Passwords Do Not Match">';
-    }
-    //=========================
-    // check rules
-    //=========================
-    r1.style.color =  (pw1.value.length >= 8) ? colorMatch : colorMismatch;
-    r2.style.color =  LCregex.test(pw1.value) ? colorMatch : colorMismatch;
-    r3.style.color =  UCregex.test(pw1.value) ? colorMatch : colorMismatch;
-    r4.style.color = NUMregex.test(pw1.value) ? colorMatch : colorMismatch;
-    r5.style.color =  SPregex.test(pw1.value) ? colorMatch : colorMismatch;
-  }
-}  
-</script>
-
-
-<table border=0>
-	<tr>
-		<td width="50px"> </td>
-		<td rowspan="3">
-			<table border=0>
-				<tr>
-					<td><img src="{{.X.ImageURL}}" height="75" class="profile-image profile-image-form"></td>
-					<td width=5></td>
-					<td>Your photo:<br><br><input type="file" name="picturefile" accept="image/*" id="file"></td>
-				</tr>
-			</table>
-		</td>
-		<td rowspan="3" width=10></td>
-		<td class="Attrib" align="right">NEW PASSWORD</td>
-		<td><input type="password" id="idpw1" name="password" value="" maxlength="25" 
-			onkeyup="checkPasswd(); return false;" size="15"></td>
-		<td rowspan="3">Good passwords should:
-		<ul class="helper-text">
-			<li id="length">be at least 8 characters long</li>
-			<li id="lowercase">contain at least one lowercase letter</li>
-			<li id="uppercase">contain at least one uppercase letter</li>
-			<li id="numeric">contain at least one number</li>
-			<li id="special">contain at least one special character</li>
-		</ul>
-		</td>
-	</tr>
-
-	<tr>
-		<td width="50px"></td>
-		<td></td>
-		<td height="22"><span id="feedbackArea"></span></td>
-	</tr>
-	
-	<tr>
-		<td width="50px"></td>
-		<td class="Attrib" align="right">REPEAT PASSWORD</td>
-		<td><input type="password" id="idpw2" name="password2" value="" maxlength="25" 
-			size="15" onkeyup="checkPasswd(); return false;"></td>
-	</tr>
-	<tr><td height="20" colspan="6"></td></tr>
-</table>
+            // if both fields are empty, erase everything
+            if (0 === pw1.value.length && 0 === pw2.value.length){
+                fb.innerHTML = '';
+                pw2.style.backgroundColor = colorEmpty;
+                r1.style.color = "black";
+                r2.style.color = "black";
+                r3.style.color = "black";
+                r4.style.color = "black";
+                r5.style.color = "black";
+            } else {
+                //  Check for matching passwords
+                if(pw1.value == pw2.value){
+                    //The passwords match.
+                    pw2.style.backgroundColor = colorMatch;
+                    fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="20" alt="Passwords Match">';
+                } else {
+                    //The passwords do not match.
+                    pw2.style.backgroundColor = colorMismatch;
+                    fb.innerHTML = ' &nbsp;<img src="/images/redx.png" height="20" alt="Passwords Do Not Match">';
+                }
+                //=========================
+                // check rules
+                //=========================
+                r1.style.color =  (pw1.value.length >= 8) ? colorMatch : colorMismatch;
+                r2.style.color =  LCregex.test(pw1.value) ? colorMatch : colorMismatch;
+                r3.style.color =  UCregex.test(pw1.value) ? colorMatch : colorMismatch;
+                r4.style.color = NUMregex.test(pw1.value) ? colorMatch : colorMismatch;
+                r5.style.color =  SPregex.test(pw1.value) ? colorMatch : colorMismatch;
+            }
+        }
+    </script>
 
 
-<table>
-		<td width="50px"></td>
-		<td class="edAttrib">PREFERRED NAME</td>
-		<td class="edAttrib">OFFICE PHONE</td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35" maxlength="25"></td>
-		<td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="20" maxlength="25"></td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">EMAIL</td>
-		<td class="edAttrib">CELL PHONE</td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35" maxlength="35"></td>
-		<td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="20" maxlength="25"></td>
-	</tr>
+    <table border=0>
+        <tr>
+            <td width="50px"> </td>
+            <td rowspan="3">
+                <table border=0>
+                    <tr>
+                        <td><img src="{{.X.ImageURL}}" height="75" class="profile-image profile-image-form"></td>
+                        <td width=5></td>
+                        <td>Your photo:<br><br><input type="file" name="picturefile" accept="image/*" id="file"></td>
+                    </tr>
+                </table>
+            </td>
+            <td rowspan="3" width=10></td>
+            <td class="Attrib" align="right">NEW PASSWORD</td>
+            <td><input type="password" id="idpw1" name="password" value="" maxlength="25"
+                       onkeyup="checkPasswd(); return false;" size="15"></td>
+            <td rowspan="3">Good passwords should:
+                <ul class="helper-text">
+                    <li id="length">be at least 8 characters long</li>
+                    <li id="lowercase">contain at least one lowercase letter</li>
+                    <li id="uppercase">contain at least one uppercase letter</li>
+                    <li id="numeric">contain at least one number</li>
+                    <li id="special">contain at least one special character</li>
+                </ul>
+            </td>
+        </tr>
 
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">EMERGENCY CONTACT NAME</td>
-		<td class="edAttrib">CONTACT PHONE</td>
-	</tr>
-	<tr>
-		<td width="50px">
-		<td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35" maxlength="25"></td></td>
-		<td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="20" maxlength="25"></td>
-	</tr>
-	<tr><td height="10" colspan="3"></td></tr>
-</table>
+        <tr>
+            <td width="50px"></td>
+            <td></td>
+            <td height="22"><span id="feedbackArea"></span></td>
+        </tr>
 
-<table>
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">HOME STREET ADDRESS</td>
-		<td class="edAttrib">HOME STREET ADDRESS-2</td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35" maxlength="35"></td>
-		<td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="20" maxlength="25"></td>
-	</tr>
-</table>
+        <tr>
+            <td width="50px"></td>
+            <td class="Attrib" align="right">REPEAT PASSWORD</td>
+            <td><input type="password" id="idpw2" name="password2" value="" maxlength="25"
+                       size="15" onkeyup="checkPasswd(); return false;"></td>
+        </tr>
+        <tr><td height="20" colspan="6"></td></tr>
+    </table>
 
-<table>
-	<tr>
-		<td width="50px"></td>
-		<td class="edAttrib">CITY</td>
-		<td class="edAttrib">STATE</td>
-		<td class="edAttrib">POSTAL CODE</td>
-		<td class="edAttrib">COUNTRY</td>
-	</tr>
-	<tr>
-		<td width="50px"></td>
-		<td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25" maxlength="25"></td>
-		<td><input type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"></td>
-		<td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10" maxlength="10"></td>
-		<td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10" maxlength="25"></td>
-	</tr>
-	<tr><td height="20" colspan="3"></td></tr>
-</table>
 
-<table>
-	<tr><td width="50px"></td>
-		<td colspan="2">
-		<input type="submit" name="action" value="Save">
-	    &nbsp;&nbsp;&nbsp;&nbsp;
-	    <input type="submit" name="action" value="Cancel">
-	</tr>
-</table>
+    <table>
+        <td width="50px"></td>
+        <td class="edAttrib">PREFERRED NAME</td>
+        <td class="edAttrib">OFFICE PHONE</td>
+        </tr>
+        <tr>
+            <td width="50px"></td>
+            <td><input type="text" name="PreferredName" value="{{.D.PreferredName}}" size="35" maxlength="25"></td>
+            <td><input type="text" name="OfficePhone" value="{{.D.OfficePhone}}" size="20" maxlength="25"></td>
+        </tr>
+        <tr>
+            <td width="50px"></td>
+            <td class="edAttrib">EMAIL</td>
+            <td class="edAttrib">CELL PHONE</td>
+        </tr>
+        <tr>
+            <td width="50px"></td>
+            <td><input type="email" name="PrimaryEmail" value="{{.D.PrimaryEmail}}" size="35" maxlength="35"></td>
+            <td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="20" maxlength="25"></td>
+        </tr>
+
+        <tr>
+            <td width="50px"></td>
+            <td class="edAttrib">EMERGENCY CONTACT NAME</td>
+            <td class="edAttrib">CONTACT PHONE</td>
+        </tr>
+        <tr>
+            <td width="50px">
+            <td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35" maxlength="25"></td></td>
+            <td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="20" maxlength="25"></td>
+        </tr>
+        <tr><td height="10" colspan="3"></td></tr>
+    </table>
+
+    <table>
+        <tr>
+            <td width="50px"></td>
+            <td class="edAttrib">HOME STREET ADDRESS</td>
+            <td class="edAttrib">HOME STREET ADDRESS-2</td>
+        </tr>
+        <tr>
+            <td width="50px"></td>
+            <td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35" maxlength="35"></td>
+            <td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="20" maxlength="25"></td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td width="50px"></td>
+            <td class="edAttrib">CITY</td>
+            <td class="edAttrib">STATE</td>
+            <td class="edAttrib">POSTAL CODE</td>
+            <td class="edAttrib">COUNTRY</td>
+        </tr>
+        <tr>
+            <td width="50px"></td>
+            <td><input type=text name="HomeCity" value="{{.D.HomeCity}}" size="25" maxlength="25"></td>
+            <td><input type=text name="HomeState" value="{{.D.HomeState}}" size="3" maxlength="2"></td>
+            <td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10" maxlength="10"></td>
+            <td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10" maxlength="25"></td>
+        </tr>
+        <tr><td height="20" colspan="3"></td></tr>
+    </table>
+
+    <table>
+        <tr><td width="50px"></td>
+            <td colspan="2">
+                <input type="submit" name="action" value="Save">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="submit" name="action" value="Cancel">
+        </tr>
+    </table>
 
 </form>
-
-</body>
-</html>
+{{ end }}
