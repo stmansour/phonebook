@@ -176,6 +176,7 @@ var supportedDomains = []string{
 	"accordinterests.com",
 	"l-objet.com",
 	"myisolabella.com",
+	"auberginesolutions.com",
 }
 var stillNeedHelp = string(`<a href="#" onclick="return alert('For assistance with your username or password please contact Steve Mansour:\nemail: sman@accordinterests.com')">Still need help?</a>`)
 
