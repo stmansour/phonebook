@@ -38,7 +38,7 @@ func uploadFileCopy(from *multipart.File, toname string) error {
 }
 
 const (
-	S3_REGION         = "ap-south-1" // This parameter define the region of bucket
+	S3_REGION         = "us-east-1" // This parameter define the region of bucket
 	IMAGE_UPLOAD_PATH = ""           // This parameter define in which folder have to upload image
 )
 
