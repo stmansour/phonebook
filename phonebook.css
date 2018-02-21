@@ -315,3 +315,18 @@ nav li:hover nav {
     opacity: 1;
 }
 
+.profile-image{
+    image-orientation: from-image;
+    vertical-align: middle;
+    border-radius: 50%;
+}
+
+.profile-image-form {
+    width: 75px;
+    height: 75px;
+}
+
+.profile-image-nav {
+    width: 35px;
+    height: 35px;
+}
