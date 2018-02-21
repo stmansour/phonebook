@@ -131,6 +131,7 @@ CREATE TABLE people (
     RID MEDIUMINT NOT NULL DEFAULT 0,
     LastModTime TIMESTAMP,
     LastModBy MEDIUMINT NOT NULL DEFAULT 0,
+    ImagePath VARCHAR(200) NULL,
     PRIMARY KEY (UID)
 );
 
@@ -145,7 +146,7 @@ CREATE TABLE sessions (
     UID BIGINT NOT NULL,
     UserName VARCHAR(40) NOT NULL DEFAULT '',
     Cookie VARCHAR(40) NOT NULL DEFAULT '',
-    Expire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00'
+    DtExpire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00'
 );
 
 -- Add the Administrator as the first and only user
