@@ -150,7 +150,7 @@ func sessionBecome(s *sess.Session, uid int) {
 	}
 	s.UID = int64(uid)
 	s.Username = d.UserName
-	s.ImageURL = ui.GetImageFilename(uid)
+	s.ImageURL = ui.GetImageLocation(uid)
 	authz.GetRoleInfo(d.RID, &s.PMap)
 
 	if authz.Authz.SecurityDebug {

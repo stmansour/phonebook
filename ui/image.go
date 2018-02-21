@@ -1,22 +1,27 @@
 package ui
 
 import (
-	"fmt"
-	"path/filepath"
+	"path"
+	"phonebook/db"
+	"phonebook/lib"
 )
 
-// GetImageFilename returns the path to an image for the specified user.
-// TBD:  this needs to be rewritten to return a blobstore url path
-//-----------------------------------------------------------------------
-func GetImageFilename(uid int) string {
-	pat := fmt.Sprintf("pictures/%d.*", uid)
-	matches, err := filepath.Glob(pat)
+// GetImageLocation returns the ImageURL for the specified user.
+func GetImageLocation(uid int) string {
+	var imagePath string
+
+	defaultImageName := "defaultProfileImage.png"
+
+	err := db.PrepStmts.GetImagePath.QueryRow(uid).Scan(&imagePath)
 	if err != nil {
-		fmt.Printf("filepath.Glob(%s) returned error: %v\n", pat, err)
-		return "/images/anon.png"
+		lib.Ulog("Error while getting profile imagePath: %s\n", err)
+		return path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, defaultImageName) // If something went wrong than display default image
 	}
-	if len(matches) > 0 {
-		return "/" + matches[0]
+
+	if imagePath != "" {
+		return path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+	} else {
+		return path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, defaultImageName) // If database doesn't have imagePath than assign default image
 	}
-	return "/images/anon.png"
+
 }

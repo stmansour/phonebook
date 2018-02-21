@@ -28,7 +28,7 @@
 <td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
 {{end}}
 <td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35"><br>{{.X.Firstname}}</span></a></p></td>
+<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
 <td width=4></td>
 <td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
 <td width=15></td>
@@ -118,9 +118,9 @@
 		<td rowspan="3">
 			<table border=0>
 				<tr>
-					<td><img src="{{.X.ImageURL}}" height="75"></td>
+					<td><img src="{{.X.ImageURL}}" height="75" class="profile-image profile-image-form"></td>
 					<td width=5></td>
-					<td>Your photo:<br><br><input type="file" name="picturefile" id="file"></td>
+					<td>Your photo:<br><br><input type="file" name="picturefile" accept="image/*" id="file"></td>
 				</tr>
 			</table>
 		</td>

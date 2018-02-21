@@ -3,15 +3,20 @@ package main
 import (
 	"crypto/sha512"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awsutil"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
+	"path"
 	"phonebook/authz"
 	"phonebook/db"
+	"phonebook/lib"
 	"phonebook/sess"
-	"phonebook/ui"
 	"strconv"
 	"strings"
 )
@@ -32,70 +37,77 @@ func uploadFileCopy(from *multipart.File, toname string) error {
 	return err
 }
 
-// uploadImageFile handles the uploading of a user's picture file and its
-// placement in the pictures directory.
+const (
+	S3_REGION         = "us-east-1" // This parameter define the region of bucket
+	IMAGE_UPLOAD_PATH = ""           // This parameter define in which folder have to upload image
+)
+
+// generateFileName generate file name with uid
+func generateFileName(uid int) string {
+	return strings.Join([]string{strconv.Itoa(uid)}, "") // return file name with extension e.g., <uid>
+}
+
+// uploadImageFileToS3 upload image to AWS S3 bucket
+// params
+// fileHeader: It contains header information of file. e.g., filename, file type
+// usrfile: It contains file data/information
+// uid: UID of user
 //
-// Params
-// usrfname - name of the file on the user's local system
-// usrfile - the open file from the form return in the user's browser
-// uid - uid of the user for whom the image applies
-//
-// Returns:  err from any os file function
-func uploadImageFile(usrfname string, usrfile *multipart.File, uid int) error {
-	// use the same filetype for the final filename
-	ftype := filepath.Ext(usrfname)
-	// ulog("user file type: %s\n", ftype)
+// return
+// imagePath : 211.jpg
+// imageLocation: <host>/<bucket>/211/jpg
+func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
 
-	// the file name we'll use for this user's picture...
-	picturefilename := fmt.Sprintf("pictures/%d%s", uid, ftype)
-	// ulog("picturefilename: %s\n", picturefilename)
+	// generate filename to save on s3/db
+	filename := generateFileName(uid)
 
-	//  delete old tmp file if exists:
-	tmpFile := fmt.Sprintf("pictures/%d.tmp", uid)
-	// ulog("tmpFile to delete if exists: %s\n", tmpFile)
-
-	finfo, err := os.Stat(tmpFile)
-	if os.IsNotExist(err) {
-		ulog("%s was not found. Nothing to delete\n", tmpFile)
-	} else {
-		ulog("os.Stat(%s) returns:  err=%v,  finfo=%#v\n", tmpFile, err, finfo)
-		err = os.Remove(tmpFile)
-		ulog("os.Remove(%s) returns err=%v\n", tmpFile, err)
+	// setup credential
+	// reading credential from the aws config
+	creds := credentials.NewStaticCredentials(lib.AppConfig.AWSAccessKeyID, lib.AppConfig.AWSSecretKey, "")
+	_, err := creds.Get()
+	if err != nil {
+		fmt.Printf("Bad credentials: %s", err)
 	}
 
-	// copy the requested file to "<uid>.tmp"
-	err = uploadFileCopy(usrfile, tmpFile)
-	if nil != err {
-		ulog("uploadFileCopy returned error: %v\n", err)
-		return err
+	// Set up configuration
+	cfg := aws.NewConfig().WithRegion(S3_REGION).WithCredentials(creds)
+
+	// Set up session
+	sess, err := session.NewSession(cfg)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	// see if there are any files that match the old filename MINUS the filetype...
-	m, err := filepath.Glob(fmt.Sprintf("./pictures/%d.*", uid))
-	if nil != err {
-		ulog("filepath.Glob returned error: %v\n", err)
-		return err
-	}
-	// ulog("filepath.Glob returned the following matches: %v\n", m)
-	for i := 0; i < len(m); i++ {
-		if filepath.Ext(m[i]) != ".tmp" {
-			ulog("removing %s\n", m[i])
-			err = os.Remove(m[i])
-			if nil != err {
-				ulog("error removing file: %s  err = %v\n", m[i], err)
-				return err
-			}
-		}
+	// Create new s3 instance
+	svc := s3.New(sess)
+
+	// Path after the bucket name
+	imagePath := path.Join(IMAGE_UPLOAD_PATH, filename)
+
+	// define parameters to upload image to S3
+	params := &s3.PutObjectInput{
+		Bucket:               aws.String(lib.AppConfig.S3BucketName),
+		Key:                  aws.String(imagePath), // it include filename
+		Body:                 usrfile,               // data of file
+		ServerSideEncryption: aws.String("AES256"),
+		ContentType:          aws.String(fileHeader.Header["Content-Type"][0]),
+		CacheControl:         aws.String("max-age=86400"),
+		ACL:                  aws.String("public-read"),
 	}
 
-	// now move our newly uploaded picture into its proper name...
-	err = os.Rename(tmpFile, picturefilename)
-	if nil != err {
-		ulog("os.Rename(%s,%s):  err = %v\n", tmpFile, picturefilename, err)
-		return err
+	// Upload image to s3 bucket
+	resp, err := svc.PutObject(params)
+	if err != nil {
+		fmt.Printf("bad response: %s", err)
 	}
 
-	return nil
+	// get image location
+	imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+
+	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
+	ulog("Image location: %s", imageLocation)
+
+	return imagePath, imageLocation
 }
 
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
@@ -167,11 +179,17 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Printf("file: %v, header: %v, err: %v\n", file, header, err)
 		if nil == err {
 			defer file.Close()
-			err = uploadImageFile(header.Filename, &file, uid)
+			//err = uploadImageFile(header.Filename, &file, uid) // Upload image on local disk space
+			imagePath, imageLocation := uploadImageFileToS3(header, file, uid) // Upload image to AWS S3
 			if nil != err {
 				ulog("uploadImageFile returned error: %v\n", err)
 			}
-			ssn.ImageURL = ui.GetImageFilename(uid)
+
+			d.ProfileImagePath = imagePath
+			d.ProfileImageURL = imageLocation
+
+			// Store imageLocation into session
+			ssn.ImageURL = imageLocation
 		} else {
 			ulog("err loading picture: %v\n", err)
 		}
@@ -181,7 +199,8 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		//=================================================================
 		_, err = Phonebook.prepstmt.updateMyDetails.Exec(d.PreferredName, d.PrimaryEmail, d.OfficePhone, d.CellPhone,
 			d.EmergencyContactName, d.EmergencyContactPhone,
-			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry, ssn.UID,
+			d.HomeStreetAddress, d.HomeStreetAddress2, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry,
+			ssn.UID, d.ProfileImagePath,
 			uid)
 		if nil != err {
 			errmsg := fmt.Sprintf("savePersonDetailsHandler: Phonebook.prepstmt.updateMyDetails.Exec: err = %v\n", err)
