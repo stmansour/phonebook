@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"phonebook/db"
 	"phonebook/sess"
-	"text/template"
 )
 
 func searchClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -48,11 +47,9 @@ func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	errcheck(rows.Err())
 
-	t, _ := template.New("searchClass.html").Funcs(funcMap).ParseFiles("searchClass.html")
-
 	ui.L = &d
-	err = t.Execute(w, &ui)
 
+	err = renderTemplate(w, ui, "searchClass.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("searchClassHandler: err = %v\n", err)
 		ulog(errmsg)

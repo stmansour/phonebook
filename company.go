@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"phonebook/authz"
 	"phonebook/db"
@@ -92,10 +91,10 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 		cocode, _ := strconv.Atoi(costr)
 		breadcrumbAdd(ssn, "Company", fmt.Sprintf("/company/%d", cocode))
 		getCompanyInfo(cocode, &c)
-		t, _ := template.New("company.html").Funcs(funcMap).ParseFiles("company.html")
 		ui.C = &c
 		filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
-		err := t.Execute(w, &ui)
+
+		err := renderTemplate(w, ui, "company.html")
 		if nil != err {
 			errmsg := fmt.Sprintf("companyHandler: err = %v\n", err)
 			ulog(errmsg)

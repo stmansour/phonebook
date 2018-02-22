@@ -1,13 +1,22 @@
 {{define "title" }}
 AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
 {{ end }}
-{{ define "content" }}
+
+{{define "body style" }}
+style='background-image: url("/{{index .Images "editDetail"}}")'
+{{ end }}
+
+{{ define "other scripts"}}{{ end }} {{ define "content" }}
 
 <table>
-    <tr><td height="50"></td></tr>
-    <tr><td width="50px"></td>
+    <tr>
+        <td height="50"></td>
+    </tr>
+    <tr>
+        <td width="50px"></td>
         <td>
-            <div class="DetailPerson">{{.D.FirstName}} {{.D.LastName}}</div><br>
+            <div class="DetailPerson">{{.D.FirstName}} {{.D.LastName}}</div>
+            <br>
             <div class="EmployerC"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></div>
             <div class="JobTitleC">{{.D.JobTitle}}</div>
             <br>Username: {{.X.Username}}
@@ -22,7 +31,7 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
 <form action="/savePersonDetails/{{.D.UID}}" method="POST" enctype="multipart/form-data">
 
     <script type="text/javascript">
-        function checkPasswd(){
+        function checkPasswd() {
             var pw1 = document.getElementById('idpw1');
             var pw2 = document.getElementById('idpw2');
             var fb = document.getElementById('feedbackArea');
@@ -34,13 +43,13 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
             var colorMatch = "#4C4";
             var colorMismatch = "#F44";
             var colorEmpty = "#ffffd1";
-            var LCregex  = /^(?=.*[a-z]).+$/;
-            var UCregex  = /^(?=.*[A-Z]).+$/;
+            var LCregex = /^(?=.*[a-z]).+$/;
+            var UCregex = /^(?=.*[A-Z]).+$/;
             var NUMregex = /^(?=.*[0-9]).+$/;
-            var SPregex  = /^(?=.*[_\W]).+$/;
+            var SPregex = /^(?=.*[_\W]).+$/;
 
             // if both fields are empty, erase everything
-            if (0 === pw1.value.length && 0 === pw2.value.length){
+            if (0 === pw1.value.length && 0 === pw2.value.length) {
                 fb.innerHTML = '';
                 pw2.style.backgroundColor = colorEmpty;
                 r1.style.color = "black";
@@ -50,7 +59,7 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
                 r5.style.color = "black";
             } else {
                 //  Check for matching passwords
-                if(pw1.value == pw2.value){
+                if (pw1.value == pw2.value) {
                     //The passwords match.
                     pw2.style.backgroundColor = colorMatch;
                     fb.innerHTML = ' &nbsp;<img src="/images/tick.png" height="20" alt="Passwords Match">';
@@ -62,11 +71,11 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
                 //=========================
                 // check rules
                 //=========================
-                r1.style.color =  (pw1.value.length >= 8) ? colorMatch : colorMismatch;
-                r2.style.color =  LCregex.test(pw1.value) ? colorMatch : colorMismatch;
-                r3.style.color =  UCregex.test(pw1.value) ? colorMatch : colorMismatch;
+                r1.style.color = (pw1.value.length >= 8) ? colorMatch : colorMismatch;
+                r2.style.color = LCregex.test(pw1.value) ? colorMatch : colorMismatch;
+                r3.style.color = UCregex.test(pw1.value) ? colorMatch : colorMismatch;
                 r4.style.color = NUMregex.test(pw1.value) ? colorMatch : colorMismatch;
-                r5.style.color =  SPregex.test(pw1.value) ? colorMatch : colorMismatch;
+                r5.style.color = SPregex.test(pw1.value) ? colorMatch : colorMismatch;
             }
         }
     </script>
@@ -74,7 +83,7 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
 
     <table border=0>
         <tr>
-            <td width="50px"> </td>
+            <td width="50px"></td>
             <td rowspan="3">
                 <table border=0>
                     <tr>
@@ -111,7 +120,9 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
             <td><input type="password" id="idpw2" name="password2" value="" maxlength="25"
                        size="15" onkeyup="checkPasswd(); return false;"></td>
         </tr>
-        <tr><td height="20" colspan="6"></td></tr>
+        <tr>
+            <td height="20" colspan="6"></td>
+        </tr>
     </table>
 
 
@@ -143,10 +154,15 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
         </tr>
         <tr>
             <td width="50px">
-            <td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35" maxlength="25"></td></td>
-            <td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="20" maxlength="25"></td>
+            <td><input type=text name="EmergencyContactName" Value="{{.D.EmergencyContactName}}" size="35"
+                       maxlength="25"></td>
+            </td>
+            <td><input type=text name="EmergencyContactPhone" Value="{{.D.EmergencyContactPhone}}" size="20"
+                       maxlength="25"></td>
         </tr>
-        <tr><td height="10" colspan="3"></td></tr>
+        <tr>
+            <td height="10" colspan="3"></td>
+        </tr>
     </table>
 
     <table>
@@ -157,8 +173,10 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
         </tr>
         <tr>
             <td width="50px"></td>
-            <td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35" maxlength="35"></td>
-            <td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="20" maxlength="25"></td>
+            <td><input type=text name="HomeStreetAddress" value="{{.D.HomeStreetAddress}}" size="35" maxlength="35">
+            </td>
+            <td><input type=text name="HomeStreetAddress2" value="{{.D.HomeStreetAddress2}}" size="20" maxlength="25">
+            </td>
         </tr>
     </table>
 
@@ -177,11 +195,14 @@ AIR Directory - Edit Details for {{.D.FirstName}} {{.D.LastName}}
             <td><input type=text name="HomePostalCode" value="{{.D.HomePostalCode}}" size="10" maxlength="10"></td>
             <td><input type=text name="HomeCountry" value="{{.D.HomeCountry}}" size="10" maxlength="25"></td>
         </tr>
-        <tr><td height="20" colspan="3"></td></tr>
+        <tr>
+            <td height="20" colspan="3"></td>
+        </tr>
     </table>
 
     <table>
-        <tr><td width="50px"></td>
+        <tr>
+            <td width="50px"></td>
             <td colspan="2">
                 <input type="submit" name="action" value="Save">
                 &nbsp;&nbsp;&nbsp;&nbsp;

@@ -6,7 +6,6 @@ import (
 	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/sess"
-	"text/template"
 )
 
 func adminAddClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,11 +33,12 @@ func adminAddClassHandler(w http.ResponseWriter, r *http.Request) {
 	c.Designation = ""
 	c.Description = ""
 
-	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 
 	ui.A = &c
 	ui.CompanyList = PhonebookUI.CompanyList
-	err := t.Execute(w, &ui)
+
+	err := renderTemplate(w, ui, "adminEditClass.html")
+
 	if nil != err {
 		errmsg := fmt.Sprintf("adminAddClassHandler: err = %v\n", err)
 		ulog(errmsg)

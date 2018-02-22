@@ -6,18 +6,25 @@
             <td>
                 <a href="/search/"></a>
             </td>
-            <td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a>
+            <td>
+                <a href="/search/">
+                    <img src="/images/air-48.png" alt="AIR logo">&nbsp;&nbsp;
+                    <img src="/images/directory-48.png" alt="Directory Logo">
+                </a>
             </td>
             <td>
                 <nav>
-                    <li><a href="#">AIROLLER &#x25BE;</a>
-                        <nav>
+                    <li>
+                        <a href="#">AIROLLER &#x25BE;</a>
+                        <div>
+                            <nav>
                     <li><a href="https://directory.airoller.com/">Directory</a></li>
                     <li><a href="https://receipt.airoller.com/">Receipts</a></li>
 
                     <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
                 </nav>
-
+                </div>
+                </nav>
             </td>
 
             <td width=15></td>
@@ -35,22 +42,28 @@
                 <p align="center">
                     <a href="/editDetail/{{.X.UID}}">
                         <span class="MenuUserName">
-                            <img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav">
-                            </span></a>
-            </p></td>
+                            <img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"
+                                 alt="Profile image">
+                            </span>
+                    </a>
+                </p>
+            </td>
 
             <td width=4></td>
             <td>
                 <nav>
                     <li><a href="#">{{.X.Firstname}} &#x25BE;</a>
-                    <nav>
+                        <div>
+                            <nav>
                     <li><a href="/editDetail/{{.X.UID}}">Preferences</a></li>
-                        <li><a href="/logoff/{{.X.UID}}">Logoff</a></li>
-                    </nav>
+                    <li><a href="/logoff/{{.X.UID}}">Logoff</a></li>
+                </nav>
+                </div>
+                </li>
                 </nav>
             </td>
             <td width=15></td>
-            <td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
+            <td><a href="/help/"><span class="MenuCmd">Help</span></a></td>
             <td width=15></td>
         </tr>
         <tr>

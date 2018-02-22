@@ -6,7 +6,6 @@ import (
 	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/sess"
-	"text/template"
 )
 
 func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,9 +52,9 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		d.Matches = append(d.Matches, c)
 	}
 	errcheck(rows.Err())
-	t, _ := template.New("searchco.html").Funcs(funcMap).ParseFiles("searchco.html")
+
 	ui.T = &d
-	err = t.Execute(w, &ui)
+	err = renderTemplate(w, ui, "searchco.html")
 
 	if nil != err {
 		errmsg := fmt.Sprintf("searchCompaniesHandler: err = %v\n", err)
