@@ -19,6 +19,7 @@ import (
 	"phonebook/sess"
 	"strconv"
 	"strings"
+	"phonebook/ui"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -104,7 +105,8 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 	}
 
 	// get image location
-	imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+	//imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+	imageLocation := ui.GenerateImageLocation(imagePath)
 
 	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
 	ulog("Image location: %s", imageLocation)
