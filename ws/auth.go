@@ -9,6 +9,7 @@ import (
 	"phonebook/db"
 	"phonebook/lib"
 	"phonebook/sess"
+	"phonebook/ui"
 	"strings"
 )
 
@@ -97,18 +98,17 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 	if UID > 0 {
-		fname, err := getImageURL(UID)
-		if err != nil {
-			err := fmt.Errorf("login failed")
-			SvcErrorReturn(w, err, funcname)
-		}
+
+		// get image location(URL)
+		imageProfilePath := ui.GetImageLocation(int(UID))
+
 		c := sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
 
 		g := AuthSuccessResponse{
 			Status:   "success",
 			UID:      UID,
 			Name:     Name,
-			ImageURL: fname,
+			ImageURL: imageProfilePath,
 			Token:    c.Cookie,
 			Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 		}
@@ -195,16 +195,14 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	if err != nil {
 		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 	}
-	fname, err := getImageURL(c.UID)
-	if err != nil {
-		err := fmt.Errorf("login failed")
-		SvcErrorReturn(w, err, funcname)
-	}
+
+	imageProfilePath := ui.GetImageLocation(int(c.UID))
+
 	g := AuthSuccessResponse{
 		Status:   "success",
 		UID:      c.UID,
 		Name:     c.UserName,
-		ImageURL: fname,
+		ImageURL: imageProfilePath,
 		Token:    c.Cookie,
 		Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 	}

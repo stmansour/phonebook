@@ -106,7 +106,7 @@ func buildPreparedStatements() {
 	errcheck(err)
 	Phonebook.prepstmt.updateMyDetails, err = Phonebook.db.Prepare("update people set PreferredName=?,PrimaryEmail=?,OfficePhone=?,CellPhone=?," +
 		"EmergencyContactName=?,EmergencyContactPhone=?," +
-		"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,lastmodby=? " +
+		"HomeStreetAddress=?,HomeStreetAddress2=?,HomeCity=?,HomeState=?,HomePostalCode=?,HomeCountry=?,lastmodby=?, ImagePath=? " +
 		"where people.uid=?")
 	errcheck(err)
 	Phonebook.prepstmt.updatePasswd, err = Phonebook.db.Prepare("update people set passhash=? where uid=?")

@@ -62,18 +62,20 @@ type Company struct {
 // Person defines a low-details version of the Person table
 //--------------------------------------------------------------------
 type Person struct {
-	UID           int
-	LastName      string
-	FirstName     string
-	PreferredName string
-	PrimaryEmail  string
-	JobCode       int
-	OfficePhone   string
-	CellPhone     string
-	OfficeFax     string
-	DeptCode      int
-	DeptName      string
-	Employer      string
+	UID              int
+	LastName         string
+	FirstName        string
+	PreferredName    string
+	PrimaryEmail     string
+	JobCode          int
+	OfficePhone      string
+	CellPhone        string
+	OfficeFax        string
+	DeptCode         int
+	DeptName         string
+	Employer         string
+	ProfileImageURL  string
+	ProfileImagePath string
 }
 
 // PersonDetail defines all details version of the Person table
@@ -137,6 +139,8 @@ type PersonDetail struct {
 	NameToDeptCode          map[string]int // department name to dept code
 	MyComps                 []MyComp
 	MyDeductions            []ADeduction
+	ProfileImageURL         string
+	ProfileImagePath        string
 }
 
 // SessionCookie defines the struct for the database table where session
@@ -156,6 +160,7 @@ var PrepStmts struct {
 	InsertSessionCookie  *sql.Stmt
 	UpdateSessionCookie  *sql.Stmt
 	LoginInfo            *sql.Stmt
+	GetImagePath         *sql.Stmt
 }
 
 // CreatePreparedStmts creates prepared sql statements
@@ -175,6 +180,10 @@ func CreatePreparedStmts() {
 	lib.Errcheck(err)
 
 	PrepStmts.LoginInfo, err = DB.DirDB.Prepare("SELECT uid,firstname,preferredname,PrimaryEmail,passhash,rid FROM people WHERE UserName=?")
+	lib.Errcheck(err)
+
+	// get image path from the people table
+	PrepStmts.GetImagePath, err = DB.DirDB.Prepare("SELECT ImagePath from people WHERE UID=?")
 	lib.Errcheck(err)
 }
 
