@@ -21,9 +21,9 @@
 <td width=15></td>
 <td>
     <p align="center" style="margin-bottom: 0px;"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav" alt="Profile image"></span></a></p>
-            <nav>
+            <nav style="display: contents; margin-bottom: 0px;">
                 <li>
-                    <a href="#" style="padding-top: 0px;">{{.X.Firstname}} &#x25BE;</a>
+                    <a href="#" style="padding-top: 0px; padding-bottom: 0px;">{{.X.Firstname}} &#x25BE;</a>
                     <nav>
                 <li><a href="/editDetail/{{.X.UID}}">Preferences</a></li>
                 <li><a href="/logoff/{{.X.UID}}">Logoff</a></li>
@@ -33,7 +33,6 @@
             </nav>
 </td>
 <td width=4></td>
-<td width=15></td>
 <td><a href="/help/"><span class="MenuCmd">Help</span></a></td>
 <td width=15></td>
 </tr>
