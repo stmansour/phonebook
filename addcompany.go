@@ -6,7 +6,6 @@ import (
 	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/sess"
-	"text/template"
 )
 
 func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,10 +56,8 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	// 	"div":               div,
 	// }
 
-	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
-
 	ui.C = &c
-	err := t.Execute(w, &ui)
+	err := renderTemplate(w, ui, "adminEditCo.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("adminAddCompanyHandler: err = %v\n", err)
 		ulog(errmsg)

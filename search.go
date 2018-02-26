@@ -7,7 +7,6 @@ import (
 	"phonebook/db"
 	"phonebook/sess"
 	"strings"
-	"text/template"
 )
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,8 +113,8 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		d.Query = " "
 	}
 	ui.R = &d
-	t, _ := template.New("search.html").Funcs(funcMap).ParseFiles("search.html")
-	err = t.Execute(w, &ui)
+
+	err = renderTemplate(w, ui, "search.html")
 
 	if nil != err {
 		errmsg := fmt.Sprintf("searchHandler: err = %v\n", err)

@@ -9,7 +9,6 @@ import (
 	"phonebook/ui"
 	"strconv"
 	"strings"
-	"text/template"
 )
 
 func getJobTitle(JobCode int) string {
@@ -163,11 +162,12 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		getReports(uid, &d)
 		d.Class = uis.ClassCodeToName[d.ClassCode]
 	}
-	t, _ := template.New("detail.html").Funcs(funcMap).ParseFiles("detail.html")
+
 	uis.D = &d
 
 	filterSecurityRead(uis.D, authz.ELEMPERSON, sess, authz.PERMVIEW, d.UID)
-	err := t.Execute(w, &uis)
+
+	err := renderTemplate(w, uis, "detail.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("detailHandler: err = %v\n", err)
 		ulog(errmsg)

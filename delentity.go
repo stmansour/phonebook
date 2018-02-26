@@ -8,7 +8,6 @@ import (
 	"phonebook/sess"
 	"strconv"
 	"strings"
-	"text/template"
 )
 
 func delCheckError(caller string, ssn *sess.Session, err error, s string, w http.ResponseWriter, r *http.Request) bool {
@@ -63,8 +62,8 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 		errcheck(rows.Err())
 		ui.R = &d
 		// fmt.Printf("Match Count = %d\n", len(ui.R.Matches))
-		t, _ := template.New("delPersonRefErr.html").Funcs(funcMap).ParseFiles("delPersonRefErr.html")
-		err = t.Execute(w, &ui)
+
+		err = renderTemplate(w, ui, "delPersonRefErr.html")
 		if nil != err {
 			errmsg := fmt.Sprintf("intPersonRefErrHandler: err = %v\n", err)
 			ulog(errmsg)
@@ -213,8 +212,8 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 		}
 		errcheck(rows.Err())
 		ui.R = &d
-		t, _ := template.New("delClassRefErr.html").Funcs(funcMap).ParseFiles("delClassRefErr.html")
-		err = t.Execute(w, &ui)
+
+		err = renderTemplate(w, ui, "delClassRefErr.html")
 		if nil != err {
 			errmsg := fmt.Sprintf("delClassRefErr: err = %v\n", err)
 			ulog(errmsg)
@@ -338,8 +337,8 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 		}
 		errcheck(rows.Err())
 		ui.R = &d
-		t, _ := template.New("delCoRefErr.html").Funcs(funcMap).ParseFiles("delCoRefErr.html")
-		err = t.Execute(w, &ui)
+
+		err = renderTemplate(w, ui, "delCoRefErr.html")
 		if nil != err {
 			errmsg := fmt.Sprintf("delCoRefErr: err = %v\n", err)
 			ulog(errmsg)

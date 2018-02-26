@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/sess"
-	"text/template"
 )
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,8 +45,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	uis.N = p
 
-	t, _ := template.New("stats.html").Funcs(funcMap).ParseFiles("stats.html")
-	err := t.Execute(w, &uis)
+	err := renderTemplate(w, uis, "stats.html")
 
 	if nil != err {
 		errmsg := fmt.Sprintf("statsHandler: err = %v\n", err)
