@@ -30,4 +30,3 @@ func GenerateImageLocation(imagePath string) string {
 	u.Path = path.Join(u.Path, lib.AppConfig.S3BucketName, imagePath)
 	return u.String()
 }
-

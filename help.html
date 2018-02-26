@@ -1,95 +1,97 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Help</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-</head>
-<body style='background-image: url("/{{index .Images "help"}}")'>
+{{define "title" }}
+AIR Directory - Help
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "help"}}")'
+{{ end }}
 
+{{ define "other scripts"}}{{ end }}
 
-
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
+{{ define "content" }}
 
 <h3>Topics</h3>
 <ol>
-<li><a href="#password">How do I change my password?</a><br></li>
-<li><a href="#icon">How do I create an icon that launches Phonebook?</a><br></li>
-<li><a href="#ideas">How do I submit an idea or problem?</a><br></li>
+    <li><a href="#password">How do I change my password?</a><br></li>
+    <li><a href="#icon">How do I create an icon that launches Phonebook?</a><br></li>
+    <li><a href="#ideas">How do I submit an idea or problem?</a><br></li>
 </ol>
 <cite><a href="mailto:sman@accordinterests.com">Click here to tell me about a topic that is missing</a></cite>
 
 <h3><a href="#password"></a>How do I change my password?</h3>
-<p>To change your password, click on your name located in the top right of the menu bar. 
-This will bring up your personal detail page. The area to change your password is just under
-your name, company, and title. There are two password fields labled "NEW PASSWORD" and "REPEAT NEW PASSWORD".
-You'll need to type your new password in both of them. They both start out empty and yellow. If you press the
-Save button at the bottom of the page while both fields are empty, then no change is made to your password.
-When you begin to type, the bottom field will turn
-red and a red "X" will appear. This is telling you both passwords do not yet match. Finish typing your
-password then enter the same password into the other text field. If they match, the bottom text field 
-will turn green and a green checkmark will appear.</p>
+<p>To change your password, click on your name located in the top right of the menu bar.
+    This will bring up your personal detail page. The area to change your password is just under
+    your name, company, and title. There are two password fields labled "NEW PASSWORD" and "REPEAT NEW PASSWORD".
+    You'll need to type your new password in both of them. They both start out empty and yellow. If you press the
+    Save button at the bottom of the page while both fields are empty, then no change is made to your password.
+    When you begin to type, the bottom field will turn
+    red and a red "X" will appear. This is telling you both passwords do not yet match. Finish typing your
+    password then enter the same password into the other text field. If they match, the bottom text field
+    will turn green and a green checkmark will appear.</p>
 <p>To the right of the password fields are some good rules of thumb to creating a password.
-While phonebook does not require you to follow these rules, it is a good idea to do so because
-they are simple and they will make your password harder to crack.  As you begin to type characters
-in your password, the rules will turn green after you have satisfied their requirement. It should
-be straightforward to make them all green.</p>
+    While phonebook does not require you to follow these rules, it is a good idea to do so because
+    they are simple and they will make your password harder to crack. As you begin to type characters
+    in your password, the rules will turn green after you have satisfied their requirement. It should
+    be straightforward to make them all green.</p>
 <p>Press the Save button at the bottom of the page to put your new password into effect.</p>
 <h3><a name="#icon"></a>How do I create an icon that launches Phonebook?</h3>
 <p>Nearly all modern browsers support dragging the URL of the webpage being viewed and dropping it onto
-the desktop. Many browsers also support a toolbar where you can drag and drop URLs for fast, one-click access.
-Also, note that you can use the <a href="https://en.wikipedia.org/wiki/Bookmark_(World_Wide_Web)">bookmark</a>
-capability associated with your browser.
-The pictures below show 2 methods for setting up Microsoft Internet Explorer for quick access to phonebook.
-After pointing your web browser to the Accord Sigin-In Page, use one of the following methods.
+    the desktop. Many browsers also support a toolbar where you can drag and drop URLs for fast, one-click access.
+    Also, note that you can use the <a href="https://en.wikipedia.org/wiki/Bookmark_(World_Wide_Web)">bookmark</a>
+    capability associated with your browser.
+    The pictures below show 2 methods for setting up Microsoft Internet Explorer for quick access to phonebook.
+    After pointing your web browser to the Accord Sigin-In Page, use one of the following methods.
 </p>
 <table>
-<tr><td align="center">Method 1</td><td width="20"></td><td align="center">Method 2</td></tr>
-<tr><td><img src="/images/pbhelp002.png"></td><td width="20"></td><td><img src="/images/pbhelp003.png"></td></tr>
+    <tr>
+        <td align="center">Method 1</td>
+        <td width="20"></td>
+        <td align="center">Method 2</td>
+    </tr>
+    <tr>
+        <td><img src="/images/pbhelp002.png"></td>
+        <td width="20"></td>
+        <td><img src="/images/pbhelp003.png"></td>
+    </tr>
 </table>
 <p><br></p>
 <a name="ideas"></a><h3>Problems? &nbsp;Ideas? &nbsp;Feedback?</h3>
 <p>Your input is welcome and encouraged. Contact me directly:</p>
 <table>
-<tr><td width="30"></td><td height=30></td><td></td><td rowspan="7"><img src=/images/pbhelp001.png width=300 align="right"></td></tr>
-<tr><td width="30"></td><td>Steve Mansour</td><td></td></tr>
-<tr><td width="30"></td><td align="right">Email:</td><td><a href="mailto:sman@accordinterests.com">sman@accordinterests.com</a></td></tr>
-<tr><td width="30"></td><td align="right">Voice or text:</td><td>408-921-9957</td></tr>
-<tr><td width="30"></td><td align="right">Skype:</td><td>StMansour</td></tr>
-<tr><td width="30"></td><td colspan=2><p>For problems, be sure to include the URL and Breadcrumb</p></td></tr>
-<tr><td width="30"></td><td colspan=2 height=30><p></p></td></tr>
+    <tr>
+        <td width="30"></td>
+        <td height=30></td>
+        <td></td>
+        <td rowspan="7"><img src=/images/pbhelp001.png width=300 align="right"></td>
+    </tr>
+    <tr>
+        <td width="30"></td>
+        <td>Steve Mansour</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td width="30"></td>
+        <td align="right">Email:</td>
+        <td><a href="mailto:sman@accordinterests.com">sman@accordinterests.com</a></td>
+    </tr>
+    <tr>
+        <td width="30"></td>
+        <td align="right">Voice or text:</td>
+        <td>408-921-9957</td>
+    </tr>
+    <tr>
+        <td width="30"></td>
+        <td align="right">Skype:</td>
+        <td>StMansour</td>
+    </tr>
+    <tr>
+        <td width="30"></td>
+        <td colspan=2><p>For problems, be sure to include the URL and Breadcrumb</p></td>
+    </tr>
+    <tr>
+        <td width="30"></td>
+        <td colspan=2 height=30><p></p></td>
+    </tr>
 
 </table>
 
+{{ end }}

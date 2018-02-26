@@ -1,76 +1,55 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Delete Class Error</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-</head>
-<body style='background-image: url("/{{index .Images "delClassRefErr"}}")'>
+{{define "title" }}
+AIR Directory - Delete Class Error
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "delClassRefErr"}}")'
+{{ end }}
 
+{{ define "other scripts"}}{{ end }}
 
-
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
+{{ define "content" }}
 
 <p></p>
-<H1>Cannot delete class {{.A.Name}}</H1>
+<h1>Cannot delete class {{.A.Name}}</h1>
 <p><strong>Number of people associated with Class {{.A.Name}}: {{.R.Matches | len}}</strong>
-<br>These people are listed below. A Class cannot
-be deleted if any people are associated with it.  Please change the class
-for each of these people to something else and try the delete again.
+    <br>These people are listed below. A Class cannot
+    be deleted if any people are associated with it. Please change the class
+    for each of these people to something else and try the delete again.
 </p>
 <p></p>
-<table cellpadding="2" class="bd" id="personDetailText" >
-<tr><th align="left">First Name</th>
-    <th width=7></th><th align="left">Last Name</th>
-    <th width=7></th><th align="left">Preferred Name</th>
-    <th width=7></th><th align="left">Email</th>
-    <th width=7></th><th align="left">Office Phone</th>
-    <th width=7></th><th align="left">Cell Phone</th>
-    <th width=7></th><th>Department</th></tr>
+<table cellpadding="2" class="bd" id="personDetailText">
+    <tr>
+        <th align="left">First Name</th>
+        <th width=7></th>
+        <th align="left">Last Name</th>
+        <th width=7></th>
+        <th align="left">Preferred Name</th>
+        <th width=7></th>
+        <th align="left">Email</th>
+        <th width=7></th>
+        <th align="left">Office Phone</th>
+        <th width=7></th>
+        <th align="left">Cell Phone</th>
+        <th width=7></th>
+        <th>Department</th>
+    </tr>
 
-	{{range .R.Matches}}
-    	<tr>
-    	<td><a href="/detail/{{.UID}}">{{.FirstName}}</a></td>
-    	<td width=7></td><td><a href="/detail/{{.UID}}">{{.LastName}}</td>
-        <td width=7></td><td><a href="/detail/{{.UID}}">{{.PreferredName}}</td>
-    	<td width=7></td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
-    	<td width=7></td><td>{{.OfficePhone}}</td>
-    	<td width=7></td><td>{{.CellPhone}}</td>
-    	<td width=7></td><td>{{.DeptName}}</td>
-    	</tr>
-	{{end}}
+{{range .R.Matches}}
+    <tr>
+        <td><a href="/detail/{{.UID}}">{{.FirstName}}</a></td>
+        <td width=7></td>
+        <td><a href="/detail/{{.UID}}">{{.LastName}}</a></td>
+        <td width=7></td>
+        <td><a href="/detail/{{.UID}}">{{.PreferredName}}</a></td>
+        <td width=7></td>
+        <td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
+        <td width=7></td>
+        <td>{{.OfficePhone}}</td>
+        <td width=7></td>
+        <td>{{.CellPhone}}</td>
+        <td width=7></td>
+        <td>{{.DeptName}}</td>
+    </tr>
+{{end}}
 </table>
-</body>
-</html>
+{{end}}

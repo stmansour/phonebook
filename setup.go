@@ -10,7 +10,6 @@ import (
 	"phonebook/authz"
 	"phonebook/sess"
 	"strings"
-	"text/template"
 )
 
 func setupHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,9 +31,7 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, _ := template.New("setup.html").Funcs(funcMap).ParseFiles("setup.html")
-
-	err := t.Execute(w, &ui)
+	err := renderTemplate(w, ui, "setup.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("setupHandler: err = %v\n", err)
 		ulog(errmsg)
@@ -193,9 +190,7 @@ func saveSetupHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t, _ := template.New("setup.html").Funcs(funcMap).ParseFiles("setup.html")
-
-	err := t.Execute(w, &ui)
+	err := renderTemplate(w, ui, "setup.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("saveSetupHandler: err = %v\n", err)
 		ulog(errmsg)

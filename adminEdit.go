@@ -7,7 +7,6 @@ import (
 	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
-	"text/template"
 )
 
 func adminEditHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,10 +49,11 @@ func adminEditHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	PDetFilterSecurityRead(&d, ssn, authz.PERMVIEW|authz.PERMMOD)
 	ui.D = &d
-	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
+
 	initUIData(&ui)
-	// fmt.Printf("AdminEditHandler: d = %#v\n", d)
-	err = t.Execute(w, &ui)
+
+	err = renderTemplate(w, ui, "adminEdit.html")
+
 	if nil != err {
 		errmsg := fmt.Sprintf("adminEditHandler: err = %v\n", err)
 		ulog(errmsg)

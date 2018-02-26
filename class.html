@@ -1,72 +1,62 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Business Unit - {{.A.Name}}</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-</head>
-<body style='background-image: url("/{{index .Images "class"}}")'>
+{{define "title" }}
+AIR Directory - Business Unit - {{.A.Name}}
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "class"}}")'
+{{ end }}
 
+{{ define "other scripts"}}{{ end }}
 
-
-
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
-
+{{ define "content" }}
 <p>&nbsp;</p>
 <table border="0" class="bd" id="personDetailText" cellpadding="3">
-<tr><td width="50px"></td><td colspan="2"><span class="LastName">{{.A.Name}}</span></td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">DESIGNATION </td><td>{{.A.Designation}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">DESCRIPTION </td><td>{{.A.Description}}</td><td width="50px"></td></tr>
-<tr><td width="50px"></td><td class="Attrib" align="right">COMPANY </td><td><a href="/company/{{.A.C.CoCode}}">{{.A.C.Designation}}</a></td><td width="50px"></td></tr>
+    <tr>
+        <td width="50px"></td>
+        <td colspan="2"><span class="LastName">{{.A.Name}}</span></td>
+        <td width="50px"></td>
+    </tr>
+    <tr>
+        <td width="50px"></td>
+        <td class="Attrib" align="right">DESIGNATION</td>
+        <td>{{.A.Designation}}</td>
+        <td width="50px"></td>
+    </tr>
+    <tr>
+        <td width="50px"></td>
+        <td class="Attrib" align="right">DESCRIPTION</td>
+        <td>{{.A.Description}}</td>
+        <td width="50px"></td>
+    </tr>
+    <tr>
+        <td width="50px"></td>
+        <td class="Attrib" align="right">COMPANY</td>
+        <td><a href="/company/{{.A.C.CoCode}}">{{.A.C.Designation}}</a></td>
+        <td width="50px"></td>
+    </tr>
 
-<tr><td width="50px"></td><td colspan="2"><p></p><hr><p></p></td><td width="50px"></td></tr>
+    <tr>
+        <td width="50px"></td>
+        <td colspan="2"><p></p>
+            <hr>
+            <p></p></td>
+        <td width="50px"></td>
+    </tr>
 
-<tr><td width="50px"></td>
-    <td colspan="2" >
-    <p align="center">
-        <form action="/adminViewBtn/" method="POST">
-        <input type="submit" name="action" value="Done">  &nbsp;&nbsp;&nbsp;
-    {{if hasAdminScreenAccess .X.Token 3 4}}
-        <input type="submit" name="action" value="AdminEdit">
-        <input type="hidden" name="url" value="/adminEditClass/{{.A.ClassCode}}">
-    {{end}}
-        </form>
-   </p>
-    </td><td width="50px"></td></tr>
+    <tr>
+        <td width="50px"></td>
+        <td colspan="2">
+            <p align="center">
+            <form action="/adminViewBtn/" method="POST">
+                <input type="submit" name="action" value="Done"> &nbsp;&nbsp;&nbsp;
+            {{if hasAdminScreenAccess .X.Token 3 4}}
+                <input type="submit" name="action" value="AdminEdit">
+                <input type="hidden" name="url" value="/adminEditClass/{{.A.ClassCode}}">
+            {{end}}
+            </form>
+            </p>
+        </td>
+        <td width="50px"></td>
+    </tr>
 
 </table>
-
-</body>
-</html>
+{{ end }}

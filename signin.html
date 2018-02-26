@@ -1,48 +1,51 @@
 <!DOCTYPE html>
 <head>
-<meta charset="utf-8">
-<title>AIR Directory - Sign In</title>
-<link rel="stylesheet" type="text/css" href="/signin.css" />
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-<script type="text/javascript">
-function submitform()
-{
-	document.getElementById("formlostpw").value = "resetpw"
-    document.forms["signinform"].submit();
-}
-</script>
+    <meta charset="utf-8">
+    <title>AIR Directory - Sign In</title>
+    <link rel="stylesheet" type="text/css" href="/signin.css"/>
+    <link rel="icon" type="image/png" href="/images/directory-32.png">
+    <script type="text/javascript">
+        function submitform() {
+            document.getElementById("formlostpw").value = "resetpw"
+            document.forms["signinform"].submit();
+        }
+    </script>
 </head>
 <body style='background-image: url("/{{index .Images "signin"}}")'>
 <div class="container">
-	<section id="content">
-		<form action="/weblogin/" method="POST" id="signinform">
-		<input type="hidden" name="pagename" value="signin">
-		<input type="hidden" name="lostpw" id="formlostpw" value="">
-		<!-- <img src="/{{index .Images "signinlogo"}}" height="200"> -->
-		<img src="/images/airlogo.png" width="350">
-			<p><br></p>
-			<center>
-				<table align="center"><tr valign="center">
-					<td><img src="/images/directory-48.png"></td>
-					<td width="10"></td>
-					<td><p style="font-size: 15pt;font-weight: bold;color: #777777;">Sign in to use AIR Directory</p></td>
-				</tr></table>
-			</center>
-			<p>&nbsp;</p>
-			<div>
-				<input type="text" name="username" placeholder="Username" required="" id="username" maxlength="35" />
-			</div>
-			<div>
-				<input type="password" name="password" placeholder="Password" required="" id="password" maxlength="35" />
-			</div>
-			{{if gt .S.ErrNo 0}}<br><p class="ErrMsg">{{.S.ErrMsg}}</p><br>{{end}}
-			<div>
-				<input type="submit" value="Sign In" />
-				<a href="javascript: submitform()">Lost your password?</a>
-				<!-- <a href="#">Register</a> -->
-			</div>
-		</form><!-- form -->
-	</section><!-- content -->
+    <section id="content">
+        <form action="/weblogin/" method="POST" id="signinform">
+            <input type="hidden" name="pagename" value="signin">
+            <input type="hidden" name="lostpw" id="formlostpw" value="">
+            <!-- <img src="/{{index .Images "signinlogo"}}" height="200"> -->
+            <img src="/images/airlogo.png" width="350">
+            <p><br></p>
+            <center>
+                <table align="center">
+                    <tr valign="center">
+                        <td><img src="/images/directory-48.png"></td>
+                        <td width="10"></td>
+                        <td><p style="font-size: 15pt;font-weight: bold;color: #777777;">Sign in to use AIR
+                            Directory</p></td>
+                    </tr>
+                </table>
+            </center>
+            <p>&nbsp;</p>
+            <div>
+                <input type="text" name="username" placeholder="Username" required="" id="username" maxlength="35"/>
+            </div>
+            <div>
+                <input type="password" name="password" placeholder="Password" required="" id="password" maxlength="35"/>
+            </div>
+        {{if gt .S.ErrNo 0}}<br>
+            <p class="ErrMsg">{{.S.ErrMsg}}</p><br>{{end}}
+            <div>
+                <input type="submit" value="Sign In"/>
+                <a href="javascript: submitform()">Lost your password?</a>
+                <!-- <a href="#">Register</a> -->
+            </div>
+        </form><!-- form -->
+    </section><!-- content -->
 </div><!-- container -->
 </body>
 </html>

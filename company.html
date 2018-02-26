@@ -1,105 +1,125 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Company: {{.C.CommonName}}</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
+{{define "title" }}
+AIR Directory - Company: {{.C.CommonName}}
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "company"}}")'  onload="gomap()"
+{{ end }}
 
+
+{{define "other scripts"}}
 <script type="text/javascript">
-function gomap() {
-    loc = "https://www.google.com/maps/embed/v1/place?key=AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4&q={{.C.Address}},{{.C.City}}+{{.C.State}}+{{.C.PostalCode}}+{{.C.Country}}";
-    document.getElementById('geomap').src = loc;
-}
+    function gomap() {
+        loc = "https://www.google.com/maps/embed/v1/place?key=AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4&q={{.C.Address}},{{.C.City}}+{{.C.State}}+{{.C.PostalCode}}+{{.C.Country}}";
+        document.getElementById('geomap').src = loc;
+    }
 </script>
+{{ end }}
 
 
-</head>
-
-<body style='background-image: url("/{{index .Images "company"}}")'  onload="gomap()">
-
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
-
+{{ define "content" }}
 <p>&nbsp;</p>
 <table>
-<tr><td>
+    <tr>
+        <td>
 
-<table border="0" class="bd" id="personDetailText" cellpadding="3" >
-<tr><td width="15px"></td><td colspan="2"><span class="LastName">{{.C.LegalName}}</span><br>
-<span class="FirstName">{{.C.CommonName}}</span></td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right" valign="center">ADDRESS</td>
-    <td>
-        {{.C.Address}}<br>
-        {{if .C.Address2}}{{.C.Address2}}<br>{{end}}
-        {{.C.City}}, {{.C.State}}&nbsp;&nbsp;{{.C.PostalCode}}, {{.C.Country}}
-    </td><td width="15px"></td>
-</tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">DESIGNATION</td><td>{{.C.Designation}}</td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">COMPANY CODE</td><td>{{.C.CoCode}}</td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">PHONE</td><td><a href="{{phoneURL .C.Phone}}">{{.C.Phone}}</a></td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">FAX</td><td>{{.C.Fax}}</td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">EMAIL</td><td><a href="mailto:{{.C.Email}}">{{.C.Email}}</a></td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">ACTIVE</td><td>{{if gt .C.Active 0}}Yes{{else}}No{{end}}</a></td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">EMPLOYS PEOPLE</td><td>{{if gt .C.EmploysPersonnel 0}}Yes{{else}}No{{end}}</a></td><td width="15px"></td></tr>
-<tr><td width="15px"></td><td class="Attrib" align="right">BUSINESS UNITS</td>
-    <td>{{range .C.C}}<a href="/class/{{.ClassCode}}">{{.Designation}}</a>&nbsp;&nbsp;{{end}}</td><td width="15px"></td>
-</tr>
-<tr><td width="15px"></td><td colspan="2"><p></p><hr><p></p></td><td width="15px"></td></tr>
+            <table border="0" class="bd" id="personDetailText" cellpadding="3">
+                <tr>
+                    <td width="15px"></td>
+                    <td colspan="2"><span class="LastName">{{.C.LegalName}}</span><br>
+                        <span class="FirstName">{{.C.CommonName}}</span></td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right" valign="center">ADDRESS</td>
+                    <td>
+                    {{.C.Address}}<br>
+                    {{if .C.Address2}}{{.C.Address2}}<br>{{end}}
+                    {{.C.City}}, {{.C.State}}&nbsp;&nbsp;{{.C.PostalCode}}, {{.C.Country}}
+                    </td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">DESIGNATION</td>
+                    <td>{{.C.Designation}}</td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">COMPANY CODE</td>
+                    <td>{{.C.CoCode}}</td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">PHONE</td>
+                    <td><a href="{{phoneURL .C.Phone}}">{{.C.Phone}}</a></td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">FAX</td>
+                    <td>{{.C.Fax}}</td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">EMAIL</td>
+                    <td><a href="mailto:{{.C.Email}}">{{.C.Email}}</a></td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">ACTIVE</td>
+                    <td>{{if gt .C.Active 0}}Yes{{else}}No{{end}}</td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">EMPLOYS PEOPLE</td>
+                    <td>{{if gt .C.EmploysPersonnel 0}}Yes{{else}}No{{end}}</td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td class="Attrib" align="right">BUSINESS UNITS</td>
+                    <td>{{range .C.C}}<a href="/class/{{.ClassCode}}">{{.Designation}}</a>&nbsp;&nbsp;{{end}}</td>
+                    <td width="15px"></td>
+                </tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td colspan="2"><p></p>
+                        <hr>
+                        <p></p></td>
+                    <td width="15px"></td>
+                </tr>
 
-<tr><td width="15px"></td>
-    <td colspan="2" >
-    <p align="center">
-        <form action="/adminViewBtn/" method="POST">
-        <input type="submit" name="action" value="Done">  &nbsp;&nbsp;&nbsp;
-    {{if hasAdminScreenAccess .X.Token 2 4}}
-        <input type="submit" name="action" value="AdminEdit">
-        <input type="hidden" name="url" value="/adminEditCo/{{.C.CoCode}}">
-    {{end}}
-        </form>
-    </p>
-    <br><p></p>
-    </td><td width="15px"></td></tr>
+                <tr>
+                    <td width="15px"></td>
+                    <td colspan="2">
+                        <p align="center">
+                        <form action="/adminViewBtn/" method="POST">
+                            <input type="submit" name="action" value="Done"> &nbsp;&nbsp;&nbsp;
+                        {{if hasAdminScreenAccess .X.Token 2 4}}
+                            <input type="submit" name="action" value="AdminEdit">
+                            <input type="hidden" name="url" value="/adminEditCo/{{.C.CoCode}}">
+                        {{end}}
+                        </form>
+                        </p>
+                        <br>
+                        <p></p>
+                    </td>
+                    <td width="15px"></td>
+                </tr>
 
+            </table>
+
+        </td>
+        <td>
+            <iframe id="geomap" width="450" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+
+        </td>
+    </tr>
 </table>
-
-</td>
-<td>
-<iframe id="geomap"width="450"height="450"frameborder="0" style="border:0" allowfullscreen></iframe>
-
- </td>
-</tr>
-</table>
-
-</body>
-</html>
+{{ end }}
