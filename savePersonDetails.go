@@ -17,6 +17,7 @@ import (
 	"phonebook/db"
 	"phonebook/lib"
 	"phonebook/sess"
+	"phonebook/ui"
 	"strconv"
 	"strings"
 )
@@ -37,9 +38,12 @@ func uploadFileCopy(from *multipart.File, toname string) error {
 	return err
 }
 
+/*
+Require constants for S3 configuration.
+*/
 const (
-	S3_REGION         = "us-east-1" // This parameter define the region of bucket
-	IMAGE_UPLOAD_PATH = ""           // This parameter define in which folder have to upload image
+	S3Region        = "us-east-1" // This parameter define the region of bucket
+	ImageUploadPath = ""          // This parameter define in which folder have to upload image
 )
 
 // generateFileName generate file name with uid
@@ -70,7 +74,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 	}
 
 	// Set up configuration
-	cfg := aws.NewConfig().WithRegion(S3_REGION).WithCredentials(creds)
+	cfg := aws.NewConfig().WithRegion(S3Region).WithCredentials(creds)
 
 	// Set up session
 	sess, err := session.NewSession(cfg)
@@ -82,7 +86,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 	svc := s3.New(sess)
 
 	// Path after the bucket name
-	imagePath := path.Join(IMAGE_UPLOAD_PATH, filename)
+	imagePath := path.Join(ImageUploadPath, filename)
 
 	// define parameters to upload image to S3
 	params := &s3.PutObjectInput{
@@ -102,7 +106,8 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 	}
 
 	// get image location
-	imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+	//imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
+	imageLocation := ui.GenerateImageLocation(imagePath)
 
 	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
 	ulog("Image location: %s", imageLocation)

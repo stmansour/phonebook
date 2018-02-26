@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"phonebook/ui"
 )
 
 func getCompanyInfo(cocode int, c *company) {
@@ -89,7 +90,8 @@ func getImageFilename(uid int) string {
 //  returns 0 if success, err number otherwise
 //===========================================================
 func getPersonDetail(d *personDetail, uid int) int {
-	d.Image = getImageFilename(uid)
+	//d.Image = getImageFilename(uid)
+	d.Image = ui.GetImageLocation(uid)
 	err := App.db.QueryRow("select lastname,firstname,preferredname,jobcode,primaryemail,"+
 		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
 		"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+

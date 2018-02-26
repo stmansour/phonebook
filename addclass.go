@@ -33,7 +33,6 @@ func adminAddClassHandler(w http.ResponseWriter, r *http.Request) {
 	c.Designation = ""
 	c.Description = ""
 
-
 	ui.A = &c
 	ui.CompanyList = PhonebookUI.CompanyList
 
