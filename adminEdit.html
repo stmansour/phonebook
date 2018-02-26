@@ -7,20 +7,20 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
 
 {{ define "other scripts"}}{{ end }} {{ define "content" }}
 
+
+
 <form action="/saveAdminEdit/{{.D.UID}}" method="POST">
 
-    <p class="AppHeading">Admin Edit - {{if gt .D.UID 0}}{{.D.FirstName}} {{.D.LastName}} ({{.D.UID}}){{else}}
-        add new person{{end}}
+    <p class="AppHeading">Admin Edit - {{if gt .D.UID 0}}{{.D.FirstName}} {{.D.LastName}} ({{.D.UID}}){{else}}add new person{{end}}
     {{$er := .D.RID}}
         <br>
         <select name="Role"
         {{if hasPERMMODaccess .X.Token 1 "Role"}}{{else}}disabled="disabled"{{end}}>
-        {{range $r := .Roles}}
-            <option value="{{$r.RID}}" {{if eq $r.RID $er}}selected{{end}}>{{$r.Name}}</option>{{end}}
+        {{range $r := .Roles}}<option value="{{$r.RID}}" {{if eq $r.RID $er}}selected{{end}}>{{$r.Name}}</option>{{end}}
         </select>
     </p>
 
-    <table>
+    <table >
         <tr>
             <td class="edAttrib">TITLE</td>
             <td class="edAttrib">LAST NAME</td>
@@ -43,7 +43,7 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
             {{if hasPERMMODaccess .X.Token 1 "LastName"}}{{else}}disabled="disabled"{{end}}></td>
             <td><input type=text name="MiddleName" value="{{.D.MiddleName}}" size="10" maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "MiddleName"}}{{else}}disabled="disabled"{{end}}></td>
-            <td><input type=text name="FirstName" value="{{.D.FirstName}}" size="20" required="required" maxlength="25"
+            <td><input type=text name="FirstName" value="{{.D.FirstName}}" size="20"  required="required" maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "FirstName"}}{{else}}disabled="disabled"{{end}}></td>
             <td><input type=text name="PreferredName" value="{{.D.PreferredName}}" size="15" maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "PreferredName"}}{{else}}disabled="disabled"{{end}}></td>
@@ -61,7 +61,7 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
             {{if hasPERMMODaccess .X.Token 1 "OfficePhone"}}{{else}}disabled="disabled"{{end}}></td>
             <td><input type="text" name="OfficeFax" value="{{.D.OfficeFax}}" size="15" maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "OfficeFax"}}{{else}}disabled="disabled"{{end}}></td>
-            <td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="15" maxlength="25"
+            <td><input type="text" name="CellPhone" value="{{.D.CellPhone}}" size="15"  maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "CellPhone"}}{{else}}disabled="disabled"{{end}}></td>
         </tr>
     </table>
@@ -118,11 +118,9 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
             <td class="edAttrib">PHONE</td>
         </tr>
         <tr>
-            <td><input type=text name="EmergencyContactName" value="{{.D.EmergencyContactName}}" size="25"
-                       maxlength="25"
+            <td><input type=text name="EmergencyContactName" value="{{.D.EmergencyContactName}}" size="25" maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "EmergencyContactName"}}{{else}}disabled="disabled"{{end}}></td>
-            <td><input type=text name="EmergencyContactPhone" value="{{.D.EmergencyContactPhone}}" size="15"
-                       maxlength="25"
+            <td><input type=text name="EmergencyContactPhone" value="{{.D.EmergencyContactPhone}}" size="15" maxlength="25"
             {{if hasPERMMODaccess .X.Token 1 "EmergencyContactPhone"}}{{else}}disabled="disabled"{{end}}></td>
         </tr>
     </table>
@@ -134,43 +132,35 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
 {{$a4K := .D.Accepted401K}}
 {{$dept := .D.DeptCode}}
     <p></p>
-    <table>
+    <table >
         <tr>
-            <td class="edAttrib">COMPANY</td>
-            <td><select class="HR" name="CoCode"
-            {{if hasPERMMODaccess .X.Token 1 "CoCode"}}{{else}}disabled="disabled"{{end}}>
-            {{range $cocode, $name := .CoCodeToName}}
-                <option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select>
-            </td>
+            <td class="edAttrib">COMPANY</td><td><select class="HR" name="CoCode"
+        {{if hasPERMMODaccess .X.Token 1 "CoCode"}}{{else}}disabled="disabled"{{end}}>
+        {{range $cocode, $name := .CoCodeToName}}
+            <option value="{{$cocode}}"{{if eq $cocode $comp}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
             <td width=10></td>
-            <td class="edAttrib">JOB TITLE</td>
-            <td><select class="HR" name="JobCode"
-            {{if hasPERMMODaccess .X.Token 1 "JobCode"}}{{else}}disabled="disabled"{{end}}>
-            {{range $name, $jobcode := .NameToJobCode}}
-                <option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>
-            {{end}}</select></td>
+            <td class="edAttrib">JOB TITLE</td><td><select class="HR" name="JobCode"
+        {{if hasPERMMODaccess .X.Token 1 "JobCode"}}{{else}}disabled="disabled"{{end}}>
+        {{range $name, $jobcode := .NameToJobCode}}
+            <option value="{{$jobcode}}"{{if eq $jobcode $job}}selected{{end}}>{{$name}}</option>
+        {{end}}</select></td>
             <td width=10></td>
-            <td class="edAttrib">MANAGER UID</td>
-            <td><input class="HR" type="number" name="MgrUID" value="{{.D.MgrUID}}"
-                       min="0" max="9999" {{if hasPERMMODaccess .X.Token 1 "MgrUID"}}{{else}}disabled="disabled"{{end}}>
-            </td>
+            <td class="edAttrib">MANAGER UID</td><td><input class="HR" type="number" name="MgrUID" value="{{.D.MgrUID}}"
+                                                            min="0" max="9999" {{if hasPERMMODaccess .X.Token 1 "MgrUID"}}{{else}}disabled="disabled"{{end}}></td>
         </tr>
     </table>
     <p></p>
-    <table>
+    <table >
         <tr>
-            <td class="edAttrib">STATE OF EMPLOYMENT</td>
-            <td><input class="HR" type=text name="StateOfEmployment"
-                       value="{{.D.StateOfEmployment}}" size="15" maxlength="25"
-            {{if hasPERMMODaccess .X.Token 1 "StateOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
+            <td class="edAttrib">STATE OF EMPLOYMENT</td><td><input class="HR" type=text name="StateOfEmployment"
+                                                                    value="{{.D.StateOfEmployment}}" size="15"  maxlength="25"
+        {{if hasPERMMODaccess .X.Token 1 "StateOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
             <td width=10></td>
-            <td class="edAttrib">COUNTRY OF EMPLOYMENT</td>
-            <td><input class="HR"
-                       type=text name="CountryOfEmployment" value="{{.D.CountryOfEmployment}}" size="15" maxlength="25"
-            {{if hasPERMMODaccess .X.Token 1 "CountryOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
+            <td class="edAttrib">COUNTRY OF EMPLOYMENT</td><td><input class="HR"
+                                                                      type=text name="CountryOfEmployment" value="{{.D.CountryOfEmployment}}" size="15" maxlength="25"
+        {{if hasPERMMODaccess .X.Token 1 "CountryOfEmployment"}}{{else}}disabled="disabled"{{end}}></td>
             <td width=10></td>
-            <td class="edAttrib"></td>
-            <td></td>
+            <td class="edAttrib"></td><td></td>
         </tr>
     </table>
 
@@ -178,32 +168,26 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
 
 {{$ccode := .D.ClassCode}}
 
-    <table>
+    <table >
         <tr>
-            <td class="edAttrib">DEPARTMENT</td>
-            <td><select class="HR" name="DeptCode"
-            {{if hasPERMMODaccess .X.Token 1 "DeptCode"}}{{else}}disabled="disabled"{{end}}>
-            {{range $name, $dcode := .NameToDeptCode}}
-                <option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+            <td class="edAttrib">DEPARTMENT</td><td><select class="HR" name="DeptCode"
+        {{if hasPERMMODaccess .X.Token 1 "DeptCode"}}{{else}}disabled="disabled"{{end}}>
+        {{range $name, $dcode := .NameToDeptCode}}<option value="{{$dcode}}"{{if eq $dcode $dept}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
             <td width=10></td>
-            <td class="edAttrib">BUSINESS UNIT</td>
-            <td>
-                <select class="HR" name="ClassCode"
-                {{if hasPERMMODaccess .X.Token 1 "ClassCode"}}{{else}}disabled="disabled"{{end}}>
-                {{range $name, $classcode := .NameToClassCode}}
-                    <option value="{{$classcode}}"{{if eq $classcode $ccode}}selected{{end}}>{{$name}}</option>{{end}}
-                </select>
-            </td>
+            <td class="edAttrib">BUSINESS UNIT</td><td>
+            <select class="HR" name="ClassCode"
+            {{if hasPERMMODaccess .X.Token 1 "ClassCode"}}{{else}}disabled="disabled"{{end}}>
+            {{range $name, $classcode := .NameToClassCode}}
+                <option value="{{$classcode}}"{{if eq $classcode $ccode}}selected{{end}}>{{$name}}</option>{{end}}</select>
+        </td>
             <td width=10></td>
-            <td class="edAttrib">POSITION CONTROL NUMBER</td>
-            <td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10"
-                       maxlength="10"
-            {{if hasPERMMODaccess .X.Token 1 "Status"}}{{else}}disabled="disabled"{{end}}>
-            </td>
+            <td class="edAttrib">POSITION CONTROL NUMBER </td><td><input class="HR" type=text name="PositionControlNumber" value="{{.D.PositionControlNumber}}" size="10" maxlength="10"
+        {{if hasPERMMODaccess .X.Token 1 "Status"}}{{else}}disabled="disabled"{{end}}>
+        </td>
         </tr>
     </table>
     <p></p>
-    <table>
+    <table >
         <tr>
         {{$hireyear := dateYear .D.Hire}}
             <td class="edAttrib">HIRE DATE</td>
@@ -212,85 +196,66 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
             {{if hasPERMMODaccess .X.Token 1 "Hire"}}{{else}}disabled="disabled"{{end}}>
             </td>
             <td width="10"></td>
-            <td class="edAttrib">STATUS</td>
-            <td><select
-            {{if hasPERMMODaccess .X.Token 1 "Status"}}{{else}}disabled="disabled"{{end}}
-                    name="Status" class="HR">
-                <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option>
-                <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option>
-            </select></td>
+            <td class="edAttrib">STATUS</td><td><select
+        {{if hasPERMMODaccess .X.Token 1 "Status"}}{{else}}disabled="disabled"{{end}}
+                name="Status" class="HR"> <option value="Active" {{if eq .D.Status 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .D.Status 0}}selected{{end}}>Inactive</option> </select></td>
             <td width="10"></td>
             <td class="edAttrib">ELIGIBLE FOR REHIRE </span><select name="EligibleForRehire"
             {{if hasPERMMODaccess .X.Token 1 "Hire"}}{{else}}disabled="disabled"{{end}}
-                                                                    class="HR">
-                <option value="No" {{if eq .D.EligibleForRehire 0}}selected{{end}}>No</option>
-                <option value="Yes" {{if eq .D.EligibleForRehire 1}}selected{{end}}>Yes</option>
-            </select></td>
+                                                                    class="HR"> <option value="No" {{if eq .D.EligibleForRehire 0}}selected{{end}}>No</option>
+                <option value="Yes" {{if eq .D.EligibleForRehire 1}}selected{{end}}>Yes</option></select></td>
         </tr>
     </table>
     <p></p>
 {{$termyear := dateYear .D.Termination}}
 {{$lastrevyear := dateYear .D.LastReview}}
 {{$nextrevyear := dateYear .D.NextReview}}
-    <table>
+    <table >
         <tr>
-            <td class="edAttrib">LAST REVIEW</td>
-            <td><input class="HR" type=date name="LastReview"
-                       value="{{if gt $lastrevyear 2000}}{{dateToString .D.LastReview}}{{end}}" size="10"
-            {{if hasPERMMODaccess .X.Token 1 "LastReview"}}{{else}}disabled="disabled"{{end}}></td>
+            <td class="edAttrib">LAST REVIEW</td><td><input class="HR" type=date name="LastReview"
+                                                            value="{{if gt $lastrevyear 2000}}{{dateToString .D.LastReview}}{{end}}" size="10"
+        {{if hasPERMMODaccess .X.Token 1 "LastReview"}}{{else}}disabled="disabled"{{end}}></td>
             <td width="10"></td>
-            <td class="edAttrib">NEXT REVIEW</td>
-            <td><input class="HR" type=date name="NextReview"
-                       value="{{if gt $nextrevyear 2000}}{{dateToString .D.NextReview}}{{end}}" size="10"
-            {{if hasPERMMODaccess .X.Token 1 "NextReview"}}{{else}}disabled="disabled"{{end}}></td>
+            <td class="edAttrib">NEXT REVIEW</td><td><input class="HR" type=date name="NextReview"
+                                                            value="{{if gt $nextrevyear 2000}}{{dateToString .D.NextReview}}{{end}}" size="10"
+        {{if hasPERMMODaccess .X.Token 1 "NextReview"}}{{else}}disabled="disabled"{{end}}></td>
             <td width="10"></td>
-            <td class="edAttrib">TERMINATION DATE</td>
-            <td><input class="HR" type=date name="Termination"
-                       value="{{if gt $termyear 2000}}{{dateToString .D.Termination}}{{end}}" size="10"
-            {{if hasPERMMODaccess .X.Token 1 "Termination"}}{{else}}disabled="disabled"{{end}}></td>
+            <td class="edAttrib">TERMINATION DATE</td><td><input class="HR" type=date name="Termination"
+                                                                 value="{{if gt $termyear 2000}}{{dateToString .D.Termination}}{{end}}" size="10"
+        {{if hasPERMMODaccess .X.Token 1 "Termination"}}{{else}}disabled="disabled"{{end}}></td>
         </tr>
     </table>
     <p></p>
-    <table>
+    <table >
         <tr>
             <td class="edAttrib">ACCEPTED HEALTH INSURANCE <select name="AcceptedHealthInsurance" class="HR"
             {{if hasPERMMODaccess .X.Token 1 "AcceptedHealthInsurance"}}{{else}}disabled="disabled"{{end}} >
-            {{range $code, $name := .AcceptCodeToName}}
-                <option value="{{$name}}" {{if eq $code $ahi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+            {{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $ahi}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
             <td width=10></td>
             <td class="edAttrib">ACCEPTED DENTAL INSURANCE <select name="AcceptedDentalInsurance" class="HR"
             {{if hasPERMMODaccess .X.Token 1 "AcceptedDentalInsurance"}}{{else}}disabled="disabled"{{end}} >
-            {{range $code, $name := .AcceptCodeToName}}
-                <option value="{{$name}}" {{if eq $code $adi}}selected{{end}}>{{$name}}
-                </option>{{end}}</select></td>
+            {{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $adi}}selected{{end}}>{{$name}}
+            </option>{{end}}</select></td>
             <td width=10></td>
             <td class="edAttrib">ACCEPTED 401K <select name="Accepted401K" class="HR"
             {{if hasPERMMODaccess .X.Token 1 "AcceptedDentalInsurance"}}{{else}}disabled="disabled"{{end}} >
-            {{range $code, $name := .AcceptCodeToName}}
-                <option value="{{$name}}" {{if eq $code $a4K}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
+            {{range $code, $name := .AcceptCodeToName}}<option value="{{$name}}" {{if eq $code $a4K}}selected{{end}}>{{$name}}</option>{{end}}</select></td>
         </tr>
     </table>
 
     <p></p>
 {{if hasPERMMODaccess .X.Token 1 "Comps"}}
     <table>
-        <tr>
-            <td class="edAttrib">COMPENSATION&nbsp;</td>
+        <tr><td class="edAttrib">COMPENSATION&nbsp;</td>
             <td class="HRBoxed"> {{range .D.MyComps}}<label><input type="checkbox"
-                                                                   name="{{.Name}}"
-                                                                   value="{{.CompCode}}"{{if eq .HaveIt 1}}
-                                                                   checked{{end}}>{{.Name}}</label>
-                &nbsp;&nbsp;&nbsp;{{end}}</td>
+                                                                   name="{{.Name}}" value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}}</label> &nbsp;&nbsp;&nbsp;{{end}}</td>
         </tr>
     </table>
 {{else}}
     <table>
-        <tr>
-            <td class="edAttrib">COMPENSATION&nbsp;</td>
+        <tr><td class="edAttrib">COMPENSATION&nbsp;</td>
             <td class="HRBoxedDisabled"> {{range .D.MyComps}}<input type="checkbox" name="{{.Name}}" disabled="disabled"
-                                                                    value="{{.CompCode}}"{{if eq .HaveIt 1}}
-                                                                    checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}
-            </td>
+                                                                    value="{{.CompCode}}"{{if eq .HaveIt 1}} checked{{end}}>{{.Name}} &nbsp;&nbsp;&nbsp;{{end}}</td>
         </tr>
     </table>
 {{end}}
@@ -307,8 +272,7 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
             <input type="checkbox" name="{{.Name}}" value="{{.DCode}}"{{if eq .HaveIt 1}} checked{{end}}>
         {{.Name}} &nbsp;&nbsp;
         </td>
-    {{$n := rmd $cols $i}}{{if eq $n $col}}</tr>
-    <tr>{{end}}
+    {{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
     {{end}}
     </tr>
     </table>
@@ -319,12 +283,10 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
         <td class="edAttrib" rowspan="{{$rows}}">DEDUCTIONS</td>
     {{range $i, $v := .D.MyDeductions}}
         <td class="HRBoxedDisabled">
-            <label><input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}"{{if eq .HaveIt 1}}
-                          checked{{end}}>
+            <label><input disabled="disabled" type="checkbox" name="{{.Name}}" value="{{.DCode}}"{{if eq .HaveIt 1}} checked{{end}}>
             {{.Name}}</label> &nbsp;&nbsp;
         </td>
-    {{$n := rmd $cols $i}}{{if eq $n $col}}</tr>
-    <tr>{{end}}
+    {{$n := rmd $cols $i}}{{if eq $n $col}}</tr><tr>{{end}}
     {{end}}
     </tr>
     </table>
@@ -341,9 +303,7 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
                 <select name="BirthMonth" class="HR"
                 {{if hasPERMMODaccess .X.Token 1 "BirthMonth"}}{{else}}disabled="disabled"{{end}}>
                     <option value="month">month</option>
-                {{range .Months}}
-                    <option {{$t := monthStringToInt .}}value="{{$t}}"
-                            {{if eq $t $bdayMon}}selected{{end}}>{{.}}</option>{{end}}
+                {{range .Months}}<option {{$t := monthStringToInt .}}value="{{$t}}" {{if eq $t $bdayMon}}selected{{end}}>{{.}}</option>{{end}}
                 </select>
                 <input {{if hasPERMMODaccess .X.Token 1 "BirthDOM"}}{{else}}disabled="disabled"{{end}}
                         type="number" class="HR"
@@ -354,7 +314,7 @@ style='background-image: url("/{{index .Images "adminEdit"}}")'
     <p></p>
     <hr>
     <p></p>
-    <input type="submit" name="action" value="Save"> &nbsp;
+    <input type="submit" name="action" value="Save">  &nbsp;
     <input type="submit" name="action" value="Cancel" formnovalidate>
 {{if hasFieldAccess .X.Token 1 "ElemEntity" 8}}
 {{if gt .D.UID 0}}

@@ -17,12 +17,11 @@ style='background-image: url("/{{index .Images "adminEditCo"}}")'
             <td class="edAttrib">DESIGNATION</td>
         </tr>
         <tr>
-            <td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35" required="required" maxlength="50"
+            <td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35"  required="required" maxlength="50"
             {{if hasPERMMODaccess .X.Token 2 "LegalName"}}{{else}}disabled="disabled"{{end}}></td>
             <td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35" maxlength="50"
             {{if hasPERMMODaccess .X.Token 2 "CommonName"}}{{else}}disabled="disabled"{{end}}></td>
-            <td><input type=text name="Designation" value="{{.C.Designation}}" size="7" required="required"
-                       maxlength="3"
+            <td><input type=text name="Designation" value="{{.C.Designation}}" size="7"  required="required" maxlength="3"
             {{if hasPERMMODaccess .X.Token 2 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
         </tr>
     </table>
@@ -76,12 +75,11 @@ style='background-image: url("/{{index .Images "adminEditCo"}}")'
     <p></p>
     <table>
         <tr>
-            <td class="edAttrib">STATUS</td>
-            <td><select name="Active" class="HR"
-            {{if hasPERMMODaccess .X.Token 2 "Active"}}{{else}}disabled="disabled"{{end}}>
-                <option value="Active" {{if eq .C.Active 1}}selected{{end}}>Active</option>
-                <option value="Inactive" {{if eq .C.Active 0}}selected{{end}}>Inactive</option>
-            </select></td>
+            <td class="edAttrib">STATUS</td><td><select name="Active" class="HR"
+        {{if hasPERMMODaccess .X.Token 2 "Active"}}{{else}}disabled="disabled"{{end}}>
+            <option value="Active" {{if eq .C.Active 1}}selected{{end}}>Active</option>
+            <option value="Inactive" {{if eq .C.Active 0}}selected{{end}}>Inactive</option>
+        </select></td>
             <td width="10"></td>
             <td class="edAttrib">EMPLOYS PERSONNEL </span><select name="EmploysPersonnel" class="HR"
             {{if hasPERMMODaccess .X.Token 2 "EmploysPersonnel"}}{{else}}disabled="disabled"{{end}}>
@@ -93,7 +91,7 @@ style='background-image: url("/{{index .Images "adminEditCo"}}")'
     <p></p>
     <hr>
     <p></p>
-    <input type="submit" name="action" value="Save"> &nbsp;
+    <input type="submit" name="action" value="Save">  &nbsp;
     <input type="submit" name="action" value="Cancel" formnovalidate>
 {{if hasFieldAccess .X.Token 2 "ElemEntity" 8}}
 {{if gt .C.CoCode 0}}

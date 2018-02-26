@@ -8,8 +8,7 @@ style='background-image: url("/{{index .Images "adminEditClass"}}")'
 {{ define "other scripts"}}{{ end }}
 {{ define "content" }}
 
-<p class="AppHeading">Admin Edit - {{if eq .A.ClassCode 0}}
-    New Business Unit{{else}}{{.A.Designation}} ({{.A.ClassCode}}){{end}}</p>
+<p class="AppHeading">Admin Edit - {{if eq .A.ClassCode 0}}New Business Unit{{else}}{{.A.Designation}} ({{.A.ClassCode}}){{end}}</p>
 
 <form action="/saveAdminEditClass/{{.A.ClassCode}}" method="POST">
     <table>
@@ -21,8 +20,7 @@ style='background-image: url("/{{index .Images "adminEditClass"}}")'
         <tr>
             <td><input type=text name="Name" value="{{.A.Name}}" size="25" maxlength="25"
             {{if hasPERMMODaccess .X.Token 3 "Name"}}{{else}}disabled="disabled"{{end}}></td>
-            <td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required"
-                       maxlength="3"
+            <td><input type=text name="Designation" value="{{.A.Designation}}" size="7" required="required" maxlength="3"
             {{if hasPERMMODaccess .X.Token 3 "Designation"}}{{else}}disabled="disabled"{{end}}></td>
             <td>
             {{$comp := .A.CoCode}}
@@ -31,8 +29,7 @@ style='background-image: url("/{{index .Images "adminEditClass"}}")'
                     <option value="0" {{if eq 0 $comp}}selected{{end}}>Not Set</option>
                 {{range .CompanyList}}
                 {{if gt .Active 0}}
-                    <option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.Designation}}
-                        - {{.LegalName}}</option>
+                    <option value="{{.CoCode}}" {{if eq .CoCode $comp}}selected{{end}}>{{.Designation}} - {{.LegalName}}</option>
                 {{end}}
                 {{end}}
                 </select>
@@ -51,21 +48,20 @@ style='background-image: url("/{{index .Images "adminEditClass"}}")'
             {{if hasPERMMODaccess .X.Token 3 "Description"}}{{else}}disabled="disabled"{{end}}>{{.A.Description}}</textarea>
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <p></p>
-                <hr>
-                <p></p>
-                <input type="submit" name="action" value="Save"> &nbsp;&nbsp;&nbsp;
-                <input type="submit" name="action" value="Cancel" formnovalidate>
-            {{if hasFieldAccess .X.Token 3 "ElemEntity" 8}}
-            {{if gt .A.ClassCode 0}}
-                &nbsp;&nbsp;<input type="submit" name="action" value="Delete" formnovalidate>
-            {{end}}
-            {{end}}
-            </td>
-        </tr>
+        <tr><td colspan="2">
+            <p></p>
+            <hr>
+            <p></p>
+            <input type="submit" name="action" value="Save">  &nbsp;&nbsp;&nbsp;
+            <input type="submit" name="action" value="Cancel" formnovalidate>
+        {{if hasFieldAccess .X.Token 3 "ElemEntity" 8}}
+        {{if gt .A.ClassCode 0}}
+            &nbsp;&nbsp;<input type="submit" name="action" value="Delete" formnovalidate>
+        {{end}}
+        {{end}}
+        </td></tr>
     </table>
 
 </form>
+
 {{ end }}
