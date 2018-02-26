@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"phonebook/authz"
 	"phonebook/sess"
-	"text/template"
 	"time"
 )
 
@@ -32,9 +31,8 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, _ := template.New("admin.html").Funcs(funcMap).ParseFiles("admin.html")
+	err := renderTemplate(w, ui, "admin.html")
 
-	err := t.Execute(w, &ui)
 	if nil != err {
 		errmsg := fmt.Sprintf("adminHandler: err = %v\n", err)
 		ulog(errmsg)

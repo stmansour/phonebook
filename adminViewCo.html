@@ -1,111 +1,82 @@
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-	<link type="text/css" rel="stylesheet" href="/resources/demos/style.css">
-	<title>AIR Directory - Admin - View {{.C.CommonName}}</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-</head>
-<body style='background-image: url("/{{index .Images "adminViewCo"}}")'>
+{{define "title" }}
+AIR Directory - Admin - View {{.C.CommonName}}
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "adminViewCo"}}")'
+{{ end }}
 
-
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
+{{ define "other scripts"}}{{ end }} {{ define "content" }}
 
 <p class="AppHeading">Admin View - {{.C.CommonName}} {{.C.LegalName}} ({{.C.CoCode}})</p>
 
 <table>
-	<tr>
-		<td class="edAttrib">LEGAL NAME</td>
-		<td class="edAttrib">COMMON NAME</CENTER></td>
-		<td class="edAttrib">DESIGNATION</td>
-	</tr>
-	<tr>
-		<td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35" disabled="disabled"></td>
-		<td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35" disabled="disabled"></td>
-		<td><input type=text name="Designation" value="{{.C.Designation}}" size="7" disabled="disabled"></td>
-	</tr>
+    <tr>
+        <td class="edAttrib">LEGAL NAME</td>
+        <td class="edAttrib">COMMON NAME<center/></td>
+        <td class="edAttrib">DESIGNATION</td>
+    </tr>
+    <tr>
+        <td><input type=text name="LegalName" value="{{.C.LegalName}}" size="35" disabled="disabled"></td>
+        <td><input type=text name="CommonName" value="{{.C.CommonName}}" size="35" disabled="disabled"></td>
+        <td><input type=text name="Designation" value="{{.C.Designation}}" size="7" disabled="disabled"></td>
+    </tr>
 </table>
 <table>
-	<tr>
-		<td class="edAttrib">PHONE</td>
-		<td class="edAttrib">FAX</td>
-		<td class="edAttrib">EMAIL</td>
-	</tr>
-	<tr>
-		<td><input type="text" name="Phone" value="{{.C.Phone}}" size="13" disabled="disabled"></td>
-		<td><input type="text" name="Fax" value="{{.C.Fax}}" size="13" disabled="disabled"></td>
-		<td><input disabled="disabled" type="email" name="Email" value="{{.C.Email}}" size="35"></td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td class="edAttrib">ADDRESS</td>
-		<td class="edAttrib">ADDRESS2</td>
-	</tr>
-	<tr>
-		<td><input disabled="disabled" type=text name="Address" value="{{.C.Address}}" size="35"></td>
-		<td><input disabled="disabled" type=text name="Address2" value="{{.C.Address2}}" size="35"></td>
-	</tr>
+    <tr>
+        <td class="edAttrib">PHONE</td>
+        <td class="edAttrib">FAX</td>
+        <td class="edAttrib">EMAIL</td>
+    </tr>
+    <tr>
+        <td><input type="text" name="Phone" value="{{.C.Phone}}" size="13" disabled="disabled"></td>
+        <td><input type="text" name="Fax" value="{{.C.Fax}}" size="13" disabled="disabled"></td>
+        <td><input disabled="disabled" type="email" name="Email" value="{{.C.Email}}" size="35"></td>
+    </tr>
 </table>
 
 <table>
-	<tr>
-		<td class="edAttrib">CITY</td>
-		<td class="edAttrib">STATE</td>
-		<td class="edAttrib">POSTAL CODE</td>
-		<td class="edAttrib">COUNTRY</td>
-	</tr>
-	<tr>
-		<td><input disabled="disabled" type=text name="City" value="{{.C.City}}" size="25"></td>
-		<td><input disabled="disabled" type=text name="State" value="{{.C.State}}" size="3" maxlength="2"></td>
-		<td><input disabled="disabled" type=text name="PostalCode" value="{{.C.PostalCode}}" size="10"></td>
-		<td><input disabled="disabled" type=text name="Country" value="{{.C.Country}}" size="10"></td>
-	</tr>
+    <tr>
+        <td class="edAttrib">ADDRESS</td>
+        <td class="edAttrib">ADDRESS2</td>
+    </tr>
+    <tr>
+        <td><input disabled="disabled" type=text name="Address" value="{{.C.Address}}" size="35"></td>
+        <td><input disabled="disabled" type=text name="Address2" value="{{.C.Address2}}" size="35"></td>
+    </tr>
 </table>
 
 <table>
-	<tr>
-		<td class="edAttrib">STATUS</td><td><select disabled="disabled" name="Active" class="HR"> <option value="Active" {{if eq .C.Active 1}}selected{{end}}>Active</option> <option value="Inactive" {{if eq .C.Active 0}}selected{{end}}>Inactive</option> </select></td>
-		<td width="10"></td>
-		<td class="edAttrib">EMPLOYS PERSONNEL </span><select disabled="disabled" name="EmploysPersonnel" class="HR"> <option value="No" {{if eq .C.EmploysPersonnel 0}}selected{{end}}>No</option> <option value="Yes" {{if eq .C.EmploysPersonnel 1}}selected{{end}}>Yes</option> </select></td>
-	</tr>
+    <tr>
+        <td class="edAttrib">CITY</td>
+        <td class="edAttrib">STATE</td>
+        <td class="edAttrib">POSTAL CODE</td>
+        <td class="edAttrib">COUNTRY</td>
+    </tr>
+    <tr>
+        <td><input disabled="disabled" type=text name="City" value="{{.C.City}}" size="25"></td>
+        <td><input disabled="disabled" type=text name="State" value="{{.C.State}}" size="3" maxlength="2"></td>
+        <td><input disabled="disabled" type=text name="PostalCode" value="{{.C.PostalCode}}" size="10"></td>
+        <td><input disabled="disabled" type=text name="Country" value="{{.C.Country}}" size="10"></td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td class="edAttrib">STATUS</td>
+        <td><select disabled="disabled" name="Active" class="HR">
+            <option value="Active" {{if eq .C.Active 1}}selected{{end}}>Active</option>
+            <option value="Inactive" {{if eq .C.Active 0}}selected{{end}}>Inactive</option>
+        </select></td>
+        <td width="10"></td>
+        <td class="edAttrib">EMPLOYS PERSONNEL </span><select disabled="disabled" name="EmploysPersonnel" class="HR">
+            <option value="No" {{if eq .C.EmploysPersonnel 0}}selected{{end}}>No</option>
+            <option value="Yes" {{if eq .C.EmploysPersonnel 1}}selected{{end}}>Yes</option>
+        </select></td>
+    </tr>
 </table>
 <p></p>
 <hr>
 <p></p>
-<a  href="javascript:history.back()" class="blbutton">Done</a> &nbsp;&nbsp;&nbsp;<a  href="/adminEditCo/{{.C.CoCode}}" class="blbutton">AdminEdit</a>
-</body>
-</html>
+<a href="javascript:history.back()" class="blbutton">Done</a> &nbsp;&nbsp;&nbsp;<a href="/adminEditCo/{{.C.CoCode}}"
+                                                                                   class="blbutton">AdminEdit</a>
+{{ end }}

@@ -7,7 +7,6 @@ import (
 	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
-	"text/template"
 )
 
 func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +44,6 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	ui.A = &d
 	filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW|authz.PERMMOD, 0)
 
-	t, _ := template.New("adminEditClass.html").Funcs(funcMap).ParseFiles("adminEditClass.html")
 	initUIData(&ui)
 
 	// this interface needs the complete list of companies
@@ -53,8 +51,8 @@ func adminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		ui.CompanyList = append(ui.CompanyList, PhonebookUI.CompanyList[i])
 	}
 
-	//fmt.Printf("ui.A = %#v\n", ui.A)
-	err = t.Execute(w, &ui)
+	err = renderTemplate(w, ui, "adminEditClass.html")
+
 	if nil != err {
 		errmsg := fmt.Sprintf("adminEditClassHandler: err = %v\n", err)
 		ulog(errmsg)

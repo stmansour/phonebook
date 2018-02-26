@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <head>
-<meta charset="utf-8">
-<title>Accord - Reset Password</title>
-<link rel="stylesheet" type="text/css" href="/signin.css" />
-<link rel="icon" type="image/png" href="/images/directory-32.png">
+    <meta charset="utf-8">
+    <title>Accord - Reset Password</title>
+    <link rel="stylesheet" type="text/css" href="/signin.css"/>
+    <link rel="icon" type="image/png" href="/images/directory-32.png">
 </head>
 <body style='background-image: url("/{{index .Images "signin"}}")'>
 <div class="container">
-	<section id="content">
-		<form action="/resetpw/" method="POST" id="resetpw">
-		<input type="hidden" name="pagename" value="resetpw">
-		<img src="/images/signinlogo.png" height="200">
-		<p><br><br></p>
-			<h1>Reset Your Password</h1>
-			<p>Enter your user name then click Reset Password.<br>
-			Your new password will be emailed to you.</p>
-			<p><br></p>
-			<div>
-			<input type="text" name="username"
-				{{if eq .X.Username ""}}placeholder="Username"{{else}}value="{{.X.Username}}"{{end}}
-				required="" id="username" maxlength="25" />
-				{{if ne .ErrMsg ""}}<p class="ErrMsg">{{.ErrMsg}}</p>{{end}}
-			</div>
-			<div>
-				<input type="submit" name="reset" value="Reset Password" />
-			</div>
-		</form><!-- form -->
-	</section><!-- content -->
+    <section id="content">
+        <form action="/resetpw/" method="POST" id="resetpw">
+            <input type="hidden" name="pagename" value="resetpw">
+            <img src="/images/signinlogo.png" height="200">
+            <p><br><br></p>
+            <h1>Reset Your Password</h1>
+            <p>Enter your user name then click Reset Password.<br>
+                Your new password will be emailed to you.</p>
+            <p><br></p>
+            <div>
+                <input type="text" name="username"
+                       {{if eq .X.Username ""}}placeholder="Username"{{else}}value="{{.X.Username}}"{{end}}
+                       required="" id="username" maxlength="25"/>
+            {{if ne .ErrMsg ""}}<p class="ErrMsg">{{.ErrMsg}}</p>{{end}}
+            </div>
+            <div>
+                <input type="submit" name="reset" value="Reset Password"/>
+            </div>
+        </form><!-- form -->
+    </section><!-- content -->
 </div><!-- container -->
 </body>
 </html>

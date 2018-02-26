@@ -1,89 +1,68 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Search</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
+{{define "title" }}
+AIR Directory - Search
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "search"}}")'
+{{ end }}
 
-</head>
-<body style='background-image: url("/{{index .Images "search"}}")'>
+{{ define "other scripts"}}{{ end }}
 
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
-
+{{ define "content" }}
 <p></p>
-
 <table cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-    <td width=20></td>
-    <td>
-    <form action="/search/" method="POST">
-    	<div>Search People: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input type="submit" value="Search">
-        {{if hasPERMMODaccess .X.Token 1 "Termination"}}
-        <label><input type="checkbox" name="inclterms" value="yes">Include inactive employees</label>
-        {{end}}</div>
-    </form>
-    </td>
-    <td width=20></td>
-</tr>
+    <tr>
+        <td width=20></td>
+        <td>
+            <form action="/search/" method="POST">
+                <div>Search People: <input type="search" name="searchstring" size="30" maxlength="35" autofocus><input
+                        type="submit" value="Search">
+                {{if hasPERMMODaccess .X.Token 1 "Termination"}}
+                    <label><input type="checkbox" name="inclterms" value="yes">Include inactive employees</label>
+                {{end}}</div>
+            </form>
+        </td>
+        <td width=20></td>
+    </tr>
     <td width=20></td>
     <td>{{if .R.Query}}{{.R.Matches | len}} results for "{{.R.Query}}"{{else}}Enter a search string{{end}}</td>
     <td width=20></td>
 </table>
 <p></p>
-{{if .R.Query}}    
-<table cellpadding="2" class="bd" id="personDetailText" >
-<tr>                 <th align="left">First Name</th>
-    <th width=7></th><th align="left">Last Name</th>
-    <th width=7></th><th align="left">Preferred Name</th>
-    <th width=7></th><th align="left">Email</th>
-    <th width=7></th><th align="left">Office Phone</th>
-    <th width=7></th><th align="left">Cell Phone</th>
-    <th width=7></th><th>Department</th></tr>
+{{if .R.Query}}
+<table cellpadding="2" class="bd" id="personDetailText">
+    <tr>
+        <th align="left">First Name</th>
+        <th width=7></th>
+        <th align="left">Last Name</th>
+        <th width=7></th>
+        <th align="left">Preferred Name</th>
+        <th width=7></th>
+        <th align="left">Email</th>
+        <th width=7></th>
+        <th align="left">Office Phone</th>
+        <th width=7></th>
+        <th align="left">Cell Phone</th>
+        <th width=7></th>
+        <th>Department</th>
+    </tr>
 
-	{{range .R.Matches}}
-    	<tr>
-    	<td><a href="/detail/{{.UID}}">{{.FirstName}}</a></td>
-    	<td width=7></td><td><a href="/detail/{{.UID}}">{{.LastName}}</td>
-        <td width=7></td><td><a href="/detail/{{.UID}}">{{.PreferredName}}</td>
-    	<td width=7></td><td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
-    	<td width=7></td><td><a href="{{phoneURL .OfficePhone}}">{{.OfficePhone}}</a></td>
-    	<td width=7></td><td><a href="{{phoneURL .CellPhone}}">{{.CellPhone}}</a></td>
-    	<td width=7></td><td>{{.DeptName}}</td>
-    	</tr>
-	{{end}}
+{{range .R.Matches}}
+    <tr>
+        <td><a href="/detail/{{.UID}}">{{.FirstName}}</a></td>
+        <td width=7></td>
+        <td><a href="/detail/{{.UID}}">{{.LastName}}</a></td>
+        <td width=7></td>
+        <td><a href="/detail/{{.UID}}">{{.PreferredName}}</a></td>
+        <td width=7></td>
+        <td><a href="mailto:{{.PrimaryEmail}}">{{.PrimaryEmail}}</a></td>
+        <td width=7></td>
+        <td><a href="{{phoneURL .OfficePhone}}">{{.OfficePhone}}</a></td>
+        <td width=7></td>
+        <td><a href="{{phoneURL .CellPhone}}">{{.CellPhone}}</a></td>
+        <td width=7></td>
+        <td>{{.DeptName}}</td>
+    </tr>
+{{end}}
 </table>
 {{end}}
-</body>
-</html>
+{{ end }}

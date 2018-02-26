@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"phonebook/authz"
 	"phonebook/db"
@@ -59,8 +58,9 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 		getClassInfo(classcode, &c)
 		ui.A = &c
 		filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW, 0)
-		t, _ := template.New("class.html").Funcs(funcMap).ParseFiles("class.html")
-		err := t.Execute(w, &ui)
+
+		err := renderTemplate(w, ui, "class.html")
+
 		if nil != err {
 			errmsg := fmt.Sprintf("classHandler: err = %v\n", err)
 			ulog(errmsg)

@@ -1,110 +1,140 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="/phonebook.css" rel="stylesheet"  type="text/css">
-<title>AIR Directory - Details  {{.D.FirstName}} {{.D.LastName}}</title>
-<link rel="icon" type="image/png" href="/images/directory-32.png">
-</head>
-<body style='background-image: url("/{{index .Images "detail"}}")'>
+{{define "title" }}
+AIR Directory - Details  {{.D.FirstName}} {{.D.LastName}}
+{{ end }}
+{{define "body style" }}
+style='background-image: url("/{{index .Images "detail"}}")'
+{{ end }}
 
+{{ define "other scripts"}}{{ end }}
 
-<table border=0 cellspacing="0" cellpadding="4" class="bd" id="menuid">
-<tr>
-<td width=20></td>
-<td><a href="/search/"><td><a href="/search/"><img src="/images/air-48.png">&nbsp;&nbsp;<img src="/images/directory-48.png"></a></td>
-<td><nav><li><a href="#">AIROLLER &#x25BE;</a>
-    <nav>
-        <li><a href="https://directory.airoller.com/">Directory</a></li>
-        <li><a href="https://receipt.airoller.com/">Receipts</a></li>
-        <!-- <li><a href="https://rentroll.airoller.com/">Roller</a></li> -->
-    </nav>
-</li></nav></td>
-
-<td width=15></td><td><a href="/search/"><span class="MenuCmd">People</span></a></td>
-<td width=15></td><td><a href="/searchco/"><span class="MenuCmd">Companies</span></a></td>
-<td width=15></td><td><a href="/searchcl/"><span class="MenuCmd">Business Units</span></a></td>
-{{if showAdminButton .X.Token}}
-<td width=15></td><td class="MenuCmd"><a href="/admin/"><span class="MenuCmd">Admin</span></a></td>
-{{end}}
-<td width=15></td>
-<td><p align="center"><a href="/editDetail/{{.X.UID}}"><span class="MenuUserName"><img src="{{.X.ImageURL}}" height="35" class="profile-image profile-image-nav"><br>{{.X.Firstname}}</span></a></p></td>
-<td width=4></td>
-<td><a href="/logoff/{{.X.UID}}"><span class="MenuCmd">Logoff</a></span></td>
-<td width=15></td>
-<td><a href="/help/"><span class="MenuCmd">Help</a></span></td>
-<td width=15></td>
-</tr>
-<tr>
-<td width=20></td>
-<td colspan="9">You are here: &nbsp;{{getHTMLBreadcrumb .X.Token}}</td>
-</tr>
-</table>
-
-
-
+{{ define "content" }}
 <table border=0 id="personDetailText">
-<tr><td height=30 colspan="6"></td></tr>
-<tr>
-	<td width=20 class="bd"></td>
-	<td id="personDetailText" class="bd" colspan="2" width="400">
-		<div align="right">
-		<span class="FirstName">{{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}}</span> <span class="LastName">{{.D.LastName}}</span><br>
-		<span class="Employer"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></span><br>
-		<img width=30 src="/images/orgcharticon.png" align="left" alt="Organizational Chart">
-		<span class="JobTitle">{{.D.JobTitle}}</span>
-		</div>
-	</td>
-	<td width=20 class="bd"></td>
-	<td width=30></td>
-	<td width=375 height=375 valign="center" rowspan="9" class="bd"><p align="center"><img width=300 src="{{.D.Image}}"></p></td>
-</tr>
+    <tr>
+        <td height=30 colspan="6"></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td id="personDetailText" class="bd" colspan="2" width="400">
+            <div align="right">
+                <span class="FirstName">{{if .D.PreferredName}}{{.D.PreferredName}}{{else}}{{.D.FirstName}}{{end}}</span>
+                <span class="LastName">{{.D.LastName}}</span><br>
+                <span class="Employer"><a href="/company/{{.D.Company.CoCode}}">{{.D.Company.CommonName}}</a></span><br>
+                <img width=30 src="/images/orgcharticon.png" align="left" alt="Organizational Chart">
+                <span class="JobTitle">{{.D.JobTitle}}</span>
+            </div>
+        </td>
+        <td width=20 class="bd"></td>
+        <td width=30></td>
+        <td width=375 height=375 valign="center" rowspan="9" class="bd"><p align="center"><img width=300
+                                                                                               src="{{.D.Image}}"></p>
+        </td>
+    </tr>
 
 
-<tr><td width=20 class="bd"></td><td class="Attribbd">FULL NAME &nbsp;</td><td class="AttribVal">{{.D.FirstName}} {{.D.MiddleName}} {{.D.LastName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">PREFERRED NAME &nbsp;</td><td class="AttribVal">{{.D.PreferredName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">EMAIL &nbsp;</td><td class="AttribVal"><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">PHONE &nbsp;</td><td class="AttribVal"><a href="{{phoneURL .D.OfficePhone}}">{{.D.OfficePhone}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">CELL &nbsp;</td><td class="AttribVal"><a href="{{phoneURL .D.CellPhone}}">{{.D.CellPhone}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">FAX &nbsp;</td><td class="AttribVal"><a href="{{phoneURL .D.OfficeFax}}">{{.D.OfficeFax}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">BUSINESS UNIT &nbsp;</td>
-	<td class="AttribVal"><a href="/class/{{.D.ClassCode}}">{{.D.Class}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">DEPARTMENT &nbsp;</td><td class="AttribVal">{{.D.DeptName}}</td><td width=20 class="bd"><td colspan=1></td></tr>
-<tr><td width=20 class="bd"></td><td class="Attribbd">MANAGER &nbsp;</td><td class="AttribVal"><a href="/detailpop/{{.D.MgrUID}}">{{.D.MgrName}}</a></td><td width=20 class="bd"><td colspan=1></td></tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">FULL NAME &nbsp;</td>
+        <td class="AttribVal">{{.D.FirstName}} {{.D.MiddleName}} {{.D.LastName}}</td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">PREFERRED NAME &nbsp;</td>
+        <td class="AttribVal">{{.D.PreferredName}}</td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">EMAIL &nbsp;</td>
+        <td class="AttribVal"><a href="mailto:{{.D.PrimaryEmail}}">{{.D.PrimaryEmail}}</a></td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">PHONE &nbsp;</td>
+        <td class="AttribVal"><a href="{{phoneURL .D.OfficePhone}}">{{.D.OfficePhone}}</a></td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">CELL &nbsp;</td>
+        <td class="AttribVal"><a href="{{phoneURL .D.CellPhone}}">{{.D.CellPhone}}</a></td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">FAX &nbsp;</td>
+        <td class="AttribVal"><a href="{{phoneURL .D.OfficeFax}}">{{.D.OfficeFax}}</a></td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">BUSINESS UNIT &nbsp;</td>
+        <td class="AttribVal"><a href="/class/{{.D.ClassCode}}">{{.D.Class}}</a></td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">DEPARTMENT &nbsp;</td>
+        <td class="AttribVal">{{.D.DeptName}}</td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd"></td>
+        <td class="Attribbd">MANAGER &nbsp;</td>
+        <td class="AttribVal"><a href="/detailpop/{{.D.MgrUID}}">{{.D.MgrName}}</a></td>
+        <td width=20 class="bd">
+        <td colspan=1></td>
+    </tr>
 
 {{if .D.Reports | len}}
-	<tr><td colspan="4" height="10" class="bd"></td><td colspan="2"></td></tr>
-	<tr>
-		<td width=20 class="bd">
-		<td class="Attribbd" valign="top">DIRECT REPORTS &nbsp;</td>
-	    <td class="AttribVal">
-	        {{range .D.Reports}}
-	        <a href="/detailpop/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
-	        {{end}}
-	    </td>
-	    <td width=20 class="bd">
-	    <td colspan=2></td>
-	</tr>
+    <tr>
+        <td colspan="4" height="10" class="bd"></td>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <td width=20 class="bd">
+        <td class="Attribbd" valign="top">DIRECT REPORTS &nbsp;</td>
+        <td class="AttribVal">
+        {{range .D.Reports}}
+            <a href="/detailpop/{{.UID}}">{{.FirstName}} {{.LastName}}</a><br>
+        {{end}}
+        </td>
+        <td width=20 class="bd">
+        <td colspan=2></td>
+    </tr>
 {{end}}
 
-<tr><td colspan="4" height="30" class="bd"></td><td colspan="2"></td></tr>
-<tr>
-	<td colspan="4" class="bd" nowrap="nowrap">
-	<div align="center">
-		<form action="/adminViewBtn/{{.D.UID}}" method="POST">
-		<input type="submit" name="action" value="Done">  &nbsp;&nbsp;&nbsp;
-	{{if hasAdminScreenAccess .X.Token 1 4}}
-		<input type="submit" name="action" value="AdminView">
-		<input type="hidden" name="url" value="/adminView/{{.D.UID}}">
-	{{end}}
-		</form>
-	</div>
-	</td>
-	<td colspan=2></td>
-</tr>
-<tr><td colspan="4" height="10" class="bd"></td><td colspan="2"></td></tr>
+    <tr>
+        <td colspan="4" height="30" class="bd"></td>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <td colspan="4" class="bd" nowrap="nowrap">
+            <div align="center">
+                <form action="/adminViewBtn/{{.D.UID}}" method="POST">
+                    <input type="submit" name="action" value="Done"> &nbsp;&nbsp;&nbsp;
+                {{if hasAdminScreenAccess .X.Token 1 4}}
+                    <input type="submit" name="action" value="AdminView">
+                    <input type="hidden" name="url" value="/adminView/{{.D.UID}}">
+                {{end}}
+                </form>
+            </div>
+        </td>
+        <td colspan=2></td>
+    </tr>
+    <tr>
+        <td colspan="4" height="10" class="bd"></td>
+        <td colspan="2"></td>
+    </tr>
 
 </table>
-
-
-</body>
-</html>
+{{ end }}

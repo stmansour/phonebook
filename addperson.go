@@ -6,7 +6,6 @@ import (
 	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/sess"
-	"text/template"
 )
 
 func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,10 +73,9 @@ func adminAddPersonHandler(w http.ResponseWriter, r *http.Request) {
 	d.StateOfEmployment = ""
 	d.CountryOfEmployment = "USA"
 	d.RID = 4 // Viewer
-
-	t, _ := template.New("adminEdit.html").Funcs(funcMap).ParseFiles("adminEdit.html")
 	ui.D = &d
-	err := t.Execute(w, &ui)
+
+	err := renderTemplate(w, ui, "adminEdit.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("adminAddPersonHandler:  err = %v\n", err)
 		ulog(errmsg)

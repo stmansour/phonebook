@@ -7,7 +7,6 @@ import (
 	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
-	"text/template"
 )
 
 func getCompensations(d *db.PersonDetail) {
@@ -177,11 +176,9 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	// Ensure that the user has permissions to view everything we're about
 	// to display.
 	PDetFilterSecurityRead(&d, ssn, authz.PERMVIEW|authz.PERMMOD)
-
-	t, _ := template.New("adminView.html").Funcs(funcMap).ParseFiles("adminView.html")
 	ui.D = &d
-	// fmt.Printf("ui.D = %#v\n", ui.D)
-	err := t.Execute(w, &ui)
+
+	err := renderTemplate(w, ui, "adminView.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("adminViewHandler: err = %v\n", err)
 		ulog(errmsg)

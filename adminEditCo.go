@@ -7,7 +7,6 @@ import (
 	"phonebook/db"
 	"phonebook/sess"
 	"strconv"
-	"text/template"
 )
 
 func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,8 +43,7 @@ func adminEditCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	ui.C = &c
 	filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMMOD, 0)
 
-	t, _ := template.New("adminEditCo.html").Funcs(funcMap).ParseFiles("adminEditCo.html")
-	err = t.Execute(w, &ui)
+	err = renderTemplate(w, ui, "adminEditCo.html")
 	if nil != err {
 		errmsg := fmt.Sprintf("adminEditCompanyHandler: err = %v\n", err)
 		ulog(errmsg)

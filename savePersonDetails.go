@@ -17,9 +17,9 @@ import (
 	"phonebook/db"
 	"phonebook/lib"
 	"phonebook/sess"
+	"phonebook/ui"
 	"strconv"
 	"strings"
-	"phonebook/ui"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -37,12 +37,13 @@ func uploadFileCopy(from *multipart.File, toname string) error {
 	}
 	return err
 }
+
 /*
 Require constants for S3 configuration.
 */
 const (
-	S3Region         = "us-east-1" // This parameter define the region of bucket
-	ImageUploadPath = ""           // This parameter define in which folder have to upload image
+	S3Region        = "us-east-1" // This parameter define the region of bucket
+	ImageUploadPath = ""          // This parameter define in which folder have to upload image
 )
 
 // generateFileName generate file name with uid
