@@ -322,11 +322,11 @@ nav li:hover nav {
 }
 
 .profile-image-form {
-    width: 75px;
-    height: 75px;
+    width: auto;
+    height: 100px;
 }
 
 .profile-image-nav {
-    width: 35px;
+    width: auto;
     height: 35px;
 }
