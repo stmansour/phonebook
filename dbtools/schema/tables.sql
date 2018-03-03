@@ -146,7 +146,9 @@ CREATE TABLE sessions (
     UID BIGINT NOT NULL,
     UserName VARCHAR(40) NOT NULL DEFAULT '',
     Cookie VARCHAR(40) NOT NULL DEFAULT '',
-    DtExpire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00'
+    DtExpire DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    UserAgent VARCHAR(256) NOT NULL DEFAULT '',
+    IP VARCHAR(40) NOT NULL DEFAULT ''
 );
 
 -- Add the Administrator as the first and only user

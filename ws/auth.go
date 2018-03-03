@@ -14,7 +14,8 @@ import (
 )
 
 // AuthenticateData is the struct with the username and password
-// used for authentication
+// used for authentication.  This is the data that the user sends
+// to the phonebook server.
 type AuthenticateData struct {
 	User       string `json:"user"`
 	Pass       string `json:"pass"`
@@ -24,7 +25,7 @@ type AuthenticateData struct {
 }
 
 // AuthSuccessResponse will be the response structure used when
-// authentication is successful
+// authentication is successful.
 type AuthSuccessResponse struct {
 	Status   string `json:"status"`
 	UID      int64  `json:"uid"`
@@ -115,7 +116,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		lib.Console("g = %#v\n", g)
 		SvcWriteResponse(&g, w)
 		lib.Ulog("user %s successfully logged in\n", foo.User)
-		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire)
+		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire, c.UserAgent, c.IP)
 		if err == nil {
 			return
 		}
@@ -190,11 +191,15 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 
-	lib.Console("request for session cookie:  %s\n", foo.CookieVal)
+	ua := r.UserAgent()
+	cip := r.RemoteAddr
+
+	lib.Console("request for session cookie:  %s, ua = %s, IP = %s\n", foo.CookieVal, ua, cip)
 	c, err := sess.GetSessionCookie(foo.CookieVal)
 	if err != nil {
 		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 	}
+	lib.Console("Found session cookie: %d, %s, %s\n", c.UID, c.UserName, c.Expire.Format("1/2/2006 15:04:05"))
 
 	imageProfilePath := ui.GetImageLocation(int(c.UID))
 

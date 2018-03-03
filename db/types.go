@@ -146,10 +146,12 @@ type PersonDetail struct {
 // SessionCookie defines the struct for the database table where session
 // cookies are managed.
 type SessionCookie struct {
-	UID      int64     // uid of the user
-	UserName string    // username for the user
-	Cookie   string    // the cookie value
-	Expire   time.Time // that timestamp when it expires
+	UID       int64     // uid of the user
+	UserName  string    // username for the user
+	Cookie    string    // the cookie value
+	Expire    time.Time // that timestamp when it expires
+	UserAgent string    // client identifier
+	IP        string    // end user's IP address
 }
 
 // PrepStmts are the sql prepared statements
@@ -216,7 +218,7 @@ func Init() error {
 //-----------------------------------------------------------------------------
 func GetSessionCookie(cookie string) (SessionCookie, error) {
 	var c SessionCookie
-	err := PrepStmts.GetSessionCookie.QueryRow(cookie).Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire)
+	err := PrepStmts.GetSessionCookie.QueryRow(cookie).Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire, &c.UserAgent, &c.IP)
 	if nil != err {
 		if !lib.IsSQLNoResultsError(err) {
 			lib.Ulog("UpdateSessionCookie: error updating expire time:  %v\n", err)
@@ -240,8 +242,8 @@ func DeleteSessionCookie(cookie string) error {
 
 // InsertSessionCookie inserts a new session cookie into the sessions table
 //-----------------------------------------------------------------------------
-func InsertSessionCookie(UID int64, user string, cookie string, dt *time.Time) error {
-	_, err := PrepStmts.InsertSessionCookie.Exec(UID, user, cookie, *dt)
+func InsertSessionCookie(UID int64, user string, cookie string, dt *time.Time, ua, ip string) error {
+	_, err := PrepStmts.InsertSessionCookie.Exec(UID, user, cookie, *dt, ua, ip)
 	if nil != err {
 		lib.Ulog("InsertSessionCookie: error inserting Cookie:  %v\n", err)
 		lib.Ulog("UID = %d, user = %s, cookie = %s\n", UID, user, cookie)

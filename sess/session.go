@@ -25,7 +25,7 @@ var SessionManager struct {
 
 // Session is the generic Session
 type Session struct {
-	Token        string         // this is the md5 hash, unique id
+	Token        string         // this is the md5 hash, unique id, the cookie value
 	Username     string         // associated username
 	Firstname    string         // user's first name
 	UID          int64          // user's db uid
@@ -36,6 +36,8 @@ type Session struct {
 	Expire       time.Time      // when does the cookie expire
 	Breadcrumbs  []ui.Crumb     // where is the user in the screen hierarchy
 	PMap         authz.PermMaps // user's role and associated maps
+	IP           string         // user's IP address
+	UserAgent    string         // the user's client
 }
 
 // Sessions is the map of Session structs indexed by the SessionKey (the browser cookie value)
