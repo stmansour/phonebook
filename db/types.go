@@ -243,10 +243,11 @@ func DeleteSessionCookie(cookie string) error {
 // InsertSessionCookie inserts a new session cookie into the sessions table
 //-----------------------------------------------------------------------------
 func InsertSessionCookie(UID int64, user string, cookie string, dt *time.Time, ua, ip string) error {
+	lib.Console("InsertSessionCookie: %d, %s, ua = %s, ip = %s\n", UID, user, ua, ip)
 	_, err := PrepStmts.InsertSessionCookie.Exec(UID, user, cookie, *dt, ua, ip)
 	if nil != err {
 		lib.Ulog("InsertSessionCookie: error inserting Cookie:  %v\n", err)
-		lib.Ulog("UID = %d, user = %s, cookie = %s\n", UID, user, cookie)
+		lib.Ulog("UID = %d, user = %s, ip = %s cookie = %s, ua = %s\n", UID, user, ip, cookie, ua)
 	}
 	return err
 }
