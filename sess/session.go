@@ -204,6 +204,8 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 	s.ImageURL = ui.GetImageLocation(uid)
 	s.Breadcrumbs = make([]ui.Crumb, 0)
 	s.Expire = c.Expire
+	s.IP = c.IP
+	s.UserAgent = c.UserAgent
 	authz.GetRoleInfo(rid, &s.PMap)
 
 	if authz.Authz.SecurityDebug {
@@ -221,6 +223,7 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 	}
 
 	if updateSessionTable {
+		lib.Console("JUST BEFORE InsertSessionCookie: s.IP = %s, s.UserAgent = %s\n", s.IP, s.UserAgent)
 		err = InsertSessionCookie(s)
 		if err != nil {
 			lib.Ulog("Unable to save session for UID = %d to database,  err = %s\n", uid, err.Error())

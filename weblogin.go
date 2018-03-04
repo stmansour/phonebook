@@ -88,7 +88,14 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	// dump, err := httputil.DumpRequest(r, false)
 	// errcheck(err)
 	// fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
+	ua := r.Header.Get("User-Agent")
+	ip := r.RemoteAddr
 
+	lib.Console("Entered webloginHandler.  ip = %s, ua = %s\n", ip, ua)
+
+	//-------------------------------------------
+	//  Handle FORGOT PASSWORD requests...
+	//-------------------------------------------
 	resetpw := r.FormValue("lostpw")
 	if resetpw == "resetpw" {
 		resetpwHandler(w, r)
@@ -100,6 +107,9 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	Counters.SignIn++                // initialize our data
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
+	//-------------------------------------------
+	//  Validate username and password...
+	//-------------------------------------------
 	n := 0 //error number associated with this login attempt
 	loggedIn := false
 	myusername := strings.ToLower(r.FormValue("username"))
@@ -123,6 +133,9 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if passhash == mypasshash {
+		//----------------------------------------------
+		//  USERNAME AND PASSWORD ARE ACCEPTED
+		//----------------------------------------------
 		loggedIn = true
 		ulog("user %s logged in\n", myusername)
 		//=================================================================================
@@ -131,11 +144,15 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		// to guarantee uniqueness...
 		//=================================================================================
 		expiration := time.Now().Add(10 * time.Minute)
-		c := sess.GenerateSessionCookie(int64(uid), myusername, r.Header.Get("User-Agent"), r.RemoteAddr)
+		lib.Console("USERAGENT = %s, ip = %s\n", ua, ip)
+		c := sess.GenerateSessionCookie(int64(uid), myusername, ua, ip)
+		lib.Console("After call to GenerateSessionCookie: ip = %s, ua = %s\n", c.IP, c.UserAgent)
 		name := firstname
 		if len(preferredname) > 0 {
 			name = preferredname
 		}
+
+		lib.Console("Generate session cookie: ip = %s, ua = %s\n", c.IP, c.UserAgent)
 
 		s := sess.NewSession(&c, name, RID)
 		cookie := http.Cookie{Name: sess.SessionCookieName, Value: s.Token, Expires: expiration}
