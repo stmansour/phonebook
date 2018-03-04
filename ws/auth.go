@@ -39,6 +39,8 @@ type AuthSuccessResponse struct {
 // whether or not a cookie value is valid.
 type ValidateCookie struct {
 	CookieVal string `json:"cookieval"`
+	IP        string `json:"ip"`
+	UserAgent string `json:"useragent"`
 	FLAGS     uint64 `json:"flags"`
 }
 
@@ -90,8 +92,8 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 
-	lib.Console("User = %s\n", foo.User)
-	lib.Console("Pass = %s\n", foo.Pass)
+	lib.Console("User = %s, Pass = %s\n", foo.User, foo.Pass)
+	lib.Console("IP = %s, UserAgent = %s\n", foo.RemoteAddr, foo.UserAgent)
 
 	UID, Name, err := DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
@@ -191,15 +193,13 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 
-	ua := r.UserAgent()
-	cip := r.RemoteAddr
-
-	lib.Console("request for session cookie:  %s, ua = %s, IP = %s\n", foo.CookieVal, ua, cip)
+	lib.Console("request for session cookie:  %s, IP = %s, UserAgent = %s\n", foo.CookieVal, foo.IP, foo.UserAgent)
 	c, err := sess.GetSessionCookie(foo.CookieVal)
 	if err != nil {
 		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 	}
 	lib.Console("Found session cookie: %d, %s, %s\n", c.UID, c.UserName, c.Expire.Format("1/2/2006 15:04:05"))
+	lib.Console("                      IP = %s,  UserAgent = %s\n", c.IP, c.UserAgent)
 
 	imageProfilePath := ui.GetImageLocation(int(c.UID))
 

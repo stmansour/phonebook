@@ -152,8 +152,6 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 			name = preferredname
 		}
 
-		lib.Console("Generate session cookie: ip = %s, ua = %s\n", c.IP, c.UserAgent)
-
 		s := sess.NewSession(&c, name, RID)
 		cookie := http.Cookie{Name: sess.SessionCookieName, Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
