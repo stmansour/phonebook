@@ -169,8 +169,8 @@ var PrepStmts struct {
 func CreatePreparedStmts() {
 	var err error
 	var flds string
-	flds = "UID,UserName,Cookie,DtExpire"
-	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?)")
+	flds = "UID,UserName,Cookie,DtExpire,UserAgent,IP"
+	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?,?,?)")
 	lib.Errcheck(err)
 	PrepStmts.GetSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE Cookie=?")
 	lib.Errcheck(err)
