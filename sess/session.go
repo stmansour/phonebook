@@ -243,9 +243,9 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 // It also removes the session from the db sessions table.
 //-----------------------------------------------------------------------------
 func SessionDelete(s *Session) {
-	// fmt.Printf("Session being deleted: %s\n", s.ToString())
-	// fmt.Printf("sess.Sessions before delete:\n")
-	// dumpSessions()
+	fmt.Printf("Session being deleted: %s\n", s.ToString())
+	fmt.Printf("sess.Sessions before delete:\n")
+	DumpSessions()
 
 	if err := db.DeleteSessionCookie(s.Token); err != nil {
 		lib.Ulog("Error deleteing session cookie: %s\n", err.Error())
@@ -262,8 +262,8 @@ func SessionDelete(s *Session) {
 	}
 	Sessions = ss
 	SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
-	// fmt.Printf("sess.Sessions after delete:\n")
-	// dumpSessions()
+	fmt.Printf("sess.Sessions after delete:\n")
+	DumpSessions()
 }
 
 //=====================================================================================

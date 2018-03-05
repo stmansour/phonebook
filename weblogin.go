@@ -82,6 +82,9 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 	return 1
 }
 
+// webloginHandler handles the web login form.
+//
+//-----------------------------------------------------------------------------
 func webloginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// debug only
@@ -90,8 +93,12 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("\n\ndumpRequest = %s\n", string(dump))
 	ua := r.Header.Get("User-Agent")
 	ip := r.RemoteAddr
-
 	lib.Console("Entered webloginHandler.  ip = %s, ua = %s\n", ip, ua)
+	fwdaddr := r.Header.Get("X-Forwarded-For")
+	if len(fwdaddr) > 0 {
+		ip = fwdaddr
+		lib.Console("Detected Forwarded-For address. Updating ip = %s\n", ip)
+	}
 
 	//-------------------------------------------
 	//  Handle FORGOT PASSWORD requests...
