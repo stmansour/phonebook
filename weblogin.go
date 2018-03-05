@@ -105,7 +105,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	ip := r.RemoteAddr
 	lib.Console("Entered webloginHandler.  ip = %s, ua = %s\n", ip, ua)
 	fwdaddr := r.Header.Get("X-Forwarded-For")
-	lib.Console("**** Forwarded-For address. fwdaddr = %q\n", ip)
+	lib.Console("**** Forwarded-For address. fwdaddr = %q\n", fwdaddr)
 	if len(fwdaddr) > 0 {
 		ip = fwdaddr
 	}
