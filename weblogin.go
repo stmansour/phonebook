@@ -9,7 +9,6 @@ import (
 	"phonebook/db"
 	"phonebook/lib"
 	"phonebook/sess"
-	"rentroll/rlib"
 	"strings"
 	"time"
 
@@ -28,8 +27,18 @@ func handlerInitUIDate(ui *uiSupport) {
 // RETURNS:  0 = no problems
 //           1 = redirected
 func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
-	rlib.Console("Entered initHandlerSession\n")
+	lib.Console("Entered initHandlerSession\n")
 	var ok bool
+
+	lib.Console("Headers:\n")
+	for k, v := range r.Header {
+		lib.Console("\t%s: ", k)
+		for i := 0; i < len(v); i++ {
+			lib.Console("%q  ", v[i])
+		}
+		lib.Console("\n")
+	}
+
 	cookie, err := r.Cookie(sess.SessionCookieName)
 	if err != nil {
 		lib.Ulog("Error getting cookie from http.Request: %s\n", err.Error())
@@ -42,6 +51,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 		// Found a cookie in the browser.  Let's see if we can find it
 		// in the in-memory session table...
 		//--------------------------------------------------------------
+		lib.Console("**** initHandlerSession found cookie %s in request Headers: %s\n", cookie.Name, cookie.Value)
 		ssn, ok = sess.SessionGet(cookie.Value)
 		ui.X = ssn
 		if ok && ssn != nil {
@@ -95,7 +105,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	ip := r.RemoteAddr
 	lib.Console("Entered webloginHandler.  ip = %s, ua = %s\n", ip, ua)
 	fwdaddr := r.Header.Get("X-Forwarded-For")
-	lib.Console("**** Forwarded-For address. Updating ip = %s\n", ip)
+	lib.Console("**** Forwarded-For address. fwdaddr = %q\n", ip)
 	if len(fwdaddr) > 0 {
 		ip = fwdaddr
 	}
