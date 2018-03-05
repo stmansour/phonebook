@@ -22,3 +22,8 @@ update people set ImagePath="263.jpg" WHERE UID=263;
 update people set ImagePath="264.jpg" WHERE UID=264;
 update people set ImagePath="267.jpg" WHERE UID=267;
 update people set ImagePath="281.jpg" WHERE UID=281;
+
+-- Mar 04, 2018
+-- Add UserAgent, IP to sessions table
+ALTER TABLE sessions ADD COLUMN UserAgent VARCHAR(256) NOT NULL DEFAULT '';
+ALTER TABLE sessions ADD COLUMN IP VARCHAR(40) NOT NULL DEFAULT '';
