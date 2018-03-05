@@ -95,6 +95,9 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	lib.Console("User = %s, Pass = %s\n", foo.User, foo.Pass)
 	lib.Console("IP = %s, UserAgent = %s\n", foo.RemoteAddr, foo.UserAgent)
 
+	fwdaddr := r.Header.Get("X-Forwarded-For")
+	lib.Console("X-Forwarded-For value = %q\n", fwdaddr)
+
 	UID, Name, err := DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
 		SvcErrorReturn(w, err, funcname)

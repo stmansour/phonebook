@@ -743,7 +743,7 @@ stopPhonebook() {
 doPlainPOST () {
 	TESTCOUNT=$((TESTCOUNT + 1))
 	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} $3 $4
-	CMD="curl -s -X POST ${1} -H \"Content-Type: application/json\" -d @${2}"
+	CMD="curl -s -X POST ${1} -H \"Content-Type: application/json\" -H \"X-Forwarded-For: 52.90.192.172\" -d @${2}"
 	${CMD} >${3} 2>>${LOGFILE}
 	echo >>${3}  # this ensures a newline in the file
 

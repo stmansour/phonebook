@@ -42,7 +42,7 @@ doPlainGET "http://localhost:8250/v1/version" "a0" "WebService--Version"
 
 # Test authentication
 #--------------------------
-echo "%7B%22user%22%3A%22bthorton%22%2C%22pass%22%3A%22Testing123%22%7D " > request
+echo "%7B%22user%22%3A%22bthorton%22%2C%22pass%22%3A%22Testing123%22%2C%22useragent%22%3A%22Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010_12_6)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F64.0.3282.186%20Safari%2F537.36%22%2C%22remoteaddr%22%3A%22172.31.63.140%3A7497%22%7D" > request
 doPlainPOST "http://localhost:8250/v1/authenticate" "request" "a"  "WebService--Authenticate"
 
 
