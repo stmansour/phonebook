@@ -156,13 +156,14 @@ type SessionCookie struct {
 
 // PrepStmts are the sql prepared statements
 var PrepStmts struct {
-	DeleteSessionCookie  *sql.Stmt
-	DeleteExpiredCookies *sql.Stmt
-	GetSessionCookie     *sql.Stmt
-	InsertSessionCookie  *sql.Stmt
-	UpdateSessionCookie  *sql.Stmt
-	LoginInfo            *sql.Stmt
-	GetImagePath         *sql.Stmt
+	DeleteSessionCookie       *sql.Stmt
+	DeleteExpiredCookies      *sql.Stmt
+	GetSessionCookie          *sql.Stmt
+	FindMatchingSessionCookie *sql.Stmt
+	InsertSessionCookie       *sql.Stmt
+	UpdateSessionCookie       *sql.Stmt
+	LoginInfo                 *sql.Stmt
+	GetImagePath              *sql.Stmt
 }
 
 // CreatePreparedStmts creates prepared sql statements
@@ -173,6 +174,8 @@ func CreatePreparedStmts() {
 	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?,?,?)")
 	lib.Errcheck(err)
 	PrepStmts.GetSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE Cookie=?")
+	lib.Errcheck(err)
+	PrepStmts.FindMatchingSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE UserName=? AND IP=? AND UserAgent=?")
 	lib.Errcheck(err)
 	PrepStmts.UpdateSessionCookie, err = DB.DirDB.Prepare("UPDATE sessions SET DtExpire=? WHERE Cookie=?")
 	lib.Errcheck(err)
@@ -221,8 +224,35 @@ func GetSessionCookie(cookie string) (SessionCookie, error) {
 	err := PrepStmts.GetSessionCookie.QueryRow(cookie).Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire, &c.UserAgent, &c.IP)
 	if nil != err {
 		if !lib.IsSQLNoResultsError(err) {
-			lib.Ulog("UpdateSessionCookie: error updating expire time:  %v\n", err)
+			lib.Ulog("GetSessionCookie: error getting cookie:  %v\n", err)
 			lib.Ulog("cookie = %s\n", cookie)
+			return c, err
+		}
+	}
+	return c, nil
+}
+
+// FindMatchingSessionCookie searches the session table for the speified cookie.
+//
+// INPUTS
+//  user   - this is the user making the request. It is assumed this user
+//           has already been authenticated.
+//  ip     - the user's ip address
+//  ua     - the user agent making the request
+//
+// RETURNS
+//  SessionCookie - the session cookie found matching the params supplied.
+//           If no match was made the session cookie will have a zero length
+//			 value for the .Cookie field
+//  err      Any errors encountered
+//-----------------------------------------------------------------------------
+func FindMatchingSessionCookie(user, ip, ua string) (SessionCookie, error) {
+	var c SessionCookie
+	err := PrepStmts.FindMatchingSessionCookie.QueryRow(user, ip, ua).Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire, &c.UserAgent, &c.IP)
+	if nil != err {
+		if !lib.IsSQLNoResultsError(err) {
+			lib.Ulog("FindMatchingSessionCookie: error finding match:  %v\n", err)
+			lib.Ulog("user, ip, ua = %s, %s, %s\n", user, ip, ua)
 			return c, err
 		}
 	}
@@ -234,7 +264,7 @@ func GetSessionCookie(cookie string) (SessionCookie, error) {
 func DeleteSessionCookie(cookie string) error {
 	_, err := PrepStmts.DeleteSessionCookie.Exec(cookie)
 	if nil != err {
-		lib.Ulog("UpdateSessionCookie: error updating expire time:  %v\n", err)
+		lib.Ulog("DeleteSessionCookie: error deleting cookie:  %v\n", err)
 		lib.Ulog("cookie = %s\n", cookie)
 	}
 	return err

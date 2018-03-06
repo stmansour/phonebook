@@ -132,6 +132,16 @@ func DumpSessions() {
 	}
 }
 
+// ReUpCookieTime updates the timeout time associated with a session cookie.
+//-----------------------------------------------------------------------------
+func ReUpCookieTime(s *Session) {
+	t := time.Now().Add(SessionManager.SessionTimeout * time.Minute)
+	SessionManager.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
+	<-SessionManager.ReqSessionMemAck    // make sure we got it
+	s.Expire = t                         // update the Session information
+	SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+}
+
 // Refresh updates the cookie and Session with a new expire time.
 //-----------------------------------------------------------------------------
 func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
@@ -139,12 +149,9 @@ func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
 	cookie, err := r.Cookie(SessionCookieName)
 	if nil != cookie && err == nil {
 		lib.Console("Cookie found: %s\n", cookie.Value)
-		cookie.Expires = time.Now().Add(SessionManager.SessionTimeout * time.Minute)
+		ReUpCookieTime(s)
+		cookie.Expires = s.Expire
 		lib.Console("Setting expire time to: %v\n", cookie.Expires)
-		SessionManager.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
-		<-SessionManager.ReqSessionMemAck    // make sure we got it
-		s.Expire = cookie.Expires            // update the Session information
-		SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 		cookie.Path = "/"
 		http.SetCookie(w, cookie)
 		lib.Console("Session.Expire = %v\n", s.Expire)

@@ -95,8 +95,14 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	lib.Console("User = %s, Pass = %s\n", foo.User, foo.Pass)
 	lib.Console("IP = %s, UserAgent = %s\n", foo.RemoteAddr, foo.UserAgent)
 
-	fwdaddr := r.Header.Get("X-Forwarded-For")
-	lib.Console("X-Forwarded-For value = %q\n", fwdaddr)
+	//------------------------------------------------------------------------
+	// We can detect the forwarded-for value, but it is not used. In this
+	// case, another server has sent the login on behalf of a client further
+	// back. So, here, we want to use exactly the value that has been sent
+	// by the requester.
+	//------------------------------------------------------------------------
+	// fwdaddr := r.Header.Get("X-Forwarded-For")
+	// lib.Console("X-Forwarded-For value = %q\n", fwdaddr)
 
 	UID, Name, err := DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
@@ -104,11 +110,56 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 	if UID > 0 {
+		imageProfilePath := ui.GetImageLocation(int(UID)) // we need this in multiple cases
+
+		//------------------------------------------------------------------------
+		// Before generating a new cookie, see if this user / useragent / ip
+		// combination already has a valid cookie.
+		//------------------------------------------------------------------------
+		c, err := db.FindMatchingSessionCookie(foo.User, foo.RemoteAddr, foo.UserAgent)
+		if err != nil {
+			err := fmt.Errorf("error finding cookie: %s", err.Error())
+			SvcErrorReturn(w, err, funcname)
+			return
+		}
+		if len(c.Cookie) > 0 && foo.User == c.UserName {
+			//-----------------------------------------------------------------------
+			// This user already has a cookie in the same useragent. Just update
+			// the existing info and return it...
+			//-----------------------------------------------------------------------
+			g := AuthSuccessResponse{
+				Status:   "success",
+				UID:      UID,
+				Name:     Name,
+				ImageURL: imageProfilePath,
+				Token:    c.Cookie,
+				Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
+			}
+			//--------------------------------
+			// get the associated session...
+			//--------------------------------
+			s, ok := sess.Sessions[c.Cookie]
+			if !ok { // this could possibly happen if the timeing is *just* right, but we need to create it
+				s = sess.NewSessionFromCookie(&c)
+			}
+			//----------------------------------------------------
+			// update its timeout now that it has been used...
+			//----------------------------------------------------
+			sess.ReUpCookieTime(s)
+			sess.UpdateSessionCookie(s)
+			g.Expire = s.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME)
+
+			//----------------------------------------------------
+			// And now we're done... return the response
+			//----------------------------------------------------
+			lib.Console("g = %#v\n", g)
+			SvcWriteResponse(&g, w)
+			lib.Ulog("user %s successfully piggybacked on existing session\n", foo.User)
+			return
+		}
 
 		// get image location(URL)
-		imageProfilePath := ui.GetImageLocation(int(UID))
-
-		c := sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
+		c = sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
 
 		g := AuthSuccessResponse{
 			Status:   "success",
@@ -122,13 +173,15 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		SvcWriteResponse(&g, w)
 		lib.Ulog("user %s successfully logged in\n", foo.User)
 		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire, c.UserAgent, c.IP)
-		if err == nil {
+		if err != nil {
+			err := fmt.Errorf("error inserting cookie into sessiondb: %s", err.Error())
+			SvcErrorReturn(w, err, funcname)
 			return
 		}
-	} else {
-		err := fmt.Errorf("login failed")
-		SvcErrorReturn(w, err, funcname)
+		return
 	}
+	err = fmt.Errorf("login failed")
+	SvcErrorReturn(w, err, funcname)
 }
 
 // DoAuthentication builds a password hash out of the supplied user and
