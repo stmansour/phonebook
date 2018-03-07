@@ -744,6 +744,7 @@ doPlainPOST () {
 	TESTCOUNT=$((TESTCOUNT + 1))
 	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} $3 $4
 	CMD="curl -s -X POST ${1} -H \"Content-Type: application/json\" -H \"X-Forwarded-For: 52.90.192.172\" -d @${2}"
+	
 	${CMD} >${3} 2>>${LOGFILE}
 	echo >>${3}  # this ensures a newline in the file
 
@@ -1178,46 +1179,46 @@ doCasperUITest () {
 	fi
 }
 
-# #--------------------------------------------------------------------------
-# #  Handle command line options...
-# #--------------------------------------------------------------------------
-# tdir
-# while getopts "acfmoprnR:" o; do
-# 	echo "o = ${o}"
-# 	case "${o}" in
-# 		a)	ASKBEFOREEXIT=1
-# 			echo "WILL ASK BEFORE EXITING ON ERROR"
-# 			;;
-# 		c | C)
-# 			SHOWCOMMAND=1
-# 			echo "SHOWCOMMAND"
-# 			;;
-# 		r | R)
-# 			doReport
-# 			exit 0
-# 			;;
-# 		p | P)
-# 			PAUSE=1
-# 			echo "PAUSE BETWEEN COMMANDS"
-# 			;;
-# 		f)  SKIPCOMPARE=1
-# 			echo "SKIPPING COMPARES..."
-# 			;;
-# 		m)  MANAGESERVER=0
-# 			echo "SKIPPING SERVER MGMT CMDS..."
-# 			;;
-# 		n)	CREATENEWDB=0
-# 			echo "DATA WILL BE ADDED TO CURRENT DB"
-# 			;;
-# 		o)	FORCEGOOD=1
-# 			echo "OUTPUT OF THIS RUN IS SAVED AS *.GOLD"
-# 			;;
-# 		*) 	usage
-# 			exit 1
-# 			;;
-# 	esac
-# done
-# shift $((OPTIND-1))
+#--------------------------------------------------------------------------
+#  Handle command line options...
+#--------------------------------------------------------------------------
+tdir
+while getopts "acfmoprnR:" o; do
+	echo "o = ${o}"
+	case "${o}" in
+		a)	ASKBEFOREEXIT=1
+			echo "WILL ASK BEFORE EXITING ON ERROR"
+			;;
+		c | C)
+			SHOWCOMMAND=1
+			echo "SHOWCOMMAND"
+			;;
+		r | R)
+			doReport
+			exit 0
+			;;
+		p | P)
+			PAUSE=1
+			echo "PAUSE BETWEEN COMMANDS"
+			;;
+		f)  SKIPCOMPARE=1
+			echo "SKIPPING COMPARES..."
+			;;
+		m)  MANAGESERVER=0
+			echo "SKIPPING SERVER MGMT CMDS..."
+			;;
+		n)	CREATENEWDB=0
+			echo "DATA WILL BE ADDED TO CURRENT DB"
+			;;
+		o)	FORCEGOOD=1
+			echo "OUTPUT OF THIS RUN IS SAVED AS *.GOLD"
+			;;
+		*) 	usage
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND-1))
 
 
 rm -f ${ERRFILE}

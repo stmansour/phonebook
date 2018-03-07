@@ -227,6 +227,15 @@ func DoAuthentication(User, Pass string) (int64, string, error) {
 // then we send back a success response with the same info we include in
 // a successful login. Otherwise, we send an appropriate error response
 //
+// FLAGS of the data refine the operation:
+//
+//     1<<0  -  if this bit is set it means just send back success
+//              or failure, do not send back all other information
+//              associated with the session containing the cookie.
+//              The response will come back with Status: "success"
+//              if the cookie was found, "failure" if the cookie
+//              was not found, or "error" if an error was encountered.
+//
 // INPUTS:
 //     w = file descriptor to write result
 //     r = http requrest
@@ -254,13 +263,34 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	if err != nil {
 		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 	}
-	lib.Console("Found session cookie: %d, %s, %s\n", c.UID, c.UserName, c.Expire.Format("1/2/2006 15:04:05"))
+	lib.Console("Found session cookie: %d, %s, %s\n", c.UID, c.UserName, c.Expire.Format("JSONDATETIME"))
 	lib.Console("                      IP = %s,  UserAgent = %s\n", c.IP, c.UserAgent)
 
-	imageProfilePath := ui.GetImageLocation(int(c.UID))
+	lib.Console("A\n")
+	resp := "failure"
+	if c.UID > 0 {
+		lib.Console("B  c.UID = %d\n", c.UID)
+		resp = "success"
+	}
+	lib.Console("C\n")
 
+	//------------------------------------------------------------------
+	// if the request was to ONLY verify the existence of the cookie...
+	//------------------------------------------------------------------
+	if foo.FLAGS&1 > 0 {
+		lib.Console("D\n")
+		g := AuthSuccessResponse{Status: resp}
+		SvcWriteResponse(&g, w)
+		return
+	}
+	lib.Console("E\n")
+
+	//------------------------------------------------------------------
+	// add the known information to the response
+	//------------------------------------------------------------------
+	imageProfilePath := ui.GetImageLocation(int(c.UID))
 	g := AuthSuccessResponse{
-		Status:   "success",
+		Status:   resp,
 		UID:      c.UID,
 		Name:     c.UserName,
 		ImageURL: imageProfilePath,
@@ -268,6 +298,7 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 	}
 	SvcWriteResponse(&g, w)
+	lib.Console("F\n")
 }
 
 // SvcLogoff removes a session from the
