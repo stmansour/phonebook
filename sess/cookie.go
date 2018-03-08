@@ -111,3 +111,23 @@ func ExpiredCookieCleaner() {
 		}
 	}
 }
+
+// DumpSessionCookies is a convenience function to dump the current
+//     session table to the console.
+//
+// INPUTS
+//
+// RETURNS
+//  err      Any errors encountered
+//-----------------------------------------------------------------------------
+func DumpSessionCookies() error {
+	fmt.Printf("DB SESSIONS COOKIE TABLE\n")
+	m, err := db.GetAllSessionCookies()
+	if err != nil {
+		return err
+	}
+	for i := 0; i < len(m); i++ {
+		fmt.Printf("%3d. %s  %s (%d) ip(%s), %s, ua = %s\n", i, m[i].Expire.Format(lib.JSONDATETIME), m[i].UserName, m[i].UID, m[i].IP, m[i].Cookie, m[i].UserAgent)
+	}
+	return nil
+}

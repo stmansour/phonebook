@@ -158,6 +158,7 @@ type SessionCookie struct {
 var PrepStmts struct {
 	DeleteSessionCookie       *sql.Stmt
 	DeleteExpiredCookies      *sql.Stmt
+	GetAllSessionCookies      *sql.Stmt
 	GetSessionCookie          *sql.Stmt
 	FindMatchingSessionCookie *sql.Stmt
 	InsertSessionCookie       *sql.Stmt
@@ -172,6 +173,8 @@ func CreatePreparedStmts() {
 	var flds string
 	flds = "UID,UserName,Cookie,DtExpire,UserAgent,IP"
 	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?,?,?)")
+	lib.Errcheck(err)
+	PrepStmts.GetAllSessionCookies, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions ORDER BY DtExpire ASC")
 	lib.Errcheck(err)
 	PrepStmts.GetSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE Cookie=?")
 	lib.Errcheck(err)
@@ -230,6 +233,38 @@ func GetSessionCookie(cookie string) (SessionCookie, error) {
 		}
 	}
 	return c, nil
+}
+
+// GetAllSessionCookies returns a slice of session cookies
+//
+// INPUTS
+//
+// RETURNS
+//  []SessionCookie - a slice with all the rows in the sessions table.
+//
+//  err      Any errors encountered
+//-----------------------------------------------------------------------------
+func GetAllSessionCookies() ([]SessionCookie, error) {
+	funcname := "GetAllSessionCookies"
+	var m []SessionCookie
+	rows, err := PrepStmts.GetAllSessionCookies.Query()
+	if err != nil {
+		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())
+		return m, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var c SessionCookie
+		err := rows.Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire, &c.UserAgent, &c.IP)
+		if err != nil {
+			lib.Ulog("%s: error getting row:  %v\n", funcname, err)
+			return m, err
+		}
+		m = append(m, c)
+	}
+
+	return m, nil
 }
 
 // FindMatchingSessionCookie searches the session table for the speified cookie.

@@ -118,18 +118,21 @@ func (s *Session) ToString() string {
 	if nil == s {
 		return "nil"
 	}
-	return fmt.Sprintf("User(%s) Name(%s) UID(%d) Token(%s)  Role(%s)",
-		s.Username, s.Firstname, s.UID, s.Token, s.PMap.Urole.Name)
+	return fmt.Sprintf("User(%s) Name(%s) UID(%d) IP(%s) Token(%s)  Role(%s)",
+		s.Username, s.Firstname, s.UID, s.IP, s.Token, s.PMap.Urole.Name)
 }
 
 // DumpSessions prints out the session map for debugging
 //-----------------------------------------------------------------------------
 func DumpSessions() {
+	fmt.Printf("\nDIRECTORY INTERNAL SESSION TABLE\n")
 	i := 0
 	for _, v := range Sessions {
 		fmt.Printf("%2d. %s\n", i, v.ToString())
 		i++
 	}
+	fmt.Printf("END\n")
+
 }
 
 // ReUpCookieTime updates the timeout time associated with a session cookie.

@@ -12,6 +12,11 @@ import (
 	"strings"
 )
 
+// JSONDATETIME et. al., are globally available constants
+const (
+	JSONDATETIME = "2006-01-02T15:04:00Z"
+)
+
 // // Errcheck simplifies error handling by putting all the generic
 // // code in one place.
 // func Errcheck(err error) {
