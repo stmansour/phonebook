@@ -12,3 +12,5 @@ package:
 packageqa:
 	mkdir -p ../../tmp/phonebookqa/dbtools/deductions
 	cp deductions ../../tmp/phonebookqa/dbtools/deductions/
+secure:
+	@rm -f config.json confdev.json confprod.json

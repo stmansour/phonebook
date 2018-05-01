@@ -90,3 +90,6 @@ cert:
 	openssl rsa -in server.key.org -out server.key
 	openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 	
+secure:
+	for dir in $(DIRS); do make -C $${dir} secure;done
+	@rm -f config.json confdev.json confprod.json

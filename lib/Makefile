@@ -9,3 +9,5 @@ ver.go:
 
 clean:
 	go clean
+secure:
+	@rm -f config.json confdev.json confprod.json

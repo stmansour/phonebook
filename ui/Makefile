@@ -12,3 +12,5 @@ clean:
 
 package:
 	@echo "package completed in ${THISDIR}"
+secure:
+	@rm -f config.json confdev.json confprod.json

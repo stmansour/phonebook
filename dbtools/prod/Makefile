@@ -10,3 +10,5 @@ package:
 
 packageqa:
 	cp picsync.sh ../../tmp/phonebookqa/
+secure:
+	@rm -f config.json confdev.json confprod.json

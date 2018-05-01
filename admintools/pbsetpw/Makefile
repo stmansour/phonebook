@@ -32,3 +32,5 @@ test:
 manpage:
 	#nroff -man pbsetpw.1
 	groff -man -Tascii pbsetpw.1
+secure:
+	@rm -f config.json confdev.json confprod.json

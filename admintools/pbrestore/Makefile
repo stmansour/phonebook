@@ -23,3 +23,5 @@ test:
 manpage:
 	nroff -man pbrestore.1
 	#groff -man -Tascii pbrestore.1
+secure:
+	@rm -f config.json confdev.json confprod.json

@@ -14,3 +14,5 @@ package:
 packageqa:
 	mkdir -p ../../tmp/phonebookqa/dbtools/roleinit
 	cp roleinit apply.sh ../../tmp/phonebookqa/dbtools/roleinit
+secure:
+	@rm -f config.json confdev.json confprod.json

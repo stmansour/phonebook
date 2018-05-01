@@ -29,9 +29,11 @@ test:
 clean:
 	rm -f ver.go
 	go clean
-	rm -f fail
+	@rm -f fail
 	@echo "*** ${THISDIR}: completed clean ***"
 
 package:
 	#@cp -r doc ${BINDIR}/
 	@echo "*** ${THISDIR}: completed package ***"
+secure:
+	@rm -f config.json confdev.json confprod.json

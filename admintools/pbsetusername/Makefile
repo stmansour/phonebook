@@ -29,3 +29,5 @@ test:
 manpage:
 	#nroff -man pbsetusername.1
 	groff -man -Tascii pbsetusername.1
+secure:
+	@rm -f config.json confdev.json confprod.json

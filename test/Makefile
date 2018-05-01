@@ -28,4 +28,10 @@ packageqa:
 	cd phonebookqa;make packageqa
 
 package:
-	echo "*** Package completed in test"
+	echo "*** Package completed in test"secure:
+	for dir in $(DIRS); do make -C $${dir} secure;done
+	@rm -f config.json confdev.json confprod.json
+
+secure:
+	for dir in $(DIRS); do make -C $$dir secure;done
+	@rm -rf config.json confdev.json confprod.json

@@ -18,3 +18,5 @@ packageqa:
 	cp usersim *.txt *.sh ../../tmp/phonebookqa/test/usersim/
 	cp *.1 ../../tmp/phonebookqa/man/man1/
 	@echo "*** Packaging completed in usersim ***"
+secure:
+	@rm -f config.json confdev.json confprod.json

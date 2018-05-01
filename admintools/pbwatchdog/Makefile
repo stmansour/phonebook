@@ -23,3 +23,5 @@ test:
 manpage:
 	nroff -man pbwatchdog.1
 	#groff -man -Tascii pbwatchdog.1
+secure:
+	@rm -f config.json confdev.json confprod.json

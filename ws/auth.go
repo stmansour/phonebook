@@ -112,6 +112,12 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		SvcErrorReturn(w, err, funcname)
 		goto exit
 	}
+
+	//----------------------------------------------------------------------------------
+	// If UID > 0 then the username and password match.  So, we get the user a session.
+	// Use an existing setup if the user already has a session from the endpoint that
+	// submitted this request. Otherwise, create a new one.
+	//----------------------------------------------------------------------------------
 	if UID > 0 {
 		imageProfilePath := ui.GetImageLocation(int(UID)) // we need this in multiple cases
 

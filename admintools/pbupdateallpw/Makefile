@@ -28,3 +28,5 @@ packageqa: pbupdateallpw
 
 test:
 	@echo "*** Testing completed in pbupdateallpw ***"
+secure:
+	@rm -f config.json confdev.json confprod.json

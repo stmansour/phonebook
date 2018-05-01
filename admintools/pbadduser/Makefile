@@ -29,3 +29,5 @@ test:
 manpage:
 	nroff -man pbadduser.1
 	groff -man -Tascii pbadduser.1
+secure:
+	@rm -f config.json confdev.json confprod.json

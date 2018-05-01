@@ -11,4 +11,8 @@ package:
 packageqa:
 	mkdir -p ../../tmp/phonebookqa/dbtools/schema
 	cp apply.sh tables.sql ../../tmp/phonebookqa/dbtools/schema
-	echo "./schema: packageqa done"
+	echo "./schema: packageqa done"secure:
+	@rm -f config.json confdev.json confprod.json
+
+secure:
+	@rm -f config.json confdev.json confprod.json
