@@ -254,11 +254,11 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 //-----------------------------------------------------------------------------
 func SessionDelete(s *Session) {
 	fmt.Printf("Session being deleted: %s\n", s.ToString())
-	fmt.Printf("sess.Sessions before delete:\n")
-	DumpSessions()
+	// fmt.Printf("sess.Sessions before delete:\n")
+	// DumpSessions()
 
 	if err := db.DeleteSessionCookie(s.Token); err != nil {
-		lib.Ulog("Error deleteing session cookie: %s\n", err.Error())
+		lib.Ulog("Error deleting session cookie: %s\n", err.Error())
 	}
 
 	ss := make(map[string]*Session, 0)
@@ -272,8 +272,8 @@ func SessionDelete(s *Session) {
 	}
 	Sessions = ss
 	SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
-	fmt.Printf("sess.Sessions after delete:\n")
-	DumpSessions()
+	// fmt.Printf("sess.Sessions after delete:\n")
+	// DumpSessions()
 }
 
 //=====================================================================================
