@@ -286,6 +286,10 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	var funcname = "SvcValidateCookie"
 	var err error
 	var foo ValidateCookie
+	var c db.SessionCookie
+	var imageProfilePath string
+	var resp string
+	var g AuthSuccessResponse
 
 	lib.Console("Entered %s\n", funcname)
 
@@ -293,32 +297,41 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	if err = json.Unmarshal(data, &foo); err != nil {
 		e := fmt.Errorf("%s: Error with json.Unmarshal:  %s", funcname, err.Error())
 		SvcErrorReturn(w, e, funcname)
-		return
+		goto exit1
 	}
 
 	lib.Console("request for session cookie:  %s, IP = %s, UserAgent = %s\n", foo.CookieVal, foo.IP, foo.UserAgent)
-	c, err := sess.GetSessionCookie(foo.CookieVal)
+	c, err = sess.GetSessionCookie(foo.CookieVal)
 	if err != nil {
 		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 	}
 	lib.Console("Found session cookie: %d, %s, %s\n", c.UID, c.UserName, c.Expire.Format("JSONDATETIME"))
 	lib.Console("                      IP = %s,  UserAgent = %s\n", c.IP, c.UserAgent)
 
-	resp := "failure"
+	resp = "failure"
 	if c.UID > 0 {
 		lib.Console("%s: cookie found:  c.UID = %d\n", funcname, c.UID)
 		resp = "success"
 		//------------------------------------------------------------------
 		// if the request calls for the timestamp to be updated, do so now
-		// that we know it exists
+		// that we know it exists.
 		//------------------------------------------------------------------
 		if foo.FLAGS&2 > 0 {
 			s, ok := sess.Sessions[c.Cookie]
 			if !ok {
-				err = fmt.Errorf("*** UNEXPECTED STATE: session with cookie %s was not found in sess.Sessions", c.Cookie)
-				lib.Console("%s\n", err.Error())
-				lib.Ulog("%s\n", err.Error())
-				SvcErrorReturn(w, err, funcname)
+				//----------------------------------------------------------------
+				// This means that the cookie was found in the database but not
+				// in memory. The most likely reason for this is that phonebook
+				// was restarted.  In any case, we need to add this cookie to the
+				// in memory sessions...
+				//----------------------------------------------------------------
+				s = sess.NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
+				lib.Console("Session was not found in memory.  Adding it to memory.  Cookie = %s\n", c.Cookie)
+
+				// err = fmt.Errorf("*** UNEXPECTED STATE: session with cookie %s was not found in sess.Sessions", c.Cookie)
+				// lib.Console("%s\n", err.Error())
+				// lib.Ulog("%s\n", err.Error())
+				// SvcErrorReturn(w, err, funcname)
 			}
 			s.Expire = s.Expire.Add(sess.SessionManager.SessionTimeout * time.Minute)
 			if err = sess.UpdateSessionCookie(s); err != nil {
@@ -336,14 +349,14 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		// lib.Console("D\n")
 		g := AuthSuccessResponse{Status: resp}
 		SvcWriteResponse(&g, w)
-		return
+		goto exit1
 	}
 
 	//------------------------------------------------------------------
 	// add the known information to the response
 	//------------------------------------------------------------------
-	imageProfilePath := ui.GetImageLocation(int(c.UID))
-	g := AuthSuccessResponse{
+	imageProfilePath = ui.GetImageLocation(int(c.UID))
+	g = AuthSuccessResponse{
 		Status:   resp,
 		UID:      c.UID,
 		Name:     c.UserName,
@@ -352,6 +365,10 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 	}
 	SvcWriteResponse(&g, w)
+
+exit1:
+	sess.DumpSessions()
+	sess.DumpSessionCookies()
 }
 
 // SvcLogoff removes a session from the
