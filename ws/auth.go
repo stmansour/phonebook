@@ -107,14 +107,14 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	// fwdaddr := r.Header.Get("X-Forwarded-For")
 	// lib.Console("X-Forwarded-For value = %q\n", fwdaddr)
 
-	lib.Console("svcAuth A\n")
+	// lib.Console("svcAuth A\n")
 	UID, Name, err = DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
-		lib.Console("svcAuth B\n")
+		// lib.Console("svcAuth B\n")
 		SvcErrorReturn(w, err, funcname)
 		goto exit
 	}
-	lib.Console("svcAuth C\n")
+	// lib.Console("svcAuth C\n")
 
 	//----------------------------------------------------------------------------------
 	// If UID > 0 then the username and password match.  So, we get the user a session.
@@ -122,7 +122,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	// submitted this request. Otherwise, create a new one.
 	//----------------------------------------------------------------------------------
 	if UID > 0 {
-		lib.Console("svcAuth D\n")
+		// lib.Console("svcAuth D\n")
 		imageProfilePath := ui.GetImageLocation(int(UID)) // we need this in multiple cases
 
 		//------------------------------------------------------------------------
@@ -131,14 +131,14 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		//------------------------------------------------------------------------
 		c, err := db.FindMatchingSessionCookie(foo.User, foo.RemoteAddr, foo.UserAgent)
 		if err != nil {
-			lib.Console("svcAuth E\n")
+			// lib.Console("svcAuth E\n")
 			err := fmt.Errorf("error finding cookie: %s", err.Error())
 			SvcErrorReturn(w, err, funcname)
 			goto exit
 		}
-		lib.Console("svcAuth F....   len(c.Cookie) = %d, c.UserName = %s\n", len(c.Cookie), c.UserName)
+		// lib.Console("svcAuth F....   len(c.Cookie) = %d, c.UserName = %s\n", len(c.Cookie), c.UserName)
 		if len(c.Cookie) > 0 && foo.User == c.UserName {
-			lib.Console("svcAuth G\n")
+			// lib.Console("svcAuth G\n")
 			//-----------------------------------------------------------------------
 			// This user already has a cookie in the same useragent. Just update
 			// the existing info and return it...
@@ -151,19 +151,19 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 				Token:    c.Cookie,
 				Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 			}
-			lib.Console("svcAuth H\n")
+			// lib.Console("svcAuth H\n")
 			//--------------------------------
 			// get the associated session...
 			//--------------------------------
 			s, ok := sess.Sessions[c.Cookie]
 			if !ok { // this could possibly happen if the timeing is *just* right, but we need to create it
-				lib.Console("svcAuth I\n")
+				// lib.Console("svcAuth I\n")
 				s = sess.NewSessionFromCookie(&c)
 			}
 			//----------------------------------------------------
 			// update its timeout now that it has been used...
 			//----------------------------------------------------
-			lib.Console("svcAuth J\n")
+			// lib.Console("svcAuth J\n")
 			sess.ReUpCookieTime(s)
 			sess.UpdateSessionCookie(s)
 			g.Expire = s.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME)
@@ -176,7 +176,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 			lib.Ulog("user %s successfully piggybacked on existing session\n", foo.User)
 			goto exit
 		}
-		lib.Console("svcAuth K\n")
+		// lib.Console("svcAuth K\n")
 
 		//---------------------------------------------------------------------------
 		// If we hit this point, it means that there currently is no entry in the
@@ -194,27 +194,27 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 			Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 		}
 
-		lib.Console("svcAuth L  (username: %s, user agent: %s)\n", ssn.Username, ssn.UserAgent)
+		// lib.Console("svcAuth L  (username: %s, user agent: %s)\n", ssn.Username, ssn.UserAgent)
 		// lib.Console("g = %#v\n", g)
 		SvcWriteResponse(&g, w)
 		lib.Ulog("user %s successfully logged in\n", foo.User)
 
 		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire, c.UserAgent, c.IP)
 		if err != nil {
-			lib.Console("svcAuth M\n")
+			// lib.Console("svcAuth M\n")
 			err := fmt.Errorf("error inserting cookie into sessiondb: %s", err.Error())
 			SvcErrorReturn(w, err, funcname)
 			goto exit
 		}
-		lib.Console("svcAuth N\n")
+		// lib.Console("svcAuth N\n")
 		goto exit
 	}
-	lib.Console("svcAuth O\n")
+	// lib.Console("svcAuth O\n")
 	err = fmt.Errorf("login failed")
 	SvcErrorReturn(w, err, funcname)
 
 exit:
-	lib.Console("svcAuth P\n")
+	// lib.Console("svcAuth P\n")
 	sess.DumpSessions()
 	sess.DumpSessionCookies()
 }
@@ -320,9 +320,7 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 				lib.Ulog("%s\n", err.Error())
 				SvcErrorReturn(w, err, funcname)
 			}
-			lib.Console("*** BEFORE UPDATE:  expire = %s\n", s.Expire)
 			s.Expire = s.Expire.Add(sess.SessionManager.SessionTimeout * time.Minute)
-			lib.Console("***  AFTER UPDATE:  expire = %s\n", s.Expire)
 			if err = sess.UpdateSessionCookie(s); err != nil {
 				lib.Console("Error updating session cookie = %s\n", err.Error())
 				lib.Ulog("%s: could not update session cookie: %s\n", funcname, err.Error())
@@ -363,35 +361,34 @@ func SvcLogoff(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	var foo ValidateCookie
 
 	lib.Console("Entered %s\n", funcname)
-	lib.Console("svcLogoff: A\n")
+	// lib.Console("svcLogoff: A\n")
 	data := []byte(d.data)
 	if err = json.Unmarshal(data, &foo); err != nil {
-		lib.Console("svcLogoff: B\n")
+		// lib.Console("svcLogoff: B\n")
 		e := fmt.Errorf("%s: Error with json.Unmarshal:  %s", funcname, err.Error())
 		SvcErrorReturn(w, e, funcname)
 		return
 	}
-	lib.Console("svcLogoff: C\n")
+	// lib.Console("svcLogoff: C\n")
 	lib.Console("unmarshaled request.  cookie value = %s\n", foo.CookieVal)
 
 	ssn, ok := sess.SessionGet(foo.CookieVal)
 	if ok {
-		lib.Console("svcLogoff: D\n")
+		// lib.Console("svcLogoff: D\n")
 		lib.Console("found session with that cookie. Deleting.\n")
 		sess.SessionDelete(ssn)
 	} else {
-		lib.Console("svcLogoff: E\n")
+		// lib.Console("svcLogoff: E\n")
 		lib.Console("No session with that cookie found in memory.\n")
 	}
-	lib.Console("svcLogoff: F\n")
+	// lib.Console("svcLogoff: F\n")
 	if err := db.DeleteSessionCookie(foo.CookieVal); err != nil {
-		lib.Console("svcLogoff: G\n")
+		// lib.Console("svcLogoff: G\n")
 		lib.Ulog("Error deleteing session cookie: %s\n", err.Error())
 	}
-	lib.Console("svcLogoff: H\n")
+	// lib.Console("svcLogoff: H\n")
 	SvcWriteSuccessResponse(w)
 
-	lib.Console("Done!\n")
 	sess.DumpSessions()
 	sess.DumpSessionCookies()
 
