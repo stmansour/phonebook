@@ -182,8 +182,8 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		// If we hit this point, it means that there currently is no entry in the
 		// session table for the this user. Create one...
 		//---------------------------------------------------------------------------
-		c = sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr) // get image location(URL)
-		ssn := sess.NewSessionFromCookie(&c)
+		c = sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
+		sess.NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
 
 		g := AuthSuccessResponse{
 			Status:   "success",
