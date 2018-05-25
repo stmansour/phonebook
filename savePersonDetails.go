@@ -67,7 +67,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 
 	// setup credential
 	// reading credential from the aws config
-	creds := credentials.NewStaticCredentials(lib.AppConfig.AWSAccessKeyID, lib.AppConfig.AWSSecretKey, "")
+	creds := credentials.NewStaticCredentials(lib.AppConfig.S3BucketKeyID, lib.AppConfig.S3BucketKey, "")
 	_, err := creds.Get()
 	if err != nil {
 		fmt.Printf("Bad credentials: %s", err)
