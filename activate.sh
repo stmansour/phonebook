@@ -41,12 +41,12 @@ CMD is one of: start | stop | status | restart | ready | reload | condrestart | 
 
 Examples:
 Command to start phonebook:
-	bash$  activate.sh start 
+	bash$  activate.sh start
 
 Command to start phonebook for testing purposes:
-	bash$  activate.sh -T start 
+	bash$  activate.sh -T start
 
-	If you do testing in the context of the source code tree and you don't 
+	If you do testing in the context of the source code tree and you don't
 	use -T, you may see messages like this:
 
 	  ./activate.sh: line 101: ./pbwatchdog: No such file or directory
@@ -76,8 +76,8 @@ stopwatchdog() {
         if [ $lines -gt "0" ]; then
             pid=$(echo "${pidline}" | awk '{print $2}')
             $(kill $pid)
-        fi          
-    fi      
+        fi
+    fi
 }
 
 makeProdNode() {
@@ -130,25 +130,6 @@ start() {
 	fi
 
 	if [ 0 -eq ${QA} ]; then
-		if [ ${IAM} == "root" ]; then
-			chown -R ec2-user *
-			chmod u+s phonebook pbwatchdog picsync.sh
-			if [ $(uname) == "Linux" -a ! -f "/etc/init.d/phonebook" ]; then
-				cp ./activate.sh /etc/init.d/phonebook
-				chkconfig --add phonebook
-			fi
-		fi
-
-		if [ "${STARTPBONLY}" -ne "1" ]; then
-			if [ ! -d "./images" ]; then
-				/usr/local/accord/bin/getfile.sh jenkins-snapshot/phonebook/latest/pbimages.tar.gz >phonebook.log 2>&1
-				gunzip -f pbimages.tar.gz >phonebook.log 2>&1
-				tar xvf pbimages.tar >phonebook.log 2>&1
-			fi
-			if [ ! -f "/usr/local/share/man/man1/pbbkup.1" ]; then
-				./installman.sh >phonebook.log 2>&1
-			fi
-		fi
 		./phonebook -N ${DBNAME} >pbconsole.out 2>&1 &
 		if [ ${IAM} == "root" ]; then
 			if [ ! -d /var/run/phonebook ]; then
@@ -188,7 +169,7 @@ status() {
 		exit 0
 		;;
 	"0")
-		# phonebook is not responsive or not running.  Exit status as described in 
+		# phonebook is not responsive or not running.  Exit status as described in
 		# http://refspecs.linuxbase.org/LSB_3.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
 		if [ ${IAM} == "root" -a -f /var/run/phonebook/phonebook.pid ]; then
 			exit 1
