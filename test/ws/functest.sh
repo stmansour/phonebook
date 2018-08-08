@@ -38,7 +38,12 @@ startPhonebook
 
 # Get version
 #--------------------------
-doPlainGET "http://localhost:8250/v1/version" "a0" "WebService--Version"
+curl -s "http://localhost:8250/v1/version" >a0 2>>${LOGFILE}
+OL=$(cat a0 | wc -c)
+if [ ${OL} -ne 10 ]; then
+    echo "EXPECTING 10 line for version, got ${OL}"
+    exit 2
+fi
 
 #------------------------------------------------------------------------------
 #  TESTS a, b, c
