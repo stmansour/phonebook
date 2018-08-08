@@ -40,7 +40,7 @@ package: phonebook
 	mkdir -p tmp/phonebook/man/man1/
 	cp *.1 tmp/phonebook/man/man1/
 	cp config.json tmp/phonebook/
-	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
+	cp phonebook sbsetup.sh activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	for dir in $(DIRS); do make -C $$dir package;done
 
 accorddb:
@@ -50,7 +50,7 @@ packageqa: phonebook
 	rm -rf tmp
 	mkdir -p tmp/phonebookqa/man/man1/
 	cp *.1 tmp/phonebookqa/man/man1/
-	cp phonebook activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebookqa/
+	cp phonebook sbsetup.sh activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebookqa/
 	cd admintools;make packageqa
 	cd dbtools;make packageqa
 	cd test;make packageqa
