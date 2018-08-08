@@ -13,7 +13,7 @@ FNAME="ver.go"
 VER=$(printf "%d.%d.%06d" ${MAJVER} ${MINVER} ${BUILDNO})
 BLD="${HOSTNAME}"
 DAT=$(date)
-PKG="package main"
+PKG="package lib"
 
 if [ "x${1}" != "x" ]; then 
     PKG="package ${1}"
