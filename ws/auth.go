@@ -188,7 +188,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		g := AuthSuccessResponse{
 			Status:   "success",
 			UID:      c.UID,
-			Name:     c.UserName,
+			Name:     Name,
 			ImageURL: imageProfilePath,
 			Token:    c.Cookie,
 			Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
