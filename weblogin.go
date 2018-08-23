@@ -96,7 +96,6 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 //
 //-----------------------------------------------------------------------------
 func webloginHandler(w http.ResponseWriter, r *http.Request) {
-
 	// debug only
 	// dump, err := httputil.DumpRequest(r, false)
 	// errcheck(err)
@@ -218,15 +217,19 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	var firstname, preferredname, emailAddr, passhash string
 	var uid, RID int
 	var err error
+	lib.Console("Entered: resetpwHandler\n")
 
 	pagename := r.FormValue("pagename")
 
+	lib.Console("pagename = %s\n", pagename)
 	if pagename != "resetpw" { // if the resetpw page was not the calling page...
+		lib.Console("resetpwHandler: return showResetPwPage\n")
 		showResetPwPage(w, r, "") // ...then show the resetpw page
 		return
 	}
 
 	myusername := strings.ToLower(r.FormValue("username"))
+	lib.Console("resetpwHandler: username = %s\n", myusername)
 
 	//-------------------------------------
 	// validate that myusername exists
@@ -234,15 +237,18 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	err = db.PrepStmts.LoginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &emailAddr, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
+		lib.Console("resetpwHandler: A\n")
 		errmsg := fmt.Sprintf("Username %s was not found\n", myusername) + stillNeedHelp
 		showResetPwPage(w, r, errmsg)
 		return
 	case err != nil:
+		lib.Console("resetpwHandler: B\n")
 		errmsg := fmt.Sprintf("Error: %s", err.Error()) + stillNeedHelp
 		showResetPwPage(w, r, errmsg)
 		return
 	}
 	if emailAddr == "" {
+		lib.Console("resetpwHandler: C\n")
 		errmsg := fmt.Sprintf("Error: No email address for user: %s", myusername) + stillNeedHelp
 		showResetPwPage(w, r, errmsg)
 		return
@@ -251,6 +257,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	//-------------------------------------
 	// validate domain
 	//-------------------------------------
+	lib.Console("resetpwHandler: E\n")
 	errmsg := ""
 	domain := ""
 	k := strings.LastIndex(emailAddr, "@")
@@ -293,7 +300,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	msg += `Please log into <a href="https://directory.airoller.com/">https://directory.airoller.com/</a>`
 	m.SetHeader("Subject", "Your password has been updated")
 	m.SetBody("text/html", msg)
-	if err := lib.SMTPDialAndSend(m); err != nil {
+	if err = lib.SMTPDialAndSend(m); err != nil {
 		errmsg += fmt.Sprintf("Error sending emailAddr = %s", err.Error())
 	}
 

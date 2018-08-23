@@ -107,14 +107,14 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	// fwdaddr := r.Header.Get("X-Forwarded-For")
 	// lib.Console("X-Forwarded-For value = %q\n", fwdaddr)
 
-	// lib.Console("svcAuth A\n")
+	lib.Console("svcAuth A\n")
 	UID, Name, err = DoAuthentication(foo.User, foo.Pass)
 	if err != nil {
-		// lib.Console("svcAuth B\n")
+		lib.Console("svcAuth B\n")
 		SvcErrorReturn(w, err, funcname)
 		goto exit
 	}
-	// lib.Console("svcAuth C\n")
+	lib.Console("svcAuth C\n")
 
 	//----------------------------------------------------------------------------------
 	// If UID > 0 then the username and password match.  So, we get the user a session.
@@ -122,7 +122,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	// submitted this request. Otherwise, create a new one.
 	//----------------------------------------------------------------------------------
 	if UID > 0 {
-		// lib.Console("svcAuth D\n")
+		lib.Console("svcAuth D\n")
 		imageProfilePath := ui.GetImageLocation(int(UID)) // we need this in multiple cases
 
 		//------------------------------------------------------------------------
@@ -131,14 +131,14 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		//------------------------------------------------------------------------
 		c, err := db.FindMatchingSessionCookie(foo.User, foo.RemoteAddr, foo.UserAgent)
 		if err != nil {
-			// lib.Console("svcAuth E\n")
+			lib.Console("svcAuth E\n")
 			err := fmt.Errorf("error finding cookie: %s", err.Error())
 			SvcErrorReturn(w, err, funcname)
 			goto exit
 		}
-		// lib.Console("svcAuth F....   len(c.Cookie) = %d, c.UserName = %s\n", len(c.Cookie), c.UserName)
+		lib.Console("svcAuth F....   len(c.Cookie) = %d, c.UserName = %s\n", len(c.Cookie), c.UserName)
 		if len(c.Cookie) > 0 && foo.User == c.UserName {
-			// lib.Console("svcAuth G\n")
+			lib.Console("svcAuth G\n")
 			//-----------------------------------------------------------------------
 			// This user already has a cookie in the same useragent. Just update
 			// the existing info and return it...
@@ -151,19 +151,19 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 				Token:    c.Cookie,
 				Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 			}
-			// lib.Console("svcAuth H\n")
+			lib.Console("svcAuth H\n")
 			//--------------------------------
 			// get the associated session...
 			//--------------------------------
 			s, ok := sess.Sessions[c.Cookie]
 			if !ok { // this could possibly happen if the timeing is *just* right, but we need to create it
-				// lib.Console("svcAuth I\n")
+				lib.Console("svcAuth I\n")
 				s = sess.NewSessionFromCookie(&c)
 			}
 			//----------------------------------------------------
 			// update its timeout now that it has been used...
 			//----------------------------------------------------
-			// lib.Console("svcAuth J\n")
+			lib.Console("svcAuth J\n")
 			sess.ReUpCookieTime(s)
 			sess.UpdateSessionCookie(s)
 			g.Expire = s.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME)
@@ -176,7 +176,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 			lib.Ulog("user %s successfully piggybacked on existing session\n", foo.User)
 			goto exit
 		}
-		// lib.Console("svcAuth K\n")
+		lib.Console("svcAuth K\n")
 
 		//---------------------------------------------------------------------------
 		// If we hit this point, it means that there currently is no entry in the
@@ -187,34 +187,34 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 
 		g := AuthSuccessResponse{
 			Status:   "success",
-			UID:      UID,
-			Name:     Name,
+			UID:      c.UID,
+			Name:     c.UserName,
 			ImageURL: imageProfilePath,
 			Token:    c.Cookie,
 			Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
 		}
 
-		// lib.Console("svcAuth L  (username: %s, user agent: %s)\n", ssn.Username, ssn.UserAgent)
-		// lib.Console("g = %#v\n", g)
+		lib.Console("svcAuth L  (username: %s, user agent: %s)\n", c.UserName, c.UserAgent)
+		lib.Console("g = %#v\n", g)
 		SvcWriteResponse(&g, w)
 		lib.Ulog("user %s successfully logged in\n", foo.User)
 
 		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire, c.UserAgent, c.IP)
 		if err != nil {
-			// lib.Console("svcAuth M\n")
-			err := fmt.Errorf("error inserting cookie into sessiondb: %s", err.Error())
+			lib.Console("svcAuth M\n")
+			err = fmt.Errorf("error inserting cookie into sessiondb: %s", err.Error())
 			SvcErrorReturn(w, err, funcname)
 			goto exit
 		}
-		// lib.Console("svcAuth N\n")
+		lib.Console("svcAuth N\n")
 		goto exit
 	}
-	// lib.Console("svcAuth O\n")
+	lib.Console("svcAuth O\n")
 	err = fmt.Errorf("login failed")
 	SvcErrorReturn(w, err, funcname)
 
 exit:
-	// lib.Console("svcAuth P\n")
+	lib.Console("svcAuth P\n")
 	sess.DumpSessions()
 	sess.DumpSessionCookies()
 }
@@ -305,7 +305,7 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	if err != nil {
 		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 	}
-	lib.Console("Found session cookie: %d, %s, %s\n", c.UID, c.UserName, c.Expire.Format("JSONDATETIME"))
+	lib.Console("Found session cookie: UID=%d, UserName=%s, Expire=%s\n", c.UID, c.UserName, c.Expire.Format("JSONDATETIME"))
 	lib.Console("                      IP = %s,  UserAgent = %s\n", c.IP, c.UserAgent)
 
 	resp = "failure"
@@ -345,12 +345,15 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	//------------------------------------------------------------------
 	// if the request was to ONLY verify the existence of the cookie...
 	//------------------------------------------------------------------
+	lib.Console("D\n")
 	if foo.FLAGS&1 > 0 {
-		// lib.Console("D\n")
-		g := AuthSuccessResponse{Status: resp}
+		lib.Console("D1 - verify existence of cookie only\n")
+		g = AuthSuccessResponse{Status: resp}
 		SvcWriteResponse(&g, w)
 		goto exit1
 	}
+
+	lib.Console("E - full reply: Status = %s, UID = %d, username = %s\n", resp, c.UID, c.UserName)
 
 	//------------------------------------------------------------------
 	// add the known information to the response
