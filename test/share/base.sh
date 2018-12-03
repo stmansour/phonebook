@@ -715,7 +715,7 @@ stopPhonebook() {
 	if [ ${result} -ge 0 ]; then
 		echo "phonebook stopped"
 		sleep 2
-	else 
+	else
 		echo "stopPhonebook:  'activate.sh stop' failed.  result = \"${result}\""
 		echo "stopPhonebook:  attempting to shut down forcefully..."
 		stopwatchdog
@@ -744,7 +744,7 @@ doPlainPOST () {
 	TESTCOUNT=$((TESTCOUNT + 1))
 	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} $3 $4
 	CMD="curl -s -X POST ${1} -H \"Content-Type: application/json\" -H \"X-Forwarded-For: 52.90.192.172\" -d @${2}"
-	
+
 	${CMD} >${3} 2>>${LOGFILE}
 	echo >>${3}  # this ensures a newline in the file
 
@@ -1183,7 +1183,7 @@ doCasperUITest () {
 #  Handle command line options...
 #--------------------------------------------------------------------------
 tdir
-while getopts "acfmoprnR:" o; do
+while getopts "acfmoprnR:t:" o; do
 	echo "o = ${o}"
 	case "${o}" in
 		a)	ASKBEFOREEXIT=1
@@ -1213,6 +1213,9 @@ while getopts "acfmoprnR:" o; do
 		o)	FORCEGOOD=1
 			echo "OUTPUT OF THIS RUN IS SAVED AS *.GOLD"
 			;;
+		t) SINGLETEST="${OPTARG}"
+			echo "SINGLETEST set to ${SINGLETEST}"
+			;;
 		*) 	usage
 			exit 1
 			;;
@@ -1227,5 +1230,3 @@ echo    "Test Purpose: ${TESTSUMMARY}" >> ${LOGFILE}
 echo -n "Date/Time:    " >>${LOGFILE}
 date >> ${LOGFILE}
 echo >>${LOGFILE}
-
-

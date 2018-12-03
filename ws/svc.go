@@ -10,7 +10,9 @@ import (
 	"net/http"
 	"net/url"
 	"phonebook/lib"
+	"rentroll/rlib"
 	"strings"
+	"time"
 )
 
 // SvcCtx holds global data needed by the service routines
@@ -18,19 +20,61 @@ var SvcCtx struct {
 	db *sql.DB
 }
 
+// GenSearch describes a search condition
+type GenSearch struct {
+	Field    string `json:"field"`
+	Type     string `json:"type"`
+	Value    string `json:"value"`
+	Operator string `json:"operator"`
+}
+
+// ColSort is what the UI uses to indicate how the return values should be sorted
+type ColSort struct {
+	Field     string `json:"field"`
+	Direction string `json:"direction"`
+}
+
+// WebGridSearchRequest is a struct suitable for describing a webservice operation.
+type WebGridSearchRequest struct {
+	Cmd           string      `json:"cmd"`           // get, save, delete
+	Limit         int         `json:"limit"`         // max number to return
+	Offset        int         `json:"offset"`        // solution set offset
+	Selected      []int       `json:"selected"`      // selected rows
+	SearchLogic   string      `json:"searchLogic"`   // OR | AND
+	Search        []GenSearch `json:"search"`        // what fields and what values
+	Sort          []ColSort   `json:"sort"`          // sort criteria
+	SearchDtStart time.Time   `json:"searchDtStart"` // for time-sensitive searches
+	SearchDtStop  time.Time   `json:"searchDtStop"`  // for time-sensitive searches
+	Bool1         bool        `json:"Bool1"`         // a general purpose bool flag for postData from client
+	Client        string      `json:"client"`        // name of requesting client.  ex: "roller", "receipts"
+	RentableName  string      `json:"RentableName"`  // RECEIPT-ONLY CLIENT EXTENSION - to be removed when Receipt-Only client goes away
+}
+
+// WebTypeDownRequest is a search call made by a client while the user is
+// typing in something to search for and the expecation is that the solution
+// set will be sent back in realtime to aid the user.  Search is a string
+// to search for -- it's what the user types in.  Max is the maximum number
+// of matches to return.
+type WebTypeDownRequest struct {
+	Search string `json:"search"`
+	Max    int    `json:"max"`
+}
+
 // ServiceData is the generalized data gatherer for svcHandler. It allows all
 // the common data to be centrally parsed and passed to a handler, which may
 // need to parse further to get its unique data.  It includes fields for
 // common data elements in web svc requests
 type ServiceData struct {
-	Service      string              // the service requested (position 1)
-	DetVal       string              // value of 3rd path element if present (it is not always a number)
-	UID          int64               // user id of requester
-	pathElements []string            // the parts of the uri
-	data         string              // the raw unparsed data
-	QueryParams  map[string][]string // parameters when HTTP GET is used
-	Files        map[string][]*multipart.FileHeader
-	MFValues     map[string][]string
+	Service       string               // the service requested (position 1)
+	DetVal        string               // value of 3rd path element if present (it is not always a number)
+	UID           int64                // user id of requester
+	pathElements  []string             // the parts of the uri
+	data          string               // the raw unparsed data
+	wsSearchReq   WebGridSearchRequest // what did the search requester ask for
+	wsTypeDownReq WebTypeDownRequest   // fast for typedown
+	QueryParams   map[string][]string  // parameters when HTTP GET is used
+	Files         map[string][]*multipart.FileHeader
+	MFValues      map[string][]string
 }
 
 // ServiceHandler describes the handler for all services
@@ -63,6 +107,7 @@ var Svcs = []ServiceHandler{
 	{"discon", SvcDisableConsole},
 	{"encon", SvcEnableConsole},
 	{"logoff", SvcLogoff},
+	{"peopletd", SvcPeopleTypeDown},
 	{"resetpw", SvcResetPWHandler},
 	{"validatecookie", SvcValidateCookie},
 	{"version", SvcHandlerVersion},
@@ -220,6 +265,25 @@ func getGETdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 	lib.Console("Unescaped query = %s\n", s)
 	d.QueryParams = r.URL.Query()
 	lib.Console("Query Parameters: %v\n", d.QueryParams)
+
+	w2uiPrefix := "request="
+	n := strings.Index(s, w2uiPrefix)
+	rlib.Console("n = %d\n", n)
+	if n > 0 {
+		rlib.Console("Will process as Typedown\n")
+		d.data = s[n+len(w2uiPrefix):]
+		rlib.Console("%s: will unmarshal: %s\n", funcname, d.data)
+		if err = json.Unmarshal([]byte(d.data), &d.wsTypeDownReq); err != nil {
+			e := fmt.Errorf("%s: Error with json.Unmarshal:  %s", funcname, err.Error())
+			SvcErrorReturn(w, e, funcname)
+			return e
+		}
+		d.wsSearchReq.Cmd = "typedown"
+	} else {
+		rlib.Console("Will process as web search command\n")
+		d.wsSearchReq.Cmd = r.URL.Query().Get("cmd")
+	}
+
 	return nil
 }
 
