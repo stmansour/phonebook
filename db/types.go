@@ -207,7 +207,7 @@ func CreatePreparedStmts() {
 	//-----------------------
 	// People
 	//-----------------------
-	PrepStmts.GetPeopleTypeDown, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM People WHERE FirstName LIKE ? OR MiddleName LIKE ? OR LastName LIKE ? or PreferredName LIKE ? LIMIT ?")
+	PrepStmts.GetPeopleTypeDown, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE FirstName LIKE ? OR MiddleName LIKE ? OR LastName LIKE ? or PreferredName LIKE ? LIMIT ?")
 	lib.Errcheck(err)
 
 }
