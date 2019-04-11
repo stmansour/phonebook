@@ -1,0 +1,27 @@
+{
+    "records": [
+        {
+            "ClassCode": 7,
+            "CoCode": 0,
+            "Designation": "DRS",
+            "Name": "Destiny Realty Solutions",
+            "recid": 7
+        },
+        {
+            "ClassCode": 2,
+            "CoCode": 0,
+            "Designation": "SES",
+            "Name": "Sexsi Senorita",
+            "recid": 2
+        },
+        {
+            "ClassCode": 3,
+            "CoCode": 0,
+            "Designation": "STB",
+            "Name": "Strong bod",
+            "recid": 3
+        }
+    ],
+    "status": "success",
+    "total": 3
+}
