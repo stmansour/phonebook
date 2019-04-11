@@ -2,10 +2,8 @@ package ws
 
 import (
 	"fmt"
-	"mojo/util"
 	"net/http"
 	"phonebook/db"
-	"rentroll/rlib"
 )
 
 // PeopleTypedownResponse is the data structure for the response to a search for people
@@ -33,15 +31,15 @@ func SvcPeopleTypeDown(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	var g PeopleTypedownResponse
 	var err error
 
-	util.Console("Entered %s\n", funcname)
-	util.Console("handle typedown: GetPeopleTypeDown( search=%s, limit=%d )\n", d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
+	// util.Console("Entered %s\n", funcname)
+	// util.Console("handle typedown: GetPeopleTypeDown( search=%s, limit=%d )\n", d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
 	g.Records, err = db.GetPeopleTypeDown(d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
 	if err != nil {
 		e := fmt.Errorf("Error getting typedown matches: %s", err.Error())
 		SvcErrorReturn(w, e, funcname)
 		return
 	}
-	rlib.Console("GetPeopleTypeDown returned %d matches\n", len(g.Records))
+	// util.Console("GetPeopleTypeDown returned %d matches\n", len(g.Records))
 	g.Total = int64(len(g.Records))
 	g.Status = "success"
 	SvcWriteResponse(&g, w)

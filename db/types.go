@@ -29,14 +29,14 @@ type ADeduction struct {
 // Class defines a business unit within a company
 //--------------------------------------------------------------------
 type Class struct {
-	ClassCode   int
-	CoCode      int
-	Name        string
-	Designation string
+	ClassCode   int    // uid of Business Unit
+	CoCode      int    // uid of parent company
+	Name        string // name of Business Unit
+	Designation string // business unit designation
 	Description string
 	LastModTime time.Time
 	LastModBy   int
-	C           Company // parent company
+	C           Company // parent company (just a holder for convenience)
 }
 
 // Company defines the structure of data for a company
@@ -175,6 +175,7 @@ var PrepStmts struct {
 	LoginInfo                 *sql.Stmt
 	GetImagePath              *sql.Stmt
 	GetPeopleTypeDown         *sql.Stmt
+	GetBUTypeDown             *sql.Stmt
 }
 
 // CreatePreparedStmts creates prepared sql statements
@@ -210,6 +211,12 @@ func CreatePreparedStmts() {
 	PrepStmts.GetPeopleTypeDown, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE FirstName LIKE ? OR MiddleName LIKE ? OR LastName LIKE ? or PreferredName LIKE ? LIMIT ?")
 	lib.Errcheck(err)
 
+	//--------------------
+	// Business Unit...
+	//--------------------
+	PrepStmts.GetBUTypeDown, err = DB.DirDB.Prepare("SELECT ClassCode,CoCode,Name,Designation FROM classes WHERE Designation LIKE ? ORDER BY Designation ASC LIMIT ?")
+	lib.Errcheck(err)
+
 }
 
 // Init initializes the database infrastructure
@@ -223,6 +230,50 @@ func CreatePreparedStmts() {
 func Init() error {
 	CreatePreparedStmts()
 	return nil
+}
+
+// BUInfo contains the information about a business unit needed for typedown
+//--------------------------------------------------------------------
+type BUInfo struct {
+	Recid       int64  `json:"recid"`
+	ClassCode   int64  // business unit uid
+	CoCode      int64  // parent company uid
+	Name        string // BU name
+	Designation string // bu designation
+}
+
+// GetBUTypeDown returns a slice of session cookies
+//
+// INPUTS
+//
+// RETURNS
+//  array of BUInfo structs matching the string s1
+//
+//  err      Any errors encountered
+//-----------------------------------------------------------------------------
+func GetBUTypeDown(s1 string, limit int) ([]BUInfo, error) {
+	funcname := "GetPeopleTypeDown"
+	var m []BUInfo
+	s := "%" + s1 + "%"
+	util.Console("s = %q\n", s)
+	rows, err := PrepStmts.GetBUTypeDown.Query(s, limit)
+	if err != nil {
+		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())
+		return m, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p BUInfo
+		if err := rows.Scan(&p.ClassCode, &p.CoCode, &p.Name, &p.Designation); err != nil {
+			lib.Ulog("%s: error getting row:  %v\n", funcname, err)
+			return m, err
+		}
+		p.Recid = p.ClassCode // a unique identifier for this class
+		m = append(m, p)
+	}
+
+	return m, nil
 }
 
 // GetSessionCookie searches the session table for the speified cookie.

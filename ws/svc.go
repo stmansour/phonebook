@@ -104,6 +104,7 @@ type SvcStatusResponse struct {
 // Svcs is the table of all service handlers
 var Svcs = []ServiceHandler{
 	{"authenticate", SvcAuthenticate},
+	{"butd", SvcBUTypedown},
 	{"discon", SvcDisableConsole},
 	{"encon", SvcEnableConsole},
 	{"logoff", SvcLogoff},

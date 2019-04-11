@@ -29,7 +29,7 @@ CreateDirDB() {
 	fi
 
 	pushd ${DBTOOLSDIR};./apply.sh;popd
-	pushd ${USERSIMPATH};${USERSIM} -f -u 20 -c 7 -C 7;popd
+	pushd ${USERSIMPATH};${USERSIM} -f -u 20 -c 7 -C 7 -N accord;popd
 	cmd="${ADDUSER} -f Billy -l Thorton -u billybob -r Viewer -p Testing123"
 	echo "cmd = ${cmd}"
 	${ADDUSER} -f Billy -l Thorton -r Viewer -p Testing123
@@ -104,7 +104,24 @@ if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFI
 	dojsonGET "http://localhost:8250/v1/peopletd?request=%7B%22search%22%3A%22m%22%2C%22max%22%3A100%7D" "${TFILES}0" "WebService--PeopleTypeDown"
 fi
 
-
+#------------------------------------------------------------------------------
+#  TEST c
+#
+#  Validate Business Unit designator typedown
+#
+#  Scenario:
+#
+#  Simulate a typedown request
+#
+#  Expected Results:
+#   We should get back the matching designator(s), and other info
+#
+#------------------------------------------------------------------------------
+TFILES="c"
+STEP=0
+if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	dojsonGET "http://localhost:8250/v1/butd?request=%7B%22search%22%3A%22S%22%2C%22max%22%3A10%7D" "${TFILES}0" "WebService--BUTypeDown"
+fi
 
 echo "Shutting down phonebook service..."
 stopPhonebook
