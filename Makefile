@@ -1,4 +1,5 @@
 DIRS=lib db authz ui sess dbtools admintools test
+DIST=tmp
 
 phonebook: *.go config.json
 	for dir in $(DIRS); do make -C $$dir;done
@@ -89,7 +90,18 @@ cert:
 	cp server.key server.key.org
 	openssl rsa -in server.key.org -out server.key
 	openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
-	
+
 secure:
 	for dir in $(DIRS); do make -C $${dir} secure;done
 	@rm -f config.json confdev.json confprod.json
+
+tarzip:
+	cd ${DIST};if [ -f ./phonebook/config.json ]; then mv ./phonebook/config.json .; fi
+	cd ${DIST};rm -f phonebook.tar*;tar czf phonebook.tar.gz phonebook
+	cd ${DIST};if [ -f ./config.json ]; then mv ./config.json ./phonebook/config.json; fi
+
+snapshot: tarzip
+	cd ${DIST}; /usr/local/accord/bin/snapshot.sh phonebook.tar.gz
+
+release:
+	/usr/local/accord/bin/release.sh phonebook
