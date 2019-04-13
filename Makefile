@@ -28,6 +28,8 @@ try:	clean phonebook package
 
 all: clean phonebook test
 
+build: clean phonebook
+
 dbmake:
 	#cd ../dir/obfuscate;./obfuscate
 	mysqldump accord > testdb.sql

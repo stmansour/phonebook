@@ -1,1 +1,4 @@
-UNSET CONTENT
+{
+    "message": "Error: No Business Unit with Designation CCC exists",
+    "status": "error"
+}

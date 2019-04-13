@@ -123,6 +123,26 @@ if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFI
 	dojsonGET "http://localhost:8250/v1/butd?request=%7B%22search%22%3A%22S%22%2C%22max%22%3A10%7D" "${TFILES}0" "WebService--BUTypeDown"
 fi
 
+#------------------------------------------------------------------------------
+#  TEST d
+#
+#  Validate simple BUD search
+#
+#  Scenario:
+#
+#  Simulate a typedown request
+#
+#  Expected Results:
+#   We should get back the matching designator(s), and other info
+#
+#------------------------------------------------------------------------------
+TFILES="d"
+STEP=0
+if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	dojsonGET "curl http://localhost:8250/v1/bud?request%3D%7B%22search%22%3A%22CCC%22%7D" "${TFILES}0" "WebService--BUDSearch"
+	dojsonGET "curl http://localhost:8250/v1/bud?request%3D%7B%22search%22%3A%22FOG%22%7D" "${TFILES}1" "WebService--BUDSearch"
+fi
+
 echo "Shutting down phonebook service..."
 stopPhonebook
 

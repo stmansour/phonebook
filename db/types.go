@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"mojo/util"
 	"phonebook/lib"
 	"time"
 )
@@ -176,6 +175,20 @@ var PrepStmts struct {
 	GetImagePath              *sql.Stmt
 	GetPeopleTypeDown         *sql.Stmt
 	GetBUTypeDown             *sql.Stmt
+	GetBUByBUD                *sql.Stmt
+}
+
+// IsSQLNoResultsError returns true if the error provided is a sql err indicating no rows in the solution set.
+func IsSQLNoResultsError(err error) bool {
+	return err == sql.ErrNoRows
+}
+
+// SkipSQLNoRowsError assing nil to original err variable
+// if its kind of no rows in result error from sql package
+func SkipSQLNoRowsError(err *error) {
+	if IsSQLNoResultsError(*err) {
+		*err = nil
+	}
 }
 
 // CreatePreparedStmts creates prepared sql statements
@@ -216,6 +229,8 @@ func CreatePreparedStmts() {
 	//--------------------
 	PrepStmts.GetBUTypeDown, err = DB.DirDB.Prepare("SELECT ClassCode,CoCode,Name,Designation FROM classes WHERE Designation LIKE ? ORDER BY Designation ASC LIMIT ?")
 	lib.Errcheck(err)
+	PrepStmts.GetBUByBUD, err = DB.DirDB.Prepare("SELECT ClassCode,CoCode,Name,Designation,Description FROM classes WHERE Designation=?")
+	lib.Errcheck(err)
 
 }
 
@@ -242,6 +257,24 @@ type BUInfo struct {
 	Designation string // bu designation
 }
 
+// GetBUByBUD searches for the Business Unit by the supplied BUD
+//
+// INPUTS
+//   s = the BUD to search for
+//
+// RETURNS
+//   the Business Unit record
+//   err Any errors encountered
+//-----------------------------------------------------------------------------
+func GetBUByBUD(s string) (Class, error) {
+	//funcname := "GetBUByBUD"
+	var p Class
+	row := PrepStmts.GetBUByBUD.QueryRow(s)
+	err := row.Scan(&p.ClassCode, &p.CoCode, &p.Name, &p.Designation, &p.Description)
+	SkipSQLNoRowsError(&err)
+	return p, err
+}
+
 // GetBUTypeDown returns a slice of session cookies
 //
 // INPUTS
@@ -252,10 +285,10 @@ type BUInfo struct {
 //  err      Any errors encountered
 //-----------------------------------------------------------------------------
 func GetBUTypeDown(s1 string, limit int) ([]BUInfo, error) {
-	funcname := "GetPeopleTypeDown"
+	funcname := "GetBUTypeDown"
 	var m []BUInfo
 	s := "%" + s1 + "%"
-	util.Console("s = %q\n", s)
+	lib.Console("s = %q\n", s)
 	rows, err := PrepStmts.GetBUTypeDown.Query(s, limit)
 	if err != nil {
 		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())
@@ -316,7 +349,7 @@ func GetPeopleTypeDown(s1 string, limit int) ([]PeopleTypeDown, error) {
 	funcname := "GetPeopleTypeDown"
 	var m []PeopleTypeDown
 	s := "%" + s1 + "%"
-	util.Console("s = %q\n", s)
+	lib.Console("s = %q\n", s)
 	rows, err := PrepStmts.GetPeopleTypeDown.Query(s, s, s, s, limit)
 	if err != nil {
 		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())

@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"phonebook/lib"
-	"rentroll/rlib"
 	"strings"
 	"time"
 )
@@ -104,6 +103,7 @@ type SvcStatusResponse struct {
 // Svcs is the table of all service handlers
 var Svcs = []ServiceHandler{
 	{"authenticate", SvcAuthenticate},
+	{"bud", SvcBUD},
 	{"butd", SvcBUTypedown},
 	{"discon", SvcDisableConsole},
 	{"encon", SvcEnableConsole},
@@ -269,11 +269,11 @@ func getGETdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 
 	w2uiPrefix := "request="
 	n := strings.Index(s, w2uiPrefix)
-	rlib.Console("n = %d\n", n)
+	lib.Console("n = %d\n", n)
 	if n > 0 {
-		rlib.Console("Will process as Typedown\n")
+		lib.Console("Will process as Typedown\n")
 		d.data = s[n+len(w2uiPrefix):]
-		rlib.Console("%s: will unmarshal: %s\n", funcname, d.data)
+		lib.Console("%s: will unmarshal: %s\n", funcname, d.data)
 		if err = json.Unmarshal([]byte(d.data), &d.wsTypeDownReq); err != nil {
 			e := fmt.Errorf("%s: Error with json.Unmarshal:  %s", funcname, err.Error())
 			SvcErrorReturn(w, e, funcname)
@@ -281,7 +281,7 @@ func getGETdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 		}
 		d.wsSearchReq.Cmd = "typedown"
 	} else {
-		rlib.Console("Will process as web search command\n")
+		lib.Console("Will process as web search command\n")
 		d.wsSearchReq.Cmd = r.URL.Query().Get("cmd")
 	}
 
@@ -324,7 +324,7 @@ func SvcWriteResponse(g interface{}, w http.ResponseWriter) {
 // where we can place debug statements as needed.
 func SvcWrite(w http.ResponseWriter, b []byte) {
 	lib.Console("first 300 chars of response: %-300.300s\n", string(b))
-	// util.Console("\nResponse Data:  %s\n\n", string(b))
+	// lib.Console("\nResponse Data:  %s\n\n", string(b))
 	w.Write(b)
 }
 
