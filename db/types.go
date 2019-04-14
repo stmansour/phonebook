@@ -288,7 +288,7 @@ func GetBUTypeDown(s1 string, limit int) ([]BUInfo, error) {
 	funcname := "GetBUTypeDown"
 	var m []BUInfo
 	s := "%" + s1 + "%"
-	lib.Console("s = %q\n", s)
+	// lib.Console("s = %q\n", s)
 	rows, err := PrepStmts.GetBUTypeDown.Query(s, limit)
 	if err != nil {
 		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())

@@ -1,4 +1,26 @@
 #!/bin/bash
+DEBUG=0
+
+#############################################################################
+# decho
+#   Description:
+#   	Use this function like echo. If DEBUG is 1 then it will echo the
+#		the output to the terminal. Otherwise it will just return without
+#       echoing anything.
+#
+#   Params:
+#		The string to echo
+#
+#	Returns:
+#
+#############################################################################
+function decho {
+	if (( ${DEBUG} == 1 )); then
+		echo
+		echo "${1}"
+	fi
+}
+
 #############################################################################
 # readConfig
 #   Description:
@@ -26,16 +48,22 @@ readConfig() {
         URLBASE="${URLBASE}/"
     fi
 
-    pushd
-    cd ~ec2-user
-    EC2USERHOME=$(pwd)
-    popd
+    pushd . >/dev/null
+    if [ -d ~ec2-user ]; then
+        cd ~ec2-user
+        EC2USERHOME=$(pwd)
+    else
+        EC2USERHOME=$(pwd)
+        echo "*** WARNING ***  home directory for ec2-user was not found"
+        echo "                 will use ${EC2USERHOME} instead"
+    fi
+    popd >/dev/null
 
-    echo "RELDIR = ${RELDIR}"
-    echo "REPOUSER = ${REPOUSER}"
-    echo "APIKEY = ${APIKEY}"
-    echo "URLBASE = ${URLBASE}"
-    echo "EC2USERHOME = ${EC2USERHOME}"
+    decho "RELDIR = ${RELDIR}"
+    decho "REPOUSER = ${REPOUSER}"
+    decho "APIKEY = ${APIKEY}"
+    decho "URLBASE = ${URLBASE}"
+    decho "EC2USERHOME = ${EC2USERHOME}"
 }
 
 #############################################################################
@@ -84,7 +112,7 @@ configure() {
         popd
     fi
     JFROG="${EC2USERHOME}/bin/jfrog"
-    echo "JFROG = ${JFROG}"
+    decho "JFROG = ${JFROG}"
 }
 
 
@@ -103,22 +131,22 @@ configure() {
 #
 #############################################################################
 GetLatestRepoRelease() {
-    echo "GetLatestRepoRelease:  looking for released ${1}"
+    decho "GetLatestRepoRelease: searching for ${1}"
     f=$(${JFROG} rt s "accord/air/release/*" | grep ${1} | awk '{print $2}' | sed 's/"//g')
-    echo "f = ${f}"
     if [ "x${f}" = "x" ]; then
-        echo "There are no product releases for ${f}"
+        echo "Latest release of ${1}:  *** ERROR *** no release found"
         exit 1
     fi
+    echo "Latest release of ${1}: ${f}"
     t=$(basename ${f})
-    echo "t = ${t}"
     cd ${RELDIR}
     cdir=$(pwd)
-    echo "calling curl in directory ${cdir}"
-    echo "curl -s -u ${REPOUSER}:${APIKEY} ${URLBASE}${f} > ../${t}"
+    decho "Current working directory: ${cdir}"
+    decho "curl -s -u ${REPOUSER}:${APIKEY} ${URLBASE}${f} > ../${t}"
     curl -s -u "${REPOUSER}:${APIKEY}" ${URLBASE}${f} > ../${t}
-    echo "After call to curl, directory contents ls .."
-    ls ..
+    decho "After call to curl, directory contents ls .."
+    tmpx=$(ls ../phonebook_*.tar.gz)
+    echo "Downlowded: ${tmpx}"
 }
 
 
@@ -143,33 +171,38 @@ if [ ${user} != "root" ]; then
     exit 1
 fi
 
-echo -n "Shutting down phonebook server."; $(./activate.sh stop) >/dev/null 2>&1
-echo -n "."
-echo -n "."; sleep 6
-echo -n "."; cd ..
-echo -n "."; rm -f phonbook*.tar*
-echo " "
+echo -n "Shutting down phonebook server: "
+if [ -f "activate.sh" ]; then
+    $(./activate.sh stop) >/dev/null 2>&1
+    sleep 6
+    echo "OK"
+else
+    echo "*** WARNING:  activate.sh was not found! Using killall instead ***"
+    killall phonebook >/dev/null 2>&1
+fi
 
-echo -n "Retrieving latest released Phonebook..."
+cd ..
+echo "Pulling latest phonebook release to directory:  ${PWD}"
+rm -f phonbook*.tar*
 GetLatestRepoRelease "phonebook"
 
-echo "Installing.."
-echo -n "."; cd ${RELDIR}/..
-echo -n "."; gunzip -f phonebook*.tar.gz
-echo -n "."; chown -R ec2-user:ec2-user rentroll
-#echo -n "."; rm -f phonebook*.tar*
-echo -n "."; cd ${RELDIR}
-echo
+echo -n "Extracting: "
+cd ${RELDIR}/..
+gunzip -f phonebook*.tar.gz
+chown -R ec2-user:ec2-user rentroll
+cd ${RELDIR}
+echo "done"
 
-# echo -n "."; updateImages
-echo -n "."; chmod u+s phonebook pbwatchdog
-echo -n "."; echo -n "starting..."
-echo -n "."; ./activate.sh -b start
-echo -n "."; sleep 2
-echo -n "."; status=$(./activate.sh ready)
+chmod u+s phonebook pbwatchdog
+echo -n "Invoking activation script: "
+stat=$(./activate.sh -b start)
+sleep 2
+status=$(./activate.sh ready)
 if [ "${status}" = "OK" ]; then
-    echo "Activation successful"
+    echo "Success!"
     rm ../phonebook*.tar
 else
-    echo "Problems activating phonebook.  Status = ${status}"
+    echo "error:  status = ${status}"
+    echo "output from ./activate.sh -b start "
+    echo "${stat}"
 fi

@@ -43,7 +43,7 @@ package: phonebook
 	mkdir -p tmp/phonebook/man/man1/
 	cp *.1 tmp/phonebook/man/man1/
 	cp config.json tmp/phonebook/
-	cp phonebook sbsetup.sh activate.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
+	cp phonebook sbsetup.sh activate.sh update.sh updatePhonebook.sh testdb.sql *.css *.html  tmp/phonebook/
 	for dir in $(DIRS); do make -C $$dir package;done
 
 accorddb:
@@ -102,7 +102,7 @@ tarzip:
 	cd ${DIST};rm -f phonebook.tar*;tar czf phonebook.tar.gz phonebook
 	cd ${DIST};if [ -f ./config.json ]; then mv ./config.json ./phonebook/config.json; fi
 
-snapshot: tarzip
+snapshot: package tarzip
 	cd ${DIST}; /usr/local/accord/bin/snapshot.sh phonebook.tar.gz
 
 release:
