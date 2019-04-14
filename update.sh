@@ -183,13 +183,13 @@ fi
 
 cd ..
 echo "Pulling latest phonebook release to directory:  ${PWD}"
-rm -f phonbook*.tar*
+rm -f phonebook*.tar*
 GetLatestRepoRelease "phonebook"
 
 echo -n "Extracting: "
 cd ${RELDIR}/..
-gunzip -f phonebook*.tar.gz
-chown -R ec2-user:ec2-user rentroll
+tar xzvf phonebook*.tar.gz
+chown -R ec2-user:ec2-user phonebook
 cd ${RELDIR}
 echo "done"
 
