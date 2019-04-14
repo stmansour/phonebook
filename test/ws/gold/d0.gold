@@ -1,4 +1,4 @@
 {
-    "message": "Error: No Business Unit with Designation CCC exists",
+    "message": "Error: Not Found: CCC",
     "status": "error"
 }

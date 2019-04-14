@@ -139,7 +139,7 @@ func getBUByBUD(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	}
 	lib.Console("a.BUD = %s, a.Name = %s\n", a.Designation, a.Name)
 	if a.ClassCode == 0 {
-		e := fmt.Errorf("No Business Unit with Designation %s exists", d.wsTypeDownReq.Search)
+		e := fmt.Errorf("Not Found: %s", d.wsTypeDownReq.Search)
 		SvcErrorReturn(w, e, funcname)
 		return
 	}
