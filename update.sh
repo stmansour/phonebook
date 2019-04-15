@@ -200,7 +200,7 @@ sleep 2
 status=$(./activate.sh ready)
 if [ "${status}" = "OK" ]; then
     echo "Success!"
-    rm ../phonebook*.tar
+    rm ../phonebook*.tar.gz
 else
     echo "error:  status = ${status}"
     echo "output from ./activate.sh -b start "
