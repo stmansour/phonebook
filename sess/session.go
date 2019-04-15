@@ -68,7 +68,7 @@ func InitSessionManager(clean, timeout time.Duration, db *sql.DB, debug bool) {
 	SessionManager.db = db
 	SessionManager.ZoneUTC, err = time.LoadLocation("UTC")
 	if err != nil {
-		lib.Ulog("InitSessionManager: error reading timezone: ", err.Error())
+		lib.Ulog("InitSessionManager: error reading timezone: %s", err.Error())
 	}
 	go SessionDispatcher()
 	go SessionCleanup()

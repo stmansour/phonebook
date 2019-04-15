@@ -120,7 +120,7 @@ CREATE TABLE people (
     CountryOfEmployment VARCHAR(25) NOT NULL DEFAULT '',
     EmergencyContactName VARCHAR(25) NOT NULL DEFAULT '',
     EmergencyContactPhone VARCHAR(25) NOT NULL DEFAULT '',
-    Status SMALLINT NOT NULL DEFAULT 0,
+    Status SMALLINT NOT NULL DEFAULT 0,                       -- 0 = inactive, 1 = active
     EligibleForRehire SMALLINT NOT NULL DEFAULT 0,
     AcceptedHealthInsurance SMALLINT NOT NULL DEFAULT 0,
     AcceptedDentalInsurance SMALLINT NOT NULL DEFAULT 0,

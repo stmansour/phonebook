@@ -182,7 +182,7 @@ else
 fi
 
 cd ..
-echo "Pulling latest phonebook release to directory:  ${PWD}"
+echo "Distribution download to:  ${PWD}"
 rm -f phonebook*.tar*
 GetLatestRepoRelease "phonebook"
 
