@@ -66,27 +66,44 @@ fi
 #          if the cookie is not found.
 #
 #  Expected Results:
-#	1. The authenticate command should pass (test a)
-#   2. The cookie should be stored in ${C} and should be found along with
-#          all the other login information. (test b)
-#   3. Test c should return "failure" as it will attempt to validate
-#          a bogus cookie value.
-#   4. Test d should return "success" as it will attempt to validate
-#          the cookie value created in test a.
-#   5. Ensure that setting FLAGS 1<<1 causes timestamp to update
+#    see comments below
 #------------------------------------------------------------------------------
 TFILES=a
 if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
 
-	echo "%7B%22user%22%3A%22bthorton%22%2C%22pass%22%3A%22Testing123%22%2C%22useragent%22%3A%22Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010_12_6)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F64.0.3282.186%20Safari%2F537.36%22%2C%22remoteaddr%22%3A%22172.31.63.140%3A7497%22%7D" > request
+	#------------------------------------
+	# login kwalsh - should succeed
+	#------------------------------------
+	encodeRequest '{"user":"kwalsh","pass":"Testing123","useragent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36","remoteaddr":"172.31.63.140:7497"}' > request
 	doPlainPOST "http://localhost:8250/v1/authenticate" "request" "${TFILES}0"  "WebService--Authenticate"
+
+	#-----------------------------------------------
+	# validate the cookie that was returned...
+	#-----------------------------------------------
 	C=$(curl -s -X POST http://localhost:8250/v1/authenticate -H "Content-Type: application/json" -d @request | python -m json.tool | grep "Token" | awk '{print $2}' | sed 's/[,"]//g')
 	echo "%7B%22cookieval%22%3A%22${C}%22%2C%22flags%22%3A0%2C%22useragent%22%3A%22curl%22%2C%22ip%22%3A%221.2.3.4%22%7D" > request
 	doPlainPOST "http://localhost:8250/v1/validatecookie" "request" "${TFILES}1"  "WebService--ValidateCookie-FLAGS=0"
+
+	#--------------------------------------------------------------
+	# provide an invalid cookie and make sure things fail...
+	#--------------------------------------------------------------
 	echo "%7B%22cookieval%22%3A%22deadbeefdeadbeef%22%2C%22flags%22%3A1%2C%22useragent%22%3A%22curl%22%2C%22ip%22%3A%221.2.3.4%22%7D" > request
 	doPlainPOST "http://localhost:8250/v1/validatecookie" "request" "${TFILES}2"  "WebService--ValidateCookie-FLAGS=1-fail"
+
+	#--------------------------------------------------------------
+	# validate that the good cookie still works...
+	#--------------------------------------------------------------
 	echo "%7B%22cookieval%22%3A%22${C}%22%2C%22flags%22%3A1%2C%22useragent%22%3A%22curl%22%2C%22ip%22%3A%221.2.3.4%22%7D" > request
 	doPlainPOST "http://localhost:8250/v1/validatecookie" "request" "${TFILES}3"  "WebService--ValidateCookie-FLAGS=0-succeed"
+
+	#------------------------------------------------------------------------
+	# Attempt to login a user who is listed as inactive in Directory.  Even
+	# though the username and password are correct, it should fail with an
+	# indication that the account is inactive.
+	#------------------------------------------------------------------------
+	encodeRequest '{"user":"bthorton","pass":"Testing123","useragent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36","remoteaddr":"172.31.63.140:7497"}' > request
+	doPlainPOST "http://localhost:8250/v1/authenticate" "request" "${TFILES}4"  "WebService--AuthenticateAttemptOnInactiveAccount"
+
 fi
 
 #------------------------------------------------------------------------------
