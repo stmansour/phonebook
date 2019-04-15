@@ -188,7 +188,7 @@ GetLatestRepoRelease "phonebook"
 
 echo -n "Extracting: "
 cd ${RELDIR}/..
-tar xzvf phonebook*.tar.gz
+tar xzf phonebook*.tar.gz
 chown -R ec2-user:ec2-user phonebook
 cd ${RELDIR}
 echo "done"
