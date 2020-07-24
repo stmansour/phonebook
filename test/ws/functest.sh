@@ -170,7 +170,7 @@ fi
 #  Scenario:
 #
 #  Request a known person from the db.  Request an unknown person to make sure
-#  we get an error.
+#  we get an error. Request to an unknown business should fail.
 #
 #  Expected Results:
 #   The known person should come back with all the info that is safe
@@ -182,6 +182,8 @@ STEP=0
 if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
 	encodeRequest '{"cmd":"get","selected":[],"limit":0,"offset":0}'
     dojsonPOST "http://localhost:8250/v1/people/1/9" "request" "${TFILES}${STEP}"  "get-person-9-biz-1"
+	encodeRequest '{"cmd":"get","selected":[],"limit":0,"offset":0}'
+    dojsonPOST "http://localhost:8250/v1/people/1/999" "request" "${TFILES}${STEP}"  "get-person-999-biz-1"
 fi
 
 echo "Shutting down phonebook service..."

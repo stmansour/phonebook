@@ -132,6 +132,11 @@ func getPerson(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		SvcErrorReturn(w, err, funcname)
 		return
 	}
+	if a.UID == 0 {
+		err = fmt.Errorf("User %d not found", d.ID)
+		SvcErrorReturn(w, err, funcname)
+		return
+	}
 	g.Record = a
 	g.Status = "success"
 	lib.Console("g.status = %s, g.record - %#v\n", g.Status, g.Record)
