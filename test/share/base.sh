@@ -822,7 +822,7 @@ doPlainPOST () {
 ########################################
 dojsonPOST () {
 	TESTCOUNT=$((TESTCOUNT + 1))
-	STEP=${TESTCOUNT}
+	((STEP++))
 	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} $3 $4
 	CMD="curl -s -X POST ${1} -H \"Content-Type: application/json\" -d @${2}"
 	${CMD} | python -m json.tool >${3} 2>>${LOGFILE}
