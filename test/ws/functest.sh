@@ -38,11 +38,13 @@ CreateDirDB() {
 #---------------------------------------------------------------
 #  Use the testdb for these tests...
 #---------------------------------------------------------------
+rm -f pbconsole.log   # link to server console messages
 echo "Create new database..."
 mysql --no-defaults accord < dbws.sql
 
 echo "STARTING PHONEBOOK SERVER"
 startPhonebook
+ln -s ${BINDIR}/pbconsole.log
 
 # Get version
 #--------------------------
@@ -160,7 +162,30 @@ if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFI
 	dojsonGET "curl http://localhost:8250/v1/bud?request%3D%7B%22search%22%3A%22FOG%22%7D" "${TFILES}1" "WebService--BUDSearch"
 fi
 
+#------------------------------------------------------------------------------
+#  TEST e
+#
+#  Validate a request for a person
+#
+#  Scenario:
+#
+#  Request a known person from the db.  Request an unknown person to make sure
+#  we get an error.
+#
+#  Expected Results:
+#   The known person should come back with all the info that is safe
+#   The unknown person should generate an error
+#
+#------------------------------------------------------------------------------
+TFILES="e"
+STEP=0
+if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	encodeRequest '{"cmd":"get","selected":[],"limit":0,"offset":0}'
+    dojsonPOST "http://localhost:8250/v1/people/1/9" "request" "${TFILES}${STEP}"  "get-person-9-biz-1"
+fi
+
 echo "Shutting down phonebook service..."
 stopPhonebook
+
 
 logcheck

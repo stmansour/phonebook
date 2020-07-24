@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"phonebook/lib"
+	"rentroll/rlib"
 	"strings"
 	"time"
 )
@@ -49,6 +50,24 @@ type WebGridSearchRequest struct {
 	RentableName  string      `json:"RentableName"`  // RECEIPT-ONLY CLIENT EXTENSION - to be removed when Receipt-Only client goes away
 }
 
+// WebGridSearchRequestJSON is a struct suitable for describing a webservice operation.
+// It is the wire format data. It will be merged into another object where JSONDate values
+// are converted to time.Time
+type WebGridSearchRequestJSON struct {
+	Cmd           string        `json:"cmd"`           // get, save, delete
+	Limit         int           `json:"limit"`         // max number to return
+	Offset        int           `json:"offset"`        // solution set offset
+	Selected      []int         `json:"selected"`      // selected rows
+	SearchLogic   string        `json:"searchLogic"`   // OR | AND
+	Search        []GenSearch   `json:"search"`        // what fields and what values
+	Sort          []ColSort     `json:"sort"`          // sort criteria
+	SearchDtStart rlib.JSONDate `json:"searchDtStart"` // for time-sensitive searches
+	SearchDtStop  rlib.JSONDate `json:"searchDtStop"`  // for time-sensitive searches
+	Bool1         bool          `json:"Bool1"`         // a general purpose bool flag for postData from client
+	Client        string        `json:"client"`        // name of requesting client
+	RentableName  string        `json:"RentableName"`  // RECEIPT-ONLY CLIENT EXTENSION - to be removed when Receipt-Only client goes away
+}
+
 // WebTypeDownRequest is a search call made by a client while the user is
 // typing in something to search for and the expecation is that the solution
 // set will be sent back in realtime to aid the user.  Search is a string
@@ -67,6 +86,8 @@ type ServiceData struct {
 	Service       string               // the service requested (position 1)
 	DetVal        string               // value of 3rd path element if present (it is not always a number)
 	UID           int64                // user id of requester
+	ID            int64                // ID associated with the request -- example  /v1/people/123 means get info about person with UID 123
+	BID           int64                // business id
 	pathElements  []string             // the parts of the uri
 	data          string               // the raw unparsed data
 	wsSearchReq   WebGridSearchRequest // what did the search requester ask for
@@ -108,6 +129,7 @@ var Svcs = []ServiceHandler{
 	{"discon", SvcDisableConsole},
 	{"encon", SvcEnableConsole},
 	{"logoff", SvcLogoff},
+	{"people", SvcPeople},
 	{"peopletd", SvcPeopleTypeDown},
 	{"resetpw", SvcResetPWHandler},
 	{"validatecookie", SvcValidateCookie},
@@ -118,6 +140,39 @@ var Svcs = []ServiceHandler{
 //-----------------------------------------------------------------------------
 func InitServices(db *sql.DB) {
 	SvcCtx.db = db
+}
+
+// initServiceData reads the fields that are common in all uris and loads them
+// into the approptiate slots in d (ServiceData)
+//
+// pathElements:  0   1            2     3
+//               /v1/{subservice}/{BUI}/{ID} into an array of strings
+// BID is common to nearly all commands
+//-----------------------------------------------------------------------------
+func initServiceData(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
+	var err error
+	ss := strings.Split(r.RequestURI[1:], "?") // it could be GET command
+	d.pathElements = strings.Split(ss[0], "/")
+	d.Service = d.pathElements[1]
+	if len(d.pathElements) >= 3 {
+		d.BID, err = getBIDfromBUI(d.pathElements[2])
+		if err != nil {
+			return fmt.Errorf("Could not determine business from %s", d.pathElements[2])
+		}
+		if d.BID < 0 {
+			return fmt.Errorf("Invalid business id: %s", d.pathElements[2])
+		}
+	}
+	if len(d.pathElements) >= 4 {
+		d.DetVal = d.pathElements[3]
+		d.ID, err = lib.IntFromString(d.DetVal, "bad request integer value") // assume it's a BID
+		if err != nil {
+			d.ID = 0
+		}
+	}
+
+	showRequestHeaders(r)
+	return nil
 }
 
 // V1ServiceHandler is the main dispatch point for WEB SERVICE requests
@@ -140,22 +195,17 @@ func V1ServiceHandler(w http.ResponseWriter, r *http.Request) {
 	funcname := "V1ServiceHandler"
 	svcDebugTxn(funcname, r)
 	var d ServiceData
+	var err error
 
 	//-----------------------------------------------------------------------
 	// pathElements:  0   1
-	//               /v1/{subservice}/
-	// ex:           /v1/authenticate/
+	//               /v1/{command}/bid/id
+	//
+	// ex:           /v1/authenticate/bid
+	//               /v1/people/1/201
 	//-----------------------------------------------------------------------
 	lib.Console("RequestURI = %s\n", r.RequestURI)
-	ss := strings.Split(r.RequestURI[1:], "?") // it could be GET command
-	d.pathElements = strings.Split(ss[0], "/")
-	for i := 0; i < len(d.pathElements); i++ {
-		lib.Console("%d. %s\n", i, d.pathElements[i])
-	}
-	d.Service = d.pathElements[1]
-
-	svcDebugURL(r, &d)
-	showRequestHeaders(r)
+	err = initServiceData(w, r, &d)
 
 	switch r.Method {
 	case "POST":
@@ -181,12 +231,36 @@ func V1ServiceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if !found {
 		lib.Console("**** YIPES! **** %s - Handler not found\n", r.RequestURI)
-		e := fmt.Errorf("Service not recognized: %s", d.Service)
-		lib.Console("***ERROR IN URL***  %s", e.Error())
-		SvcErrorReturn(w, e, funcname)
+		err = fmt.Errorf("Service not recognized: %s", d.Service)
+		lib.Console("***ERROR IN URL***  %s", err.Error())
+		SvcErrorReturn(w, err, funcname)
 		return
 	}
 	svcDebugTxnEnd()
+}
+
+// getBIDfromBUI reads the business field from the uri and converts it as needed
+//------------------------------------------------------------------------------
+func getBIDfromBUI(s string) (int64, error) {
+	s = strings.TrimSpace(s)
+	if len(s) == 0 {
+		return int64(0), nil
+	}
+	d, err := rlib.IntFromString(s, "bad request integer value") // assume it's a BID
+	if err != nil {
+		err = nil // clear the slate
+
+		// need to do a db lookup for the BUD to determine the BID
+		// var ok bool // OK, let's see if it's a BUD
+		// d, ok = rlib.RRdb.BUDlist[s]
+		// if !ok {
+		// 	d = 0
+		// 	err = fmt.Errorf("Could not find Business for %q", s)
+		// }
+		d = 0
+		err = fmt.Errorf("Could not find Business for %q", s)
+	}
+	return d, err
 }
 
 func getPOSTdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
@@ -194,6 +268,7 @@ func getPOSTdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 	var err error
 
 	const _1MB = (1 << 20) * 1024
+	lib.Console("Entered %s\n", funcname)
 
 	// if content type is form data then
 	ct := r.Header.Get("Content-Type")
@@ -252,11 +327,22 @@ func getPOSTdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 
 	u = strings.TrimPrefix(u, "request=") // strip off "request=" if it is present
 	d.data = u
+	var wjs WebGridSearchRequestJSON
+	err = json.Unmarshal([]byte(u), &wjs)
+	if err != nil {
+		e := fmt.Errorf("%s: Error with json.Unmarshal:  %s", funcname, err.Error())
+		SvcErrorReturn(w, e, funcname)
+		return e
+	}
+	rlib.MigrateStructVals(&wjs, &d.wsSearchReq)
+	rlib.Console("Client = %s\n", d.wsSearchReq.Client)
+
 	return err
 }
 
 func getGETdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 	funcname := "getGETdata"
+	lib.Console("Entered %s\n", funcname)
 	s, err := url.QueryUnescape(strings.TrimSpace(r.URL.String()))
 	if err != nil {
 		e := fmt.Errorf("%s: Error with url.QueryUnescape:  %s", funcname, err.Error())
@@ -286,67 +372,4 @@ func getGETdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 	}
 
 	return nil
-}
-
-// SvcSuccessReturn sends a success message to the requester
-func SvcSuccessReturn(w http.ResponseWriter) {
-	g := SvcSuccess{Status: "success"}
-	SvcWriteResponse(&g, w)
-}
-
-// SvcErrorReturn formats an error return to the grid widget and sends it
-func SvcErrorReturn(w http.ResponseWriter, err error, funcname string) {
-	// lib.Console("<Function>: %s | <Error>: %s\n", funcname, err.Error())
-	lib.Console("%s: %s\n", funcname, err.Error())
-	var e SvcError
-	e.Status = "error"
-	e.Message = fmt.Sprintf("Error: %s", err.Error())
-	w.Header().Set("Content-Type", "application/json")
-	b, _ := json.Marshal(e)
-	SvcWrite(w, b)
-}
-
-// SvcWriteResponse finishes the transaction with the W2UI client
-func SvcWriteResponse(g interface{}, w http.ResponseWriter) {
-	funcname := "SvcWriteResponse"
-	w.Header().Set("Content-Type", "application/json")
-	b, err := json.Marshal(g)
-	if err != nil {
-		e := fmt.Errorf("Error marshaling json data: %s", err.Error())
-		lib.Ulog("%s: %s\n", funcname, err.Error())
-		SvcErrorReturn(w, e, funcname)
-		return
-	}
-	SvcWrite(w, b)
-}
-
-// SvcWrite is a general write routine for service calls... it is a bottleneck
-// where we can place debug statements as needed.
-func SvcWrite(w http.ResponseWriter, b []byte) {
-	lib.Console("first 300 chars of response: %-300.300s\n", string(b))
-	// lib.Console("\nResponse Data:  %s\n\n", string(b))
-	w.Write(b)
-}
-
-// SvcWriteSuccessResponse is used to complete a successful write operation on w2ui form save requests.
-func SvcWriteSuccessResponse(w http.ResponseWriter) {
-	var g = SvcStatusResponse{Status: "success"}
-	w.Header().Set("Content-Type", "application/json")
-	SvcWriteResponse(&g, w)
-}
-
-// SvcHandlerVersion returns the server version number
-//  @Title Verrsion
-//  @URL /v1/version
-//  @Method  POST or GET
-//  @Synopsis Get the current server version
-//  @Description Returns the server build number appended to the major/minor
-//  @Description version number.
-//  @Input
-//  @Response version number
-// wsdoc }
-func SvcHandlerVersion(w http.ResponseWriter, r *http.Request, d *ServiceData) {
-	lib.Ulog("Entered SvcHandlerVersion\n")
-	lib.Ulog("lib.GetVersionNo() returns %s\n", lib.GetVersionNo())
-	fmt.Fprintf(w, "%s", lib.GetVersionNo())
 }

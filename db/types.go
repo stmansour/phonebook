@@ -174,6 +174,7 @@ var PrepStmts struct {
 	LoginInfo                 *sql.Stmt
 	GetImagePath              *sql.Stmt
 	GetPeopleTypeDown         *sql.Stmt
+	GetPerson                 *sql.Stmt
 	GetBUTypeDown             *sql.Stmt
 	GetBUByBUD                *sql.Stmt
 }
@@ -222,6 +223,8 @@ func CreatePreparedStmts() {
 	// People
 	//-----------------------
 	PrepStmts.GetPeopleTypeDown, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE FirstName LIKE ? OR MiddleName LIKE ? OR LastName LIKE ? or PreferredName LIKE ? LIMIT ?")
+	lib.Errcheck(err)
+	PrepStmts.GetPerson, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE UID=?")
 	lib.Errcheck(err)
 
 	//--------------------
@@ -334,46 +337,6 @@ func GetSessionCookie(cookie string) (SessionCookie, error) {
 		}
 	}
 	return c, nil
-}
-
-// GetPeopleTypeDown returns a slice of session cookies
-//
-// INPUTS
-//
-// RETURNS
-//  []SessionCookie - a slice with all the rows in the sessions table.
-//
-//  err      Any errors encountered
-//-----------------------------------------------------------------------------
-func GetPeopleTypeDown(s1 string, limit int) ([]PeopleTypeDown, error) {
-	funcname := "GetPeopleTypeDown"
-	var m []PeopleTypeDown
-	s := "%" + s1 + "%"
-	lib.Console("s = %q\n", s)
-	rows, err := PrepStmts.GetPeopleTypeDown.Query(s, s, s, s, limit)
-	if err != nil {
-		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())
-		return m, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var p PeopleTypeDown
-		var first, middle, last, preferred string
-		err := rows.Scan(&p.UID, &first, &middle, &last, &preferred)
-		if err != nil {
-			lib.Ulog("%s: error getting row:  %v\n", funcname, err)
-			return m, err
-		}
-		fn := first
-		if len(first) > 0 {
-			fn = preferred
-		}
-		p.Name = fn + middle + last
-		m = append(m, p)
-	}
-
-	return m, nil
 }
 
 // GetAllSessionCookies returns a slice of session cookies

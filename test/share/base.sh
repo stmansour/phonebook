@@ -900,7 +900,9 @@ dojsonGET () {
 	TESTCOUNT=$((TESTCOUNT + 1))
 	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} ${2} ${3}
 	CMD="curl -s ${1}"
-	echo "dojsonGET: Executing command:  ${CMD}"
+	if [ ${SHOWCOMMAND} = "1" ]; then
+		@echo "dojsonGET: Executing command:  ${CMD}"
+	fi
 	${CMD} | python -m json.tool >${2} 2>>${LOGFILE}
 
 	checkPause
