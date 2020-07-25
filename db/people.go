@@ -10,7 +10,6 @@ import (
 //-------------------------------------------------------------------------
 type WSPerson struct {
 	UID           int64
-	BID           int64
 	FirstName     string
 	MiddleName    string
 	LastName      string
