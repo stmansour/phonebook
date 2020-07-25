@@ -30,7 +30,7 @@ type PeopleTypedownResponse struct {
 // get person request
 type GetPersonResponse struct {
 	Status string      `json:"status"` // typically "success"
-	Record db.WSPerson `json:"recid"`  // set to id of newly inserted record
+	Record db.WSPerson `json:"record"` // set to id of newly inserted record
 }
 
 // SvcPeopleTypeDown handles typedown requests for People.  It returns
