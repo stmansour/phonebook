@@ -1,0 +1,27 @@
+{
+    "records": [
+        {
+            "FirstName": "kena",
+            "LastName": "walsh",
+            "MiddleName": "",
+            "PreferredName": "maria",
+            "UID": 3
+        },
+        {
+            "FirstName": "lamont",
+            "LastName": "tate",
+            "MiddleName": "",
+            "PreferredName": "josef",
+            "UID": 7
+        },
+        {
+            "FirstName": "claris",
+            "LastName": "england",
+            "MiddleName": "",
+            "PreferredName": "caron",
+            "UID": 9
+        }
+    ],
+    "status": "success",
+    "total": 3
+}

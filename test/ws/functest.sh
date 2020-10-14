@@ -186,6 +186,30 @@ if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFI
     dojsonPOST "http://localhost:8250/v1/people/1/999" "request" "${TFILES}${STEP}"  "get-person-999-biz-1"
 fi
 
+#------------------------------------------------------------------------------
+#  TEST f
+#
+#  Validate a request for a list of persons
+#
+#  Scenario:
+#
+#  Request a list of known persons from the db.  Request an unknown person to make sure
+#  we get an error. Request to an unknown business should fail.
+#
+#  Expected Results:
+#   The known person list should come back with all the info that is safe
+#   The unknown person should generate an error
+#
+#------------------------------------------------------------------------------
+TFILES="f"
+STEP=0
+if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	encodeRequest '{"cmd":"getlist","UIDs":[3,7,9]}'
+    dojsonPOST "http://localhost:8250/v1/people/1" "request" "${TFILES}${STEP}"  "get-personlist-biz-1"
+	encodeRequest '{"cmd":"getlist","UIDs":[3,7,9,8888]}'
+    dojsonPOST "http://localhost:8250/v1/people/1" "request" "${TFILES}${STEP}"  "get-personlist-error-biz-1"
+fi
+
 echo "Shutting down phonebook service..."
 stopPhonebook
 

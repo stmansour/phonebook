@@ -1,6 +1,8 @@
 package ws
 
 import (
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"phonebook/db"
@@ -31,6 +33,19 @@ type PeopleTypedownResponse struct {
 type GetPersonResponse struct {
 	Status string      `json:"status"` // typically "success"
 	Record db.WSPerson `json:"record"` // set to id of newly inserted record
+}
+
+// GetPersonList describes the POST request for getting a list of people
+type GetPersonList struct {
+	Cmd  string `json:"cmd"`
+	UIDs []int
+}
+
+// GetPersonListResponse describes the POST request for getting a list of people
+type GetPersonListResponse struct {
+	Status  string        `json:"status"`
+	Total   int64         `json:"total"`
+	Records []db.WSPerson `json:"records"`
 }
 
 // SvcPeopleTypeDown handles typedown requests for People.  It returns
@@ -82,17 +97,18 @@ func SvcPeople(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	const funcname = "SvcPeople"
 	var err error
 	lib.Console("Entered %s\n", funcname)
-
-	if d.ID, err = SvcExtractIDFromURI(r.RequestURI, "ID", 3, w); err != nil {
-		SvcErrorReturn(w, err, funcname)
-		return
-	}
-
-	lib.Console("Request: %s:  BID = %d,  ID = %d\n", d.wsSearchReq.Cmd, d.BID, d.ID)
+	// lib.Console("Request: %s:  BID = %d,  ID = %d\n", d.wsSearchReq.Cmd, d.BID, d.ID)
 
 	switch d.wsSearchReq.Cmd {
 	case "get":
+		if d.ID, err = SvcExtractIDFromURI(r.RequestURI, "ID", 3, w); err != nil {
+			SvcErrorReturn(w, err, funcname)
+			return
+		}
 		getPerson(w, r, d)
+		break
+	case "getlist":
+		getPersonList(w, r, d)
 		break
 
 	// case "save":
@@ -140,5 +156,67 @@ func getPerson(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	g.Record = a
 	g.Status = "success"
 	lib.Console("g.status = %s, g.record - %#v\n", g.Status, g.Record)
+	SvcWriteResponse(&g, w)
+}
+
+// getPersonList returns the requested Person
+// wsdoc {
+//  @Title  Get Person
+//	@URL /v1/people/:BUI
+//  @Method  getlist
+//	@Synopsis Get information on a Person
+//  @Description  Return all fields for Person :UID
+//	@Input WebGridSearchRequest
+//  @Response GetPersonResponse
+// wsdoc }
+//-----------------------------------------------------------------------------
+func getPersonList(w http.ResponseWriter, r *http.Request, d *ServiceData) {
+	const funcname = "getPersonList"
+	var g GetPersonListResponse
+	var err error
+	var rows *sql.Rows
+
+	lib.Console("entered %s\n", funcname)
+
+	var pl GetPersonList
+	err = json.Unmarshal([]byte(d.data), &pl)
+	if err != nil {
+		e := fmt.Errorf("%s: Error with json.Unmarshal:  %s", funcname, err.Error())
+		SvcErrorReturn(w, e, funcname)
+		return
+	}
+
+	q := "SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE UID in ("
+	l := len(pl.UIDs)
+	for i := 0; i < l; i++ {
+		q += fmt.Sprintf("%d", pl.UIDs[i])
+		if i+1 < l {
+			q += ","
+		}
+	}
+	q += ")"
+	lib.Console("query = %s\n", q)
+
+	if rows, err = db.DB.DirDB.Query(q); err != nil {
+		SvcErrorReturn(w, err, funcname)
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var p db.WSPerson
+		if err = rows.Scan(&p.UID, &p.FirstName, &p.MiddleName, &p.LastName, &p.PreferredName); err != nil {
+			SvcErrorReturn(w, err, funcname)
+			return
+		}
+		g.Records = append(g.Records, p)
+	}
+	// if len(g.Records) != len(pl.UIDs) {
+	// 	err = fmt.Errorf("One or more UIDs in the request were not found")
+	// 	SvcErrorReturn(w, err, funcname)
+	// }
+	g.Status = "success"
+	g.Total = int64(len(g.Records))
+	lib.Console("g.status = %s, g.total - %d\n", g.Status, g.Total)
 	SvcWriteResponse(&g, w)
 }
