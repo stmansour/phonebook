@@ -30,6 +30,7 @@ func GetPeopleTypeDown(s1 string, limit int) ([]PeopleTypeDown, error) {
 	var m []PeopleTypeDown
 	s := "%" + s1 + "%"
 	lib.Console("s = %q\n", s)
+
 	rows, err := PrepStmts.GetPeopleTypeDown.Query(s, s, s, s, limit)
 	if err != nil {
 		lib.Ulog("%s: error getting rows: %s\n", funcname, err.Error())
@@ -40,6 +41,7 @@ func GetPeopleTypeDown(s1 string, limit int) ([]PeopleTypeDown, error) {
 	for rows.Next() {
 		var p PeopleTypeDown
 		var first, middle, last, preferred string
+		// SELECT UID,FirstName,MiddleName,LastName,PreferredName
 		err := rows.Scan(&p.UID, &first, &middle, &last, &preferred)
 		if err != nil {
 			lib.Ulog("%s: error getting row:  %v\n", funcname, err)
@@ -49,7 +51,11 @@ func GetPeopleTypeDown(s1 string, limit int) ([]PeopleTypeDown, error) {
 		if len(first) > 0 {
 			fn = preferred
 		}
-		p.Name = fn + middle + last
+		p.Name = fn + " "
+		if len(middle) > 0 {
+			p.Name += middle + " "
+		}
+		p.Name += last
 		m = append(m, p)
 	}
 
