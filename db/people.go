@@ -57,6 +57,7 @@ func GetPeopleTypeDown(s1 string, limit int) ([]PeopleTypeDown, error) {
 		}
 		p.Name += last
 		m = append(m, p)
+		lib.Console("UID=%d, FirstName=%q, MiddleName=%q, LastName=%q PreferredName=%q\n", p.UID, first, middle, last, preferred)
 	}
 
 	return m, nil
