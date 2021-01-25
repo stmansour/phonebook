@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"path/filepath"
-	"phonebook/ui"
+	"phonebook/db"
 )
 
-func getCompanyInfo(cocode int, c *company) {
+func getCompanyInfo(cocode int64, c *company) {
 	rows, err := App.prepstmt.companyInfo.Query(cocode)
 	errcheck(err)
 	defer rows.Close()
@@ -16,7 +16,7 @@ func getCompanyInfo(cocode int, c *company) {
 	errcheck(rows.Err())
 }
 
-func getJobTitle(JobCode int) string {
+func getJobTitle(JobCode int64) string {
 	if JobCode > 0 {
 		var JobTitle string
 		rows, err := App.db.Query("select title from jobtitles where jobcode=?", JobCode)
@@ -31,7 +31,7 @@ func getJobTitle(JobCode int) string {
 	return "Unknown"
 }
 
-func getNameFromUID(uid int) string {
+func getNameFromUID(uid int64) string {
 	var FirstName string
 	var LastName string
 	var name string
@@ -46,7 +46,7 @@ func getNameFromUID(uid int) string {
 	return name
 }
 
-func getDepartmentFromDeptCode(deptcode int) string {
+func getDepartmentFromDeptCode(deptcode int64) string {
 	var name string
 	rows, err := App.db.Query("select name from departments where deptcode=?", deptcode)
 	errcheck(err)
@@ -58,7 +58,7 @@ func getDepartmentFromDeptCode(deptcode int) string {
 	return name
 }
 
-func getReports(uid int, d *personDetail) {
+func getReports(uid int64, d *personDetail) {
 	s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
 	rows, err := App.db.Query(s)
 	errcheck(err)
@@ -71,7 +71,7 @@ func getReports(uid int, d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func getImageFilename(uid int) string {
+func getImageFilename(uid int64) string {
 	pat := fmt.Sprintf("pictures/%d.*", uid)
 	matches, err := filepath.Glob(pat)
 	if err != nil {
@@ -89,9 +89,9 @@ func getImageFilename(uid int) string {
 //  to get detailed person information on a particular user
 //  returns 0 if success, err number otherwise
 //===========================================================
-func getPersonDetail(d *personDetail, uid int) int {
+func getPersonDetail(d *personDetail, uid int64) int64 {
 	//d.Image = getImageFilename(uid)
-	d.Image = ui.GetImageLocation(uid)
+	d.Image = db.GetImageLocation(uid)
 	err := App.db.QueryRow("select lastname,firstname,preferredname,jobcode,primaryemail,"+
 		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
 		"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
@@ -113,7 +113,7 @@ func getCompensations(d *personDetail) {
 	rows, err := App.db.Query("select type from compensation where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()
-	var c int
+	var c int64
 	for rows.Next() {
 		errcheck(rows.Scan(&c))
 		d.Comps = append(d.Comps, c)
@@ -134,7 +134,7 @@ func getCompensationStr(d *personDetail) {
 
 func initMyComps(d *personDetail) {
 	d.MyComps = make([]myComp, 0)
-	for i := CTUNSET + 1; i < CTEND; i++ {
+	for i := int64(CTUNSET) + 1; i < int64(CTEND); i++ {
 		var c myComp
 		c.CompCode = i
 		c.Name = compensationTypeToString(i)
@@ -159,7 +159,7 @@ func getDeductions(d *personDetail) {
 	rows, err := App.db.Query("select deduction from deductions where uid=?", d.UID)
 	errcheck(err)
 	defer rows.Close()
-	var c int
+	var c int64
 	for rows.Next() {
 		errcheck(rows.Scan(&c))
 		d.Deductions = append(d.Deductions, c)

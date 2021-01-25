@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/db"
-	"phonebook/sess"
 )
 
 func searchClassHandler(w http.ResponseWriter, r *http.Request) {
 	var s string
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {

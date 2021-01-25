@@ -1,9 +1,8 @@
-package sess
+package db
 
 import (
 	"crypto/md5"
 	"fmt"
-	"phonebook/db"
 	"phonebook/lib"
 	"time"
 )
@@ -29,9 +28,9 @@ var SessionCookieName = string("air")
 // RETURNS
 //  string     - a unique key identifier for the user
 //-----------------------------------------------------------------------------
-func GenerateSessionCookie(UID int64, username, useragent, remoteaddr string) db.SessionCookie {
+func GenerateSessionCookie(UID int64, username, useragent, remoteaddr string) SessionCookie {
 	lib.Console("Entered GenerateSessionCookie:  ua = %s, ip = %s\n", useragent, remoteaddr)
-	var c db.SessionCookie
+	var c SessionCookie
 	key := username + useragent + remoteaddr
 	c.Cookie = fmt.Sprintf("%x", md5.Sum([]byte(key)))
 	c.UID = UID
@@ -52,11 +51,11 @@ func GenerateSessionCookie(UID int64, username, useragent, remoteaddr string) db
 // RETURNS
 //  error       - any errors encountered, or nil if no errors
 //-----------------------------------------------------------------------------
-func GetSessionCookie(s string) (db.SessionCookie, error) {
-	return db.GetSessionCookie(s)
+func GetSessionCookie(s string) (SessionCookie, error) {
+	return GetSessionCookieDB(s)
 }
 
-// InsertSessionCookie - add a new cookie to the session db table
+// InsertSessionCookieDB - add a new cookie to the session db table
 //
 // INPUTS
 //  s           - the session containing the cookie
@@ -64,11 +63,11 @@ func GetSessionCookie(s string) (db.SessionCookie, error) {
 // RETURNS
 //  error       - any errors encountered, or nil if no errors
 //-----------------------------------------------------------------------------
-func InsertSessionCookie(s *Session) error {
-	return db.InsertSessionCookie(s.UID, s.Username, s.Token, &s.Expire, s.UserAgent, s.IP)
+func InsertSessionCookieDB(s *Session) error {
+	return InsertSessionCookie(s.UID, s.Username, s.Token, &s.Expire, s.UserAgent, s.IP)
 }
 
-// UpdateSessionCookie - update the expire time of an existing cookie. It
+// UpdateSessionCookieDB - update the expire time of an existing cookie. It
 // is assumed that the expire time in the session is correct, that is the
 // value that will be written to the database.
 //
@@ -78,13 +77,13 @@ func InsertSessionCookie(s *Session) error {
 // RETURNS
 //  error       - any errors encountered, or nil if no errors
 //-----------------------------------------------------------------------------
-func UpdateSessionCookie(s *Session) error {
+func UpdateSessionCookieDB(s *Session) error {
 	lib.Console("Entered UpdateSessionCookie: token = %s, Expire = %v\n", s.Token, s.Expire)
-	err := db.UpdateSessionCookie(s.Token, &s.Expire)
+	err := UpdateSessionCookie(s.Token, &s.Expire)
 	return err
 }
 
-// DeleteSessionCookie - remove the cookie from the session list. This is called
+// DeleteSessionCookieDB - remove the cookie from the session list. This is called
 //                when the user explicitly logs out rather
 //
 // INPUTS
@@ -93,7 +92,7 @@ func UpdateSessionCookie(s *Session) error {
 // RETURNS
 //  error       - any errors encountered, or nil if no errors
 //-----------------------------------------------------------------------------
-func DeleteSessionCookie(s *Session) error {
+func DeleteSessionCookieDB(s *Session) error {
 	return nil
 }
 
@@ -104,7 +103,7 @@ func ExpiredCookieCleaner() {
 		select {
 		case <-time.After(1 * time.Minute):
 			now := time.Now()
-			_, err := db.PrepStmts.DeleteExpiredCookies.Exec(now)
+			_, err := PrepStmts.DeleteExpiredCookies.Exec(now)
 			if err != nil {
 				lib.Ulog("Error removing expired coockies = %s\n", err.Error())
 			}
@@ -122,7 +121,7 @@ func ExpiredCookieCleaner() {
 //-----------------------------------------------------------------------------
 func DumpSessionCookies() error {
 	fmt.Printf("DB SESSIONS COOKIE TABLE\n")
-	m, err := db.GetAllSessionCookies()
+	m, err := GetAllSessionCookies()
 	if err != nil {
 		return err
 	}

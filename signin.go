@@ -3,15 +3,16 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"phonebook/db"
 	"phonebook/lib"
-	"phonebook/sess"
+	"phonebook/ws"
 	"strconv"
 	"text/template"
 )
 
 // ErrMsgs are a list of string we can convey to the UI to indicate when an error occurs
 var ErrMsgs = []string{
-	"", // 0
+	"",                               // 0
 	"Username or password not found", // 1
 	"System error",                   // 2
 }
@@ -21,11 +22,11 @@ var ErrMsgs = []string{
 func signinHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	// lib.Console("Entered signinHandler.  Looking for cookie named: %s\n", sess.SessionCookieName)
-	cookie, _ := r.Cookie(sess.SessionCookieName)
+	// lib.Console("Entered signinHandler.  Looking for cookie named: %s\n", db.SessionCookieName)
+	cookie, _ := r.Cookie(db.SessionCookieName)
 	if nil != cookie {
-		// lib.Console("Cookie named %s found.  value = %s\n", sess.SessionCookieName, cookie.Value)
-		s, ok := sess.SessionGet(cookie.Value)
+		// lib.Console("Cookie named %s found.  value = %s\n", db.SessionCookieName, cookie.Value)
+		s, ok := db.SessionGet(cookie.Value)
 		if ok {
 			if s.Token == cookie.Value {
 				// fmt.Printf("FOUND session, redirecting\n")
@@ -37,14 +38,14 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		// The login may have come from another AIR application. Create a
 		// session
 		//----------------------------------------------------------------
-		// lib.Console("Cookie named %s was not found in the session table\n", sess.SessionCookieName)
+		// lib.Console("Cookie named %s was not found in the session table\n", db.SessionCookieName)
 		// lib.Console("Creating new session...\n")
-		c, err := sess.GetSessionCookie(cookie.Value)
+		c, err := db.GetSessionCookie(cookie.Value)
 		// lib.Console("session cookie:  %#v\n", c)
 		if err != nil {
 			lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
 		} else if len(c.Cookie) > 0 {
-			s := sess.NewSessionFromCookie(&c)
+			s := ws.NewSessionFromCookie(&c)
 			// lib.Console("Creating new session from cookie. s.Username = %s\n", s.Username)
 			if len(s.Username) > 0 {
 				http.Redirect(w, r, "/search/", http.StatusFound)

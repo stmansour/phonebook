@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 	"strings"
 )
 
 func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -24,7 +22,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMMOD) {
+	if !ssn.ElemPermsAny(db.ELEMCLASS, db.PERMMOD) {
 		ulog("Permissions refuse saveAdminEditClass page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -37,7 +35,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "The RequestURI needs the person's Company Code. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	ClassCode, err := strconv.Atoi(ClassCodestr)
+	ClassCode, err := strconv.ParseInt(ClassCodestr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting Company Code to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -57,7 +55,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		if len(c.Designation) > 3 {
 			c.Designation = c.Designation[0:3]
 		}
-		c.CoCode, err = strconv.Atoi(r.FormValue("CoCode"))
+		c.CoCode, err = strconv.ParseInt(r.FormValue("CoCode"), 10, 64)
 		if err != nil {
 			c.CoCode = 0
 		}
@@ -70,9 +68,9 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 		getClassInfo(ClassCode, &co) // get the rest of the info
 
 		// func (c *db.Class) filterSecurityMerge(ssn *sess.Session, permRequired int, cNew *db.Class) {
-		// 	filterSecurityMerge(c, ssn, authz.ELEMCLASS, permRequired, cNew, 0)
+		// 	filterSecurityMerge(c, ssn, db.ELEMCLASS, permRequired, cNew, 0)
 		// }
-		filterSecurityMerge(&co, ssn, authz.ELEMCLASS, authz.PERMMOD, &c, 0) // merge new info based on permissions
+		filterSecurityMerge(&co, ssn, db.ELEMCLASS, db.PERMMOD, &c, 0) // merge new info based on permissions
 
 		if 0 == ClassCode {
 			_, err = Phonebook.prepstmt.insertClass.Exec(co.CoCode, co.Name, co.Designation, co.Description, ssn.UID)
@@ -82,7 +80,7 @@ func saveAdminEditClassHandler(w http.ResponseWriter, r *http.Request) {
 			rows, err := Phonebook.prepstmt.classReadBack.Query(co.Name, co.Designation)
 			errcheck(err)
 			defer rows.Close()
-			nClassCode := 0 // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest db.Class added
+			nClassCode := int64(0) // quick way to handle multiple matches... in this case, largest ClassCode wins, it hast to be the latest db.Class added
 			for rows.Next() {
 				errcheck(rows.Scan(&ClassCode))
 				if ClassCode > nClassCode {

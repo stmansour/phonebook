@@ -77,7 +77,7 @@ func SvcBUTypedown(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	// lib.Console("Entered %s\n", funcname)
 	// lib.Console("handle typedown: GetTransactantsTypeDown( search=%s, limit=%d\n", d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	g.Records, err = db.GetBUTypeDown(d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
+	g.Records, err = db.GetBUTypeDown(d.wsTypeDownReq.Search, int64(d.wsTypeDownReq.Max))
 	// lib.Console("GetTransactantTypeDown returned %d matches\n", len(g.Records))
 	g.Total = int64(len(g.Records))
 	if err != nil {

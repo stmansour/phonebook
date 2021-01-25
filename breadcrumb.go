@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"phonebook/sess"
-	"phonebook/ui"
+	"phonebook/db"
+	"phonebook/lib"
 )
 
-func breadcrumbBack(ssn *sess.Session, n int) string {
+func breadcrumbBack(ssn *db.Session, n int) string {
 	var s string
 	m := len(ssn.Breadcrumbs)
 	if n <= m {
@@ -19,7 +19,7 @@ func breadcrumbBack(ssn *sess.Session, n int) string {
 	return s
 }
 
-func breadcrumbToString(ssn *sess.Session) string {
+func breadcrumbToString(ssn *db.Session) string {
 	L := len(ssn.Breadcrumbs)
 	if L < 1 {
 		return ""
@@ -31,7 +31,7 @@ func breadcrumbToString(ssn *sess.Session) string {
 	return s
 }
 
-func breadcrumbToHTMLString(ssn *sess.Session) template.HTML {
+func breadcrumbToHTMLString(ssn *db.Session) template.HTML {
 	var s string
 	L := len(ssn.Breadcrumbs)
 	if L < 1 {
@@ -52,29 +52,29 @@ func breadcrumbToHTMLString(ssn *sess.Session) template.HTML {
 	return template.HTML(s)
 }
 
-func breadcrumbAdd(ssn *sess.Session, name string, url string) {
-	c := ui.Crumb{URL: url, Name: name}
+func breadcrumbAdd(ssn *db.Session, name string, url string) {
+	c := lib.Crumb{URL: url, Name: name}
 	ssn.Breadcrumbs = append(ssn.Breadcrumbs, c)
 }
 
-func breadcrumbReset(ssn *sess.Session, name string, url string) {
-	ssn.Breadcrumbs = make([]ui.Crumb, 0)
+func breadcrumbReset(ssn *db.Session, name string, url string) {
+	ssn.Breadcrumbs = make([]lib.Crumb, 0)
 	breadcrumbAdd(ssn, name, url)
 }
 
 func getBreadcrumb(token string) string {
-	s, ok := sess.Sessions[token]
+	s, ok := db.Sessions[token]
 	if !ok {
-		fmt.Printf("getBreadcrumb:  Could not find sess.Session for %s\n", token)
+		fmt.Printf("getBreadcrumb:  Could not find db.Session for %s\n", token)
 		return "-/-"
 	}
 	return breadcrumbToString(s)
 }
 
 func getHTMLBreadcrumb(token string) template.HTML {
-	s, ok := sess.Sessions[token]
+	s, ok := db.Sessions[token]
 	if !ok {
-		fmt.Printf("getHTMLBreadcrumb:  Could not find sess.Session for %s\n", token)
+		fmt.Printf("getHTMLBreadcrumb:  Could not find db.Session for %s\n", token)
 		return "-/-"
 	}
 	return breadcrumbToHTMLString(s)

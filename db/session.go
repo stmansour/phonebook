@@ -1,21 +1,29 @@
-package sess
+package db
 
 import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"phonebook/authz"
-	"phonebook/db"
 	"phonebook/lib"
-	"phonebook/ui"
 	"time"
 )
+
+// SessionCookie defines the struct for the database table where session
+// cookies are managed.
+type SessionCookie struct {
+	UID       int64     // uid of the user
+	UserName  string    // username for the user
+	Cookie    string    // the cookie value
+	Expire    time.Time // that timestamp when it expires
+	UserAgent string    // client identifier
+	IP        string    // end user's IP address
+}
 
 // SessionManager is the struct containing key values for the Session
 // management infrastructure
 var SessionManager struct {
-	ReqSessionMem      chan int // request to access Session data memory
-	ReqSessionMemAck   chan int // done with Session datamemory
+	ReqSessionMem      chan int64 // request to access Session data memory
+	ReqSessionMemAck   chan int64 // done with Session datamemory
 	SessionCleanupTime time.Duration
 	SecurityDebug      bool
 	SessionTimeout     time.Duration
@@ -25,19 +33,18 @@ var SessionManager struct {
 
 // Session is the generic Session
 type Session struct {
-	Token        string         // this is the md5 hash, unique id, the cookie value
-	Username     string         // associated username
-	Firstname    string         // user's first name
-	UID          int64          // user's db uid
-	UIDorig      int64          // original uid (for use with method sessionBecome())
-	UsernameOrig string         // original username
-	CoCode       int            // logged in user's company
-	ImageURL     string         // user's picture
-	Expire       time.Time      // when does the cookie expire
-	Breadcrumbs  []ui.Crumb     // where is the user in the screen hierarchy
-	PMap         authz.PermMaps // user's role and associated maps
-	IP           string         // user's IP address
-	UserAgent    string         // the user's client
+	Token       string      // this is the md5 hash, unique id, the cookie value
+	Username    string      // associated username
+	Firstname   string      // user's first name
+	UID         int64       // user's db uid
+	UIDorig     int64       // original uid (for use with method sessionBecome())
+	CoCode      int64       // logged in user's company
+	ImageURL    string      // user's picture
+	Expire      time.Time   // when does the cookie expire
+	Breadcrumbs []lib.Crumb // where is the user in the screen hierarchy
+	PMap        PermMaps    // user's role and associated maps
+	IP          string      // user's IP address
+	UserAgent   string      // the user's client
 }
 
 // Sessions is the map of Session structs indexed by the SessionKey (the browser cookie value)
@@ -59,8 +66,8 @@ func SessionGet(token string) (*Session, bool) {
 //-----------------------------------------------------------------------------
 func InitSessionManager(clean, timeout time.Duration, db *sql.DB, debug bool) {
 	var err error
-	SessionManager.ReqSessionMem = make(chan int)
-	SessionManager.ReqSessionMemAck = make(chan int)
+	SessionManager.ReqSessionMem = make(chan int64)
+	SessionManager.ReqSessionMemAck = make(chan int64)
 	SessionManager.SessionCleanupTime = clean
 	SessionManager.SessionTimeout = timeout
 	Sessions = make(map[string]*Session)
@@ -147,7 +154,7 @@ func ReUpCookieTime(s *Session) {
 
 // Refresh updates the cookie and Session with a new expire time.
 //-----------------------------------------------------------------------------
-func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
+func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int64 {
 	lib.Console("Entered Session.Refresh\n")
 	cookie, err := r.Cookie(SessionCookieName)
 	if nil != cookie && err == nil {
@@ -158,7 +165,7 @@ func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
 		cookie.Path = "/"
 		http.SetCookie(w, cookie)
 		lib.Console("Session.Expire = %v\n", s.Expire)
-		UpdateSessionCookie(s)
+		UpdateSessionCookieDB(s)
 		return 0
 	}
 	return 1
@@ -176,11 +183,11 @@ func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int {
 //  *Session - it will be empty if there was any problem. Otherwise it will
 //		have all required session information
 //-----------------------------------------------------------------------------
-func NewSessionFromCookie(c *db.SessionCookie) *Session {
+func NewSessionFromCookie(c *SessionCookie) *Session {
 	var email, passhash, firstname, preferredname string
-	var uid, RID int
+	var uid, RID int64
 
-	err := db.PrepStmts.LoginInfo.QueryRow(c.UserName).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
+	err := PrepStmts.LoginInfo.QueryRow(c.UserName).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
 	if err != nil {
 		s := new(Session)
 		lib.Ulog("Error reading person with username %s: %s", c.UserName, err.Error())
@@ -195,36 +202,36 @@ func NewSessionFromCookie(c *db.SessionCookie) *Session {
 // NewSession returns a new session.  This entry point requires an update
 // to the session table.
 //-----------------------------------------------------------------------------
-func NewSession(c *db.SessionCookie, firstname string, rid int) *Session {
+func NewSession(c *SessionCookie, firstname string, rid int64) *Session {
 	return pvtNewSession(c, firstname, rid, true)
 }
 
 // pvtNewSession creates a new session, updates the session table if necessary,
 // adds the new session to the in-memory session table, and returns the session
 //-----------------------------------------------------------------------------
-func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSessionTable bool) *Session {
+func pvtNewSession(c *SessionCookie, firstname string, rid int64, updateSessionTable bool) *Session {
 	// lib.Ulog("Entering NewSession: %s (%d)\n", username, uid)
-	uid := int(c.UID)
+	uid := int64(c.UID)
 	s := new(Session)
 	s.Token = c.Cookie
 	s.Username = c.UserName
 	s.Firstname = firstname
 	s.UID = c.UID
 	s.UIDorig = c.UID
-	s.ImageURL = ui.GetImageLocation(uid)
-	s.Breadcrumbs = make([]ui.Crumb, 0)
+	s.ImageURL = GetImageLocation(uid)
+	s.Breadcrumbs = make([]lib.Crumb, 0)
 	s.Expire = c.Expire
 	s.IP = c.IP
 	s.UserAgent = c.UserAgent
-	authz.GetRoleInfo(rid, &s.PMap)
+	GetRoleInfo(rid, &s.PMap)
 
-	if authz.Authz.SecurityDebug {
+	if Authz.SecurityDebug {
 		for i := 0; i < len(s.PMap.Urole.Perms); i++ {
 			lib.Ulog("f: %s,  perm: %02x\n", s.PMap.Urole.Perms[i].Field, s.PMap.Urole.Perms[i].Perm)
 		}
 	}
 
-	var d db.PersonDetail
+	var d PersonDetail
 	d.UID = uid
 
 	err := SessionManager.db.QueryRow(fmt.Sprintf("SELECT CoCode FROM people WHERE UID=%d", uid)).Scan(&s.CoCode)
@@ -234,7 +241,7 @@ func pvtNewSession(c *db.SessionCookie, firstname string, rid int, updateSession
 
 	if updateSessionTable {
 		lib.Console("JUST BEFORE InsertSessionCookie: s.IP = %s, s.UserAgent = %s\n", s.IP, s.UserAgent)
-		err = InsertSessionCookie(s)
+		err = InsertSessionCookieDB(s)
 		if err != nil {
 			lib.Ulog("Unable to save session for UID = %d to database,  err = %s\n", uid, err.Error())
 		}
@@ -257,7 +264,7 @@ func SessionDelete(s *Session) {
 	// fmt.Printf("sess.Sessions before delete:\n")
 	// DumpSessions()
 
-	if err := db.DeleteSessionCookie(s.Token); err != nil {
+	if err := DeleteSessionCookie(s.Token); err != nil {
 		lib.Ulog("Error deleting session cookie: %s\n", err.Error())
 	}
 
@@ -279,17 +286,17 @@ func SessionDelete(s *Session) {
 //=====================================================================================
 // pvtElemPermsAny determines whether or not the Session has permissions to perform the
 // requested operations.  NOTE:  This interface does check the UID to fully cover
-// permissions authz.PERMOWNERVIEW or authz.PERMOWNERMOD. This must be done at a higher level.
+// permissions db.PERMOWNERVIEW or db.PERMOWNERMOD. This must be done at a higher level.
 //
 // ARGS:
-//   ent  = which element? authz.ELEMPERSON, authz.ELEMCOMPANY, authz.ELEMCLASS, ...
-//   perm = logical or of the desired permissions.  Example authz.PERMCREATE | authz.PERMMOD
+//   ent  = which element? db.ELEMPERSON, db.ELEMCOMPANY, db.ELEMCLASS, ...
+//   perm = logical or of the desired permissions.  Example db.PERMCREATE | db.PERMMOD
 //
 // RETURNS:
 //   true if there are ANY fields for the specified element for
 //   with the requested permission.
 //=====================================================================================
-func pvtElemPermsAny(s *Session, elem int, perm int) bool {
+func pvtElemPermsAny(s *Session, elem int64, perm int64) bool {
 	// lib.Ulog("elemPermsAny:  elem=%d, perm = 0x%02x\n", elem, perm)
 	for i := 0; i < len(s.PMap.Urole.Perms); i++ {
 		// lib.Ulog("s.PMap.Urole.Perms[%d].Elem = %d\n", i, s.PMap.Urole.Perms[i].Elem)
@@ -309,7 +316,7 @@ func pvtElemPermsAny(s *Session, elem int, perm int) bool {
 // ElemPermsAny returns true if the session as permissions to perform any of the
 // requested actions. Otherwise it return s false
 //-----------------------------------------------------------------------------
-func (s *Session) ElemPermsAny(elem int, perm int) bool {
+func (s *Session) ElemPermsAny(elem int64, perm int64) bool {
 	SessionManager.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
 	<-SessionManager.ReqSessionMemAck    // make sure we got it
 	ok := pvtElemPermsAny(s, elem, perm) // look for perms
@@ -320,16 +327,16 @@ func (s *Session) ElemPermsAny(elem int, perm int) bool {
 //=====================================================================================
 // pvtElemPermsAll determines whether or not the Session has permissions to perform all
 // requested operations.  NOTE: This interface does check the UID to fully cover
-// permissions authz.PERMOWNERVIEW or authz.PERMOWNERMOD. This must be done at a higher level.
+// permissions db.PERMOWNERVIEW or db.PERMOWNERMOD. This must be done at a higher level.
 //
 // ARGS:
-//   ent  = which element? authz.ELEMPERSON, authz.ELEMCOMPANY, authz.ELEMCLASS, ...
-//   perm = logical or of the desired permissions.  Example authz.PERMCREATE | authz.PERMMOD
+//   ent  = which element? db.ELEMPERSON, db.ELEMCOMPANY, db.ELEMCLASS, ...
+//   perm = logical or of the desired permissions.  Example db.PERMCREATE | db.PERMMOD
 //
 // RETURNS:
 //   true if ALL permission fields for the specified element are present
 //=====================================================================================
-func pvtElemPermsAll(s *Session, elem int, perm int) bool {
+func pvtElemPermsAll(s *Session, elem int64, perm int64) bool {
 	// lib.Ulog("elemPermsAll:  elem=%d, perm = 0x%02x\n", elem, perm)
 	for i := 0; i < len(s.PMap.Urole.Perms); i++ {
 		// lib.Ulog("s.PMap.Urole.Perms[%d].Elem = %d\n", i, s.PMap.Urole.Perms[i].Elem)
@@ -349,7 +356,7 @@ func pvtElemPermsAll(s *Session, elem int, perm int) bool {
 // ElemPermsAll returns true if the supplied session has permissions to perform all requested
 // operations. Otherwise it returns false.
 //----------------------------------------------------------------------------------------------
-func (s *Session) ElemPermsAll(elem int, perm int) bool {
+func (s *Session) ElemPermsAll(elem int64, perm int64) bool {
 	SessionManager.ReqSessionMem <- 1    // ask to access the shared mem, blocks until granted
 	<-SessionManager.ReqSessionMemAck    // make sure we got it
 	ok := pvtElemPermsAll(s, elem, perm) // look for perms

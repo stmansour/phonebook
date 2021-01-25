@@ -2,12 +2,12 @@
 3M Company
 A.G. Edwards Inc.
 Abbott Laboratories
-Abercrombie & Fitch Co.
+Abercrombie and Fitch Co.
 ABM Industries Incorporated
 Ace Hardware Corporation
 ACT Manufacturing Inc.
 Acterna Corp.
-Adams Resources & Energy, Inc.
+Adams Resources and Energy, Inc.
 ADC Telecommunications, Inc.
 Adelphia Communications Corporation
 Administaff, Inc.
@@ -51,7 +51,7 @@ Amerada Hess Corporation
 AMERCO
 Ameren Corporation
 America West Holdings Corporation
-American Axle & Manufacturing Holdings, Inc.
+American Axle and Manufacturing Holdings, Inc.
 American Eagle Outfitters, Inc.
 American Electric Power Company, Inc.
 American Express Company
@@ -90,7 +90,7 @@ Arrow Electronics, Inc.
 ArvinMeritor, Inc.
 Ashland Inc.
 Astoria Financial Corporation
-AT&T Corp.
+ATandT Corp.
 Atmel Corporation
 Atmos Energy Corporation
 Audiovox Corporation
@@ -110,15 +110,15 @@ The Bank of New York Company, Inc.
 Bank One Corporation
 Banknorth Group, Inc.
 Banta Corporation
-Barnes & Noble, Inc.
-Bausch & Lomb Incorporated
+Barnes and Noble, Inc.
+Bausch and Lomb Incorporated
 Baxter International Inc.
-BB&T Corporation
+BBandT Corporation
 The Bear Stearns Companies Inc.
 Beazer Homes USA, Inc.
 Beckman Coulter, Inc.
 Becton, Dickinson and Company
-Bed Bath & Beyond Inc.
+Bed Bath and Beyond Inc.
 Belk, Inc.
 Bell Microproducts Inc.
 BellSouth Corporation
@@ -132,7 +132,7 @@ Beverly Enterprises, Inc.
 Big Lots, Inc.
 BJ Services Company
 BJ's Wholesale Club, Inc.
-The Black & Decker Corporation
+The Black and Decker Corporation
 Black Hills Corporation
 BMC Software, Inc.
 The Boeing Company
@@ -141,7 +141,7 @@ Borders Group, Inc.
 BorgWarner Inc.
 Boston Scientific Corporation
 Bowater Incorporated
-Briggs & Stratton Corporation
+Briggs and Stratton Corporation
 Brightpoint, Inc.
 Brinker International, Inc.
 Bristol-Myers Squibb Company
@@ -203,7 +203,7 @@ CNF Inc.
 Coca-Cola Co.
 Coca-Cola Enterprises Inc.
 Colgate-Palmolive Co.
-Collins & Aikman Corp.
+Collins and Aikman Corp.
 Comcast Corp.
 Comdisco Inc.
 Comerica Inc.
@@ -228,7 +228,7 @@ Continental Airlines Inc.
 Convergys Corp.
 Cooper Cameron Corp.
 Cooper Industries Ltd.
-Cooper Tire & Rubber Co.
+Cooper Tire and Rubber Co.
 Corn Products International Inc.
 Corning Inc.
 Costco Wholesale Corp.
@@ -237,20 +237,20 @@ Coventry Health Care Inc.
 Cox Communications Inc.
 Crane Co.
 Crompton Corp.
-Crown Cork & Seal Co. Inc.
+Crown Cork and Seal Co. Inc.
 CSK Auto Corp.
 CSX Corp.
 Cummins Inc.
 CVS Corp.
 Cytec Industries Inc.
-D&K Healthcare Resources, Inc.
+DandK Healthcare Resources, Inc.
 D.R. Horton Inc.
 Dana Corporation
 Danaher Corporation
 Darden Restaurants Inc.
 DaVita Inc.
 Dean Foods Company
-Deere & Company
+Deere and Company
 Del Monte Foods Co
 Dell Computer Corporation
 Delphi Corp.
@@ -269,7 +269,7 @@ Dominion Resources, Inc.
 Domino's Pizza LLC
 Dover Corporation, Inc.
 Dow Chemical Company
-Dow Jones & Company, Inc.
+Dow Jones and Company, Inc.
 DPL Inc.
 DQE Inc.
 Dreyer's Grand Ice Cream, Inc.
@@ -277,7 +277,7 @@ DST Systems, Inc.
 DTE Energy Co.
 E.I. Du Pont de Nemours and Company
 Duke Energy Corp
-Dun & Bradstreet Inc.
+Dun and Bradstreet Inc.
 DURA Automotive Systems Inc.
 DynCorp
 Dynegy Inc.
@@ -349,7 +349,7 @@ Fortune Brands Inc.
 Foster Wheeler Ltd.
 FPL Group Inc.
 Franklin Resources Inc.
-Freeport McMoran Copper & Gold Inc.
+Freeport McMoran Copper and Gold Inc.
 Frontier Oil Corp
 Furniture Brands International Inc.
 Gannett Co., Inc.
@@ -377,7 +377,7 @@ Golden State Bancorp Inc.
 Golden West Financial Corporation
 Goldman Sachs Group Inc.
 Goodrich Corporation
-The Goodyear Tire & Rubber Company
+The Goodyear Tire and Rubber Company
 Granite Construction Incorporated
 Graybar Electric Company Inc.
 Great Lakes Chemical Corporation
@@ -387,7 +387,7 @@ Greif Bros. Corporation
 Grey Global Group Inc.
 Group 1 Automotive Inc.
 Guidant Corporation
-H&R Block Inc.
+HandR Block Inc.
 H.B. Fuller Company
 H.J. Heinz Company
 Halliburton Co.
@@ -440,7 +440,7 @@ International Paper Co.
 Interpublic Group of Companies Inc.
 Interstate Bakeries Corporation
 International Business Machines Corp.
-International Flavors & Fragrances Inc.
+International Flavors and Fragrances Inc.
 International Multifoods Corporation
 Intuit Inc.
 IT Group Inc.
@@ -448,14 +448,14 @@ ITT Industries Inc.
 Ivax Corp.
 J.B. Hunt Transport Services Inc.
 J.C. Penny Co.
-J.P. Morgan Chase & Co.
+J.P. Morgan Chase and Co.
 Jabil Circuit Inc.
 Jack In The Box Inc.
 Jacobs Engineering Group Inc.
 JDS Uniphase Corp.
 Jefferson-Pilot Co.
 John Hancock Financial Services Inc.
-Johnson & Johnson
+Johnson and Johnson
 Johnson Controls Inc.
 Jones Apparel Group Inc.
 KB Home
@@ -485,12 +485,12 @@ Landstar System Inc.
 La-Z-Boy Inc.
 Lear Corporation
 Legg Mason Inc.
-Leggett & Platt Inc.
+Leggett and Platt Inc.
 Lehman Brothers Holdings Inc.
 Lennar Corporation
 Lennox International Inc.
 Level 3 Communications Inc.
-Levi Strauss & Co.
+Levi Strauss and Co.
 Lexmark International Inc.
 Limited Inc.
 Lincoln National Corporation
@@ -507,7 +507,7 @@ The LTV Corporation
 The Lubrizol Corporation
 Lucent Technologies Inc.
 Lyondell Chemical Company
-M & T Bank Corporation
+M and T Bank Corporation
 Magellan Health Services Inc.
 Mail-Well Inc.
 Mandalay Resort Group
@@ -517,9 +517,9 @@ Marathon Oil Corporation
 Mariner Health Care Inc.
 Markel Corporation
 Marriott International Inc.
-Marsh & McLennan Companies Inc.
+Marsh and McLennan Companies Inc.
 Marsh Supermarkets Inc.
-Marshall & Ilsley Corporation
+Marshall and Ilsley Corporation
 Martin Marietta Materials Inc.
 Masco Corporation
 Massey Energy Company
@@ -531,7 +531,7 @@ Maxxam Inc.
 The May Department Stores Company
 Maytag Corporation
 MBNA Corporation
-McCormick & Company Incorporated
+McCormick and Company Incorporated
 McDonald's Corporation
 The McGraw-Hill Companies Inc.
 McKesson Corporation
@@ -542,9 +542,9 @@ MeadWestvaco Corporation
 Medtronic Inc.
 Mellon Financial Corporation
 The Men's Wearhouse Inc.
-Merck & Co., Inc.
+Merck and Co., Inc.
 Mercury General Corporation
-Merrill Lynch & Co. Inc.
+Merrill Lynch and Co. Inc.
 Metaldyne Corporation
 Metals USA Inc.
 MetLife Inc.
@@ -560,7 +560,7 @@ Mirant Corporation
 Mohawk Industries Inc.
 Molex Incorporated
 The MONY Group Inc.
-Morgan Stanley Dean Witter & Co.
+Morgan Stanley Dean Witter and Co.
 Motorola Inc.
 MPS Group Inc.
 Murphy Oil Corporation
@@ -618,7 +618,7 @@ ONEOK Inc
 Oracle Corp
 Oshkosh Truck Corp
 Outback Steakhouse Inc.
-Owens & Minor Inc.
+Owens and Minor Inc.
 Owens Corning
 Owens-Illinois Inc
 Oxford Health Plans Inc
@@ -638,7 +638,7 @@ Pennzoil-Quaker State Company
 Pentair Inc
 Peoples Energy Corp.
 PeopleSoft Inc
-Pep Boys Manny, Moe & Jack
+Pep Boys Manny, Moe and Jack
 Potomac Electric Power Co.
 Pepsi Bottling Group Inc.
 PepsiAmericas Inc.
@@ -651,7 +651,7 @@ Petco Animal Supplies Inc.
 Peter Kiewit Sons', Inc.
 PETsMART Inc
 Pfizer Inc
-Pacific Gas & Electric Corp.
+Pacific Gas and Electric Corp.
 Pharmacia Corp
 Phar Mor Inc.
 Phelps Dodge Corp.
@@ -681,7 +681,7 @@ Premcor Inc.
 Pride International Inc
 Primedia Inc
 Principal Financial Group Inc.
-Procter & Gamble Co.
+Procter and Gamble Co.
 Pro-Fac Cooperative Inc.
 Progress Energy Inc
 Progressive Corporation
@@ -702,7 +702,7 @@ Questar Corp
 Quintiles Transnational
 Qwest Communications Intl Inc
 R.J. Reynolds Tobacco Company
-R.R. Donnelley & Sons Company
+R.R. Donnelley and Sons Company
 Radio Shack Corporation
 Raymond James Financial Inc.
 Raytheon Company
@@ -710,7 +710,7 @@ Reader's Digest Association Inc.
 Reebok International Ltd.
 Regions Financial Corp.
 Regis Corporation
-Reliance Steel & Aluminum Co.
+Reliance Steel and Aluminum Co.
 Reliant Energy Inc.
 Rent A Center Inc
 Republic Services Inc
@@ -723,7 +723,7 @@ Robert Half International Inc.
 Rock-Tenn Co
 Rockwell Automation Inc
 Rockwell Collins Inc
-Rohm & Haas Co.
+Rohm and Haas Co.
 Ross Stores Inc
 RPM Inc.
 Ruddick Corp
@@ -747,7 +747,7 @@ Scientific-Atlanta Inc
 Scotts Company
 Seaboard Corp
 Sealed Air Corp
-Sears Roebuck & Co
+Sears Roebuck and Co
 Sempra Energy
 Sequa Corp
 Service Corp. International
@@ -789,12 +789,12 @@ Standard Pacific Corp.
 Stanley Works
 Staples Inc
 Starbucks Corp
-Starwood Hotels & Resorts Worldwide Inc
+Starwood Hotels and Resorts Worldwide Inc
 State Street Corp.
 Stater Bros. Holdings Inc.
 Steelcase Inc
 Stein Mart Inc
-Stewart & Stevenson Services Inc
+Stewart and Stevenson Services Inc
 Stewart Information Services Corp
 Stilwell Financial Inc
 Storage Technology Corporation
@@ -816,7 +816,7 @@ TECO Energy Inc
 Tecumseh Products Company
 Tektronix Inc
 Teleflex Incorporated
-Telephone & Data Systems Inc
+Telephone and Data Systems Inc
 Tellabs Inc.
 Temple-Inland Inc
 Tenet Healthcare Corporation
@@ -828,8 +828,8 @@ Texas Industries Inc.
 Texas Instruments Incorporated
 Textron Inc
 Thermo Electron Corporation
-Thomas & Betts Corporation
-Tiffany & Co
+Thomas and Betts Corporation
+Tiffany and Co
 Timken Company
 TJX Companies Inc
 TMP Worldwide Inc
@@ -846,7 +846,7 @@ Triad Hospitals Inc
 Tribune Company
 Trigon Healthcare Inc.
 Trinity Industries Inc
-Trump Hotels & Casino Resorts Inc.
+Trump Hotels and Casino Resorts Inc.
 TruServ Corporation
 TRW Inc
 TXU Corp
@@ -897,7 +897,7 @@ Visteon Corporation
 Volt Information Sciences Inc
 Vulcan Materials Company
 W.R. Berkley Corporation
-W.R. Grace & Co
+W.R. Grace and Co
 W.W. Grainger Inc
 Wachovia Corporation
 Wakenhut Corporation
@@ -913,7 +913,7 @@ Watsco Inc
 Weatherford International Inc
 Weis Markets Inc.
 Wellpoint Health Networks Inc
-Wells Fargo & Company
+Wells Fargo and Company
 Wendy's International Inc
 Werner Enterprises Inc
 WESCO International Inc

@@ -24,18 +24,18 @@ func saveAdminEditCo(d *personDetail, atr *TestResults) bool {
 
 	// user d.UID must only change the company names to something that none
 	// of the other users will use.
-	n := len(App.Companies) / App.TestUsers // this is the range that ea
-	nstart := n * (d.UID - 1)               // starting index for this user
+	n := int64(len(App.Companies)) / App.TestUsers // this is the range that ea
+	nstart := n * (d.UID - 1)                      // starting index for this user
 
 	// set new values
-	c.LegalName = App.Companies[nstart+rand.Intn(n)]
+	c.LegalName = App.Companies[nstart+rand.Int63n(n)]
 	c.CommonName = c.LegalName
 	c.Designation = genDesignation(c.LegalName, "cocode", "companies")
 	c.Email = randomCompanyEmail(c.LegalName)
 	c.Phone = randomPhoneNumber()
 	c.Fax = randomPhoneNumber()
-	c.Active = rand.Intn(2)
-	c.EmploysPersonnel = rand.Intn(2)
+	c.Active = rand.Int63n(2)
+	c.EmploysPersonnel = rand.Int63n(2)
 	c.Address = randomAddress()
 	if rand.Intn(10) > 7 {
 		c.Address2 = fmt.Sprintf("Suite %d", 1+rand.Intn(10000))

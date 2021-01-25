@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 )
 
 func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -27,7 +25,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "the RequestURI needs to know the person's uid. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	uid, err := strconv.Atoi(uidstr)
+	uid, err := strconv.ParseInt(uidstr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -39,8 +37,8 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	//=================================================================================
 	// SECURITY
 	//=================================================================================
-	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
-		if !(ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) && ssn.UID == int64(uid)) {
+	if !ssn.ElemPermsAny(db.ELEMPERSON, db.PERMMOD) {
+		if !(ssn.ElemPermsAny(db.ELEMPERSON, db.PERMOWNERMOD) && ssn.UID == int64(uid)) {
 			ulog("Permissions refuse adminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 			http.Redirect(w, r, "/search/", http.StatusFound)
 			return
@@ -61,7 +59,7 @@ func editDetailHandler(w http.ResponseWriter, r *http.Request) {
 	errcheck(rows.Err())
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD|authz.PERMOWNERMOD) {
+	if !ssn.ElemPermsAny(db.ELEMPERSON, db.PERMMOD|db.PERMOWNERMOD) {
 		ulog("Permissions refuse editDetail page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return

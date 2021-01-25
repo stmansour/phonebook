@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 	"strings"
 )
 
-func delCheckError(caller string, ssn *sess.Session, err error, s string, w http.ResponseWriter, r *http.Request) bool {
+func delCheckError(caller string, ssn *db.Session, err error, s string, w http.ResponseWriter, r *http.Request) bool {
 	if nil != err {
 		ulog("%s: \"%s\"  err = %v\n", caller, s, err)
 		fmt.Printf("%s: \"%s\"  err = %v\n", caller, s, err)
@@ -22,7 +20,7 @@ func delCheckError(caller string, ssn *sess.Session, err error, s string, w http
 
 func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -32,7 +30,7 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
-		uid, _ := strconv.Atoi(uidstr)
+		uid, _ := strconv.ParseInt(uidstr, 10, 64)
 		var pd db.PersonDetail
 		if 0 != getPersonDetail(&pd, uid) {
 			ulog("%s: Error retrieving person information for userid=%d\n", path, uid)
@@ -40,8 +38,8 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 			return
 		}
 		ui.D = &pd
-		// ui.D.filterSecurityRead(ssn, authz.PERMVIEW)
-		PDetFilterSecurityRead(ui.D, ssn, authz.PERMVIEW)
+		// ui.D.filterSecurityRead(ssn, db.PERMVIEW)
+		PDetFilterSecurityRead(ui.D, ssn, db.PERMVIEW)
 		breadcrumbAdd(ssn, "Inactivate Person", fmt.Sprintf("/inactivatePerson/%d", uid))
 
 		s := fmt.Sprintf("select uid,lastname,firstname,preferredname,jobcode,primaryemail,officephone,cellphone,deptcode from people where status=1 and mgruid=%d", uid)
@@ -56,7 +54,7 @@ func intPersonRefErrHandler(w http.ResponseWriter, r *http.Request, path string)
 			errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 			m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 			pm := &m
-			filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
+			filterSecurityRead(pm, db.ELEMPERSON, ssn, db.PERMVIEW|db.PERMMOD, m.UID)
 			d.Matches = append(d.Matches, m)
 		}
 		errcheck(rows.Err())
@@ -82,7 +80,7 @@ func inactivatePersonHandler(w http.ResponseWriter, r *http.Request) {
 	intPersonRefErrHandler(w, r, "/inactivatePerson/")
 }
 
-func getDirectReportsCount(uid int) int {
+func getDirectReportsCount(uid int64) int64 {
 	//===============================================================
 	//  Check to see if this person manages anyone before deleting...
 	//===============================================================
@@ -91,7 +89,7 @@ func getDirectReportsCount(uid int) int {
 	errcheck(err)
 	defer rows.Close()
 	var refuid int
-	count := 0
+	count := int64(0)
 	for rows.Next() {
 		errcheck(rows.Scan(&refuid))
 		count++
@@ -101,7 +99,7 @@ func getDirectReportsCount(uid int) int {
 }
 
 func delPersonHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -114,7 +112,7 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !hasAccess(ssn, authz.ELEMPERSON, "ElemEntity", authz.PERMDEL) {
+	if !hasAccess(ssn, db.ELEMPERSON, "ElemEntity", db.PERMDEL) {
 		ulog("Permissions refuse delPersonHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -128,7 +126,7 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "The RequestURI needs the person's uid. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	uid, err := strconv.Atoi(uidstr)
+	uid, err := strconv.ParseInt(uidstr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -175,7 +173,7 @@ func delPersonHandler(w http.ResponseWriter, r *http.Request) {
 
 func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -186,12 +184,12 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 	path := "/delClassRefErr/"
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
-		classcode, _ := strconv.Atoi(costr)
+		classcode, _ := strconv.ParseInt(costr, 10, 64)
 		var c db.Class
 		getClassInfo(classcode, &c)
 		ui.A = &c
-		// ui.A.filterSecurityRead(ssn, authz.PERMVIEW)
-		filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW, 0)
+		// ui.A.filterSecurityRead(ssn, db.PERMVIEW)
+		filterSecurityRead(ui.A, db.ELEMCLASS, ssn, db.PERMVIEW, 0)
 
 		breadcrumbAdd(ssn, "Delete Class", fmt.Sprintf("/delClassRefErr/%d", classcode))
 
@@ -206,8 +204,8 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 			errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 			m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 			pm := &m
-			// pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
-			filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
+			// pm.filterSecurityRead(ssn, db.PERMVIEW|db.PERMMOD)
+			filterSecurityRead(pm, db.ELEMPERSON, ssn, db.PERMVIEW|db.PERMMOD, m.UID)
 			d.Matches = append(d.Matches, m)
 		}
 		errcheck(rows.Err())
@@ -226,7 +224,7 @@ func delClassRefErr(w http.ResponseWriter, r *http.Request) {
 }
 
 func delClassHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -239,7 +237,7 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !hasAccess(ssn, authz.ELEMCLASS, "ElemEntity", authz.PERMDEL) {
+	if !hasAccess(ssn, db.ELEMCLASS, "ElemEntity", db.PERMDEL) {
 		ulog("Permissions refuse delCoHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -252,7 +250,7 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "The RequestURI needs the class code. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	ClassCode, err := strconv.Atoi(uidstr)
+	ClassCode, err := strconv.ParseInt(uidstr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting class code to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -300,7 +298,7 @@ func delClassHandler(w http.ResponseWriter, r *http.Request) {
 
 func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -311,12 +309,12 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 	path := "/delCoRefErr/"
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
-		cocode, _ := strconv.Atoi(costr)
+		cocode, _ := strconv.ParseInt(costr, 10, 64)
 		var c db.Company
 		getCompanyInfo(cocode, &c)
 		ui.C = &c
-		// ui.C.filterSecurityRead(ssn, authz.PERMVIEW)
-		filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
+		// ui.C.filterSecurityRead(ssn, db.PERMVIEW)
+		filterSecurityRead(ui.C, db.ELEMCOMPANY, ssn, db.PERMVIEW, 0)
 
 		breadcrumbAdd(ssn, "Delete Company", fmt.Sprintf("/delCoRefErr/%d", cocode))
 
@@ -331,8 +329,8 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 			errcheck(rows.Scan(&m.UID, &m.LastName, &m.FirstName, &m.PreferredName, &m.JobCode, &m.PrimaryEmail, &m.OfficePhone, &m.CellPhone, &m.DeptCode))
 			m.DeptName = getDepartmentFromDeptCode(m.DeptCode)
 			pm := &m
-			// pm.filterSecurityRead(ssn, authz.PERMVIEW|authz.PERMMOD)
-			filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
+			// pm.filterSecurityRead(ssn, db.PERMVIEW|db.PERMMOD)
+			filterSecurityRead(pm, db.ELEMPERSON, ssn, db.PERMVIEW|db.PERMMOD, m.UID)
 			d.Matches = append(d.Matches, m)
 		}
 		errcheck(rows.Err())
@@ -351,7 +349,7 @@ func delCoRefErr(w http.ResponseWriter, r *http.Request) {
 }
 
 func delCoHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -364,7 +362,7 @@ func delCoHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !hasAccess(ssn, authz.ELEMCOMPANY, "ElemEntity", authz.PERMDEL) {
+	if !hasAccess(ssn, db.ELEMCOMPANY, "ElemEntity", db.PERMDEL) {
 		ulog("Permissions refuse delCoHandler page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return

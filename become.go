@@ -2,14 +2,12 @@ package main
 
 import (
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 )
 
 func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -23,18 +21,18 @@ func adminBecomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := "/become/"
 	uidstr := r.RequestURI[len(path):]
-	uid := 0
+	uid := int64(0)
 	if len(uidstr) > 0 {
-		uid, _ = strconv.Atoi(uidstr)
+		uid, _ = strconv.ParseInt(uidstr, 10, 64)
 	}
 
 	// fmt.Printf("Current session = %s\n", ssn.ToString())
-	var tmp sess.Session
+	var tmp db.Session
 	var d db.PersonDetail
 	d.Reports = make([]db.Person, 0)
-	d.UID = int(ssn.UIDorig)
+	d.UID = ssn.UIDorig
 	adminReadDetails(&d)
-	authz.GetRoleInfo(d.RID, &tmp.PMap)
+	db.GetRoleInfo(d.RID, &tmp.PMap)
 	// fmt.Printf("UIDorig = %d,  role name = %s, RID = %d\n", ssn.UIDorig, tmp.Urole.Name, tmp.Urole.RID)
 
 	//============================================================

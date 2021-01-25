@@ -3,15 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
-	"phonebook/ui"
 	"strconv"
 	"strings"
 )
 
-func getJobTitle(JobCode int) string {
+func getJobTitle(JobCode int64) string {
 	if JobCode > 0 {
 		var JobTitle string
 		rows, err := Phonebook.prepstmt.getJobTitle.Query(JobCode)
@@ -26,7 +23,7 @@ func getJobTitle(JobCode int) string {
 	return "Unknown"
 }
 
-func getNameFromUID(uid int) string {
+func getNameFromUID(uid int64) string {
 	var FirstName string
 	var LastName string
 	var name string
@@ -41,7 +38,7 @@ func getNameFromUID(uid int) string {
 	return name
 }
 
-func getDepartmentFromDeptCode(deptcode int) string {
+func getDepartmentFromDeptCode(deptcode int64) string {
 	var name string
 	rows, err := Phonebook.prepstmt.deptName.Query(deptcode)
 	errcheck(err)
@@ -53,7 +50,7 @@ func getDepartmentFromDeptCode(deptcode int) string {
 	return name
 }
 
-func getReports(uid int, d *db.PersonDetail) {
+func getReports(uid int64, d *db.PersonDetail) {
 	//s := fmt.Sprintf("select uid,lastname,firstname,jobcode,primaryemail,officephone,cellphone from people where mgruid=%d AND status>0 order by lastname, firstname", uid)
 	rows, err := Phonebook.prepstmt.directReports.Query(uid)
 	errcheck(err)
@@ -67,7 +64,7 @@ func getReports(uid int, d *db.PersonDetail) {
 }
 
 func detailpopHandler(w http.ResponseWriter, r *http.Request) {
-	var sess *sess.Session
+	var sess *db.Session
 	var ui uiSupport
 	sess = nil
 	if 0 < initHandlerSession(sess, &ui, w, r) {
@@ -83,8 +80,8 @@ func detailpopHandler(w http.ResponseWriter, r *http.Request) {
 //  to get detailed person information on a particular user
 //  returns 0 if success, err number otherwise
 //===========================================================
-func getPersonDetail(d *db.PersonDetail, uid int) int {
-	d.Image = ui.GetImageLocation(uid)
+func getPersonDetail(d *db.PersonDetail, uid int64) int {
+	d.Image = db.GetImageLocation(uid)
 	err := Phonebook.prepstmt.personDetail.QueryRow(uid).Scan(&d.LastName, &d.MiddleName,
 		&d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
 		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
@@ -103,7 +100,7 @@ func getPersonDetail(d *db.PersonDetail, uid int) int {
 
 func detailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var sess *sess.Session
+	var sess *db.Session
 	var uis uiSupport
 	sess = nil
 	if 0 < initHandlerSession(sess, &uis, w, r) {
@@ -125,9 +122,9 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 		path = "/detail/"
 	}
 	uidstr := r.RequestURI[len(path):]
-	uid := 0
+	uid := int64(0)
 	if len(uidstr) > 0 {
-		uid, _ = strconv.Atoi(uidstr)
+		uid, _ = strconv.ParseInt(uidstr, 10, 64)
 		d.UID = uid
 	}
 	breadcrumbAdd(sess, "Person", fmt.Sprintf("/detail/%d", uid))
@@ -135,14 +132,14 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 	//=================================================================
 	// SECURITY
 	//=================================================================
-	if !sess.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMOWNERVIEW) {
+	if !sess.ElemPermsAny(db.ELEMPERSON, db.PERMVIEW|db.PERMOWNERVIEW) {
 		ulog("ViewPersonDetail: Permission refusal on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 
 	if uid > 0 {
-		d.Image = ui.GetImageLocation(uid)
+		d.Image = db.GetImageLocation(uid)
 		rows, err := Phonebook.prepstmt.personDetail.Query(uid)
 		errcheck(err)
 		defer rows.Close()
@@ -165,7 +162,7 @@ func detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	uis.D = &d
 
-	filterSecurityRead(uis.D, authz.ELEMPERSON, sess, authz.PERMVIEW, d.UID)
+	filterSecurityRead(uis.D, db.ELEMPERSON, sess, db.PERMVIEW, d.UID)
 
 	err := renderTemplate(w, uis, "detail.html")
 	if nil != err {

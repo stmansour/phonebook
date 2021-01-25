@@ -1,8 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"phonebook/lib"
+)
 
-func (d *personDetail) matches(d2 *personDetail, tr *TestResults) bool {
+func dumpPD(d *personDetail) {
+	lib.Ulog("\tUser:  %s, %d\n", d.UserName, d.UID)
+	lib.Ulog("\tF,M,L,P:  %s, %s, %s, %s\n", d.FirstName, d.MiddleName, d.LastName, d.PreferredName)
+	lib.Ulog("\tJobCode: %d, DeptCode: %d, ClassCode: %d, CoCode: %d\n", d.JobCode, d.DeptCode, d.ClassCode, d.CoCode)
+}
+func dumpPersonDetails(n int, d, d2 *personDetail, desc string) {
+	lib.Ulog("Context= %s (TotalSaveAdminEditCalls = %d): %d PERSON differences:\n", desc, TotalSaveAdminEditCalls, n)
+	dumpPD(d)
+	dumpPD(d2)
+}
+
+func (d *personDetail) matches(d2 *personDetail, tr *TestResults, desc string) bool {
 	n := 0 // number of miscompares
 	if d.FirstName != d2.FirstName {
 		var f TestFailure
@@ -150,6 +164,9 @@ func (d *personDetail) matches(d2 *personDetail, tr *TestResults) bool {
 		f.TestName = fmt.Sprintf("Miscompare on CoCode:  d(%d) : d2(%d)\n", d.CoCode, d2.CoCode)
 		tr.Failures = append(tr.Failures, f)
 		n++
+	}
+	if n > 0 {
+		dumpPersonDetails(n, d, d2, desc)
 	}
 	return (n == 0)
 }

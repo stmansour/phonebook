@@ -19,11 +19,11 @@ func saveAdminEditClass(d *personDetail, atr *TestResults) bool {
 
 	form := url.Values{}
 	// set new values
-	n := len(App.RandClasses) / App.TestUsers // this is the range that ea
-	nstart := n * (d.UID - 1)                 // starting index for this user
+	n := int64(len(App.RandClasses)) / (App.TestUsers) // this is the range that ea
+	nstart := n * (d.UID - 1)                          // starting index for this user
 
 	// set new values
-	c.Name = App.RandClasses[nstart+rand.Intn(n)]
+	c.Name = App.RandClasses[nstart+rand.Int63n(n)]
 	c.Designation = genDesignation(c.Name, "classcode", "classes")
 	c.Description = RandomString(14)
 

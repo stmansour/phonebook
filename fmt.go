@@ -65,7 +65,7 @@ func div(b, a int) int { return a / b }
 func rmd(b, a int) int { return a - ((a / b) * b) }
 func smrand(n int) int { return rand.Intn(n) }
 
-func yesnoToInt(s string) int {
+func yesnoToInt(s string) int64 {
 	s = strings.ToUpper(s)
 	switch {
 	case s == "Y" || s == "YES":
@@ -78,7 +78,7 @@ func yesnoToInt(s string) int {
 	}
 }
 
-func yesnoToString(i int) string {
+func yesnoToString(i int64) string {
 	switch {
 	case i == NO:
 		return "No"
@@ -90,7 +90,7 @@ func yesnoToString(i int) string {
 	}
 }
 
-func activeToInt(s string) int {
+func activeToInt(s string) int64 {
 	s = strings.ToUpper(s)
 	switch {
 	case s == "ACTIVE":
@@ -103,7 +103,7 @@ func activeToInt(s string) int {
 	}
 }
 
-func activeToString(i int) string {
+func activeToString(i int64) string {
 	switch {
 	case i == INACTIVE:
 		return "Inactive"
@@ -185,8 +185,8 @@ const (
 	ACPTLAST    = ACPTNOTAPPL // loops go from ACPTUNKNOWN to ACPTLAST
 )
 
-func acceptTypeToInt(s string) int {
-	var i int
+func acceptTypeToInt(s string) int64 {
+	var i int64
 	s = strings.ToUpper(s)
 	s = strings.Replace(s, " ", "", -1)
 	switch {
@@ -205,7 +205,7 @@ func acceptTypeToInt(s string) int {
 	return i
 }
 
-func acceptIntToString(i int) string {
+func acceptIntToString(i int64) string {
 	var s string
 	switch {
 	case i == ACPTUNKNOWN:
@@ -319,8 +319,8 @@ const (
 	CTEND                 // all compensation ids are less than this
 )
 
-func compensationTypeToInt(s string) int {
-	var i int
+func compensationTypeToInt(s string) int64 {
+	var i int64
 	s = strings.ToUpper(s)
 	s = strings.Replace(s, " ", "", -1)
 	switch {
@@ -341,7 +341,7 @@ func compensationTypeToInt(s string) int {
 	return i
 }
 
-func compensationTypeToString(i int) string {
+func compensationTypeToString(i int64) string {
 	var s string
 	switch {
 	case i == CTUNSET:

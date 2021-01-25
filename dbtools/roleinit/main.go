@@ -7,121 +7,121 @@ import (
 	"fmt"
 	"os"
 	"phonebook/lib"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type company struct {
-	CoCode           int
-	LegalName        string
-	CommonName       string
-	Address          string
-	Address2         string
-	City             string
-	State            string
-	PostalCode       string
-	Country          string
-	Phone            string
-	Fax              string
-	Email            string
-	Designation      string
-	Active           int
-	EmploysPersonnel int
-}
+// type company struct {
+// 	CoCode           int
+// 	LegalName        string
+// 	CommonName       string
+// 	Address          string
+// 	Address2         string
+// 	City             string
+// 	State            string
+// 	PostalCode       string
+// 	Country          string
+// 	Phone            string
+// 	Fax              string
+// 	Email            string
+// 	Designation      string
+// 	Active           int
+// 	EmploysPersonnel int
+// }
+//
+// type person struct {
+// 	UID           int
+// 	LastName      string
+// 	FirstName     string
+// 	PreferredName string
+// 	PrimaryEmail  string
+// 	JobCode       int
+// 	OfficePhone   string
+// 	CellPhone     string
+// 	DeptCode      int
+// 	DeptName      string
+// 	Employer      string
+// }
 
-type person struct {
-	UID           int
-	LastName      string
-	FirstName     string
-	PreferredName string
-	PrimaryEmail  string
-	JobCode       int
-	OfficePhone   string
-	CellPhone     string
-	DeptCode      int
-	DeptName      string
-	Employer      string
-}
+// type myComp struct {
+// 	CompCode int    // code for this comp type
+// 	Name     string // name for this code
+// 	HaveIt   int    // 0 = does not have it, 1 = has it
+// }
+//
+// type aDeduction struct {
+// 	DCode  int    // code for this deduction
+// 	Name   string // name for this deduction
+// 	HaveIt int    // 0 = does not have it, 1 = has it
+// }
 
-type myComp struct {
-	CompCode int    // code for this comp type
-	Name     string // name for this code
-	HaveIt   int    // 0 = does not have it, 1 = has it
-}
-
-type aDeduction struct {
-	DCode  int    // code for this deduction
-	Name   string // name for this deduction
-	HaveIt int    // 0 = does not have it, 1 = has it
-}
-
-type personDetail struct {
-	UID                     int
-	LastName                string
-	FirstName               string
-	PrimaryEmail            string
-	JobCode                 int
-	OfficePhone             string
-	CellPhone               string
-	DeptName                string
-	MiddleName              string
-	Salutation              string
-	Status                  int
-	PositionControlNumber   string
-	OfficeFax               string
-	SecondaryEmail          string
-	EligibleForRehire       int
-	LastReview              time.Time
-	NextReview              time.Time
-	Birthdate               string
-	BirthMonth              int
-	BirthDOM                int
-	HomeStreetAddress       string
-	HomeStreetAddress2      string
-	HomeCity                string
-	HomeState               string
-	HomePostalCode          string
-	HomeCountry             string
-	StateOfEmployment       string
-	CountryOfEmployment     string
-	PreferredName           string
-	Comps                   []int // an array of CompensationType values (ints)
-	SecList                 []int
-	CompensationStr         string //used in the admin edit interface
-	DeptCode                int
-	Company                 company
-	CoCode                  int
-	MgrUID                  int
-	JobTitle                string
-	Class                   string
-	ClassCode               int
-	MgrName                 string
-	Image                   string // ptr to image -- URI
-	Reports                 []person
-	Deductions              []int
-	DeductionsStr           string
-	EmergencyContactName    string
-	EmergencyContactPhone   string
-	AcceptedHealthInsurance int
-	AcceptedDentalInsurance int
-	Accepted401K            int
-	Hire                    time.Time
-	Termination             time.Time
-	NameToCoCode            map[string]int
-	NameToJobCode           map[string]int
-	AcceptCodeToName        map[int]string
-	NameToDeptCode          map[string]int // department name to dept code
-	MyComps                 []myComp
-	MyDeductions            []aDeduction
-}
-
-type class struct {
-	ClassCode   int
-	Name        string
-	Designation string
-	Description string
-}
+//
+// type personDetail struct {
+// 	UID                     int
+// 	LastName                string
+// 	FirstName               string
+// 	PrimaryEmail            string
+// 	JobCode                 int
+// 	OfficePhone             string
+// 	CellPhone               string
+// 	DeptName                string
+// 	MiddleName              string
+// 	Salutation              string
+// 	Status                  int
+// 	PositionControlNumber   string
+// 	OfficeFax               string
+// 	SecondaryEmail          string
+// 	EligibleForRehire       int
+// 	LastReview              time.Time
+// 	NextReview              time.Time
+// 	Birthdate               string
+// 	BirthMonth              int
+// 	BirthDOM                int
+// 	HomeStreetAddress       string
+// 	HomeStreetAddress2      string
+// 	HomeCity                string
+// 	HomeState               string
+// 	HomePostalCode          string
+// 	HomeCountry             string
+// 	StateOfEmployment       string
+// 	CountryOfEmployment     string
+// 	PreferredName           string
+// 	Comps                   []int // an array of CompensationType values (ints)
+// 	SecList                 []int
+// 	CompensationStr         string //used in the admin edit interface
+// 	DeptCode                int
+// 	Company                 company
+// 	CoCode                  int
+// 	MgrUID                  int
+// 	JobTitle                string
+// 	Class                   string
+// 	ClassCode               int
+// 	MgrName                 string
+// 	Image                   string // ptr to image -- URI
+// 	Reports                 []person
+// 	Deductions              []int
+// 	DeductionsStr           string
+// 	EmergencyContactName    string
+// 	EmergencyContactPhone   string
+// 	AcceptedHealthInsurance int
+// 	AcceptedDentalInsurance int
+// 	Accepted401K            int
+// 	Hire                    time.Time
+// 	Termination             time.Time
+// 	NameToCoCode            map[string]int
+// 	NameToJobCode           map[string]int
+// 	AcceptCodeToName        map[int]string
+// 	NameToDeptCode          map[string]int // department name to dept code
+// 	MyComps                 []myComp
+// 	MyDeductions            []aDeduction
+// }
+//
+// type class struct {
+// 	ClassCode   int
+// 	Name        string
+// 	Designation string
+// 	Description string
+// }
 
 const (
 	PERMNONE       = 0      // no permissions to see, view, modify, delete, print, or anything to this field
@@ -259,6 +259,7 @@ func makeDefaultRoles(db *sql.DB) {
 		{ELEMPERSON, "MyDeductions", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "RID", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "Role", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "Permissions role"},
+		{ELEMPERSON, "UserName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMPERSON, "ElemEntity", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "Permissions to delete the entity"},
 		{ELEMCOMPANY, "CoCode", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},
 		{ELEMCOMPANY, "LegalName", PERMVIEW | PERMCREATE | PERMMOD | PERMDEL | PERMPRINT, "def"},

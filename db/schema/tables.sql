@@ -129,9 +129,11 @@ CREATE TABLE people (
     NextReview DATE NOT NULL DEFAULT '2000-01-01 00:00:00',
     passhash char(128) NOT NULL DEFAULT '',
     RID MEDIUMINT NOT NULL DEFAULT 0,
-    LastModTime TIMESTAMP,
-    LastModBy MEDIUMINT NOT NULL DEFAULT 0,
     ImagePath VARCHAR(200) NOT NULL DEFAULT '',
+    LastModTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- when was this record last written
+    LastModBy BIGINT NOT NULL DEFAULT 0,                    -- employee UID (from phonebook) that modified it
+    CreateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- when was this record created
+    CreateBy BIGINT NOT NULL DEFAULT 0,                     -- employee UID (from phonebook) that created this record
     PRIMARY KEY (UID)
 );
 

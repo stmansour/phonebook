@@ -40,7 +40,7 @@ func errcheck(err error) {
 	}
 }
 
-func yesnoToInt(s string) int {
+func yesnoToInt(s string) int64 {
 	s = strings.ToUpper(s)
 	switch {
 	case s == "Y" || s == "YES":
@@ -53,7 +53,7 @@ func yesnoToInt(s string) int {
 	}
 }
 
-func yesnoToString(i int) string {
+func yesnoToString(i int64) string {
 	switch {
 	case i == NO:
 		return "No"
@@ -65,7 +65,7 @@ func yesnoToString(i int) string {
 	}
 }
 
-func activeToInt(s string) int {
+func activeToInt(s string) int64 {
 	s = strings.ToUpper(s)
 	switch {
 	case s == "ACTIVE":
@@ -78,7 +78,7 @@ func activeToInt(s string) int {
 	}
 }
 
-func activeToString(i int) string {
+func activeToString(i int64) string {
 	switch {
 	case i == INACTIVE:
 		return "Inactive"
@@ -111,8 +111,8 @@ var fmtMonths = []string{
 	"September", "October", "November", "December",
 }
 
-func monthStringToInt(s string) int {
-	for i := 0; i < len(fmtMonths); i++ {
+func monthStringToInt(s string) int64 {
+	for i := int64(0); i < int64(len(fmtMonths)); i++ {
 		if fmtMonths[i][0:3] == s[0:3] {
 			return i + 1
 		}
@@ -127,8 +127,8 @@ func dateToDBStr(d time.Time) string {
 	return d.Format(PBDateSaveFmt)
 }
 
-func dateYear(d time.Time) int {
-	return d.Year()
+func dateYear(d time.Time) int64 {
+	return int64(d.Year())
 }
 
 func stringToDate(s string) time.Time {
@@ -156,8 +156,8 @@ const (
 	ACPTLAST    = ACPTNOTAPPL // loops go from ACPTUNKNOWN to ACPTLAST
 )
 
-func acceptTypeToInt(s string) int {
-	var i int
+func acceptTypeToInt(s string) int64 {
+	var i int64
 	s = strings.ToUpper(s)
 	s = strings.Replace(s, " ", "", -1)
 	switch {
@@ -176,7 +176,7 @@ func acceptTypeToInt(s string) int {
 	return i
 }
 
-func acceptIntToString(i int) string {
+func acceptIntToString(i int64) string {
 	var s string
 	switch {
 	case i == ACPTUNKNOWN:
@@ -211,8 +211,8 @@ const (
 	DDTAXES               // taxes
 )
 
-func deductionStringToInt(s string) int {
-	var i int
+func deductionStringToInt(s string) int64 {
+	var i int64
 	s = strings.ToUpper(s)
 	s = strings.Replace(s, " ", "", -1)
 	switch {
@@ -245,7 +245,7 @@ func deductionStringToInt(s string) int {
 	return i
 }
 
-func deductionIntToString(i int) string {
+func deductionIntToString(i int64) string {
 	var s string
 	switch {
 	case i == DD401K:
@@ -290,8 +290,8 @@ const (
 	CTEND                 // all compensation ids are less than this
 )
 
-func compensationTypeToInt(s string) int {
-	var i int
+func compensationTypeToInt(s string) int64 {
+	var i int64
 	s = strings.ToUpper(s)
 	s = strings.Replace(s, " ", "", -1)
 	switch {
@@ -312,7 +312,7 @@ func compensationTypeToInt(s string) int {
 	return i
 }
 
-func compensationTypeToString(i int) string {
+func compensationTypeToString(i int64) string {
 	var s string
 	switch {
 	case i == CTUNSET:

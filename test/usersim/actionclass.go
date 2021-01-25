@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func getClassInfo(classcode int, c *class) {
+func getClassInfo(classcode int64, c *class) {
 	// s := fmt.Sprintf("select classcode,Name,Designation,Description from classes where classcode=%d", classcode)
 	rows, err := App.prepstmt.classInfo.Query(classcode)
 	errcheck(err)

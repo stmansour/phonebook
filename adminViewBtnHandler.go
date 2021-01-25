@@ -2,13 +2,13 @@ package main
 
 import (
 	"net/http"
-	"phonebook/sess"
+	"phonebook/db"
 	"strconv"
 	"strings"
 )
 
 func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -39,7 +39,7 @@ func adminViewBtnHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func popHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {

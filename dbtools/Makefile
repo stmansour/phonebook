@@ -1,4 +1,4 @@
-DIRS = schema jobtitles departments roleinit deductions prod
+DIRS=jobtitles departments roleinit deductions prod
 
 db:
 	for dir in $(DIRS); do make -C $$dir;done

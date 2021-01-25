@@ -3,23 +3,21 @@ package main
 import (
 	"crypto/sha512"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awsutil"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
-	"phonebook/authz"
 	"phonebook/db"
 	"phonebook/lib"
-	"phonebook/sess"
-	"phonebook/ui"
 	"strconv"
 	"strings"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awsutil"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 func uploadFileCopy(from *multipart.File, toname string) error {
@@ -47,8 +45,9 @@ const (
 )
 
 // generateFileName generate file name with uid
-func generateFileName(uid int) string {
-	return strings.Join([]string{strconv.Itoa(uid)}, "") // return file name with extension e.g., <uid>
+func generateFileName(uid int64) string {
+	s := fmt.Sprintf("%d", uid)
+	return strings.Join([]string{s}, "") // return file name with extension e.g., <uid>
 }
 
 // uploadImageFileToS3 upload image to AWS S3 bucket
@@ -60,7 +59,7 @@ func generateFileName(uid int) string {
 // return
 // imagePath : 211.jpg
 // imageLocation: <host>/<bucket>/211/jpg
-func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.File, uid int) (string, string) {
+func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.File, uid int64) (string, string) {
 
 	// generate filename to save on s3/db
 	filename := generateFileName(uid)
@@ -107,7 +106,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 
 	// get image location
 	//imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
-	imageLocation := ui.GenerateImageLocation(imagePath)
+	imageLocation := db.GenerateImageLocation(imagePath)
 
 	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
 	ulog("Image location: %s", imageLocation)
@@ -116,7 +115,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 }
 
 func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var uis uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &uis, w, r) {
@@ -135,7 +134,7 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "The RequestURI needs the person's uid. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	uid, err := strconv.Atoi(uidstr)
+	uid, err := strconv.ParseInt(uidstr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -144,12 +143,12 @@ func savePersonDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	//=================================================================
 	//  SECURITY
 	//=================================================================
-	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMOWNERMOD) {
+	if !ssn.ElemPermsAny(db.ELEMPERSON, db.PERMOWNERMOD) {
 		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
-	if int64(uid) != ssn.UID {
+	if uid != ssn.UID {
 		ulog("Permissions refuse savePersonDetails page on userid=%d (%s), role=%s trying to save for UID=%d\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name, uid)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return

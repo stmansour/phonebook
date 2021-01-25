@@ -17,7 +17,7 @@ OPTIONS:
 
 Examples:
 Command to create roles in accordtest:
-	bash$  apply.sh 
+	bash$  apply.sh
 
 Command to create roles in a database named 'accord':
 	bash$  apply.sh -N accord
@@ -40,7 +40,7 @@ while getopts ":p:h:N:" o; do
         N)
             DBNAME=${OPTARG}
 	    	echo "DBNAME set to: ${DBNAME}"
-            ;;           
+            ;;
         *)
             usage
             ;;
@@ -48,8 +48,8 @@ while getopts ":p:h:N:" o; do
 done
 shift $((OPTIND-1))
 
-echo "schema";      pushd schema;      ./apply.sh -N ${DBNAME}    ; popd
-echo "roleinit";    pushd roleinit;    ./apply.sh -N ${DBNAME}    ; popd
-echo "jobtitles";   pushd jobtitles;   ./jobtitles -N ${DBNAME}   ; popd
-echo "deductions";  pushd deductions;  ./deductions -N ${DBNAME}  ; popd
-echo "departments"; pushd departments; ./departments -N ${DBNAME} ; popd
+echo "schema";      pushd ../db/schema; ./apply.sh -N ${DBNAME}    ; popd
+echo "roleinit";    pushd roleinit;     ./apply.sh -N ${DBNAME}    ; popd
+echo "jobtitles";   pushd jobtitles;    ./jobtitles -N ${DBNAME}   ; popd
+echo "deductions";  pushd deductions;   ./deductions -N ${DBNAME}  ; popd
+echo "departments"; pushd departments;  ./departments -N ${DBNAME} ; popd

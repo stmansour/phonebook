@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"phonebook/db"
 	"phonebook/lib"
-	"phonebook/sess"
+	"phonebook/ws"
 	"strings"
 	"time"
 
@@ -26,7 +26,7 @@ func handlerInitUIDate(ui *uiSupport) {
 // it also initializes the uiSession variable
 // RETURNS:  0 = no problems
 //           1 = redirected
-func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
+func initHandlerSession(ssn *db.Session, ui *uiSupport, w http.ResponseWriter, r *http.Request) int {
 	lib.Console("Entered initHandlerSession\n")
 	var ok bool
 
@@ -39,7 +39,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 		lib.Console("\n")
 	}
 
-	cookie, err := r.Cookie(sess.SessionCookieName)
+	cookie, err := r.Cookie(db.SessionCookieName)
 	if err != nil {
 		lib.Ulog("Error getting cookie from http.Request: %s\n", err.Error())
 		http.Redirect(w, r, "/signin/", http.StatusFound)
@@ -52,7 +52,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 		// in the in-memory session table...
 		//--------------------------------------------------------------
 		lib.Console("**** initHandlerSession found cookie %s in request Headers: %s\n", cookie.Name, cookie.Value)
-		ssn, ok = sess.SessionGet(cookie.Value)
+		ssn, ok = db.SessionGet(cookie.Value)
 		ui.X = ssn
 		if ok && ssn != nil {
 			ssn.Refresh(w, r) // Found it.
@@ -67,7 +67,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 		// the cookie is in the db sessions table. If so, it is still a
 		// valid session and we will honor it.
 		//--------------------------------------------------------------
-		c, err := sess.GetSessionCookie(cookie.Value)
+		c, err := db.GetSessionCookie(cookie.Value)
 		if err != nil {
 			lib.Ulog("Error getting cookie from http.Request: %s\n", err.Error())
 			http.Redirect(w, r, "/signin/", http.StatusFound)
@@ -78,7 +78,7 @@ func initHandlerSession(ssn *sess.Session, ui *uiSupport, w http.ResponseWriter,
 			// Found a valid session. Add it to our in-memory table
 			// and continue...
 			//--------------------------------------------------------------
-			s := sess.NewSessionFromCookie(&c)
+			s := ws.NewSessionFromCookie(&c)
 			if len(s.Username) > 0 {
 				ui.X = s
 				handlerInitUIDate(ui)
@@ -135,7 +135,7 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 	email := ""
 
 	var passhash, firstname, preferredname string
-	var uid, RID int
+	var uid, RID int64
 	err := db.PrepStmts.LoginInfo.QueryRow(myusername).Scan(&uid, &firstname, &preferredname, &email, &passhash, &RID)
 	switch {
 	case err == sql.ErrNoRows:
@@ -161,15 +161,15 @@ func webloginHandler(w http.ResponseWriter, r *http.Request) {
 		//=================================================================================
 		expiration := time.Now().Add(10 * time.Minute)
 		lib.Console("USERAGENT = %s, ip = %s\n", ua, ip)
-		c := sess.GenerateSessionCookie(int64(uid), myusername, ua, ip)
+		c := db.GenerateSessionCookie(int64(uid), myusername, ua, ip)
 		lib.Console("After call to GenerateSessionCookie: ip = %s, ua = %s\n", c.IP, c.UserAgent)
 		name := firstname
 		if len(preferredname) > 0 {
 			name = preferredname
 		}
 
-		s := sess.NewSession(&c, name, RID)
-		cookie := http.Cookie{Name: sess.SessionCookieName, Value: s.Token, Expires: expiration}
+		s := db.NewSession(&c, name, RID)
+		cookie := http.Cookie{Name: db.SessionCookieName, Value: s.Token, Expires: expiration}
 		cookie.Path = "/"
 		http.SetCookie(w, &cookie)
 		r.AddCookie(&cookie) // need this so that the redirect to search finds the cookie
@@ -190,7 +190,7 @@ func showResetPwPage(w http.ResponseWriter, r *http.Request, errmsg string) {
 	t, _ := template.New("resetpw.html").Funcs(funcMap).ParseFiles("resetpw.html")
 	var ui uiSupport
 	handlerInitUIDate(&ui)
-	var ssn sess.Session
+	var ssn db.Session
 	ssn.Username = r.FormValue("username")
 	ui.X = &ssn
 	ui.ErrMsg = template.HTML(errmsg)
@@ -310,7 +310,7 @@ func resetpwHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.New("pwreset.html").Funcs(funcMap).ParseFiles("pwreset.html")
 	var ui uiSupport
 	handlerInitUIDate(&ui)
-	var ssn sess.Session
+	var ssn db.Session
 	ssn.Username = myusername
 	ui.X = &ssn
 	ui.ErrMsg = template.HTML(errmsg)

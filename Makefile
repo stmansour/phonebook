@@ -1,4 +1,4 @@
-DIRS=lib db authz ui sess dbtools admintools test
+DIRS=lib db dbtools admintools test
 DIST=tmp
 
 phonebook: *.go config.json

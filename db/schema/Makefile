@@ -1,4 +1,7 @@
+TOP=../..
+DIST=tmp
 db:
+	./apply.sh
 	echo "./schema: build done"
 
 clean:
@@ -9,8 +12,8 @@ package:
 	echo "./schema: package done"
 
 packageqa:
-	mkdir -p ../../tmp/phonebookqa/dbtools/schema
-	cp apply.sh tables.sql ../../tmp/phonebookqa/dbtools/schema
+	mkdir -p "${TOP}"/"${DIST}"/phonebookqa/dbtools/schema
+	cp apply.sh tables.sql "${TOP}"/"${DIST}"/phonebookqa/dbtools/schema
 	echo "./schema: packageqa done"secure:
 	@rm -f config.json confdev.json confprod.json
 

@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strings"
 )
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 
@@ -37,15 +35,15 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	//===========================================================
 	//  First, determine the deptcodes that match this query...
 	//===========================================================
-	var dca []int
+	var dca []int64
 	l := len(d.Query)
 	for deptname, deptcode := range ui.NameToDeptCode {
 		if l > 0 {
 			if strings.Contains(strings.ToLower(deptname), strings.ToLower(d.Query)) {
-				dca = append(dca, deptcode)
+				dca = append(dca, int64(deptcode))
 			}
 		} else {
-			dca = append(dca, deptcode)
+			dca = append(dca, int64(deptcode))
 		}
 	}
 
@@ -105,7 +103,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		// func (d *person) filterSecurityRead(sess *session, permRequired int) {
 		// 	filterSecurityRead(d, ELEMPERSON, sess, permRequired, d.UID)
 		// }
-		filterSecurityRead(pm, authz.ELEMPERSON, ssn, authz.PERMVIEW|authz.PERMMOD, m.UID)
+		filterSecurityRead(pm, db.ELEMPERSON, ssn, db.PERMVIEW|db.PERMMOD, m.UID)
 		d.Matches = append(d.Matches, m)
 	}
 	errcheck(rows.Err())

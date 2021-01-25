@@ -3,17 +3,15 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 )
 
 // func (c *db.Class) filterSecurityRead(ssn *sess.Session, permRequired int) {
-// 	filterSecurityRead(c, authz.ELEMCLASS, ssn, permRequired, 0)
+// 	filterSecurityRead(c, db.ELEMCLASS, ssn, permRequired, 0)
 // }
 
-func getClassInfo(classcode int, c *db.Class) {
+func getClassInfo(classcode int64, c *db.Class) {
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewClass++             // initialize our data
@@ -34,7 +32,7 @@ func getClassInfo(classcode int, c *db.Class) {
 
 func classHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -43,7 +41,7 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 	ssn = ui.X
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMCLASS, authz.PERMVIEW) {
+	if !ssn.ElemPermsAny(db.ELEMCLASS, db.PERMVIEW) {
 		ulog("Permissions refuse class page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -53,11 +51,11 @@ func classHandler(w http.ResponseWriter, r *http.Request) {
 	path := "/class/"
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
-		classcode, _ := strconv.Atoi(costr)
+		classcode, _ := strconv.ParseInt(costr, 10, 64)
 		breadcrumbAdd(ssn, "Class", fmt.Sprintf("/class/%d", classcode))
 		getClassInfo(classcode, &c)
 		ui.A = &c
-		filterSecurityRead(ui.A, authz.ELEMCLASS, ssn, authz.PERMVIEW, 0)
+		filterSecurityRead(ui.A, db.ELEMCLASS, ssn, db.PERMVIEW, 0)
 
 		err := renderTemplate(w, ui, "class.html")
 

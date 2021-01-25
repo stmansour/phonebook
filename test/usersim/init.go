@@ -32,18 +32,18 @@ func readCommandLineArgs() {
 	fptr := flag.Int("o", 0, "index of first user to test")
 
 	flag.Parse()
-	App.TestIterations = *iPtr // number of iterations (mutually exclusive with TestDuration)
-	App.TestUsers = *uPtr      // number of users to test with
+	App.TestIterations = int64(*iPtr) // number of iterations (mutually exclusive with TestDuration)
+	App.TestUsers = int64(*uPtr)      // number of users to test with
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
 	App.Seed = int64(*p)
 	App.Host = *hPtr
-	App.Port = *pPtr
+	App.Port = int64(*pPtr)
 	App.Debug = *dbgPtr
-	App.FirstUserIndex = *fptr
+	App.FirstUserIndex = int64(*fptr)
 	App.UpdateDBOnly = *fdbPtr
-	App.TotalClasses = *pclPtr
-	App.TotalCompanies = *pcoPtr
+	App.TotalClasses = int64(*pclPtr)
+	App.TotalCompanies = int64(*pcoPtr)
 	App.ShowTestMatching = *tmPtr
 	rand.Seed(App.Seed)
 	App.TestDurationHrs = *HPtr
@@ -104,7 +104,7 @@ func createClasses() {
 	insert, err := App.db.Prepare("INSERT INTO classes (Name,Designation) VALUES(?,?)")
 	errcheck(err)
 	list := rand.Perm(len(App.RandClasses))
-	for i := 0; i < App.TotalClasses; i++ {
+	for i := int64(0); i < App.TotalClasses; i++ {
 		cn := App.RandClasses[list[i]]
 		dsg := genDesignation(cn, "classcode", "classes")
 		if len(cn) > 25 {
@@ -137,7 +137,7 @@ func createCompanies() {
 	errcheck(err)
 	list := rand.Perm(len(App.Companies))
 
-	for i := 0; i < App.TotalCompanies; i++ {
+	for i := int64(0); i < App.TotalCompanies; i++ {
 		cn := App.Companies[list[i]]
 		dsg := genDesignation(cn, "cocode", "companies")
 		if len(cn) > 25 {
@@ -242,10 +242,10 @@ func readAccessRoles() {
 }
 
 func loadCompanies() {
-	var code int
+	var code int64
 	var name string
-	App.CoCodeToName = make(map[int]string)
-	App.NameToCoCode = make(map[string]int)
+	App.CoCodeToName = make(map[int64]string)
+	App.NameToCoCode = make(map[string]int64)
 
 	retrycount := 0
 	count := 0
@@ -274,11 +274,11 @@ func loadCompanies() {
 }
 
 func loadClasses() {
-	var code int
+	var code int64
 	var name string
 
-	App.NameToClassCode = make(map[string]int)
-	App.ClassCodeToName = make(map[int]string)
+	App.NameToClassCode = make(map[string]int64)
+	App.ClassCodeToName = make(map[int64]string)
 	retrycount := 0
 	classcount := 0
 
@@ -306,13 +306,13 @@ func loadClasses() {
 }
 
 func loadMaps() {
-	var code int
+	var code int64
 	var name string
 
 	loadCompanies()
 	loadClasses()
 
-	App.NameToJobCode = make(map[string]int)
+	App.NameToJobCode = make(map[string]int64)
 	rows, err := App.db.Query("select jobcode,title from jobtitles")
 	errcheck(err)
 	defer rows.Close()
@@ -330,7 +330,7 @@ func loadMaps() {
 	}
 	errcheck(rows.Err())
 
-	App.NameToDeptCode = make(map[string]int)
+	App.NameToDeptCode = make(map[string]int64)
 	rows, err = App.db.Query("select deptcode,name from departments order by name")
 	errcheck(err)
 	defer rows.Close()
@@ -349,8 +349,8 @@ func loadMaps() {
 		fmt.Printf("DeptLo=%d, DeptHi=%d\n", App.DeptLo, App.DeptHi)
 	}
 
-	App.AcceptCodeToName = make(map[int]string)
-	for i := ACPTUNKNOWN; i <= ACPTLAST; i++ {
+	App.AcceptCodeToName = make(map[int64]string)
+	for i := int64(ACPTUNKNOWN); i <= int64(ACPTLAST); i++ {
 		App.AcceptCodeToName[i] = acceptIntToString(i)
 	}
 

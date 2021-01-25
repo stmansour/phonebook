@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 )
 
@@ -13,7 +11,7 @@ func getCompensations(d *db.PersonDetail) {
 	rows, err := Phonebook.prepstmt.getComps.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
-	var c int
+	var c int64
 	for rows.Next() {
 		errcheck(rows.Scan(&c))
 		d.Comps = append(d.Comps, c)
@@ -34,7 +32,7 @@ func getCompensationStr(d *db.PersonDetail) {
 
 func initMyComps(d *db.PersonDetail) {
 	d.MyComps = make([]db.MyComp, 0)
-	for i := CTUNSET + 1; i < CTEND; i++ {
+	for i := int64(CTUNSET) + 1; i < int64(CTEND); i++ {
 		var c db.MyComp
 		c.CompCode = i
 		c.Name = compensationTypeToString(i)
@@ -59,7 +57,7 @@ func getDeductions(d *db.PersonDetail) {
 	rows, err := Phonebook.prepstmt.deductList.Query(d.UID)
 	errcheck(err)
 	defer rows.Close()
-	var c int
+	var c int64
 	for rows.Next() {
 		errcheck(rows.Scan(&c))
 		d.Deductions = append(d.Deductions, c)
@@ -141,7 +139,7 @@ func adminReadDetails(d *db.PersonDetail) {
 
 func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -159,7 +157,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	path := "/adminView/"
 	uidstr := r.RequestURI[len(path):]
 	if len(uidstr) > 0 {
-		uid, _ := strconv.Atoi(uidstr)
+		uid, _ := strconv.ParseInt(uidstr, 10, 64)
 		d.UID = uid
 		breadcrumbAdd(ssn, "AdminView Person", fmt.Sprintf("/adminView/%d", uid))
 		adminReadDetails(&d)
@@ -168,14 +166,14 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	//============================================================
 	// SECURITY
 	//============================================================
-	if !ssn.ElemPermsAll(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMMOD) {
-		fmt.Printf("ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMVIEW|authz.PERMMOD) returned 0\n")
+	if !ssn.ElemPermsAll(db.ELEMPERSON, db.PERMVIEW|db.PERMMOD) {
+		fmt.Printf("ssn.ElemPermsAny(db.ELEMPERSON, db.PERMVIEW|db.PERMMOD) returned 0\n")
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
 	}
 	// Ensure that the user has permissions to view everything we're about
 	// to display.
-	PDetFilterSecurityRead(&d, ssn, authz.PERMVIEW|authz.PERMMOD)
+	PDetFilterSecurityRead(&d, ssn, db.PERMVIEW|db.PERMMOD)
 	ui.D = &d
 
 	err := renderTemplate(w, ui, "adminView.html")

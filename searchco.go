@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 )
 
 func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -46,9 +44,9 @@ func searchCompaniesHandler(w http.ResponseWriter, r *http.Request) {
 		errcheck(rows.Scan(&c.CoCode, &c.LegalName, &c.CommonName, &c.Phone, &c.Fax, &c.Email, &c.Designation))
 		pc := &c
 		// func (c *db.Company) filterSecurityRead(ssn *sess.Session, permRequired int) {
-		// 	filterSecurityRead(c, authz.ELEMCOMPANY, ssn, permRequired, 0)
+		// 	filterSecurityRead(c, db.ELEMCOMPANY, ssn, permRequired, 0)
 		// }
-		filterSecurityRead(pc, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
+		filterSecurityRead(pc, db.ELEMCOMPANY, ssn, db.PERMVIEW, 0)
 		d.Matches = append(d.Matches, c)
 	}
 	errcheck(rows.Err())

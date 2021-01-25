@@ -7,15 +7,14 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"phonebook/authz"
-	"phonebook/sess"
+	"phonebook/db"
 	"strings"
 )
 
 func setupHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("entered setup handler\n")
 	w.Header().Set("Content-Type", "text/html")
-	var sess *sess.Session
+	var sess *db.Session
 	var ui uiSupport
 	sess = nil
 	if 0 < initHandlerSession(sess, &ui, w, r) {
@@ -25,7 +24,7 @@ func setupHandler(w http.ResponseWriter, r *http.Request) {
 	breadcrumbReset(sess, "Setup", "/setup/")
 
 	// SECURITY
-	if !(sess.ElemPermsAny(authz.ELEMPBSVC, authz.PERMEXEC)) {
+	if !(sess.ElemPermsAny(db.ELEMPBSVC, db.PERMEXEC)) {
 		ulog("Permissions refuse setup page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -161,7 +160,7 @@ func saveSetupHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("Entered saveSetupHandler\n")
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Cache-Control", "no-store")
-	var sess *sess.Session
+	var sess *db.Session
 	var ui uiSupport
 	sess = nil
 	if 0 < initHandlerSession(sess, &ui, w, r) {
@@ -171,7 +170,7 @@ func saveSetupHandler(w http.ResponseWriter, r *http.Request) {
 	breadcrumbReset(sess, "Setup", "/setup/")
 
 	// SECURITY
-	if !(sess.ElemPermsAny(authz.ELEMPBSVC, authz.PERMEXEC)) {
+	if !(sess.ElemPermsAny(db.ELEMPBSVC, db.PERMEXEC)) {
 		ulog("Permissions refuse setup page on userid=%d (%s), role=%s\n", sess.UID, sess.Firstname, sess.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return

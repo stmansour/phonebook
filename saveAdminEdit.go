@@ -3,19 +3,17 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 	"strings"
 )
 
-func strToInt(s string) int {
+func strToInt(s string) int64 {
 	if len(s) == 0 {
 		return 0
 	}
 	s = strings.Trim(s, " \n\r")
-	n, err := strconv.Atoi(s)
+	n, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		fmt.Printf("Error converting %s to a number: %v\n", s, err)
 		return 0
@@ -33,7 +31,7 @@ func parseDeductions(d *db.PersonDetail) {
 }
 
 func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -46,7 +44,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMPERSON, authz.PERMMOD) {
+	if !ssn.ElemPermsAny(db.ELEMPERSON, db.PERMMOD) {
 		ulog("Permissions refuse saveAdminEdit page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -59,7 +57,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "The RequestURI needs the person's uid. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	uid, err := strconv.Atoi(uidstr)
+	uid, err := strconv.ParseInt(uidstr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting uid to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -117,7 +115,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 		d.StateOfEmployment = r.FormValue("StateOfEmployment")
 		d.CountryOfEmployment = r.FormValue("CountryOfEmployment")
 
-		if hasAccess(ssn, authz.ELEMPERSON, "Role", authz.PERMMOD) {
+		if hasAccess(ssn, db.ELEMPERSON, "Role", db.PERMMOD) {
 			d.RID = strToInt(r.FormValue("Role"))
 		}
 
@@ -162,10 +160,9 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// func (d *db.PersonDetail) filterSecurityMerge(ssn *sess.Session, permRequired int, dNew *db.PersonDetail) {
-		// 	filterSecurityMerge(d, ssn, authz.ELEMPERSON, permRequired, dNew, d.UID)
-		// }
-		filterSecurityMerge(&do, ssn, authz.ELEMPERSON, authz.PERMMOD, &d, do.UID) // merge in new data
+		// lib.Console("BEFORE SECURITY MERGE: d.DeptCode = %d, do.DeptCode = %d\n", d.DeptCode, do.DeptCode)
+		filterSecurityMerge(&do, ssn, db.ELEMPERSON, db.PERMMOD, &d, do.UID) // merge in new data
+		// lib.Console("AFTER  SECURITY MERGE: d.DeptCode = %d, do.DeptCode = %d\n", d.DeptCode, do.DeptCode)
 
 		if int64(uid) == ssn.UID {
 			if 0 == len(do.PreferredName) {
@@ -191,7 +188,7 @@ func saveAdminEditHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			UserName := do.UserName
 			var xx int
-			nUID := 0
+			nUID := int64(0)
 			for {
 				found := false
 				rows, err := Phonebook.db.Query("select uid from people where UserName=?", UserName)

@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 	"strings"
 )
@@ -17,7 +15,7 @@ var LEGALNAMESIZE = 50
 var COMMONNAMESIZE = 50
 
 func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -30,7 +28,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMMOD) {
+	if !ssn.ElemPermsAny(db.ELEMCOMPANY, db.PERMMOD) {
 		ulog("Permissions refuse saveAdminEditCo page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -43,7 +41,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "The RequestURI needs the person's Company Code. It was not found on the URI:  %s\n", r.RequestURI)
 		return
 	}
-	CoCode, err := strconv.Atoi(CoCodestr)
+	CoCode, err := strconv.ParseInt(CoCodestr, 10, 64)
 	if err != nil {
 		fmt.Fprintf(w, "Error converting Company Code to a number: %v. URI: %s\n", err, r.RequestURI)
 		return
@@ -88,9 +86,9 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 		getCompanyInfo(CoCode, &co) // fetch all its data
 
 		// func (c *company) filterSecurityMerge(ssn *sess.Session, permRequired int, cNew *company) {
-		// 	filterSecurityMerge(c, ssn, authz.ELEMCOMPANY, permRequired, cNew, 0)
+		// 	filterSecurityMerge(c, ssn, db.ELEMCOMPANY, permRequired, cNew, 0)
 		// }
-		filterSecurityMerge(&co, ssn, authz.ELEMCOMPANY, authz.PERMMOD, &c, 0) // merge
+		filterSecurityMerge(&co, ssn, db.ELEMCOMPANY, db.PERMMOD, &c, 0) // merge
 
 		if 0 == CoCode {
 			_, err = Phonebook.prepstmt.insertCompany.Exec(c.LegalName, c.CommonName, c.Designation,
@@ -102,7 +100,7 @@ func saveAdminEditCoHandler(w http.ResponseWriter, r *http.Request) {
 			rows, err := Phonebook.prepstmt.companyReadback.Query(c.CommonName, c.LegalName)
 			errcheck(err)
 			defer rows.Close()
-			nCoCode := 0 // quick way to handle multiple matches... in this case, largest CoCode wins, it hast to be the latest person added
+			nCoCode := int64(0) // quick way to handle multiple matches... in this case, largest CoCode wins, it hast to be the latest person added
 			for rows.Next() {
 				errcheck(rows.Scan(&CoCode))
 				if CoCode > nCoCode {

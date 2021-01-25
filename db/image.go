@@ -1,20 +1,19 @@
-package ui
+package db
 
 import (
 	"net/url"
 	"path"
-	"phonebook/db"
 	"phonebook/lib"
 )
 
 // GetImageLocation returns the ImageURL for the specified user.
-func GetImageLocation(uid int) string {
+func GetImageLocation(uid int64) string {
 	var imagePath string
 
 	defaultImageName := "defaultProfileImage.png"
 
 	im := defaultImageName // If something went wrong  or database doesn't have imagePath than display default image
-	err := db.PrepStmts.GetImagePath.QueryRow(uid).Scan(&imagePath)
+	err := PrepStmts.GetImagePath.QueryRow(uid).Scan(&imagePath)
 	if imagePath != "" && err == nil {
 		im = imagePath
 	}

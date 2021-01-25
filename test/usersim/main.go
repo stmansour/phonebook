@@ -21,7 +21,7 @@ import (
 
 // Role defines a collection of FieldPerms that can be assigned to a person
 type Role struct {
-	RID  int    // assigned by DB
+	RID  int64  // assigned by DB
 	Name string // role name
 }
 
@@ -35,7 +35,7 @@ type testContext struct {
 	d        *personDetail
 	co       *company
 	cl       *class
-	testtype int
+	testtype int64
 }
 
 // ProductName is the name of the product that appears in the header of all html.
@@ -45,7 +45,7 @@ var ProductName = string("AIR Directory")
 //  FINANCE
 //--------------------------------------------------------------------
 type company struct {
-	CoCode           int
+	CoCode           int64
 	LegalName        string
 	CommonName       string
 	Address          string
@@ -58,20 +58,20 @@ type company struct {
 	Fax              string
 	Email            string
 	Designation      string
-	Active           int
-	EmploysPersonnel int
+	Active           int64
+	EmploysPersonnel int64
 }
 
 type myComp struct {
-	CompCode int    // code for this comp type
+	CompCode int64  // code for this comp type
 	Name     string // name for this code
-	HaveIt   int    // 0 = does not have it, 1 = has it
+	HaveIt   int64  // 0 = does not have it, 1 = has it
 }
 
 type aDeduction struct {
-	DCode  int    // code for this deduction
+	DCode  int64  // code for this deduction
 	Name   string // name for this deduction
-	HaveIt int    // 0 = does not have it, 1 = has it
+	HaveIt int64  // 0 = does not have it, 1 = has it
 }
 
 //--------------------------------------------------------------------
@@ -97,15 +97,15 @@ const (
 
 // FieldPerm defines how a specific element field can be accessed
 type FieldPerm struct {
-	Elem  int    // Element: Person, Company, or Class
+	Elem  int64  // Element: Person, Company, or Class
 	Field string // field within the Element
-	Perm  int    // 'logical or' of all permissions on this field
+	Perm  int64  // 'logical or' of all permissions on this field
 	Descr string // description of the field
 }
 
 type class struct {
-	ClassCode   int
-	CoCode      int
+	ClassCode   int64
+	CoCode      int64
 	Name        string
 	Designation string
 	Description string
@@ -116,15 +116,15 @@ type class struct {
 //  used in Phonebook searches and as direct reports
 //--------------------------------------------------------------------
 type person struct {
-	UID           int
+	UID           int64
 	LastName      string
 	FirstName     string
 	PreferredName string
 	PrimaryEmail  string
-	JobCode       int
+	JobCode       int64
 	OfficePhone   string
 	CellPhone     string
-	DeptCode      int
+	DeptCode      int64
 	DeptName      string
 	Employer      string
 }
@@ -137,27 +137,27 @@ type personDetail struct {
 	Pro           *Profile
 	SessionCookie *http.Cookie
 	// below this point, it is exactly the struct defined in Phonebook
-	UID                     int
+	UID                     int64
 	UserName                string
 	LastName                string
 	FirstName               string
 	PrimaryEmail            string
-	JobCode                 int
+	JobCode                 int64
 	OfficePhone             string
 	CellPhone               string
 	DeptName                string
 	MiddleName              string
 	Salutation              string
-	Status                  int
+	Status                  int64
 	PositionControlNumber   string
 	OfficeFax               string
 	SecondaryEmail          string
-	EligibleForRehire       int
+	EligibleForRehire       int64
 	LastReview              time.Time
 	NextReview              time.Time
 	Birthdate               string
-	BirthMonth              int
-	BirthDOM                int
+	BirthMonth              int64
+	BirthDOM                int64
 	HomeStreetAddress       string
 	HomeStreetAddress2      string
 	HomeCity                string
@@ -167,32 +167,32 @@ type personDetail struct {
 	StateOfEmployment       string
 	CountryOfEmployment     string
 	PreferredName           string
-	Comps                   []int  // an array of CompensationType values (ints)
-	RID                     int    // security role assigned to this person
-	CompensationStr         string //used in the admin edit interface
-	DeptCode                int
+	Comps                   []int64 // an array of CompensationType values (ints)
+	RID                     int64   // security role assigned to this person
+	CompensationStr         string  //used in the admin edit interface
+	DeptCode                int64
 	Company                 company
-	CoCode                  int
-	MgrUID                  int
+	CoCode                  int64
+	MgrUID                  int64
 	JobTitle                string
 	Class                   string
-	ClassCode               int
+	ClassCode               int64
 	MgrName                 string
 	Image                   string // ptr to image -- URI
 	Reports                 []person
-	Deductions              []int
+	Deductions              []int64
 	DeductionsStr           string
 	EmergencyContactName    string
 	EmergencyContactPhone   string
-	AcceptedHealthInsurance int
-	AcceptedDentalInsurance int
-	Accepted401K            int
+	AcceptedHealthInsurance int64
+	AcceptedDentalInsurance int64
+	Accepted401K            int64
 	Hire                    time.Time
 	Termination             time.Time
-	NameToCoCode            map[string]int
-	NameToJobCode           map[string]int
-	AcceptCodeToName        map[int]string
-	NameToDeptCode          map[string]int // department name to dept code
+	NameToCoCode            map[string]int64
+	NameToJobCode           map[string]int64
+	AcceptCodeToName        map[int64]string
+	NameToDeptCode          map[string]int64 // department name to dept code
 	MyComps                 []myComp
 	MyDeductions            []aDeduction
 }
@@ -242,41 +242,41 @@ var App struct {
 	DBName           string
 	DBUser           string
 	Host             string
-	Port             int
-	FirstUserIndex   int             // index of first user to test
-	db               *sql.DB         // database connection
-	prepstmt         PrepSQL         // struct of prepared sql statements
-	TestIterations   int             // number of iterations (mutually exclusive with TestDuration)
-	TestUsers        int             // number of users to test with
-	TestDurationMins int64           // duration in minutes
-	TestDurationHrs  int64           // duration in hours
-	TestDuration     time.Duration   // duration of tests
-	Debug            bool            // show debug information
-	ShowTestMatching bool            // to debug when matches fail
-	UpdateDBOnly     bool            // just update the db as needed, don't run the simulation
-	TotalCompanies   int             // number of companies to create
-	TotalClasses     int             // number of classes to create
-	Peeps            []*personDetail // the people to use for test users
-	FirstNames       []string        // array of first names
-	LastNames        []string        // array of last names
-	Streets          []string        // array of street names
-	Cities           []string        // array of cities
-	States           []string        // array of states
-	Companies        []string        // array of random company names
-	RandClasses      []string        // array of random class names
-	CoCodeToName     map[int]string  // map from company code to company name
-	NameToCoCode     map[string]int  // map from company name to company code
-	NameToJobCode    map[string]int  // jobtitle to jobcode
-	AcceptCodeToName map[int]string  // Acceptance to jobcode
-	NameToDeptCode   map[string]int  // department name to dept code
-	NameToClassCode  map[string]int  // class designation to classcode
-	ClassCodeToName  map[int]string  // index by classcode to get the name
-	Months           []string        // a map for month number to month name
-	Roles            []Role          // the roles saved in the database
-	JCLo, JCHi       int             // lo and high indeces for jobcode
-	DeptLo, DeptHi   int             // lo and high indeces for department
-	CompanyList      []company       // array of company structs for all defined companies
-	LogFile          *os.File        // where to log messages
+	Port             int64
+	FirstUserIndex   int64            // index of first user to test
+	db               *sql.DB          // database connection
+	prepstmt         PrepSQL          // struct of prepared sql statements
+	TestIterations   int64            // number of iterations (mutually exclusive with TestDuration)
+	TestUsers        int64            // number of users to test with
+	TestDurationMins int64            // duration in minutes
+	TestDurationHrs  int64            // duration in hours
+	TestDuration     time.Duration    // duration of tests
+	Debug            bool             // show debug information
+	ShowTestMatching bool             // to debug when matches fail
+	UpdateDBOnly     bool             // just update the db as needed, don't run the simulation
+	TotalCompanies   int64            // number of companies to create
+	TotalClasses     int64            // number of classes to create
+	Peeps            []*personDetail  // the people to use for test users
+	FirstNames       []string         // array of first names
+	LastNames        []string         // array of last names
+	Streets          []string         // array of street names
+	Cities           []string         // array of cities
+	States           []string         // array of states
+	Companies        []string         // array of random company names
+	RandClasses      []string         // array of random class names
+	CoCodeToName     map[int64]string // map from company code to company name
+	NameToCoCode     map[string]int64 // map from company name to company code
+	NameToJobCode    map[string]int64 // jobtitle to jobcode
+	AcceptCodeToName map[int64]string // Acceptance to jobcode
+	NameToDeptCode   map[string]int64 // department name to dept code
+	NameToClassCode  map[string]int64 // class designation to classcode
+	ClassCodeToName  map[int64]string // index by classcode to get the name
+	Months           []string         // a map for month number to month name
+	Roles            []Role           // the roles saved in the database
+	JCLo, JCHi       int64            // lo and high indeces for jobcode
+	DeptLo, DeptHi   int64            // lo and high indeces for department
+	CompanyList      []company        // array of company structs for all defined companies
+	LogFile          *os.File         // where to log messages
 }
 
 func fillUserFields(v *personDetail) {
@@ -295,14 +295,18 @@ func fillUserFields(v *personDetail) {
 	v.HomeState = App.States[rand.Intn(len(App.States))]
 	v.HomePostalCode = fmt.Sprintf("%05d", rand.Intn(99999))
 	v.HomeCountry = "USA"
-	v.DeptCode = 1 + rand.Intn(1+rand.Intn(App.DeptHi-App.DeptLo-1))
-	v.JobCode = 1 + rand.Intn(1+rand.Intn(App.JCHi-App.JCLo-1))
+
+	var w = int(App.DeptHi - App.DeptLo - 1)
+	var x = int(1 + rand.Intn(w))
+	v.DeptCode = int64(1 + rand.Intn(x))
+
+	v.JobCode = 1 + rand.Int63n(1+rand.Int63n(App.JCHi-App.JCLo-1))
 	v.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)]) + strings.ToLower(App.LastNames[rand.Intn(Nlast)])
 	v.EmergencyContactPhone = randomPhoneNumber()
 	v.PrimaryEmail = randomEmail(v.LastName, v.FirstName)
 	v.SecondaryEmail = randomEmail(v.LastName, v.FirstName)
 
-	v.ClassCode = 1 + rand.Intn(len(App.NameToClassCode))
+	v.ClassCode = int64(1 + rand.Intn(len(App.NameToClassCode)))
 
 	// select a random company, but be sure it employs people.
 	for {
@@ -351,7 +355,7 @@ func loadUsers() {
 	defer rows.Close()
 	for rows.Next() {
 		var m personDetail
-		var uid int
+		var uid int64
 		errcheck(rows.Scan(&uid))
 		m.UID = uid
 		adminReadDetails(&m)
@@ -407,13 +411,14 @@ func main() {
 	readAccessRoles()
 	loadNames()
 	loadMaps()
+
 	App.Peeps = make([]*personDetail, 0)
 	initProfiles()
 
 	loadUsers()
 	loadCompanyList()
-	if App.TestUsers > len(App.Peeps) {
-		for i := 0; i < App.TestUsers-len(App.Peeps); i++ {
+	if App.TestUsers > int64(len(App.Peeps)) {
+		for i := int64(0); i < App.TestUsers-int64(len(App.Peeps)); i++ {
 			var v personDetail
 			createUser(&v)
 		}

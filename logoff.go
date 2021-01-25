@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"phonebook/sess"
+	"phonebook/db"
 	"time"
 )
 
@@ -13,20 +13,21 @@ func logoffHandler(w http.ResponseWriter, r *http.Request) {
 	Phonebook.ReqCountersMemAck <- 1 // tell Dispatcher we're done with the data
 
 	var ok bool
-	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
-	var ui uiSupport
-	ssn = nil
-	if 0 < initHandlerSession(ssn, &ui, w, r) {
-		return
-	}
-	ssn = ui.X
+	// var ui uiSupport
+	var ssn *db.Session
 
-	cookie, err := r.Cookie(sess.SessionCookieName)
+	// ssn = nil
+	// if 0 < initHandlerSession(ssn, &ui, w, r) {
+	// 	return
+	// }
+	// ssn = ui.X
+	cookie, err := r.Cookie(db.SessionCookieName)
+
+	w.Header().Set("Content-Type", "text/html")
 	if nil != cookie && err == nil {
-		ssn, ok = sess.SessionGet(cookie.Value)
+		ssn, ok = db.SessionGet(cookie.Value)
 		if ok {
-			sess.SessionDelete(ssn)
+			db.SessionDelete(ssn)
 		}
 		// force the cookie to expire
 		cookie.Expires = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)

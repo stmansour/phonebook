@@ -68,7 +68,7 @@ func SvcPeopleTypeDown(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 
 	// lib.Console("Entered %s\n", funcname)
 	// lib.Console("handle typedown: GetPeopleTypeDown( search=%s, limit=%d )\n", d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
-	g.Records, err = db.GetPeopleTypeDown(d.wsTypeDownReq.Search, d.wsTypeDownReq.Max)
+	g.Records, err = db.GetPeopleTypeDown(d.wsTypeDownReq.Search, int64(d.wsTypeDownReq.Max))
 	if err != nil {
 		e := fmt.Errorf("Error getting typedown matches: %s", err.Error())
 		SvcErrorReturn(w, e, funcname)
@@ -142,7 +142,6 @@ func getPerson(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	var a db.WSPerson
 	var err error
 
-	lib.Console("entered %s, getting UID = %d\n", funcname, d.ID)
 	a, err = db.GetWSPerson(d.ID)
 	if err != nil {
 		SvcErrorReturn(w, err, funcname)

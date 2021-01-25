@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"phonebook/db"
 	"phonebook/lib"
-	"phonebook/sess"
-	"phonebook/ui"
 	"strings"
 	"time"
 )
@@ -37,7 +35,7 @@ type AuthSuccessResponse struct {
 }
 
 // ValidateCookie describes the data sent by an AIR app to check
-// whether or not a cookie value is valid.
+// whether or not a db.Cookie value is valid.
 type ValidateCookie struct {
 	CookieVal string `json:"cookieval"`
 	IP        string `json:"ip"`
@@ -62,6 +60,14 @@ func getImageURL(UID int64) (string, error) {
 		}
 	}
 	return fname, nil
+}
+
+// NewSessionFromCookie is a wrapper around the sess version of this so that
+// no db access is needed
+func NewSessionFromCookie(c *db.SessionCookie) *db.Session {
+	s := db.NewSessionFromCookie(c)
+	//s.ImageURL = db.GetImageLocation(uid)
+	return s
 }
 
 // SvcAuthenticate generates a password hash from the supplied POST info and
@@ -123,16 +129,16 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	//----------------------------------------------------------------------------------
 	if UID > 0 {
 		// lib.Console("svcAuth D\n")
-		imageProfilePath := ui.GetImageLocation(int(UID)) // we need this in multiple cases
+		imageProfilePath := db.GetImageLocation(UID) // we need this in multiple cases
 
 		//------------------------------------------------------------------------
-		// Before generating a new cookie, see if this user / useragent / ip
-		// combination already has a valid cookie.
+		// Before generating a new db.Cookie, see if this user / useragent / ip
+		// combination already has a valid db.Cookie.
 		//------------------------------------------------------------------------
 		c, err := db.FindMatchingSessionCookie(foo.User, foo.RemoteAddr, foo.UserAgent)
 		if err != nil {
 			// lib.Console("svcAuth E\n")
-			err := fmt.Errorf("error finding cookie: %s", err.Error())
+			err := fmt.Errorf("error finding db.Cookie: %s", err.Error())
 			SvcErrorReturn(w, err, funcname)
 			goto exit
 		}
@@ -140,7 +146,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		if len(c.Cookie) > 0 && foo.User == c.UserName {
 			// lib.Console("svcAuth G\n")
 			//-----------------------------------------------------------------------
-			// This user already has a cookie in the same useragent. Just update
+			// This user already has a db.Cookie in the same useragent. Just update
 			// the existing info and return it...
 			//-----------------------------------------------------------------------
 			g := AuthSuccessResponse{
@@ -149,24 +155,24 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 				Name:     Name,
 				ImageURL: imageProfilePath,
 				Token:    c.Cookie,
-				Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
+				Expire:   c.Expire.In(db.SessionManager.ZoneUTC).Format(JSONDATETIME),
 			}
 			// lib.Console("svcAuth H\n")
 			//--------------------------------
 			// get the associated session...
 			//--------------------------------
-			s, ok := sess.Sessions[c.Cookie]
+			s, ok := db.Sessions[c.Cookie]
 			if !ok { // this could possibly happen if the timeing is *just* right, but we need to create it
 				// lib.Console("svcAuth I\n")
-				s = sess.NewSessionFromCookie(&c)
+				s = db.NewSessionFromCookie(&c)
 			}
 			//----------------------------------------------------
 			// update its timeout now that it has been used...
 			//----------------------------------------------------
 			// lib.Console("svcAuth J\n")
-			sess.ReUpCookieTime(s)
-			sess.UpdateSessionCookie(s)
-			g.Expire = s.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME)
+			db.ReUpCookieTime(s)
+			db.UpdateSessionCookieDB(s)
+			g.Expire = s.Expire.In(db.SessionManager.ZoneUTC).Format(JSONDATETIME)
 
 			//----------------------------------------------------
 			// And now we're done... return the response
@@ -182,8 +188,8 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		// If we hit this point, it means that there currently is no entry in the
 		// session table for the this user. Create one...
 		//---------------------------------------------------------------------------
-		c = sess.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
-		sess.NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
+		c = db.GenerateSessionCookie(UID, foo.User, foo.UserAgent, foo.RemoteAddr)
+		db.NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
 
 		g := AuthSuccessResponse{
 			Status:   "success",
@@ -191,7 +197,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 			Name:     Name,
 			ImageURL: imageProfilePath,
 			Token:    c.Cookie,
-			Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
+			Expire:   c.Expire.In(db.SessionManager.ZoneUTC).Format(JSONDATETIME),
 		}
 
 		// lib.Console("svcAuth L  (username: %s, user agent: %s)\n", c.UserName, c.UserAgent)
@@ -202,7 +208,7 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		err = db.InsertSessionCookie(c.UID, c.UserName, c.Cookie, &c.Expire, c.UserAgent, c.IP)
 		if err != nil {
 			// lib.Console("svcAuth M\n")
-			err = fmt.Errorf("error inserting cookie into sessiondb: %s", err.Error())
+			err = fmt.Errorf("error inserting db.Cookie into sessiondb: %s", err.Error())
 			SvcErrorReturn(w, err, funcname)
 			goto exit
 		}
@@ -215,8 +221,8 @@ func SvcAuthenticate(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 
 exit:
 	// lib.Console("svcAuth P\n")
-	sess.DumpSessions()
-	sess.DumpSessionCookies()
+	db.DumpSessions()
+	db.DumpSessionCookies()
 }
 
 // DoAuthentication builds a password hash out of the supplied user and
@@ -268,8 +274,8 @@ func DoAuthentication(User, Pass string) (int64, string, error) {
 	}
 }
 
-// SvcValidateCookie is called by an AIR app when it finds the air cookie
-// but has no associated session.  If the cookie is in our sessions table
+// SvcValidateCookie is called by an AIR app when it finds the air db.Cookie
+// but has no associated session.  If the db.Cookie is in our sessions table
 // then we send back a success response with the same info we include in
 // a successful login. Otherwise, we send an appropriate error response
 //
@@ -277,12 +283,12 @@ func DoAuthentication(User, Pass string) (int64, string, error) {
 //
 //     1<<0  -  if this bit is set it means just send back success
 //              or failure, do not send back all other information
-//              associated with the session containing the cookie.
+//              associated with the session containing the db.Cookie.
 //              The response will come back with Status: "success"
-//              if the cookie was found, "failure" if the cookie
+//              if the db.Cookie was found, "failure" if the db.Cookie
 //              was not found, or "error" if an error was encountered.
 //
-//     1<<1  =  Update the timeout time for the cookie and session -
+//     1<<1  =  Update the timeout time for the db.Cookie and session -
 //              Increments by phonebook session manager timeout time.
 //
 // INPUTS:
@@ -311,54 +317,54 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		goto exit1
 	}
 
-	lib.Console("request for session cookie:  %s, IP = %s, UserAgent = %s\n", foo.CookieVal, foo.IP, foo.UserAgent)
-	c, err = sess.GetSessionCookie(foo.CookieVal)
+	lib.Console("request for session db.Cookie:  %s, IP = %s, UserAgent = %s\n", foo.CookieVal, foo.IP, foo.UserAgent)
+	c, err = db.GetSessionCookie(foo.CookieVal)
 	if err != nil {
-		lib.Ulog("signinHandler: error getting session cookie: %s\n", err.Error())
+		lib.Ulog("signinHandler: error getting session db.Cookie: %s\n", err.Error())
 	}
-	lib.Console("Found session cookie: UID=%d, UserName=%s, Expire=%s\n", c.UID, c.UserName, c.Expire.Format("JSONDATETIME"))
+	lib.Console("Found session db.Cookie: UID=%d, UserName=%s, Expire=%s\n", c.UID, c.UserName, c.Expire.Format("JSONDATETIME"))
 	lib.Console("                      IP = %s,  UserAgent = %s\n", c.IP, c.UserAgent)
 
 	resp = "failure"
 	if c.UID > 0 {
-		lib.Console("%s: cookie found:  c.UID = %d\n", funcname, c.UID)
+		lib.Console("%s: db.Cookie found:  c.UID = %d\n", funcname, c.UID)
 		resp = "success"
 		//------------------------------------------------------------------
 		// if the request calls for the timestamp to be updated, do so now
 		// that we know it exists.
 		//------------------------------------------------------------------
 		if foo.FLAGS&2 > 0 {
-			s, ok := sess.Sessions[c.Cookie]
+			s, ok := db.Sessions[c.Cookie]
 			if !ok {
 				//----------------------------------------------------------------
-				// This means that the cookie was found in the database but not
+				// This means that the db.Cookie was found in the database but not
 				// in memory. The most likely reason for this is that phonebook
-				// was restarted.  In any case, we need to add this cookie to the
+				// was restarted.  In any case, we need to add this db.Cookie to the
 				// in memory sessions...
 				//----------------------------------------------------------------
-				s = sess.NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
-				lib.Console("Session was not found in memory.  Adding it to memory.  Cookie = %s\n", c.Cookie)
+				s = db.NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
+				lib.Console("Session was not found in memory.  Adding it to memory.  db.Cookie = %s\n", c.Cookie)
 
-				// err = fmt.Errorf("*** UNEXPECTED STATE: session with cookie %s was not found in sess.Sessions", c.Cookie)
+				// err = fmt.Errorf("*** UNEXPECTED STATE: session with db.Cookie %s was not found in db.Sessions", c.Cookie)
 				// lib.Console("%s\n", err.Error())
 				// lib.Ulog("%s\n", err.Error())
 				// SvcErrorReturn(w, err, funcname)
 			}
-			s.Expire = s.Expire.Add(sess.SessionManager.SessionTimeout * time.Minute)
-			if err = sess.UpdateSessionCookie(s); err != nil {
-				lib.Console("Error updating session cookie = %s\n", err.Error())
-				lib.Ulog("%s: could not update session cookie: %s\n", funcname, err.Error())
+			s.Expire = s.Expire.Add(db.SessionManager.SessionTimeout * time.Minute)
+			if err = db.UpdateSessionCookieDB(s); err != nil {
+				lib.Console("Error updating session db.Cookie = %s\n", err.Error())
+				lib.Ulog("%s: could not update session db.Cookie: %s\n", funcname, err.Error())
 			}
-			lib.Console("UPDATED SESSION COOKIE TIMEOUT TIME\n")
+			lib.Console("UPDATED SESSION db.Cookie TIMEOUT TIME\n")
 		}
 	}
 
 	//------------------------------------------------------------------
-	// if the request was to ONLY verify the existence of the cookie...
+	// if the request was to ONLY verify the existence of the db.Cookie...
 	//------------------------------------------------------------------
 	lib.Console("D\n")
 	if foo.FLAGS&1 > 0 {
-		lib.Console("D1 - verify existence of cookie only\n")
+		lib.Console("D1 - verify existence of db.Cookie only\n")
 		g = AuthSuccessResponse{Status: resp}
 		SvcWriteResponse(&g, w)
 		goto exit1
@@ -369,20 +375,20 @@ func SvcValidateCookie(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	//------------------------------------------------------------------
 	// add the known information to the response
 	//------------------------------------------------------------------
-	imageProfilePath = ui.GetImageLocation(int(c.UID))
+	imageProfilePath = db.GetImageLocation(c.UID)
 	g = AuthSuccessResponse{
 		Status:   resp,
 		UID:      c.UID,
 		Name:     c.UserName,
 		ImageURL: imageProfilePath,
 		Token:    c.Cookie,
-		Expire:   c.Expire.In(sess.SessionManager.ZoneUTC).Format(JSONDATETIME),
+		Expire:   c.Expire.In(db.SessionManager.ZoneUTC).Format(JSONDATETIME),
 	}
 	SvcWriteResponse(&g, w)
 
 exit1:
-	sess.DumpSessions()
-	sess.DumpSessionCookies()
+	db.DumpSessions()
+	db.DumpSessionCookies()
 }
 
 // SvcLogoff removes a session from the
@@ -401,26 +407,26 @@ func SvcLogoff(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		return
 	}
 	// lib.Console("svcLogoff: C\n")
-	lib.Console("unmarshaled request.  cookie value = %s\n", foo.CookieVal)
+	lib.Console("unmarshaled request.  db.Cookie value = %s\n", foo.CookieVal)
 
-	ssn, ok := sess.SessionGet(foo.CookieVal)
+	ssn, ok := db.SessionGet(foo.CookieVal)
 	if ok {
 		// lib.Console("svcLogoff: D\n")
-		lib.Console("found session with that cookie. Deleting.\n")
-		sess.SessionDelete(ssn)
+		lib.Console("found session with that db.Cookie. Deleting.\n")
+		db.SessionDelete(ssn)
 	} else {
 		// lib.Console("svcLogoff: E\n")
-		lib.Console("No session with that cookie found in memory.\n")
+		lib.Console("No session with that db.Cookie found in memory.\n")
 	}
 	// lib.Console("svcLogoff: F\n")
 	if err := db.DeleteSessionCookie(foo.CookieVal); err != nil {
 		// lib.Console("svcLogoff: G\n")
-		lib.Ulog("Error deleteing session cookie: %s\n", err.Error())
+		lib.Ulog("Error deleteing session db.Cookie: %s\n", err.Error())
 	}
 	// lib.Console("svcLogoff: H\n")
 	SvcWriteSuccessResponse(w)
 
-	sess.DumpSessions()
-	sess.DumpSessionCookies()
+	db.DumpSessions()
+	db.DumpSessionCookies()
 
 }

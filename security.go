@@ -6,9 +6,7 @@
 package main
 
 import (
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"reflect"
 	"time"
 )
@@ -20,8 +18,8 @@ const (
 )
 
 func dumpAccessRoles() {
-	for i := 0; i < len(authz.Authz.Roles); i++ {
-		r := authz.Authz.Roles[i]
+	for i := 0; i < len(db.Authz.Roles); i++ {
+		r := db.Authz.Roles[i]
 		ulog("Role %d: %s - %s\n", r.RID, r.Name, r.Descr)
 		for j := 0; j < len(r.Perms); j++ {
 			f := r.Perms[j]
@@ -30,13 +28,13 @@ func dumpAccessRoles() {
 	}
 }
 
-func readFieldPerms(r *authz.Role) {
+func readFieldPerms(r *db.Role) {
 	rows, err := Phonebook.prepstmt.readFieldPerms.Query(r.RID)
 	errcheck(err)
 	defer rows.Close()
 
 	for rows.Next() {
-		var f authz.FieldPerm
+		var f db.FieldPerm
 		errcheck(rows.Scan(&f.Elem, &f.Field, &f.Perm, &f.Descr))
 		r.Perms = append(r.Perms, f)
 	}
@@ -52,11 +50,11 @@ func readAccessRoles() {
 	defer rows.Close()
 
 	for rows.Next() {
-		var r authz.Role
-		r.Perms = make([]authz.FieldPerm, 0)
+		var r db.Role
+		r.Perms = make([]db.FieldPerm, 0)
 		errcheck(rows.Scan(&r.RID, &r.Name, &r.Descr))
 		readFieldPerms(&r)
-		authz.Authz.Roles = append(authz.Authz.Roles, r)
+		db.Authz.Roles = append(db.Authz.Roles, r)
 	}
 
 	errcheck(rows.Err())
@@ -70,26 +68,26 @@ func readAccessRoles() {
 //      perm.  If the result is non-zero, the condition is met.
 // ARGS:
 //      d            = the struct we want access to
-//		el			 = type of element: authz.ELEMPERSON, authz.ELEMCOMPANY, authz.ELEMCLASS
+//		el			 = type of element: db.ELEMPERSON, db.ELEMCOMPANY, db.ELEMCLASS
 //   	ssn          = session of the logged in user
-//   	permRequired = logical or of the required permissions.  Example authz.PERMVIEW | authz.PERMOWNERVIEW
+//   	permRequired = logical or of the required permissions.  Example db.PERMVIEW | db.PERMOWNERVIEW
 //		dataUID      = only used if el == PERSON
 // RETURNS:
 //      ret val = the permissions found logically ANDed with permRequired.  This can be
 //				  useful for determining whether or not to check the OWNER uid to that of
 //				  the data being accessed. For example, if the data is accessible because of
-//				  authz.PERMOWNERMOD, the caller can compare the return value to authz.PERMOWNERMOD. If
+//				  db.PERMOWNERMOD, the caller can compare the return value to db.PERMOWNERMOD. If
 //				  equal, it needs to further check that the session uid matches the uid of the
 //				  data being edited before it allows the edit to proceed.
 //   	the data elements for this struct filtered based on the permissions associated
 //				  with the logged in user's session
 //=========================================================================================
-func filterSecurityRead(d interface{}, el int, ssn *sess.Session, permRequired int, dataUID int) int {
-	var perm int
+func filterSecurityRead(d interface{}, el int, ssn *db.Session, permRequired int64, dataUID int64) int64 {
+	var perm int64
 	var ok bool
 
 	sulog("filterSecurityRead: d, permRequired=0x%02x, session: %+v\n", permRequired, ssn)
-	pcheck := 0
+	pcheck := int64(0)
 	val := reflect.ValueOf(d).Elem()
 	for i := 0; i < val.NumField(); i++ {
 		field := val.Field(i)         // this is the struct (Foo)
@@ -99,11 +97,11 @@ func filterSecurityRead(d interface{}, el int, ssn *sess.Session, permRequired i
 		sulog("%d. %s\n", i, n)
 		// Does this field have the required permissions?
 		switch el {
-		case authz.ELEMPERSON:
+		case db.ELEMPERSON:
 			perm, ok = ssn.PMap.Pp[n] // here's the permission we have
-		case authz.ELEMCOMPANY:
+		case db.ELEMCOMPANY:
 			perm, ok = ssn.PMap.Pco[n] // here's the permission we have
-		case authz.ELEMCLASS:
+		case db.ELEMCLASS:
 			perm, ok = ssn.PMap.Pcl[n] // here's the permission we have
 		}
 		sulog("    permission found: 0x%02x\n", perm)
@@ -113,9 +111,9 @@ func filterSecurityRead(d interface{}, el int, ssn *sess.Session, permRequired i
 			continue // if it's not there, we can ignore it
 		}
 		sulog("    field found, checking permissions...\n")
-		pcheck = permRequired & perm                                       // and it with the required permissions
-		ok = 0 != pcheck                                                   // if the result is non-zero, the first test passes
-		if el == authz.ELEMPERSON && ok && pcheck == authz.PERMOWNERVIEW { // if this was an ownerView result...
+		pcheck = permRequired & perm                                 // and it with the required permissions
+		ok = 0 != pcheck                                             // if the result is non-zero, the first test passes
+		if el == db.ELEMPERSON && ok && pcheck == db.PERMOWNERVIEW { // if this was an ownerView result...
 			ok = int64(dataUID) == ssn.UID // the session uid needs to match the data uid
 		}
 		if ok {
@@ -146,8 +144,8 @@ func filterSecurityRead(d interface{}, el int, ssn *sess.Session, permRequired i
 }
 
 // PDetFilterSecurityRead is a wrapper around filterSecurityRead
-func PDetFilterSecurityRead(d *db.PersonDetail, ssn *sess.Session, permRequired int) {
-	filterSecurityRead(d, authz.ELEMPERSON, ssn, permRequired, d.UID)
+func PDetFilterSecurityRead(d *db.PersonDetail, ssn *db.Session, permRequired int64) {
+	filterSecurityRead(d, db.ELEMPERSON, ssn, permRequired, d.UID)
 	if d.CoCode == 0 {
 		companyInit(&d.Company)
 	}
@@ -162,16 +160,18 @@ func PDetFilterSecurityRead(d *db.PersonDetail, ssn *sess.Session, permRequired 
 //		in d are merged with values of dNew where it is allowed. The resulting d is
 //		suitable for writing back to the database.
 // ARGS:
-// 		ssn         = session of the logged in user
-// 		permRequired = logical or of the required permissions.  Example authz.PERMMOD | authz.PERMOWNERMOD
-// 		dNew         = an updated version of d.
+//      d            = base structure, should be pulled from db just prior to calling, no mods
+// 		ssn          = session of the logged in user
+//      el           = type of element: (1 = people, 2 = company, 3 = class, 4 = service)
+// 		permRequired = logical or of the required permissions.  Example db.PERMMOD | db.PERMOWNERMOD
+// 		dNew         = an updated version of the same structure as d, it should contain the updates we want to apply to d
 // RETURNS:
 // 		the data elements for this struct filtered based on the supplied perm value
 //=========================================================================================
-func filterSecurityMerge(d interface{}, ssn *sess.Session, el int, permRequired int, dNew interface{}, UID int) {
+func filterSecurityMerge(d interface{}, ssn *db.Session, el int, permRequired int64, dNew interface{}, UID int64) {
 	val := reflect.ValueOf(d).Elem()
 	valNew := reflect.ValueOf(dNew).Elem()
-	var perm int
+	var perm int64
 	var ok bool
 
 	for i := 0; i < val.NumField(); i++ {
@@ -182,27 +182,35 @@ func filterSecurityMerge(d interface{}, ssn *sess.Session, el int, permRequired 
 
 		// Do we have the required permissions to update this field?
 		switch el {
-		case authz.ELEMPERSON:
+		case db.ELEMPERSON:
 			perm, ok = ssn.PMap.Pp[n] // here's the permission we have
-		case authz.ELEMCOMPANY:
+		case db.ELEMCOMPANY:
 			perm, ok = ssn.PMap.Pco[n] // here's the permission we have
-		case authz.ELEMCLASS:
+		case db.ELEMCLASS:
 			perm, ok = ssn.PMap.Pcl[n] // here's the permission we have
 		}
+
 		if !ok { // !ok here means that the variable was not found in the access list
-			// fmt.Printf("filterSecurityMerge: field %s not covered, skipping\n", n)
+			// lib.Console("filterSecurityMerge: field %s not covered, skipping\n", n)
 			continue // if it's not there, we can ignore it
 		}
-		pcheck := permRequired & perm                                     // AND it with the required permissions
-		ok = 0 != pcheck                                                  // if the result is non-zero, the first test passes
-		if el == authz.ELEMPERSON && ok && pcheck == authz.PERMOWNERMOD { // if we passed it still may be an ownerMOD result...
+
+		// lib.Console("Field = %s, perm = %d, permRequired = %d,  ", n, perm, permRequired)
+
+		pcheck := permRequired & perm // AND it with the required permissions
+		ok = 0 != pcheck              // if the result is non-zero, the first test passes
+		// lib.Console("pcheck = %d, ok = %t\n", pcheck, ok)
+		if el == db.ELEMPERSON && ok && pcheck == db.PERMOWNERMOD { // if we passed it still may be an ownerMOD result...
 			ok = int64(UID) == ssn.UID // if so, the session uid needs to match the data uid to proceed
 		}
 
 		if ok && field.IsValid() {
 			if field.CanSet() {
+				// lib.Console("type = %v, will attempt to change!\n", t)
 				switch t {
 				case "int":
+					field.Set(reflect.ValueOf(fieldNew.Interface()))
+				case "int64":
 					field.Set(reflect.ValueOf(fieldNew.Interface()))
 				case "string":
 					field.SetString(fieldNew.String())
@@ -218,14 +226,14 @@ func filterSecurityMerge(d interface{}, ssn *sess.Session, el int, permRequired 
 	}
 }
 
-// func (d *db.PersonDetail) filterSecurityMerge(ssn *sess.Session, permRequired int, dNew *db.PersonDetail) {
-// 	filterSecurityMerge(d, ssn, authz.ELEMPERSON, permRequired, dNew, d.UID)
+// func (d *db.PersonDetail) filterSecurityMerge(ssn *db.Session, permRequired int, dNew *db.PersonDetail) {
+// 	filterSecurityMerge(d, ssn, db.ELEMPERSON, permRequired, dNew, d.UID)
 // }
 
-// func (c *company) filterSecurityMerge(ssn *sess.Session, permRequired int, cNew *company) {
-// 	filterSecurityMerge(c, ssn, authz.ELEMCOMPANY, permRequired, cNew, 0)
+// func (c *company) filterSecurityMerge(ssn *db.Session, permRequired int, cNew *company) {
+// 	filterSecurityMerge(c, ssn, db.ELEMCOMPANY, permRequired, cNew, 0)
 // }
 
-// func (c *db.Class) filterSecurityMerge(ssn *sess.Session, permRequired int, cNew *db.Class) {
-// 	filterSecurityMerge(c, ssn, authz.ELEMCLASS, permRequired, cNew, 0)
+// func (c *db.Class) filterSecurityMerge(ssn *db.Session, permRequired int, cNew *db.Class) {
+// 	filterSecurityMerge(c, ssn, db.ELEMCLASS, permRequired, cNew, 0)
 // }

@@ -1,4 +1,4 @@
-package authz
+package db
 
 import "phonebook/lib"
 
@@ -25,15 +25,15 @@ const (
 
 // FieldPerm defines how a specific element field can be accessed
 type FieldPerm struct {
-	Elem  int    // Element: Person, Company, or Class
+	Elem  int64  // Element: Person, Company, or Class
 	Field string // field within the Element
-	Perm  int    // 'logical or' of all permissions on this field
+	Perm  int64  // 'logical or' of all permissions on this field
 	Descr string // description of the field
 }
 
 // Role defines a collection of FieldPerms that can be assigned to a person
 type Role struct {
-	RID   int         // assigned by DB
+	RID   int64       // assigned by DB
 	Name  string      // role name
 	Descr string      // role description
 	Perms []FieldPerm // permissions for all fields, all entities
@@ -43,11 +43,11 @@ type Role struct {
 // This is a handy structure for a session.
 //-----------------------------------------------------------------------------
 type PermMaps struct {
-	Urole Role           // user's role
-	Pp    map[string]int // quick way to reference person permissions based on field name
-	Pco   map[string]int // quick way to reference company permissions based on field name
-	Pcl   map[string]int // quick way to reference db.Class permissions based on field name
-	Ppr   map[string]int
+	Urole Role             // user's role
+	Pp    map[string]int64 // quick way to reference person permissions based on field name
+	Pco   map[string]int64 // quick way to reference company permissions based on field name
+	Pcl   map[string]int64 // quick way to reference Authz.Class permissions based on field name
+	Ppr   map[string]int64
 }
 
 // Authz is the context structure for the authorization framework
@@ -57,16 +57,16 @@ var Authz struct {
 	SecurityDebug bool // push security debug messages to the logfile
 }
 
-// Init initializes the authorization framework
+// AuthzInit initializes the authorization framework
 //-----------------------------------------------------------------------------
-func Init(debug bool) {
+func AuthzInit(debug bool) {
 	Authz.Roles = make([]Role, 0)
 	Authz.SecurityDebug = debug
 }
 
 // GetRoleInfo populates the PermMaps
 //-----------------------------------------------------------------------------
-func GetRoleInfo(rid int, s *PermMaps) {
+func GetRoleInfo(rid int64, s *PermMaps) {
 	found := -1
 	idx := -1
 
@@ -90,10 +90,10 @@ func GetRoleInfo(rid int, s *PermMaps) {
 	}
 
 	r := Authz.Roles[idx]
-	s.Pp = make(map[string]int)
-	s.Pco = make(map[string]int)
-	s.Pcl = make(map[string]int)
-	s.Ppr = make(map[string]int)
+	s.Pp = make(map[string]int64)
+	s.Pco = make(map[string]int64)
+	s.Pcl = make(map[string]int64)
+	s.Ppr = make(map[string]int64)
 
 	for i := 0; i < len(r.Perms); i++ {
 		var f FieldPerm

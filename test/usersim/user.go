@@ -341,7 +341,7 @@ func usersimDoTest(v *personDetail, tr *TestResults) {
 
 func usersim(userindex, iterations int, finishTime time.Time, TestResChan chan TestResults, TestResChanAck chan int) {
 	v := App.Peeps[userindex]
-	tr := TestResults{v.UID, 0, 0, nil}
+	tr := TestResults{int(v.UID), 0, 0, nil}
 	// lib.Ulog("Usersim %d,  UID = %d, username = %s, iterations = %d\n", userindex, v.UID, v.UserName, iterations)
 	// lib.Ulog("finish time = %s\n", finishTime.Format("January 2, 2006"))
 
@@ -377,8 +377,8 @@ func executeSimulation() {
 	if App.TestDuration.Seconds() > 0 {
 		finishTime = time.Now().Add(App.TestDuration)
 	}
-	for j := 0; j < App.TestUsers; j++ {
-		go usersim(j, App.TestIterations, finishTime, TestResChan, TestResChanAck)
+	for j := int64(0); j < App.TestUsers; j++ {
+		go usersim(int(j), int(App.TestIterations), finishTime, TestResChan, TestResChanAck)
 		time.Sleep(500 * time.Millisecond)
 	}
 

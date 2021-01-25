@@ -2,46 +2,54 @@ package db
 
 import (
 	"database/sql"
+	"extres"
+	"math/rand"
 	"phonebook/lib"
 	"time"
 )
 
 // DB is the context structure of data for the DB infrastructure
 var DB struct {
-	DirDB *sql.DB
+	DirDB    *sql.DB
+	noAuth   bool // is authrization needed to access the db?
+	Config   extres.ExternalResources
+	DBFields map[string]string // map of db table fields DBFields[tablename] = field list
+	Zone     *time.Location    // what timezone should the server use?
+	Key      []byte            // crypto key
+	Rand     *rand.Rand        // for generating Reference Numbers or other UniqueIDs
 }
 
 // MyComp describes the MyComp struct
 type MyComp struct {
-	CompCode int    // code for this comp type
+	CompCode int64  // code for this comp type
 	Name     string // name for this code
-	HaveIt   int    // 0 = does not have it, 1 = has it
+	HaveIt   int64  // 0 = does not have it, 1 = has it
 }
 
 // ADeduction describes the ADeduction struct
 type ADeduction struct {
-	DCode  int    // code for this deduction
+	DCode  int64  // code for this deduction
 	Name   string // name for this deduction
-	HaveIt int    // 0 = does not have it, 1 = has it
+	HaveIt int64  // 0 = does not have it, 1 = has it
 }
 
 // Class defines a business unit within a company
 //--------------------------------------------------------------------
 type Class struct {
-	ClassCode   int    // uid of Business Unit
-	CoCode      int    // uid of parent company
+	ClassCode   int64  // uid of Business Unit
+	CoCode      int64  // uid of parent company
 	Name        string // name of Business Unit
 	Designation string // business unit designation
 	Description string
 	LastModTime time.Time
-	LastModBy   int
+	LastModBy   int64
 	C           Company // parent company (just a holder for convenience)
 }
 
 // Company defines the structure of data for a company
 //--------------------------------------------------------------------
 type Company struct {
-	CoCode           int
+	CoCode           int64
 	LegalName        string
 	CommonName       string
 	Address          string
@@ -54,24 +62,24 @@ type Company struct {
 	Fax              string
 	Email            string
 	Designation      string
-	Active           int
-	EmploysPersonnel int
+	Active           int64
+	EmploysPersonnel int64
 	C                []Class // an array of classes for the business units of this
 }
 
 // Person defines a low-details version of the Person table
 //--------------------------------------------------------------------
 type Person struct {
-	UID              int
+	UID              int64
 	LastName         string
 	FirstName        string
 	PreferredName    string
 	PrimaryEmail     string
-	JobCode          int
+	JobCode          int64
 	OfficePhone      string
 	CellPhone        string
 	OfficeFax        string
-	DeptCode         int
+	DeptCode         int64
 	DeptName         string
 	Employer         string
 	ProfileImageURL  string
@@ -89,27 +97,27 @@ type PeopleTypeDown struct {
 // PersonDetail defines all details version of the Person table
 //--------------------------------------------------------------------
 type PersonDetail struct {
-	UID                     int
+	UID                     int64
 	UserName                string
 	LastName                string
 	FirstName               string
 	PrimaryEmail            string
-	JobCode                 int
+	JobCode                 int64
 	OfficePhone             string
 	CellPhone               string
 	DeptName                string
 	MiddleName              string
 	Salutation              string
-	Status                  int
+	Status                  int64
 	PositionControlNumber   string
 	OfficeFax               string
 	SecondaryEmail          string
-	EligibleForRehire       int
+	EligibleForRehire       int64
 	LastReview              time.Time
 	NextReview              time.Time
 	Birthdate               string
-	BirthMonth              int
-	BirthDOM                int
+	BirthMonth              int64
+	BirthDOM                int64
 	HomeStreetAddress       string
 	HomeStreetAddress2      string
 	HomeCity                string
@@ -119,122 +127,36 @@ type PersonDetail struct {
 	StateOfEmployment       string
 	CountryOfEmployment     string
 	PreferredName           string
-	Comps                   []int  // an array of CompensationType values (ints)
-	RID                     int    // security role assigned to this person
-	CompensationStr         string //used in the admin edit interface
-	DeptCode                int
+	Comps                   []int64 // an array of CompensationType values (ints)
+	RID                     int64   // security role assigned to this person
+	CompensationStr         string  //used in the admin edit interface
+	DeptCode                int64
 	Company                 Company
-	CoCode                  int
-	MgrUID                  int
+	CoCode                  int64
+	MgrUID                  int64
 	JobTitle                string
 	Class                   string
-	ClassCode               int
+	ClassCode               int64
 	MgrName                 string
 	Image                   string // ptr to image -- URI
 	Reports                 []Person
-	Deductions              []int
+	Deductions              []int64
 	DeductionsStr           string
 	EmergencyContactName    string
 	EmergencyContactPhone   string
-	AcceptedHealthInsurance int
-	AcceptedDentalInsurance int
-	Accepted401K            int
+	AcceptedHealthInsurance int64
+	AcceptedDentalInsurance int64
+	Accepted401K            int64
 	Hire                    time.Time
 	Termination             time.Time
-	NameToCoCode            map[string]int
-	NameToJobCode           map[string]int
-	AcceptCodeToName        map[int]string
-	NameToDeptCode          map[string]int // department name to dept code
+	NameToCoCode            map[string]int64
+	NameToJobCode           map[string]int64
+	AcceptCodeToName        map[int64]string
+	NameToDeptCode          map[string]int64 // department name to dept code
 	MyComps                 []MyComp
 	MyDeductions            []ADeduction
 	ProfileImageURL         string
 	ProfileImagePath        string
-}
-
-// SessionCookie defines the struct for the database table where session
-// cookies are managed.
-type SessionCookie struct {
-	UID       int64     // uid of the user
-	UserName  string    // username for the user
-	Cookie    string    // the cookie value
-	Expire    time.Time // that timestamp when it expires
-	UserAgent string    // client identifier
-	IP        string    // end user's IP address
-}
-
-// PrepStmts are the sql prepared statements
-var PrepStmts struct {
-	DeleteSessionCookie       *sql.Stmt
-	DeleteExpiredCookies      *sql.Stmt
-	GetAllSessionCookies      *sql.Stmt
-	GetSessionCookie          *sql.Stmt
-	FindMatchingSessionCookie *sql.Stmt
-	InsertSessionCookie       *sql.Stmt
-	UpdateSessionCookie       *sql.Stmt
-	LoginInfo                 *sql.Stmt
-	GetImagePath              *sql.Stmt
-	GetPeopleTypeDown         *sql.Stmt
-	GetPerson                 *sql.Stmt
-	GetBUTypeDown             *sql.Stmt
-	GetBUByBUD                *sql.Stmt
-}
-
-// IsSQLNoResultsError returns true if the error provided is a sql err indicating no rows in the solution set.
-func IsSQLNoResultsError(err error) bool {
-	return err == sql.ErrNoRows
-}
-
-// SkipSQLNoRowsError assing nil to original err variable
-// if its kind of no rows in result error from sql package
-func SkipSQLNoRowsError(err *error) {
-	if IsSQLNoResultsError(*err) {
-		*err = nil
-	}
-}
-
-// CreatePreparedStmts creates prepared sql statements
-func CreatePreparedStmts() {
-	var err error
-	var flds string
-	flds = "UID,UserName,Cookie,DtExpire,UserAgent,IP"
-	PrepStmts.InsertSessionCookie, err = DB.DirDB.Prepare("INSERT INTO sessions (" + flds + ") VALUES(?,?,?,?,?,?)")
-	lib.Errcheck(err)
-	PrepStmts.GetAllSessionCookies, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions ORDER BY DtExpire ASC")
-	lib.Errcheck(err)
-	PrepStmts.GetSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE Cookie=?")
-	lib.Errcheck(err)
-	PrepStmts.FindMatchingSessionCookie, err = DB.DirDB.Prepare("SELECT " + flds + " FROM sessions WHERE UserName=? AND IP=? AND UserAgent=?")
-	lib.Errcheck(err)
-	PrepStmts.UpdateSessionCookie, err = DB.DirDB.Prepare("UPDATE sessions SET DtExpire=? WHERE Cookie=?")
-	lib.Errcheck(err)
-	PrepStmts.DeleteSessionCookie, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE Cookie=?")
-	lib.Errcheck(err)
-	PrepStmts.DeleteExpiredCookies, err = DB.DirDB.Prepare("DELETE FROM sessions WHERE DtExpire <= ?")
-	lib.Errcheck(err)
-
-	PrepStmts.LoginInfo, err = DB.DirDB.Prepare("SELECT uid,firstname,preferredname,PrimaryEmail,passhash,rid FROM people WHERE UserName=?")
-	lib.Errcheck(err)
-
-	// get image path from the people table
-	PrepStmts.GetImagePath, err = DB.DirDB.Prepare("SELECT ImagePath from people WHERE UID=?")
-	lib.Errcheck(err)
-
-	//-----------------------
-	// People
-	//-----------------------
-	PrepStmts.GetPeopleTypeDown, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE FirstName LIKE ? OR MiddleName LIKE ? OR LastName LIKE ? or PreferredName LIKE ? LIMIT ?")
-	lib.Errcheck(err)
-	PrepStmts.GetPerson, err = DB.DirDB.Prepare("SELECT UID,FirstName,MiddleName,LastName,PreferredName FROM people WHERE UID=?")
-	lib.Errcheck(err)
-
-	//--------------------
-	// Business Unit...
-	//--------------------
-	PrepStmts.GetBUTypeDown, err = DB.DirDB.Prepare("SELECT ClassCode,CoCode,Name,Designation FROM classes WHERE Designation LIKE ? ORDER BY Designation ASC LIMIT ?")
-	lib.Errcheck(err)
-	PrepStmts.GetBUByBUD, err = DB.DirDB.Prepare("SELECT ClassCode,CoCode,Name,Designation,Description FROM classes WHERE Designation=?")
-	lib.Errcheck(err)
-
 }
 
 // Init initializes the database infrastructure
@@ -287,7 +209,7 @@ func GetBUByBUD(s string) (Class, error) {
 //
 //  err      Any errors encountered
 //-----------------------------------------------------------------------------
-func GetBUTypeDown(s1 string, limit int) ([]BUInfo, error) {
+func GetBUTypeDown(s1 string, limit int64) ([]BUInfo, error) {
 	funcname := "GetBUTypeDown"
 	var m []BUInfo
 	s := "%" + s1 + "%"
@@ -312,7 +234,7 @@ func GetBUTypeDown(s1 string, limit int) ([]BUInfo, error) {
 	return m, nil
 }
 
-// GetSessionCookie searches the session table for the speified cookie.
+// GetSessionCookieDB searches the session table for the speified cookie.
 //
 // INPUTS
 //  cookie - the Web Cookie value string. If err == nil then it is filled
@@ -326,7 +248,7 @@ func GetBUTypeDown(s1 string, limit int) ([]BUInfo, error) {
 //
 //  err      Any errors encountered
 //-----------------------------------------------------------------------------
-func GetSessionCookie(cookie string) (SessionCookie, error) {
+func GetSessionCookieDB(cookie string) (SessionCookie, error) {
 	var c SessionCookie
 	err := PrepStmts.GetSessionCookie.QueryRow(cookie).Scan(&c.UID, &c.UserName, &c.Cookie, &c.Expire, &c.UserAgent, &c.IP)
 	if nil != err {

@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 	"strconv"
 )
 
@@ -26,7 +24,7 @@ func companyInit(c *db.Company) {
 }
 
 // func (c *db.Company) filterSecurityRead(ssn *sess.Session, permRequired int) {
-// 	filterSecurityRead(c, authz.ELEMCOMPANY, ssn, permRequired, 0)
+// 	filterSecurityRead(c, db.ELEMCOMPANY, ssn, permRequired, 0)
 // }
 
 // MapKey is Accord's key for using google maps
@@ -43,7 +41,7 @@ func mapURL(addr, city, state, zip, country string) string {
 // 	return mapURL(c.Address, c.City, c.State, c.PostalCode, c.Country)
 // }
 
-func getCompanyInfo(cocode int, c *db.Company) {
+func getCompanyInfo(cocode int64, c *db.Company) {
 	Phonebook.ReqCountersMem <- 1    // ask to access the shared mem, blocks until granted
 	<-Phonebook.ReqCountersMemAck    // make sure we got it
 	Counters.ViewCompany++           // initialize our data
@@ -69,7 +67,7 @@ func getCompanyInfo(cocode int, c *db.Company) {
 
 func companyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -78,7 +76,7 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 	ssn = ui.X
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMVIEW) {
+	if !ssn.ElemPermsAny(db.ELEMCOMPANY, db.PERMVIEW) {
 		ulog("Permissions refuse company view page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
@@ -88,11 +86,11 @@ func companyHandler(w http.ResponseWriter, r *http.Request) {
 	path := "/company/"
 	costr := r.RequestURI[len(path):]
 	if len(costr) > 0 {
-		cocode, _ := strconv.Atoi(costr)
+		cocode, _ := strconv.ParseInt(costr, 10, 64)
 		breadcrumbAdd(ssn, "Company", fmt.Sprintf("/company/%d", cocode))
 		getCompanyInfo(cocode, &c)
 		ui.C = &c
-		filterSecurityRead(ui.C, authz.ELEMCOMPANY, ssn, authz.PERMVIEW, 0)
+		filterSecurityRead(ui.C, db.ELEMCOMPANY, ssn, db.PERMVIEW, 0)
 
 		err := renderTemplate(w, ui, "company.html")
 		if nil != err {

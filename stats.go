@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/sess"
+	"phonebook/db"
 )
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var mysession *sess.Session
+	var mysession *db.Session
 	var uis uiSupport
 	mysession = nil
 	if 0 < initHandlerSession(mysession, &uis, w, r) {
@@ -28,11 +28,11 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	uis.K = &MyCounters
 	uis.Ki = &MyiCounters
 
-	sess.SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
-	<-sess.SessionManager.ReqSessionMemAck // make sure we got it
-	var p []sess.Session
-	for _, v := range sess.Sessions {
-		s := sess.Session{}
+	db.SessionManager.ReqSessionMem <- 1 // ask to access the shared mem, blocks until granted
+	<-db.SessionManager.ReqSessionMemAck // make sure we got it
+	var p []db.Session
+	for _, v := range db.Sessions {
+		s := db.Session{}
 		s.Token = v.Token
 		s.Firstname = v.Firstname
 		s.ImageURL = v.ImageURL
@@ -41,7 +41,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		s.Expire = v.Expire
 		p = append(p, s)
 	}
-	sess.SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
+	db.SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 
 	uis.N = p
 

@@ -150,10 +150,11 @@ logcheck() {
 # Generate a new database...
 #---------------------------------
 initDB() {
-	pushd ${DBTOOLSDIR} >/dev/null
+	pushd ${DBTOOLSDIR} >/dev/null || exit 2
 	./apply.sh -N ${DBNAME} > /dev/null
 	popd >/dev/null
-	${USERSIM} -f -u 300 -c 70 -C 70
+	# ${USERSIM} -f -u 300 -c 70 -C 70
+	${USERSIM} -d -f -u 300 -c 70 -C 70
 }
 
 stopPhonebook() {
@@ -164,7 +165,7 @@ stopPhonebook() {
 	if [ ${result} -ge 0 ]; then
 		echo "phonebook stopped"
 		sleep 2
-	else 
+	else
 		echo "phonebook did not stop properly.  result = \"${result}\""
 		exit 1
 	fi
@@ -189,6 +190,7 @@ echo "Stopping any running instance of phonebook..."
 stopPhonebook
 
 goldpath
+
 echo    "Test Name:    ${TESTNAME}" > ${LOGFILE}
 echo    "Test Purpose: ${TESTSUMMARY}" >> ${LOGFILE}
 echo -n "Date/Time:    " >>${LOGFILE}
@@ -198,7 +200,7 @@ echo >>${LOGFILE}
 L=$(ps -ef | grep phonebook | grep -v grep | grep -v "ssh phonebook" | wc -l)
 if [ ${L} -gt 0 ]; then
 	echo "Could not stop running instance of phonebook..."
-	ps -ef | grep phonebook | grep -v grep 
+	ps -ef | grep phonebook | grep -v grep
 	exit 1
 fi
 
@@ -211,7 +213,7 @@ startPhonebook
 L=$(ps -ef | grep phonebook | grep -v grep | grep -v "ssh phonebook" | wc -l)
 if [ ${L} -ne 1 ]; then
 	echo "Could not find one and only one running instance of phonebook..."
-	ps -ef | grep phonebook | grep -v grep 
+	ps -ef | grep phonebook | grep -v grep
 	exit 1
 fi
 

@@ -16,12 +16,15 @@ var salutations = []string{
 	"Dr",
 }
 
+// TotalSaveAdminEditCalls is used for debugging
+var TotalSaveAdminEditCalls = 0
+
 // RandomString returns a random string of length n containing alpha numeric characters
-func RandomString(n int) string {
+func RandomString(n int64) string {
 	const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	s := make([]byte, n)
-	for i := 0; i < n; i++ {
-		s[i] = c[rand.Intn(len(c))]
+	for i := int64(0); i < n; i++ {
+		s[i] = c[rand.Int63n(int64(len(c)))]
 	}
 	return string(s)
 }
@@ -30,19 +33,20 @@ func RandomString(n int) string {
 //    returns true if the save was successful
 //            false if save failed
 func saveAdminEdit(d *personDetail, atr *TestResults) bool {
+	TotalSaveAdminEditCalls++
 	URL := fmt.Sprintf("http://%s:%d/saveAdminEdit/%d", App.Host, App.Port, d.UID)
 	hc := http.Client{}
 	Nlast := len(App.LastNames)
 	Nfirst := len(App.FirstNames)
 
 	form := url.Values{}
-	d.BirthDOM = 1 + rand.Intn(29)   // choose a random date
-	d.BirthMonth = 1 + rand.Intn(12) // choose a random birthmonth
-	d.Salutation = salutations[rand.Intn(len(salutations))]
-	d.FirstName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)])
-	d.MiddleName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)])
-	d.LastName = strings.ToLower(App.LastNames[rand.Intn(Nlast)])
-	d.PreferredName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)])
+	d.BirthDOM = 1 + rand.Int63n(29)   // choose a random date
+	d.BirthMonth = 1 + rand.Int63n(12) // choose a random birthmonth
+	d.Salutation = salutations[rand.Int63n(int64(len(salutations)))]
+	d.FirstName = strings.ToLower(App.FirstNames[int64(rand.Intn(Nfirst))])
+	d.MiddleName = strings.ToLower(App.FirstNames[int64(rand.Intn(Nfirst))])
+	d.LastName = strings.ToLower(App.LastNames[int64(rand.Intn(Nlast))])
+	d.PreferredName = strings.ToLower(App.FirstNames[int64(rand.Intn(Nfirst))])
 	d.PrimaryEmail = randomEmail(d.LastName, d.FirstName)
 	d.SecondaryEmail = randomEmail(d.LastName, d.FirstName)
 	d.OfficePhone = randomPhoneNumber()
@@ -50,11 +54,11 @@ func saveAdminEdit(d *personDetail, atr *TestResults) bool {
 	d.OfficeFax = randomPhoneNumber()
 	d.EmergencyContactName = strings.ToLower(App.FirstNames[rand.Intn(Nfirst)] + " " + App.LastNames[rand.Intn(Nlast)])
 	d.EmergencyContactPhone = randomPhoneNumber()
-	d.ClassCode = 1 + rand.Intn(len(App.NameToClassCode))
-	d.CoCode = 1 + rand.Intn(len(App.NameToCoCode))
-	d.DeptCode = 1 + rand.Intn(1+rand.Intn(App.DeptHi-App.DeptLo-1))
-	d.JobCode = 1 + rand.Intn(1+rand.Intn(App.JCHi-App.JCLo-1))
-	d.Status = 1
+	d.ClassCode = int64(1 + rand.Intn(len(App.NameToClassCode)))
+	d.CoCode = int64(1 + rand.Intn(len(App.NameToCoCode)))
+	d.DeptCode = 1 + rand.Int63n(1+rand.Int63n(App.DeptHi-App.DeptLo-1))
+	d.JobCode = 1 + rand.Int63n(1+rand.Int63n(App.JCHi-App.JCLo-1))
+	d.Status = int64(1)
 	d.HomeStreetAddress = randomAddress()
 	d.HomeCity = App.Cities[rand.Intn(len(App.Cities))]
 	d.HomeState = App.States[rand.Intn(len(App.States))]
@@ -62,15 +66,15 @@ func saveAdminEdit(d *personDetail, atr *TestResults) bool {
 	d.HomeCountry = "USA"
 	d.StateOfEmployment = App.States[rand.Intn(len(App.States))]
 	d.CountryOfEmployment = "Tazmania"
-	d.Accepted401K = rand.Intn(1 + ACPTLAST)
-	d.AcceptedDentalInsurance = rand.Intn(1 + ACPTLAST)
-	d.AcceptedHealthInsurance = rand.Intn(1 + ACPTLAST)
-	d.EligibleForRehire = rand.Intn(2)
+	d.Accepted401K = rand.Int63n(1 + ACPTLAST)
+	d.AcceptedDentalInsurance = rand.Int63n(1 + ACPTLAST)
+	d.AcceptedHealthInsurance = rand.Int63n(1 + ACPTLAST)
+	d.EligibleForRehire = rand.Int63n(2)
 	d.LastReview = stringToDate(fmt.Sprintf("%04d-%02d-%02d", 1990+rand.Intn(27), 1+rand.Intn(12), 1+rand.Intn(28)))
 	d.NextReview = stringToDate(fmt.Sprintf("%04d-%02d-%02d", 1990+rand.Intn(27), 1+rand.Intn(12), 1+rand.Intn(28)))
 	d.Hire = stringToDate(fmt.Sprintf("%04d-%02d-%02d", 1990+rand.Intn(27), 1+rand.Intn(12), 1+rand.Intn(28)))
 	d.Termination = stringToDate(fmt.Sprintf("%04d-%02d-%02d", 1990+rand.Intn(27), 1+rand.Intn(12), 1+rand.Intn(28)))
-	d.MgrUID = rand.Intn(len(App.Peeps))
+	d.MgrUID = int64(rand.Intn(len(App.Peeps)))
 	d.PositionControlNumber = RandomString(10)
 
 	//===================================================
@@ -118,9 +122,9 @@ func saveAdminEdit(d *personDetail, atr *TestResults) bool {
 	//---------------------------------------------------
 	// handle the compensation types
 	//---------------------------------------------------
-	d.Comps = make([]int, 0)
+	d.Comps = make([]int64, 0)
 	for i := 0; i < len(d.MyComps); i++ {
-		d.MyComps[i].HaveIt = rand.Intn(2)
+		d.MyComps[i].HaveIt = rand.Int63n(2)
 		h := ""
 		if d.MyComps[i].HaveIt > 0 {
 			d.Comps = append(d.Comps, d.MyComps[i].CompCode)
@@ -132,9 +136,9 @@ func saveAdminEdit(d *personDetail, atr *TestResults) bool {
 	//---------------------------------------------------
 	// handle deductions...
 	//---------------------------------------------------
-	d.Deductions = make([]int, 0)
+	d.Deductions = make([]int64, 0)
 	for i := 0; i < len(d.MyDeductions); i++ {
-		d.MyDeductions[i].HaveIt = rand.Intn(2)
+		d.MyDeductions[i].HaveIt = rand.Int63n(2)
 		h := ""
 		if d.MyDeductions[i].HaveIt > 0 {
 			d.Deductions = append(d.Deductions, d.MyDeductions[i].DCode)
@@ -203,7 +207,7 @@ func saveAdminEdit(d *personDetail, atr *TestResults) bool {
 	var dnew personDetail
 	dnew.UID = d.UID
 	adminReadDetails(&dnew)
-	res := d.matches(&dnew, atr)
+	res := d.matches(&dnew, atr, "Save Person Details")
 	adminReadDetails(d) // ensure that all values are correct for remaining tests...
 
 	return res

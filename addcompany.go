@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"phonebook/authz"
 	"phonebook/db"
-	"phonebook/sess"
 )
 
 func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	var ssn *sess.Session
+	var ssn *db.Session
 	var ui uiSupport
 	ssn = nil
 	if 0 < initHandlerSession(ssn, &ui, w, r) {
@@ -19,7 +17,7 @@ func adminAddCompanyHandler(w http.ResponseWriter, r *http.Request) {
 	ssn = ui.X
 
 	// SECURITY
-	if !ssn.ElemPermsAny(authz.ELEMCOMPANY, authz.PERMCREATE) {
+	if !ssn.ElemPermsAny(db.ELEMCOMPANY, db.PERMCREATE) {
 		ulog("Permissions refuse AddCompany page on userid=%d (%s), role=%s\n", ssn.UID, ssn.Firstname, ssn.PMap.Urole.Name)
 		http.Redirect(w, r, "/search/", http.StatusFound)
 		return
