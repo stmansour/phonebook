@@ -6,7 +6,6 @@ phonebook: *.go config.json
 	go vet
 	golint
 	go build
-	/usr/local/bin/mysql --no-defaults accord <accord.sql
 
 .PHONY:  test
 
