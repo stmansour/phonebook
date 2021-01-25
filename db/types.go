@@ -157,6 +157,7 @@ type PersonDetail struct {
 	MyDeductions            []ADeduction
 	ProfileImageURL         string
 	ProfileImagePath        string
+	MapURL                  string
 }
 
 // Init initializes the database infrastructure

@@ -459,7 +459,7 @@ func loadMaps() {
 		"getHTMLBreadcrumb":    getHTMLBreadcrumb,
 		"datetimeToString":     datetimeToString,
 		"phoneURL":             phoneURL,
-		"mapURL":               mapURL,
+		"mapURL":               db.MapURL,
 		"GetVersionNo":         getVer,
 		"GetBuildTime":         getBTime,
 	}

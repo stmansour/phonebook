@@ -47,6 +47,15 @@ func SkipSQLNoRowsError(err *error) {
 	}
 }
 
+// MapURL returns the map url needed by google to show the map for the supplied address
+//------------------------------------------------------------------------------
+func MapURL(addr, city, state, zip, country string) string {
+	s := fmt.Sprintf("https://www.google.com/maps/embed/v1/place?key=%s&q=%s,%s+%s+%s+%s",
+		lib.AppConfig.MapKey, addr, city, state, zip, country)
+	lib.Console("MAP URL:    %s\n", s)
+	return s
+}
+
 // ValidateSession validates that we either have a valid session or that a
 // session is not required.  If there's a problem it returns an error.
 //
@@ -257,6 +266,7 @@ func genericDelete(ctx context.Context, s string, g *sql.Stmt, id int64) error {
 func getRowFromDB(ctx context.Context, stmt *sql.Stmt, fields []interface{}) (*sql.Stmt, *sql.Row) {
 	var row *sql.Row
 	if tx, ok := TxFromContext(ctx); ok { // if transaction is supplied
+		fmt.Printf("getRowFromDB: B\n")
 		stmt := tx.Stmt(stmt)
 		row = stmt.QueryRow(fields...)
 		return stmt, row

@@ -22,6 +22,7 @@ var PrepStmts struct {
 	GetImagePath              *sql.Stmt
 	GetPeopleTypeDown         *sql.Stmt
 	GetPerson                 *sql.Stmt
+	GetByUsername             *sql.Stmt
 	GetWSPerson               *sql.Stmt
 	GetBUTypeDown             *sql.Stmt
 	GetBUByBUD                *sql.Stmt
@@ -108,6 +109,8 @@ func CreatePreparedStmts() {
 
 	DB.DBFields["people"] = flds
 	PrepStmts.GetPeople, err = DB.DirDB.Prepare("SELECT " + flds + " FROM people WHERE UID=?")
+	Errcheck(err)
+	PrepStmts.GetByUsername, err = DB.DirDB.Prepare("SELECT " + flds + " FROM people WHERE Username=?")
 	Errcheck(err)
 	s1, s2, s3, _, _ = GenSQLInsertAndUpdateStrings(flds)
 	PrepStmts.InsertPeople, err = DB.DirDB.Prepare("INSERT INTO people (" + s1 + ") VALUES(" + s2 + ")")

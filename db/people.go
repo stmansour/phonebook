@@ -176,6 +176,30 @@ func GetPeople(ctx context.Context, id int64) (People, error) {
 	return a, ReadPeople(row, &a)
 }
 
+// GetByUsername reads and returns a People structure
+//
+// INPUTS
+// ctx - db context
+// id - username of the record to read
+//
+// RETURNS
+// ErrSessionRequired if the session is invalid
+// nil if the session is valid
+//-----------------------------------------------------------------------------
+func GetByUsername(ctx context.Context, id string) (People, error) {
+	var a People
+	if !ValidateSession(ctx) {
+		return a, ErrSessionRequired
+	}
+
+	fields := []interface{}{id}
+	stmt, row := getRowFromDB(ctx, PrepStmts.GetByUsername, fields)
+	if stmt != nil {
+		defer stmt.Close()
+	}
+	return a, ReadPeople(row, &a)
+}
+
 // InsertPeople writes a new People record to the database
 //
 // INPUTS
@@ -256,6 +280,7 @@ func InsertPeople(ctx context.Context, a *People) (int64, error) {
 // nil if the session is valid
 //-----------------------------------------------------------------------------
 func ReadPeople(row *sql.Row, a *People) error {
+	lib.Console("Entered ReadPeople\n")
 	err := row.Scan(
 		&a.UID,
 		&a.UserName,

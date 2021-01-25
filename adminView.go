@@ -174,6 +174,7 @@ func adminViewHandler(w http.ResponseWriter, r *http.Request) {
 	// Ensure that the user has permissions to view everything we're about
 	// to display.
 	PDetFilterSecurityRead(&d, ssn, db.PERMVIEW|db.PERMMOD)
+	d.MapURL = db.MapURL(d.HomeStreetAddress, d.HomeCity, d.HomeState, d.HomePostalCode, d.HomeCountry)
 	ui.D = &d
 
 	err := renderTemplate(w, ui, "adminView.html")

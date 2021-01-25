@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"extres"
 	"flag"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"phonebook/db"
 	"phonebook/lib"
 	"time"
 
@@ -90,6 +92,8 @@ func readCommandLineArgs() {
 	App.usernameonly = *unoPtr
 }
 
+type decoy string
+
 func main() {
 	readCommandLineArgs()
 
@@ -107,13 +111,32 @@ func main() {
 	if nil != err {
 		fmt.Printf("App.db.Ping for database=%s, dbuser=%s: Error = %v\n", App.DBName, App.DBUser, err)
 	}
+	db.DB.DirDB = App.db
+	db.Init()
 
-	if len(App.fname) > 0 && len(App.lname) > 0 {
+	fmt.Printf("App.usernameonly = %t\n", App.usernameonly)
+
+	if len(App.user) > 0 && len(App.lname) > 0 {
 		getUserName()
 		if App.usernameonly {
 			fmt.Printf("%s\n", App.user)
 			os.Exit(0)
 		}
+	}
+
+	if len(App.user) > 0 && App.usernameonly {
+		var a db.People
+		k := decoy("key")
+		ctx := context.WithValue(context.Background(), k, "Go")
+
+		if a, err = db.GetByUsername(ctx, App.user); err != nil {
+			fmt.Printf("Error getting user info: %s\n", err.Error())
+			os.Exit(1)
+		}
+		fmt.Printf("(%d) %s %s\n", a.UID, a.FirstName, a.LastName)
+		fmt.Printf("Address: %s, %s, %s, %s %s\n", a.HomeStreetAddress, a.HomeCity, a.HomeState, a.HomePostalCode, a.HomeCountry)
+		fmt.Printf("Map:  %s\n", db.MapURL(a.HomeStreetAddress, a.HomeCity, a.HomeState, a.HomePostalCode, a.HomeCountry))
+		os.Exit(0)
 	}
 
 	if len(App.password) == 0 {
