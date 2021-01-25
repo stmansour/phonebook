@@ -28,11 +28,10 @@ func companyInit(c *db.Company) {
 // }
 
 // MapKey is Accord's key for using google maps
-var MapKey = string("AIzaSyByoVWcYSzjTviDzAN_2cMZk6m1nH64KZ4")
 
 func mapURL(addr, city, state, zip, country string) string {
 	s := fmt.Sprintf("https://www.google.com/maps/embed/v1/place?key=%s&q=%s,%s+%s+%s+%s",
-		MapKey, addr, city, state, zip, country)
+		db.DB.Config.MapKey, addr, city, state, zip, country)
 	fmt.Printf("%s\n", s)
 	return s
 }
