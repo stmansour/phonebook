@@ -31,7 +31,7 @@ Airgas, Inc.
 AK Steel Holding Corporation
 Alaska Air Group, Inc.
 Alberto-Culver Company
-Albertson's, Inc.
+Albertsons, Inc.
 Alcoa Inc.
 Alleghany Corporation
 Allegheny Energy, Inc.
@@ -131,7 +131,7 @@ Bethlehem Steel Corporation
 Beverly Enterprises, Inc.
 Big Lots, Inc.
 BJ Services Company
-BJ's Wholesale Club, Inc.
+BJs Wholesale Club, Inc.
 The Black and Decker Corporation
 Black Hills Corporation
 BMC Software, Inc.
@@ -165,7 +165,7 @@ Cardinal Health Inc.
 Caremark Rx Inc.
 Carlisle Cos. Inc.
 Carpenter Technology Corp.
-Casey's General Stores Inc.
+Caseys General Stores Inc.
 Caterpillar Inc.
 CBRL Group Inc.
 CDI Corp.
@@ -260,19 +260,19 @@ Devon Energy Corporation
 Di Giorgio Corporation
 Dial Corporation
 Diebold Incorporated
-Dillard's Inc.
+Dillards Inc.
 DIMON Incorporated
 Dole Food Company, Inc.
 Dollar General Corporation
 Dollar Tree Stores, Inc.
 Dominion Resources, Inc.
-Domino's Pizza LLC
+Dominos Pizza LLC
 Dover Corporation, Inc.
 Dow Chemical Company
 Dow Jones and Company, Inc.
 DPL Inc.
 DQE Inc.
-Dreyer's Grand Ice Cream, Inc.
+Dreyers Grand Ice Cream, Inc.
 DST Systems, Inc.
 DTE Energy Co.
 E.I. Du Pont de Nemours and Company
@@ -393,7 +393,7 @@ H.J. Heinz Company
 Halliburton Co.
 Harley-Davidson Inc.
 Harman International Industries Inc.
-Harrah's Entertainment Inc.
+Harrahs Entertainment Inc.
 Harris Corp.
 Harsco Corp.
 Hartford Financial Services Group Inc.
@@ -473,14 +473,14 @@ Kindred Healthcare Inc.
 KLA-Tencor Corporation
 K-Mart Corp.
 Knight-Ridder Inc.
-Kohl's Corp.
+Kohls Corp.
 KPMG Consulting Inc.
 Kroger Co.
 L-3 Communications Holdings Inc.
 Laboratory Corporation of America Holdings
 Lam Research Corporation
 LandAmerica Financial Group Inc.
-Lands' End Inc.
+Lands End Inc.
 Landstar System Inc.
 La-Z-Boy Inc.
 Lear Corporation
@@ -494,14 +494,14 @@ Levi Strauss and Co.
 Lexmark International Inc.
 Limited Inc.
 Lincoln National Corporation
-Linens 'n Things Inc.
+Linens n Things Inc.
 Lithia Motors Inc.
 Liz Claiborne Inc.
 Lockheed Martin Corporation
 Loews Corporation
 Longs Drug Stores Corporation
 Louisiana-Pacific Corporation
-Lowe's Companies Inc.
+Lowes Companies Inc.
 LSI Logic Corporation
 The LTV Corporation
 The Lubrizol Corporation
@@ -532,7 +532,7 @@ The May Department Stores Company
 Maytag Corporation
 MBNA Corporation
 McCormick and Company Incorporated
-McDonald's Corporation
+McDonalds Corporation
 The McGraw-Hill Companies Inc.
 McKesson Corporation
 McLeodUSA Incorporated
@@ -541,7 +541,7 @@ MDU Resources Group Inc.
 MeadWestvaco Corporation
 Medtronic Inc.
 Mellon Financial Corporation
-The Men's Wearhouse Inc.
+The Mens Wearhouse Inc.
 Merck and Co., Inc.
 Mercury General Corporation
 Merrill Lynch and Co. Inc.
@@ -648,7 +648,7 @@ Perini Corp
 PerkinElmer Inc
 Perot Systems Corp
 Petco Animal Supplies Inc.
-Peter Kiewit Sons', Inc.
+Peter Kiewit Sons, Inc.
 PETsMART Inc
 Pfizer Inc
 Pacific Gas and Electric Corp.
@@ -660,7 +660,7 @@ Phillips Petroleum Co
 Phillips Van Heusen Corp.
 Phoenix Companies Inc
 Pier 1 Imports Inc.
-Pilgrim's Pride Corporation
+Pilgrims Pride Corporation
 Pinnacle West Capital Corp
 Pioneer-Standard Electronics Inc.
 Pitney Bowes Inc.
@@ -706,7 +706,7 @@ R.R. Donnelley and Sons Company
 Radio Shack Corporation
 Raymond James Financial Inc.
 Raytheon Company
-Reader's Digest Association Inc.
+Readers Digest Association Inc.
 Reebok International Ltd.
 Regions Financial Corp.
 Regis Corporation
@@ -837,7 +837,7 @@ Toll Brothers Inc
 Torchmark Corporation
 Toro Company
 Tower Automotive Inc.
-Toys 'R' Us Inc
+Toys R Us Inc
 Trans World Entertainment Corp.
 TransMontaigne Inc
 Transocean Inc
@@ -914,7 +914,7 @@ Weatherford International Inc
 Weis Markets Inc.
 Wellpoint Health Networks Inc
 Wells Fargo and Company
-Wendy's International Inc
+Wendys International Inc
 Werner Enterprises Inc
 WESCO International Inc
 Western Digital Inc

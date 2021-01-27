@@ -114,3 +114,11 @@ func SvcHandlerVersion(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	lib.Ulog("lib.GetVersionNo() returns %s\n", lib.GetVersionNo())
 	fmt.Fprintf(w, "%s", lib.GetVersionNo())
 }
+
+// SvcWriteSuccessResponseWithID is used to complete a successful write
+// operation on w2ui form save requests.
+func SvcWriteSuccessResponseWithID(w http.ResponseWriter, id int64) {
+	var g = SvcStatusResponse{Status: "success", Recid: id}
+	w.Header().Set("Content-Type", "application/json")
+	SvcWriteResponse(&g, w)
+}

@@ -1,0 +1,17 @@
+{
+    "records": [
+        {
+            "CreateBy": 269,
+            "CreateTime": "2021-01-26T21:37:35Z",
+            "FLAGS": 0,
+            "LID": 1,
+            "LastModBy": 269,
+            "LastModTime": "2021-01-26T21:37:35Z",
+            "LicenseNo": "02069301",
+            "State": "MO",
+            "UID": 269
+        }
+    ],
+    "status": "success",
+    "total": 1
+}

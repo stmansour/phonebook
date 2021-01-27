@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"phonebook/db"
 	"phonebook/lib"
 	"rentroll/rlib"
 	"strings"
@@ -95,12 +96,14 @@ type ServiceData struct {
 	QueryParams   map[string][]string  // parameters when HTTP GET is used
 	Files         map[string][]*multipart.FileHeader
 	MFValues      map[string][]string
+	sess          *db.Session
 }
 
 // ServiceHandler describes the handler for all services
 type ServiceHandler struct {
-	Cmd     string
-	Handler func(http.ResponseWriter, *http.Request, *ServiceData)
+	Cmd           string
+	Handler       func(http.ResponseWriter, *http.Request, *ServiceData)
+	AuthNRequired bool
 }
 
 // SvcError is the generalized error structure to return errors to the grid widget
@@ -123,17 +126,19 @@ type SvcStatusResponse struct {
 
 // Svcs is the table of all service handlers
 var Svcs = []ServiceHandler{
-	{"authenticate", SvcAuthenticate},
-	{"bud", SvcBUD},
-	{"butd", SvcBUTypedown},
-	{"discon", SvcDisableConsole},
-	{"encon", SvcEnableConsole},
-	{"logoff", SvcLogoff},
-	{"people", SvcPeople},
-	{"peopletd", SvcPeopleTypeDown},
-	{"resetpw", SvcResetPWHandler},
-	{"validatecookie", SvcValidateCookie},
-	{"version", SvcHandlerVersion},
+	{"authenticate", SvcAuthenticate, false},
+	{"bud", SvcBUD, false},
+	{"butd", SvcBUTypedown, false},
+	{"discon", SvcDisableConsole, false},
+	{"encon", SvcEnableConsole, false},
+	{"license", SvcHandlerLicense, true},
+	{"licenses", GetLicenses, true},
+	{"logoff", SvcLogoff, false},
+	{"people", SvcPeople, true},
+	{"peopletd", SvcPeopleTypeDown, false},
+	{"resetpw", SvcResetPWHandler, true},
+	{"validatecookie", SvcValidateCookie, false},
+	{"version", SvcHandlerVersion, false},
 }
 
 // InitServices initializes the context data needed by service routines
@@ -221,21 +226,63 @@ func V1ServiceHandler(w http.ResponseWriter, r *http.Request) {
 	//-----------------------------------------------------------------------
 	//  Now call the appropriate handler to do the rest
 	//-----------------------------------------------------------------------
-	found := false
+	sid := -1
 	for i := 0; i < len(Svcs); i++ {
 		if Svcs[i].Cmd == d.Service {
-			Svcs[i].Handler(w, r, &d)
-			found = true
+			sid = i
 			break
 		}
 	}
-	if !found {
+	if sid < 0 {
 		lib.Console("**** YIPES! **** %s - Handler not found\n", r.RequestURI)
 		err = fmt.Errorf("Service not recognized: %s", d.Service)
 		lib.Console("***ERROR IN URL***  %s", err.Error())
 		SvcErrorReturn(w, err, funcname)
 		return
 	}
+
+	//-----------------------------------------------------------------------
+	// Is authentication required for this command?  If so validate that we
+	// have a cookie.
+	//-----------------------------------------------------------------------
+	// lib.Console("debug> SVC: A\n")
+	if Svcs[sid].AuthNRequired {
+		// lib.Console("debug> SVC: B\n")
+		c, err := db.ValidateSessionCookie(r, false) // this updates the expire time
+		if err != nil {
+			SvcErrorReturn(w, err, funcname)
+			return
+		}
+		// lib.Console("debug> SVC: C\n")
+		if !c {
+			SvcErrorReturn(w, db.ErrSessionRequired, funcname)
+			return
+		}
+
+		// lib.Console("debug> SVC: D\n")
+		//----------------------------------------------------------------------
+		// The air cookie is valid.  Create (or get) the internal session. This
+		// is needed to identify the person associated with the request. All
+		// database updates performed by this user will be updated captured
+		// in the database writes/updates. We maintain info about this user
+		// so we don't have to look it up every time they make a db change.
+		//----------------------------------------------------------------------
+		if d.sess, err = db.GetSession(r.Context(), w, r); err != nil {
+			SvcErrorReturn(w, err, funcname)
+			return
+		}
+		//----------------------------------------------------------------------
+		// If we make it here, we have a good session.  Add it to the request
+		// context
+		//----------------------------------------------------------------------
+		// lib.Console("debug> SVC: E,   d.sess.{UID, Username, Firstname} = %d, %s, %s\n", d.sess.UID, d.sess.Username, d.sess.Firstname)
+		ctx := db.SetSessionContextKey(r.Context(), d.sess)
+		r = r.WithContext(ctx)
+
+		// lib.Console("debug> SVC: F\n")
+	}
+
+	Svcs[sid].Handler(w, r, &d)
 	svcDebugTxnEnd()
 }
 

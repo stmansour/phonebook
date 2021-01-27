@@ -17,6 +17,59 @@ CREATENEWDB=0
 
 source ../share/base.sh
 
+USER=$(grep Tester1Name config.json | awk '{print $2;}' | sed 's/[",]//g')
+PASS=$(grep Tester1Pass config.json | awk '{print $2;}' | sed 's/[",]//g')
+if [ "${USER}x" = "x" -o "${PASS}x" = "x" ]; then
+    echo "Could not establish user and password. Is config.conf correct?"
+    exit 2
+fi
+
+
+#------------------------------------------------------------------------------
+#  login - will attempt to login to the wreis server. If it is successful
+#          it will set two environment variables:
+#
+#          TOKEN   - will contain the cookie value for AIR login
+#          COOKIES - contains the option for CURL to include the AIR cookie
+#                    in requests
+#
+#          dojsonPOST is setup to use ${COOKIES}
+#
+#  Scenario:
+#  Execute the url to ping the server
+#
+#  Expected Results:
+#   1.  It should return the server version
+#------------------------------------------------------------------------------
+
+login() {
+    if [ "x${COOKIES}" = "x" ]; then
+        encodeRequest "{\"user\":\"${USER}\",\"pass\":\"${PASS}\"}"
+        OUTFILE="loginrequest"
+        dojsonPOST "http://localhost:8250/v1/authenticate/" "request" "${OUTFILE}"  "login"
+
+        #-----------------------------------------------------------------------------
+        # Now we need to add the token to the curl command for future calls to
+        # the server.  curl -b "air=${TOKEN}"  ...
+        # Set the command line for cookies in ${COOKIES} and dojsonPOST will use them.
+        #-----------------------------------------------------------------------------
+        TOKEN=$(grep Token "${OUTFILE}" | awk '{print $2;}' | sed 's/[",]//g')
+
+		echo "LOGIN SUCCESSFULL:  token = ${TOKEN}"
+        COOKIES="-b air=${TOKEN}"
+
+        #-----------------------------------------------------------------------
+        # This is needed so that the tests can be entered at any point.
+        # login() uses dojsonPOST which updates STEP.  We only want the
+        # test steps in the main routine below to update the test counts.
+        # login should be written so that it can be called anywhere, anytime
+        # and it will not alter the sequencing of the output files.
+        #-----------------------------------------------------------------------
+        ((STEP--))
+    fi
+}
+
+
 #------------------------------------------------------------------------------
 #  Create Directory Database - generate a random database...
 #  This is here mainly to document how it is done.  We have the
@@ -180,10 +233,13 @@ fi
 TFILES="e"
 STEP=0
 if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	mysql --no-defaults accord < accord.sql
+	login
 	encodeRequest '{"cmd":"get","selected":[],"limit":0,"offset":0}'
     dojsonPOST "http://localhost:8250/v1/people/1/9" "request" "${TFILES}${STEP}"  "get-person-9-biz-1"
 	encodeRequest '{"cmd":"get","selected":[],"limit":0,"offset":0}'
     dojsonPOST "http://localhost:8250/v1/people/1/999" "request" "${TFILES}${STEP}"  "get-person-999-biz-1"
+	COOKIES=
 fi
 
 #------------------------------------------------------------------------------
@@ -204,10 +260,57 @@ fi
 TFILES="f"
 STEP=0
 if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	mysql --no-defaults accord < accord.sql
+	login
 	encodeRequest '{"cmd":"getlist","UIDs":[3,7,9]}'
     dojsonPOST "http://localhost:8250/v1/people/1" "request" "${TFILES}${STEP}"  "get-personlist-biz-1"
 	encodeRequest '{"cmd":"getlist","UIDs":[3,7,9,8888]}'
     dojsonPOST "http://localhost:8250/v1/people/1" "request" "${TFILES}${STEP}"  "get-personlist-error-biz-1"
+	COOKIES=
+fi
+
+#------------------------------------------------------------------------------
+#  TEST g
+#
+#  Validate saving updating and retrieving licenses
+#
+#  Scenario:
+#
+#
+#  Expected Results:
+#   do a save, validate that the save occurred
+#   do an update, validate that the update occurred,
+#   do a delete, validate that the delete occurred
+#
+#------------------------------------------------------------------------------
+TFILES="g"
+STEP=0
+if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFILES}${TFILES}" ]; then
+	mysql --no-defaults accord < accord.sql
+	login
+    # 0. Add a license for UID 269
+	encodeRequest '{"cmd":"save","record":{"LID":0,"UID":269,"State":"MO","LicenseNo":"02069301","FLAGS":0}}'
+    dojsonPOST "http://localhost:8250/v1/license/0/0" "request" "${TFILES}${STEP}"  "save-license"
+    # 1. Read all UID 269's licenses
+	encodeRequest '{"cmd":"get"}'
+    dojsonPOST "http://localhost:8250/v1/licenses/0/269" "request" "${TFILES}${STEP}"  "get-licenses"
+    # 2. Read license LID=1
+	encodeRequest '{"cmd":"get"}'
+    dojsonPOST "http://localhost:8250/v1/license/0/1" "request" "${TFILES}${STEP}"  "get-license"
+    # 3. Add an additional license for UID 269
+	encodeRequest '{"cmd":"save","record":{"LID":0,"UID":269,"State":"CA","LicenseNo":"01234567","FLAGS":0}}'
+    dojsonPOST "http://localhost:8250/v1/license/0/0" "request" "${TFILES}${STEP}"  "save-license"
+    # 4. Read all UID 269's licenses, there should be 2 now
+	encodeRequest '{"cmd":"get"}'
+    dojsonPOST "http://localhost:8250/v1/licenses/0/269" "request" "${TFILES}${STEP}"  "get-licenses"
+    # 5. delete license 2
+	encodeRequest '{"cmd":"delete"}'
+    dojsonPOST "http://localhost:8250/v1/license/0/2" "request" "${TFILES}${STEP}"  "delete-licenses"
+    # 6. Read all UID 269's licenses, there should only be 1 now
+	encodeRequest '{"cmd":"get"}'
+    dojsonPOST "http://localhost:8250/v1/licenses/0/269" "request" "${TFILES}${STEP}"  "get-licenses"
+
+    COOKIES=
 fi
 
 echo "Shutting down phonebook service..."

@@ -20,7 +20,7 @@ test:
 
 
 clean:
-	rm -f testreport.txt
+	rm -f testreport.txt dbqq*.sql
 	for dir in $(DIRS); do make -C $$dir clean;done
 
 packageqa:

@@ -31,8 +31,8 @@ type PeopleTypedownResponse struct {
 // GetPersonResponse is the structure of date send in response to a
 // get person request
 type GetPersonResponse struct {
-	Status string      `json:"status"` // typically "success"
-	Record db.WSPerson `json:"record"` // set to id of newly inserted record
+	Status string    `json:"status"` // typically "success"
+	Record db.People `json:"record"` // set to id of newly inserted record
 }
 
 // GetPersonList describes the POST request for getting a list of people
@@ -86,8 +86,8 @@ func SvcPeopleTypeDown(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 // For this call, we expect the URI to contain the BID and ID, in this case the
 // ID is the UID of the person we're interested in.
 //
-//           0  1    2   3
-// uri 		/v1/asm/:BUI/ID
+//           0  1
+// uri 		/v1/UID
 // The server command can be:
 //      get
 //      save
@@ -139,10 +139,14 @@ func SvcPeople(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 func getPerson(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 	const funcname = "getPerson"
 	var g GetPersonResponse
-	var a db.WSPerson
 	var err error
 
-	a, err = db.GetWSPerson(d.ID)
+	// var a db.WSPerson
+	// a, err = db.GetWSPerson(d.ID)
+
+	lib.Console("Entered: %s.  Calling db.GetPeople for UID = %d\n", funcname, d.ID)
+	var a db.People
+	a, err = db.GetPeople(r.Context(), d.ID)
 	if err != nil {
 		SvcErrorReturn(w, err, funcname)
 		return

@@ -30,6 +30,11 @@ var PrepStmts struct {
 	InsertPeople              *sql.Stmt
 	UpdatePeople              *sql.Stmt
 	DeletePeople              *sql.Stmt
+	GetLicense                *sql.Stmt
+	GetLicenses               *sql.Stmt
+	InsertLicense             *sql.Stmt
+	UpdateLicense             *sql.Stmt
+	DeleteLicense             *sql.Stmt
 }
 
 // GenSQLInsertAndUpdateStrings generates a string suitable for SQL INSERT and UPDATE statements given the fields as used in SELECT statements.
@@ -102,6 +107,25 @@ func CreatePreparedStmts() {
 	var s1, s2, s3, flds string
 
 	DB.DBFields = make(map[string]string, 0)
+
+	//==========================================
+	// License
+	//==========================================
+	flds = "LID,UID,State,LicenseNo,FLAGS,LastModTime,LastModBy,CreateTime,CreateBy"
+
+	DB.DBFields["license"] = flds
+	PrepStmts.GetLicense, err = DB.DirDB.Prepare("SELECT " + flds + " FROM license WHERE LID=?")
+	Errcheck(err)
+	PrepStmts.GetLicenses, err = DB.DirDB.Prepare("SELECT " + flds + " FROM license WHERE UID=?")
+	Errcheck(err)
+	s1, s2, s3, _, _ = GenSQLInsertAndUpdateStrings(flds)
+	PrepStmts.InsertLicense, err = DB.DirDB.Prepare("INSERT INTO license (" + s1 + ") VALUES(" + s2 + ")")
+	Errcheck(err)
+	PrepStmts.UpdateLicense, err = DB.DirDB.Prepare("UPDATE license SET " + s3 + " WHERE UID=?")
+	Errcheck(err)
+	PrepStmts.DeleteLicense, err = DB.DirDB.Prepare("DELETE FROM license WHERE LID=?")
+	Errcheck(err)
+
 	//==========================================
 	// People
 	//==========================================

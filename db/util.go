@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"phonebook/lib"
 	"runtime/debug"
-	"wreis/session"
 )
 
 // ErrSessionRequired session required error
@@ -68,7 +67,7 @@ func MapURL(addr, city, state, zip, country string) string {
 //------------------------------------------------------------------------------
 func ValidateSession(ctx context.Context) bool {
 	if !(lib.AppConfig.Env != extres.APPENVPROD) {
-		_, ok := session.GetSessionFromContext(ctx)
+		_, ok := GetSessionFromContext(ctx)
 		if !ok {
 			return false
 		}
@@ -88,7 +87,7 @@ func ValidateSession(ctx context.Context) bool {
 //------------------------------------------------------------------------------
 func ValidateSessionForDBDelete(ctx context.Context) error {
 	if !(DB.noAuth && lib.AppConfig.Env != extres.APPENVPROD) {
-		_, ok := session.GetSessionFromContext(ctx)
+		_, ok := GetSessionFromContext(ctx)
 		if !ok {
 			return ErrSessionRequired
 		}
@@ -111,7 +110,7 @@ func ValidateSessionForDBDelete(ctx context.Context) error {
 //-----------------------------------------------------------------------------
 func ValidateSessionForDBInsert(ctx context.Context, id1, id2 *int64) error {
 	if !(DB.noAuth && lib.AppConfig.Env != extres.APPENVPROD) {
-		sess, ok := session.GetSessionFromContext(ctx)
+		sess, ok := GetSessionFromContext(ctx)
 		if !ok {
 			return ErrSessionRequired
 		}
@@ -136,7 +135,7 @@ func ValidateSessionForDBInsert(ctx context.Context, id1, id2 *int64) error {
 //-----------------------------------------------------------------------------
 func ValidateSessionForDBUpdate(ctx context.Context, id2 *int64) error {
 	if !(DB.noAuth && lib.AppConfig.Env != extres.APPENVPROD) {
-		sess, ok := session.GetSessionFromContext(ctx)
+		sess, ok := GetSessionFromContext(ctx)
 		if !ok {
 			return ErrSessionRequired
 		}

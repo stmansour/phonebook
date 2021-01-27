@@ -1,10 +1,12 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"phonebook/lib"
+	"strings"
 	"time"
 )
 
@@ -155,16 +157,16 @@ func ReUpCookieTime(s *Session) {
 // Refresh updates the cookie and Session with a new expire time.
 //-----------------------------------------------------------------------------
 func (s *Session) Refresh(w http.ResponseWriter, r *http.Request) int64 {
-	lib.Console("Entered Session.Refresh\n")
+	// lib.Console("Entered Session.Refresh\n")
 	cookie, err := r.Cookie(SessionCookieName)
 	if nil != cookie && err == nil {
-		lib.Console("Cookie found: %s\n", cookie.Value)
+		// lib.Console("Cookie found: %s\n", cookie.Value)
 		ReUpCookieTime(s)
 		cookie.Expires = s.Expire
-		lib.Console("Setting expire time to: %v\n", cookie.Expires)
+		// lib.Console("Setting expire time to: %v\n", cookie.Expires)
 		cookie.Path = "/"
 		http.SetCookie(w, cookie)
-		lib.Console("Session.Expire = %v\n", s.Expire)
+		// lib.Console("Session.Expire = %v\n", s.Expire)
 		UpdateSessionCookieDB(s)
 		return 0
 	}
@@ -362,4 +364,124 @@ func (s *Session) ElemPermsAll(elem int64, perm int64) bool {
 	ok := pvtElemPermsAll(s, elem, perm) // look for perms
 	SessionManager.ReqSessionMemAck <- 1 // tell SessionDispatcher we're done with the data
 	return ok
+}
+
+// ValidateSessionCookie verifies the existence of a cookie and will update its
+// timeout value if update=true
+//
+// INPUTS
+//  cval   = value of cookie string for "air"
+//  update = if true, increase the timeout value by the SessionTimeout amount
+//
+// RETURNS
+//  any errors encountered
+//----------------------------------------------------------------------------------------------
+func ValidateSessionCookie(r *http.Request, update bool) (bool, error) {
+	// funcname := "ValidateCookie"
+	cookie, err := r.Cookie(SessionCookieName)
+	if err != nil {
+		return false, err
+	}
+	cval := cookie.Value
+	// lib.Console("validate Cookie:  %s\n", cval)
+
+	c, err := GetSessionCookie(cval)
+	if err != nil {
+		return false, err
+	}
+
+	// lib.Console("Found session Cookie: UID=%d, UserName=%s, Expire=%v\n", c.UID, c.UserName, c.Expire)
+
+	if c.UID < 1 {
+		return false, nil
+	}
+
+	// lib.Console("%s: Cookie found:  c.UID = %d\n", funcname, c.UID)
+	//------------------------------------------------------------------
+	// if the request calls for the timestamp to be updated, do so now
+	// that we know it exists.
+	//------------------------------------------------------------------
+	if update {
+		s, ok := Sessions[c.Cookie]
+		if !ok {
+			//----------------------------------------------------------------
+			// This means that the Cookie was found in the database but not
+			// in memory. The most likely reason for this is that phonebook
+			// was restarted.  In any case, we need to add this Cookie to the
+			// in memory sessions...
+			//----------------------------------------------------------------
+			s = NewSessionFromCookie(&c) // we don't need the return value, we just need the session to be put into memory
+			// lib.Console("Session was not found in memory.  Adding it to memory.  Cookie = %s\n", c.Cookie)
+		}
+		s.Expire = s.Expire.Add(SessionManager.SessionTimeout * time.Minute)
+		if err = UpdateSessionCookieDB(s); err != nil {
+			return true, err
+		}
+		// lib.Console("UPDATED SESSION Cookie TIMEOUT TIME\n")
+	}
+	return true, nil
+
+}
+
+// GetSession returns the session based on the cookie in the supplied
+// HTTP connection. If the "air" cookie is valid, it will either find the
+// existing session or create a new session.
+//
+// INPUT
+//  ctx database context
+//  w - http writer to client
+//  r - the request where we look for the cookie
+//  c - pointer to the validate cookie response.  If UID > 0 it means that
+//      the cookie has already been validated and that the other fields are
+//      valid -- we don't need to make another call to the directory server.
+//
+// RETURNS
+//  session - pointer to the new session
+//  error   - any error encountered
+//-----------------------------------------------------------------------------
+func GetSession(ctx context.Context, w http.ResponseWriter, r *http.Request) (*Session, error) {
+	// funcname := "GetSession"
+	// var b AIRAuthenticateResponse
+	var ok bool
+	var sess *Session
+
+	// util.Console("GetSession 1\n")
+	// util.Console("\nSession Table:\n")
+	// DumpSessions()
+	// util.Console("\n")
+	cookie, err := r.Cookie(SessionCookieName)
+	if err != nil {
+		// util.Console("GetSession 2\n")
+		if strings.Contains(err.Error(), "cookie not present") {
+			// util.Console("GetSession 3\n")
+			return nil, nil
+		}
+		// util.Console("GetSession 4\n")
+		return nil, err
+	}
+	// util.Console("GetSession 5\n")
+	sess, ok = Sessions[cookie.Value]
+	// if !ok || sess == nil {
+	// 	var b ValidateCookieResponse
+	// 	util.Console("GetSession 6\n")
+	//
+	// 	b, err = ValidateSessionCookie(cookie.Value, true)
+	// 	if err != nil {
+	// 		util.Console("GetSession 7\n")
+	// 		return sess, err
+	// 	}
+	// 	util.Console("ValidateSessionCookie returned b = %#v\n", b)
+	// 	util.Console("Directory Service Expire time = %s\n", time.Time(b.Expire).Format(util.RRDATETIMEINPFMT))
+	// 	sess, err = CreateSession(ctx, &b)
+	// 	util.Console("GetSession 8\n")
+	// 	if err != nil {
+	// 		util.Console("GetSession 9\n")
+	// 		return nil, err
+	// 	}
+	// 	util.Console("*** NEW SESSION CREATED ***\n")
+	// }
+	if ok && sess != nil {
+		sess.Refresh(w, r)
+	}
+	return sess, nil
 }

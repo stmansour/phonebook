@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"phonebook/lib"
 	"time"
-	"wreis/session"
 )
 
 // WSPerson is the People information we pass over the web service call.
@@ -211,7 +210,7 @@ func GetByUsername(ctx context.Context, id string) (People, error) {
 // any error encountered or nil if no error
 //-----------------------------------------------------------------------------
 func InsertPeople(ctx context.Context, a *People) (int64, error) {
-	sess, ok := session.GetSessionFromContext(ctx)
+	sess, ok := GetSessionFromContext(ctx)
 	if !ok {
 		return a.UID, ErrSessionRequired
 	}
@@ -280,7 +279,6 @@ func InsertPeople(ctx context.Context, a *People) (int64, error) {
 // nil if the session is valid
 //-----------------------------------------------------------------------------
 func ReadPeople(row *sql.Row, a *People) error {
-	lib.Console("Entered ReadPeople\n")
 	err := row.Scan(
 		&a.UID,
 		&a.UserName,
@@ -409,7 +407,7 @@ func ReadPeopleList(rows *sql.Rows, a *People) error {
 // any error encountered or nil if no error
 //-----------------------------------------------------------------------------
 func UpdatePeople(ctx context.Context, a *People) error {
-	sess, ok := session.GetSessionFromContext(ctx)
+	sess, ok := GetSessionFromContext(ctx)
 	if !ok {
 		return ErrSessionRequired
 	}

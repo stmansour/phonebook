@@ -30,6 +30,20 @@ DBNAME="accord"
 # ALTER TABLE people ADD CreateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER LastModBy;
 # ALTER TABLE people ADD CreateBy BIGINT NOT NULL DEFAULT 0 AFTER CreateTime;
 
+# CREATE TABLE license (
+#     LID BIGINT NOT NULL AUTO_INCREMENT,     -- unique license id
+#     UID BIGINT NOT NULL DEFAULT 0,          -- associated with this user
+#     State VARCHAR(25) NOT NULL DEFAULT '',  -- state associated with license
+#     LicenseNo VARCHAR(128) NOT NULL DEFAULT '',
+#     FLAGS BIGINT NOT NULL DEFAULT 0,        -- 1<<0: if 0 it's a sales license, if 1 it's a broker's license
+#     LastModTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- when was this record last written
+#     LastModBy BIGINT NOT NULL DEFAULT 0,    -- employee UID (from phonebook) that modified it
+#     CreateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- when was this record created
+#     CreateBy BIGINT NOT NULL DEFAULT 0,     -- employee UID (from phonebook) that created this record
+#
+#     PRIMARY KEY(LID)
+# )
+
 #=====================================================
 #  END of modification history
 #=====================================================

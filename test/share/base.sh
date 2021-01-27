@@ -111,6 +111,19 @@ checkPause() {
 	fi
 }
 
+#############################################################################
+# incStep()
+#   Description:
+#		Increment the STEP variable.  It is encapsulated here because
+#       there may be additional steps to perform in the future.
+#
+#   Params:
+#       none
+#############################################################################
+incStep() {
+	((STEP++))
+}
+
 ##########################################################################
 # elapsedtime()
 # Shows the number of seconds that was needed to run this script
@@ -810,23 +823,29 @@ doPlainPOST () {
 	rm -f qqx qqy
 }
 
-########################################
+########################################################################
 # dojsonPOST()
 #   Simulate a POST command to the server and use
-#   the supplied file name as the json data
+#   the supplied file name as the json data.
+#
 #	Parameters:
 # 		$1 = url
 #       $2 = json file
 # 		$3 = base file name
 #		$4 = title
-########################################
+#       $5 = if present, the name of a property to ignore in the check
+########################################################################
 dojsonPOST () {
-	TESTCOUNT=$((TESTCOUNT + 1))
-	((STEP++))
+	((TESTCOUNT++))
 	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} $3 $4
-	CMD="curl -s -X POST ${1} -H \"Content-Type: application/json\" -d @${2}"
-	${CMD} | python -m json.tool >${3} 2>>${LOGFILE}
+	COOK=""
+	if [ "${COOKIES}x" != "x" ]; then
+		COOK="${COOKIES}"
+	fi
+	CMD="curl ${COOK} -s -X POST ${1} -H \"Content-Type: application/json\" -d @${2}"
+	${CMD} | tee serverreply | python -m json.tool >${3} 2>>${LOGFILE}
 
+	incStep
 	checkPause
 
 	if [ "${FORCEGOOD}" = "1" ]; then
@@ -836,18 +855,23 @@ dojsonPOST () {
 	elif [ "${SKIPCOMPARE}" = "0" ]; then
 		if [ ! -f ${GOLD}/${3}.gold ]; then
 			echo "UNSET CONTENT" > ${GOLD}/${3}.gold
+			mkdir -p gold
 			echo "Created a default ${GOLD}/$1.gold for you. Update this file with known-good output."
 		fi
 
 		#--------------------------------------------------------------------
-		# The actual data has timestamp information that changes every run.
+		# The actual data has timestamp and token information that changes every run.
 		# The timestamp can be filtered out for purposes of testing whether
 		# or not the web service could be called and can return the expected
 		# data.
 		#--------------------------------------------------------------------
 		declare -a out_filters=(
 			's/(^[ \t]+"LastModTime":).*/$1 TIMESTAMP/'
-			's/(^[ \t]+"CreateTS":).*/$1 TIMESTAMP/'
+			's/(^[ \t]+"CreateTime":).*/$1 TIMESTAMP/'
+			's/(^[ \t]+"ApproverDt":).*/$1 TIMESTAMP/'
+			's/(^[ \t]+"OwnerDt":).*/$1 TIMESTAMP/'
+			's/(^[ \t]+"Token":).*/$1 TOKEN/'
+			's/(^[ \t]+"Expire":).*/$1 TIMESTAMP/'
 		)
 		cp gold/${3}.gold qqx
 		cp ${3} qqy
@@ -856,6 +880,13 @@ dojsonPOST () {
 			perl -pe "$f" qqx > qqx1; mv qqx1 qqx
 			perl -pe "$f" qqy > qqy1; mv qqy1 qqy
 		done
+
+		if [ "x${5}" != "x" ]; then
+			# echo "  [ CHECKING FOR ${5} ]"
+			f="s/([ \t]+\"${5}\":).*/\$1 CONFCODE/"
+			perl -pe "$f" qqx > qqx1; mv qqx1 qqx
+			perl -pe "$f" qqy > qqy1; mv qqy1 qqy
+		fi
 
 		UDIFFS=$(diff qqx qqy | wc -l)
 		if [ ${UDIFFS} -eq 0 ]; then
@@ -887,6 +918,112 @@ dojsonPOST () {
 	fi
 	rm -f qqx qqy
 }
+
+########################################################################
+# dobinPOST()
+#   Simulate a POST command to the server and use
+#   the supplied file name as the binary data.
+#
+#   NOTE:   if you want to pass more args to CURL on this, declare
+#           an array called CURLARGS .  For example:
+#
+#           declare -a CURLARGS=('-H' 'Content-Type: multipart/form-data; boundary=------WebKitFormBoundaryNcjHBUJY2uBg9xCJ'
+# 			                     '-H' 'Content-Length: 744')
+#
+#	Parameters:
+# 		$1 = url
+#       $2 = binary file
+# 		$3 = base file name
+#		$4 = title
+#       $5 = if present, the name of a property to ignore in the check
+########################################################################
+dobinPOST () {
+	((TESTCOUNT++))
+	printf "PHASE %2s  %3s  %s... " ${TESTCOUNT} $3 $4
+	COOK=""
+	if [ "${COOKIES}x" != "x" ]; then
+		COOK="${COOKIES}"
+	fi
+	# CMD="curl ${COOK} ${CURLARGS[@]} -s -X POST ${1}  --data-binary @${2}"
+	CMD="curl -v ${COOK} ${CURLARGS[@]} -s -X POST ${1}  --data-binary @${2}"
+	if [ ${SHOWCOMMAND} -eq 1 ]; then
+		echo ""
+		echo "CMD =  ${CMD}"
+	fi
+	${CMD} | tee serverreply | python -m json.tool >${3} 2>>${LOGFILE}
+
+	incStep
+	checkPause
+
+	if [ "${FORCEGOOD}" = "1" ]; then
+		goldpath
+		cp ${3} ${GOLD}/${3}.gold
+		echo "DONE"
+	elif [ "${SKIPCOMPARE}" = "0" ]; then
+		if [ ! -f ${GOLD}/${3}.gold ]; then
+			echo "UNSET CONTENT" > ${GOLD}/${3}.gold
+			mkdir -p gold
+			echo "Created a default ${GOLD}/$1.gold for you. Update this file with known-good output."
+		fi
+
+		#--------------------------------------------------------------------
+		# The actual data has timestamp and token information that changes every run.
+		# The timestamp can be filtered out for purposes of testing whether
+		# or not the web service could be called and can return the expected
+		# data.
+		#--------------------------------------------------------------------
+		declare -a out_filters=(
+			's/(^[ \t]+"LastModTime":).*/$1 TIMESTAMP/'
+			's/(^[ \t]+"CreateTime":).*/$1 TIMESTAMP/'
+			's/(^[ \t]+"Token":).*/$1 TOKEN/'
+			's/(^[ \t]+"Expire":).*/$1 TIMESTAMP/'
+		)
+		cp gold/${3}.gold qqx
+		cp ${3} qqy
+		for f in "${out_filters[@]}"
+		do
+			perl -pe "$f" qqx > qqx1; mv qqx1 qqx
+			perl -pe "$f" qqy > qqy1; mv qqy1 qqy
+		done
+
+		if [ "x${5}" != "x" ]; then
+			# echo "  [ CHECKING FOR ${5} ]"
+			f="s/([ \t]+\"${5}\":).*/\$1 CONFCODE/"
+			perl -pe "$f" qqx > qqx1; mv qqx1 qqx
+			perl -pe "$f" qqy > qqy1; mv qqy1 qqy
+		fi
+
+		UDIFFS=$(diff qqx qqy | wc -l)
+		if [ ${UDIFFS} -eq 0 ]; then
+			if [ ${SHOWCOMMAND} -eq 1 ]; then
+				echo "PASSED	cmd: ${CMD}"
+			else
+				echo "PASSED"
+			fi
+		else
+			echo "FAILED..." >> ${ERRFILE}
+			echo "Differences in ${3} are as follows:" >> ${ERRFILE}
+			diff qqx qqy >> ${ERRFILE}
+			echo "If correct:  mv ${3} ${GOLD}/${3}.gold" >> ${ERRFILE}
+			echo "Command to reproduce:  ${CMD}" >> ${ERRFILE}
+			cat ${ERRFILE}
+			failmsg
+			if [ "${ASKBEFOREEXIT}" = "1" ]; then
+				pause ${3}
+			else
+				if [ ${MANAGESERVER} -eq 1 ]; then
+					echo "STOPPING RENTROLL SERVER"
+					pkill rentroll
+				fi
+				exit 1
+			fi
+		fi
+	else
+		echo
+	fi
+	rm -f qqx qqy
+}
+
 
 ########################################
 # dojsonGET()

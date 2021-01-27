@@ -29,7 +29,7 @@ var SessionCookieName = string("air")
 //  string     - a unique key identifier for the user
 //-----------------------------------------------------------------------------
 func GenerateSessionCookie(UID int64, username, useragent, remoteaddr string) SessionCookie {
-	lib.Console("Entered GenerateSessionCookie:  ua = %s, ip = %s\n", useragent, remoteaddr)
+	// lib.Console("Entered GenerateSessionCookie:  ua = %s, ip = %s\n", useragent, remoteaddr)
 	var c SessionCookie
 	key := username + useragent + remoteaddr
 	c.Cookie = fmt.Sprintf("%x", md5.Sum([]byte(key)))
@@ -38,8 +38,8 @@ func GenerateSessionCookie(UID int64, username, useragent, remoteaddr string) Se
 	c.Expire = time.Now().Add(SessionManager.SessionTimeout * time.Minute)
 	c.UserAgent = useragent
 	c.IP = remoteaddr
-	lib.Console("GenerateSessionCookie    %s : %s : %s  --> %s\n", username, useragent, remoteaddr, c.Cookie)
-	lib.Console("   PAddr : User Agent    %s : %s\n", c.IP, c.UserAgent)
+	// lib.Console("GenerateSessionCookie    %s : %s : %s  --> %s\n", username, useragent, remoteaddr, c.Cookie)
+	// lib.Console("   PAddr : User Agent    %s : %s\n", c.IP, c.UserAgent)
 	return c
 }
 
@@ -78,7 +78,7 @@ func InsertSessionCookieDB(s *Session) error {
 //  error       - any errors encountered, or nil if no errors
 //-----------------------------------------------------------------------------
 func UpdateSessionCookieDB(s *Session) error {
-	lib.Console("Entered UpdateSessionCookie: token = %s, Expire = %v\n", s.Token, s.Expire)
+	// lib.Console("Entered UpdateSessionCookie: token = %s, Expire = %v\n", s.Token, s.Expire)
 	err := UpdateSessionCookie(s.Token, &s.Expire)
 	return err
 }

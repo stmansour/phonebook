@@ -295,6 +295,36 @@ INSERT INTO `jobtitles` VALUES (1,'Accounting Assistant',''),(2,'Accounting Asso
 UNLOCK TABLES;
 
 --
+-- Table structure for table `license`
+--
+
+DROP TABLE IF EXISTS `license`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `license` (
+  `LID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `UID` bigint(20) NOT NULL DEFAULT '0',
+  `State` varchar(25) NOT NULL DEFAULT '',
+  `LicenseNo` varchar(128) NOT NULL DEFAULT '',
+  `FLAGS` bigint(20) NOT NULL DEFAULT '0',
+  `LastModTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `LastModBy` bigint(20) NOT NULL DEFAULT '0',
+  `CreateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `CreateBy` bigint(20) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`LID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `license`
+--
+
+LOCK TABLES `license` WRITE;
+/*!40000 ALTER TABLE `license` DISABLE KEYS */;
+/*!40000 ALTER TABLE `license` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `people`
 --
 
@@ -422,4 +452,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-01-24 15:14:45
+-- Dump completed on 2021-01-26 15:47:07

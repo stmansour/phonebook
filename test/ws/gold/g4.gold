@@ -1,0 +1,28 @@
+{
+    "records": [
+        {
+            "CreateBy": 269,
+            "CreateTime": "2021-01-26T21:11:14Z",
+            "FLAGS": 0,
+            "LID": 1,
+            "LastModBy": 269,
+            "LastModTime": "2021-01-26T21:11:14Z",
+            "LicenseNo": "02069301",
+            "State": "MO",
+            "UID": 269
+        },
+        {
+            "CreateBy": 269,
+            "CreateTime": "2021-01-26T21:11:15Z",
+            "FLAGS": 0,
+            "LID": 2,
+            "LastModBy": 269,
+            "LastModTime": "2021-01-26T21:11:15Z",
+            "LicenseNo": "01234567",
+            "State": "CA",
+            "UID": 269
+        }
+    ],
+    "status": "success",
+    "total": 2
+}
