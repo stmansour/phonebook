@@ -59,6 +59,7 @@ declare -a dbs=(
 	"../testdb.sql"
 	"../accord.sql"
 	"ws/dbws.sql"
+	"ws/accord.sql"
 )
 
 for f in "${dbs[@]}"
