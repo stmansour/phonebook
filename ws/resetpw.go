@@ -14,9 +14,9 @@ import (
 // ResetPWDomains is the list of domains supported by the
 // password reset comma nd
 // var supportedDomains = []string{
-// 	"accordinterests.com",
-// 	"l-objet.com",
-// 	"myisolabella.com",
+	// "accordinterests.com",
+	// "l-objet.com",
+	// "myisolabella.com",
 // }
 
 // ResetPWData is the struct with the username and password
