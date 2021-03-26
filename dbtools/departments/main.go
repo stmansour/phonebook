@@ -6,10 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"phonebook/lib"
 	"strings"
-)
 
-import _ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 // App is the global data structure for this app
 var App struct {
@@ -54,19 +55,29 @@ func readCommandLineArgs() {
 }
 
 func main() {
-	readCommandLineArgs()
-
 	var err error
-	s := fmt.Sprintf("%s:@/%s?charset=utf8&parseTime=True", App.DBUser, App.DBName)
-	App.db, err = sql.Open("mysql", s)
-	if nil != err {
-		fmt.Printf("sql.Open: Error = %v\n", err)
-	}
+	fmt.Printf("reading command line args\n")
+	readCommandLineArgs()
+	fmt.Printf("ReadConfig\n")
+	lib.ReadConfig()
+	fmt.Printf("GetSQLOpenString(%q,%q)\n", App.DBUser, App.DBName)
+	dbopenparms := lib.GetSQLOpenString(App.DBUser, App.DBName)
+	fmt.Printf("sql.Open(), dbopenparms = %s\n", dbopenparms)
+	App.db, err = sql.Open("mysql", dbopenparms)
+	lib.Errcheck(err)
 	defer App.db.Close()
+	fmt.Printf("Ping\n")
 	err = App.db.Ping()
 	if nil != err {
 		fmt.Printf("App.db.Ping: Error = %v\n", err)
+		s := fmt.Sprintf("Could not establish database connection to pbdb: %s, dbuser: %s\n", App.DBName, App.DBUser)
+		// ulog(s)
+		fmt.Println(s)
+		os.Exit(2)
 	}
 
+	fmt.Printf("loadDepartments\n")
+
 	loadDepartments(App.db)
+	fmt.Printf("Completed!\n")
 }

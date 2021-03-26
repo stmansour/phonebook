@@ -93,4 +93,5 @@ func main() {
 	fmt.Printf("CreateJobTitlesTable\n")
 
 	CreateJobTitlesTable(App.db)
+	fmt.Printf("Completed!\n")
 }
