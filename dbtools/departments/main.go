@@ -14,10 +14,10 @@ import (
 
 // App is the global data structure for this app
 var App struct {
-	db         *sql.DB
-	DBName     string
-	DBUser     string
-	JTFileName string
+	db       *sql.DB
+	DBName   string
+	DBUser   string
+	FileName string
 }
 
 func errcheck(err error) {
@@ -33,8 +33,11 @@ func loadDepartments(db *sql.DB) {
 	//--------------------------------------------------------------------------
 	InsertJT, err := db.Prepare("INSERT INTO departments (name) VALUES(?)")
 	errcheck(err)
-	filename := "depts.csv"
-	f, err := os.Open(filename)
+	f, err := os.Open(App.FileName)
+	if err != nil {
+		fmt.Printf("Error opening file: %s :: %s\n", App.FileName, err.Error())
+		os.Exit(1)
+	}
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -47,10 +50,10 @@ func loadDepartments(db *sql.DB) {
 func readCommandLineArgs() {
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	dbnmPtr := flag.String("N", "accord", "database name (accordtest, accord)")
-	jobtPtr := flag.String("j", "jobtitles.csv", "The file containing the job titles to load")
+	jobtPtr := flag.String("d", "depts.csv", "The file containing the job titles to load")
 	flag.Parse()
 	App.DBName = *dbnmPtr
-	App.JTFileName = *jobtPtr
+	App.FileName = *jobtPtr
 	App.DBUser = *dbuPtr
 }
 
