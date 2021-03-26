@@ -155,3 +155,17 @@ CREATE TABLE sessions (
 
 -- Add the Administrator as the first and only user
 -- INSERT INTO people (UserName,FirstName,LastName) VALUES("administrator","Administrator","Administrator");
+
+-- this table is needed by WithCredentials
+CREATE TABLE license (
+    LID BIGINT NOT NULL AUTO_INCREMENT,
+    UID BIGINT NOT NULL DEFAULT 0,
+    State VARCHAR(25) NOT NULL DEFAULT '',
+    LicenseNo VARCHAR(128) NOT NULL DEFAULT '',
+    FLAGS BIGINT NOT NULL DEFAULT 0,
+    LastModTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- when was this record last written
+    LastModBy BIGINT NOT NULL DEFAULT 0,                    -- employee UID (from phonebook) that modified it
+    CreateTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- when was this record created
+    CreateBy BIGINT NOT NULL DEFAULT 0,                     -- employee UID (from phonebook) that created this record
+    PRIMARY KEY (LID)
+);

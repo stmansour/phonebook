@@ -13,11 +13,11 @@ import (
 
 // ResetPWDomains is the list of domains supported by the
 // password reset comma nd
-var supportedDomains = []string{
-	"accordinterests.com",
-	"l-objet.com",
-	"myisolabella.com",
-}
+// var supportedDomains = []string{
+// 	"accordinterests.com",
+// 	"l-objet.com",
+// 	"myisolabella.com",
+// }
 
 // ResetPWData is the struct with the username and password
 // used for authentication
@@ -77,8 +77,8 @@ func SvcResetPWHandler(w http.ResponseWriter, r *http.Request, d *ServiceData) {
 		domain = PrimaryEmail[k+1:]
 	}
 	found := false
-	for i := 0; i < len(supportedDomains); i++ {
-		if domain == supportedDomains[i] {
+	for i := 0; i < len(lib.AppConfig.ResetPWList); i++ {
+		if domain == lib.AppConfig.ResetPWList[i] {
 			found = true
 			break
 		}
