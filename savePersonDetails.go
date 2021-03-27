@@ -98,7 +98,14 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 		ACL:                  aws.String("public-read"),
 	}
 
-	fmt.Printf("*** PutObject image path: %s\n", imagePath)
+	fmt.Printf(`*** PutObject params
+Bucket:               %s
+Key:                  %s
+ServerSideEncryption: %s
+ContentType:          %s
+CacheControl:         %s
+ACL:                  %s
+`, lib.AppConfig.S3BucketName, imagePath, "AES256", fileHeader.Header["Content-Type"][0], "max-age=86400", "public-read")
 
 	// Upload image to s3 bucket
 	resp, err := svc.PutObject(params)
@@ -109,9 +116,11 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 	// get image location
 	//imageLocation := path.Join(lib.AppConfig.S3BucketHost, lib.AppConfig.S3BucketName, imagePath)
 	imageLocation := db.GenerateImageLocation(imagePath)
-
 	ulog("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
+	fmt.Printf("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
+
 	ulog("Image location: %s", imageLocation)
+	fmt.Printf("Image location: %s", imageLocation)
 
 	return imagePath, imageLocation
 }
