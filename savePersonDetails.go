@@ -98,6 +98,8 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 		ACL:                  aws.String("public-read"),
 	}
 
+	fmt.Printf("*** PutObject image path: %s\n", imagePath)
+
 	// Upload image to s3 bucket
 	resp, err := svc.PutObject(params)
 	if err != nil {
