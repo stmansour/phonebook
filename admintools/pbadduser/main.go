@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -56,31 +55,18 @@ func setDefaultImage() error {
 		return err
 	}
 	defer file.Close()
-	// stats, statsErr := file.Stat()
-	// if statsErr != nil {
-	// 	return statsErr
-	// }
-	// var size int64 = stats.Size()
-	// bytes := make([]byte, size)
-	// bufr := bufio.NewReader(file)
-	// if _, err = bufr.Read(bytes); err != nil {
-	// 	return err
-	// }
-
 	creds := credentials.NewStaticCredentials(lib.AppConfig.S3BucketKeyID, lib.AppConfig.S3BucketKey, "")
 	if _, err = creds.Get(); err != nil {
 		return fmt.Errorf("Bad credentials: %s", err)
 	}
 
-	// Set up configuration
 	cfg := aws.NewConfig().WithRegion(lib.AppConfig.S3Region).WithCredentials(creds)
 	sess, err := session.NewSession(cfg)
 	if err != nil {
-		fmt.Println(err)
+		return fmt.Errorf("Error creating session: %s", err.Error())
 	}
 	svc := s3.New(sess)
 	imagePath := "defaultProfileImage.png"
-	// define parameters to upload image to S3
 	params := &s3.PutObjectInput{
 		Bucket:               aws.String(lib.AppConfig.S3BucketName),
 		Key:                  aws.String(imagePath), // it include filename
@@ -91,21 +77,19 @@ func setDefaultImage() error {
 		ACL:                  aws.String("public-read"),
 	}
 
-	fmt.Printf(`*** PutObject params
-		Bucket:               %s
-		Key:                  %s
-		ServerSideEncryption: %s
-		ContentType:          %s
-		CacheControl:         %s
-		ACL:                  %s\n`, lib.AppConfig.S3BucketName, imagePath, "AES256", "image/png", "max-age=86400", "public-read")
+	// fmt.Printf(`*** PutObject params
+	// 	Bucket:               %s
+	// 	Key:                  %s
+	// 	ServerSideEncryption: %s
+	// 	ContentType:          %s
+	// 	CacheControl:         %s
+	// 	ACL:                  %s\n`, lib.AppConfig.S3BucketName, imagePath, "AES256", "image/png", "max-age=86400", "public-read")
 
 	// Upload image to s3 bucket
-	resp, err := svc.PutObject(params)
-	if err != nil {
-		fmt.Printf("bad response: %s", err)
+	if _, err = svc.PutObject(params); err != nil {
+		return fmt.Errorf("Error with PutObject: %s", err.Error())
 	}
 
-	fmt.Printf("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
 	return nil
 }
 
@@ -129,7 +113,7 @@ func readCommandLineArgs() {
 	fPtr := flag.String("f", "", "first or given name")
 	lPtr := flag.String("l", "", "last or surname name")
 	rPtr := flag.String("r", "Viewer", "sets the user's role")
-	diPtr := flag.String("defaultimage", "", "sets the default image for all users")
+	diPtr := flag.String("defaultimage", "", "filename of image file that is the default image for all users. Must be a .png")
 	RPtr := flag.Bool("R", false, "dump roles to stdout")
 	flag.Parse()
 	App.DefaultImgFName = *diPtr
