@@ -40,8 +40,7 @@ func uploadFileCopy(from *multipart.File, toname string) error {
 Require constants for S3 configuration.
 */
 const (
-	S3Region        = "us-east-1" // This parameter define the region of bucket
-	ImageUploadPath = ""          // This parameter define in which folder have to upload image
+	ImageUploadPath = "" // This parameter define in which folder have to upload image
 )
 
 // generateFileName generate file name with uid
@@ -73,7 +72,7 @@ func uploadImageFileToS3(fileHeader *multipart.FileHeader, usrfile multipart.Fil
 	}
 
 	// Set up configuration
-	cfg := aws.NewConfig().WithRegion(S3Region).WithCredentials(creds)
+	cfg := aws.NewConfig().WithRegion(lib.AppConfig.S3Region).WithCredentials(creds)
 
 	// Set up session
 	sess, err := session.NewSession(cfg)

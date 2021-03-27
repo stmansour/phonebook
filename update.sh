@@ -1,6 +1,26 @@
 #!/bin/bash
 DEBUG=0
 
+usage() {
+    cat <<ZZEOF
+ACCORD - update application script
+Usage:   update.sh [OPTIONS]
+
+OPTIONS:
+-n  do not run startup after new version installed
+
+Examples:
+Normal usage
+        bash$  sudo ./update.sh
+
+Install but don't run startup script:
+    bash$  ./pbrestore.sh -n
+
+ZZEOF
+        exit 0
+}
+
+
 #############################################################################
 # decho
 #   Description:
@@ -149,6 +169,46 @@ GetLatestRepoRelease() {
     echo "Downlowded: ${tmpx}"
 }
 
+#############################################################################
+# RunActivation
+#   Description:
+#       Runs sudo ./activate.sh start
+#
+#   Params:
+#       ${1} = base name of product (rentroll, phonebook, mojo, ...)
+#
+#   Returns:
+#       nothing
+#
+#############################################################################
+GetLatestRepoRelease() {
+	echo -n "Invoking activation script: "
+	stat=$(./activate.sh -b start)
+	sleep 2
+	status=$(./activate.sh ready)
+	if [ "${status}" = "OK" ]; then
+	    echo "Success!"
+	    rm ../phonebook*.tar.gz
+	else
+	    echo "error:  status = ${status}"
+	    echo "output from ./activate.sh -b start "
+	    echo "${stat}"
+	fi
+}
+
+STARTUP=1
+while getopts "n" o; do
+        echo "o = ${o}"
+        case "${o}" in
+                n)      STARTUP=0
+                        echo "WILL NOT RUN STARTUP AFTER INSTALL"
+                        ;;
+                *)      usage
+                        exit 1
+                        ;;
+        esac
+done
+shift $((OPTIND-1))
 
 readConfig
 configure
@@ -194,15 +254,7 @@ cd ${RELDIR}
 echo "done"
 
 chmod u+s phonebook pbwatchdog
-echo -n "Invoking activation script: "
-stat=$(./activate.sh -b start)
-sleep 2
-status=$(./activate.sh ready)
-if [ "${status}" = "OK" ]; then
-    echo "Success!"
-    rm ../phonebook*.tar.gz
-else
-    echo "error:  status = ${status}"
-    echo "output from ./activate.sh -b start "
-    echo "${stat}"
+
+if [ "${STARTUP}" = "1" ]; then
+        RunActivation
 fi
