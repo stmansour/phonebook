@@ -181,7 +181,7 @@ GetLatestRepoRelease() {
 #       nothing
 #
 #############################################################################
-GetLatestRepoRelease() {
+RunActivation() {
 	echo -n "Invoking activation script: "
 	stat=$(./activate.sh -b start)
 	sleep 2

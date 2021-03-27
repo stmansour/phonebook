@@ -21,6 +21,9 @@ number of fields:  first name, last name, username, password, and role.
 .TP
 .IP "-B database_username"
 Username for logging into the database server. Default name is "ec2-user"
+.IP "-defaultimage filename"
+Use the supplied file as the default image for all users. This must be a png file. When
+this option is used, it will be processed first and the program will exit after it completes.
 .IP "-f firstname"
 Specifies the new user's first name
 .IP "-help"

@@ -15,6 +15,7 @@ install: pbadduser
 
 package: pbadduser
 	cp pbadduser ../../tmp/phonebook/
+	cp defaultProfileImage.png ../../tmp/phonebook/
 	cp *.1 ../../tmp/phonebook/man/man1/
 	@echo "*** Packaging completed in pbadduser ***"
 

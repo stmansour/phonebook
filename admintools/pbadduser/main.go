@@ -13,6 +13,11 @@ import (
 	"phonebook/lib"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awsutil"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -24,17 +29,18 @@ type Role struct {
 
 // App is the global data structure for this app
 var App struct {
-	db        *sql.DB
-	DBName    string
-	DBUser    string
-	username  string
-	firstname string
-	lastname  string
-	passwd    string
-	rname     string
-	RID       int
-	DumpRoles bool
-	Roles     []Role // the roles saved in the database
+	db              *sql.DB
+	DBName          string
+	DBUser          string
+	username        string
+	firstname       string
+	lastname        string
+	passwd          string
+	rname           string
+	DefaultImgFName string
+	RID             int
+	DumpRoles       bool
+	Roles           []Role // the roles saved in the database
 }
 
 func errcheck(err error) {
@@ -42,6 +48,65 @@ func errcheck(err error) {
 		fmt.Printf("Error = %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func setDefaultImage() error {
+	file, err := os.Open(App.DefaultImgFName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	// stats, statsErr := file.Stat()
+	// if statsErr != nil {
+	// 	return statsErr
+	// }
+	// var size int64 = stats.Size()
+	// bytes := make([]byte, size)
+	// bufr := bufio.NewReader(file)
+	// if _, err = bufr.Read(bytes); err != nil {
+	// 	return err
+	// }
+
+	creds := credentials.NewStaticCredentials(lib.AppConfig.S3BucketKeyID, lib.AppConfig.S3BucketKey, "")
+	if _, err = creds.Get(); err != nil {
+		return fmt.Errorf("Bad credentials: %s", err)
+	}
+
+	// Set up configuration
+	cfg := aws.NewConfig().WithRegion(lib.AppConfig.S3Region).WithCredentials(creds)
+	sess, err := session.NewSession(cfg)
+	if err != nil {
+		fmt.Println(err)
+	}
+	svc := s3.New(sess)
+	imagePath := "defaultProfileImage.png"
+	// define parameters to upload image to S3
+	params := &s3.PutObjectInput{
+		Bucket:               aws.String(lib.AppConfig.S3BucketName),
+		Key:                  aws.String(imagePath), // it include filename
+		Body:                 file,                  // data of file
+		ServerSideEncryption: aws.String("AES256"),
+		ContentType:          aws.String("image/png"),
+		CacheControl:         aws.String("max-age=86400"),
+		ACL:                  aws.String("public-read"),
+	}
+
+	fmt.Printf(`*** PutObject params
+		Bucket:               %s
+		Key:                  %s
+		ServerSideEncryption: %s
+		ContentType:          %s
+		CacheControl:         %s
+		ACL:                  %s\n`, lib.AppConfig.S3BucketName, imagePath, "AES256", "image/png", "max-age=86400", "public-read")
+
+	// Upload image to s3 bucket
+	resp, err := svc.PutObject(params)
+	if err != nil {
+		fmt.Printf("bad response: %s", err)
+	}
+
+	fmt.Printf("Response of Image Uploading: \n%s\n", awsutil.StringValue(resp))
+	return nil
 }
 
 func readAccessRoles() {
@@ -64,8 +129,10 @@ func readCommandLineArgs() {
 	fPtr := flag.String("f", "", "first or given name")
 	lPtr := flag.String("l", "", "last or surname name")
 	rPtr := flag.String("r", "Viewer", "sets the user's role")
+	diPtr := flag.String("defaultimage", "", "sets the default image for all users")
 	RPtr := flag.Bool("R", false, "dump roles to stdout")
 	flag.Parse()
+	App.DefaultImgFName = *diPtr
 	App.DBName = *dbnmPtr
 	App.DBUser = *dbuPtr
 	App.username = *uPtr
@@ -125,6 +192,13 @@ func main() {
 	if App.DumpRoles {
 		for i := 0; i < len(App.Roles); i++ {
 			fmt.Printf("%d - %s\n", App.Roles[i].RID, App.Roles[i].Name)
+		}
+		os.Exit(0)
+	}
+
+	if len(App.DefaultImgFName) > 0 {
+		if err = setDefaultImage(); err != nil {
+			fmt.Printf("Error reading image file: %s\n", err.Error())
 		}
 		os.Exit(0)
 	}
