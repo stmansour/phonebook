@@ -516,7 +516,15 @@ func loadMaps() {
 
 }
 
+func unauthorizeFileReqHandler(w http.ResponseWriter, r *http.Request) {
+	ulog("UNAUTHORIZED FILE ACCESS ATTEMPT: url = %s\n", r.URL.Path)
+	fmt.Fprintf(w, "404 page not found")
+}
+
 func initHTTP() {
+	http.HandleFunc("/config.json", unauthorizeFileReqHandler)
+	http.HandleFunc("/confprod.json", unauthorizeFileReqHandler)
+	http.HandleFunc("/confdev.json", unauthorizeFileReqHandler)
 	chttp.Handle("/", http.FileServer(http.Dir("./")))
 	http.HandleFunc("/", HomeHandler)
 	http.HandleFunc("/admin/", adminHandler)

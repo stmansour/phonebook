@@ -1,4 +1,5 @@
-DIRS=usersim ws
+# DIRS=usersim ws
+DIRS=ws
 
 tests:
 	cd usersim;make

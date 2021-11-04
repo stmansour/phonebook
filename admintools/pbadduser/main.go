@@ -39,6 +39,7 @@ var App struct {
 	DefaultImgFName string
 	RID             int
 	DumpRoles       bool
+	RootStaticDir   string
 	Roles           []Role // the roles saved in the database
 }
 
