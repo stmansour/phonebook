@@ -19,16 +19,16 @@ func getCompensations(d *db.PersonDetail) {
 	errcheck(rows.Err())
 }
 
-func getCompensationStr(d *db.PersonDetail) {
-	getCompensations(d)
-	d.CompensationStr = ""
-	for i := 0; i < len(d.Comps); i++ {
-		d.CompensationStr += fmt.Sprintf("%d", d.Comps[i])
-		if i+1 < len(d.Comps) {
-			d.CompensationStr += ", "
-		}
-	}
-}
+// func getCompensationStr(d *db.PersonDetail) {
+// 	getCompensations(d)
+// 	d.CompensationStr = ""
+// 	for i := 0; i < len(d.Comps); i++ {
+// 		d.CompensationStr += fmt.Sprintf("%d", d.Comps[i])
+// 		if i+1 < len(d.Comps) {
+// 			d.CompensationStr += ", "
+// 		}
+// 	}
+// }
 
 func initMyComps(d *db.PersonDetail) {
 	d.MyComps = make([]db.MyComp, 0)

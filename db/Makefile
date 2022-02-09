@@ -5,7 +5,7 @@ THISDIR=db
 lib: *.go
 	for dir in $(DIRS); do make -C $$dir;done
 	go vet
-	golint
+	# if [[ -f "${GOPATH}/bin/golint" ]]; then golint; else staticcheck; fi
 	go build
 	go install
 

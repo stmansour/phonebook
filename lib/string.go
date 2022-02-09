@@ -43,7 +43,7 @@ func IntFromString(sa string, errmsg string) (int64, error) {
 	if len(s) > 0 {
 		i, err := strconv.Atoi(s)
 		if err != nil {
-			if "" != errmsg {
+			if errmsg != "" {
 				return 0, fmt.Errorf("IntFromString: %s: %s", errmsg, s)
 			}
 			return n, err

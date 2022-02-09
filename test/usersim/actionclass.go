@@ -95,6 +95,7 @@ func viewClass(d *personDetail, atr *TestResults) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body
@@ -200,6 +201,7 @@ func adminEditClass(d *personDetail, atr *TestResults) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body

@@ -9,10 +9,8 @@ import (
 	"fmt"
 	"os"
 	"phonebook/lib"
-	"strconv"
-	"strings"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "mysql"
 )
 
 // App is the global data structure for this app
@@ -36,27 +34,27 @@ func readCommandLineArgs() {
 	App.username = *nPtr
 }
 
-func strToInt(s string) int {
-	if len(s) == 0 {
-		return 0
-	}
-	s = strings.Trim(s, " \n\r")
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		fmt.Printf("Error converting %s to a number: %v\n", s, err)
-		return 0
-	}
-	return n
-}
+// func strToInt(s string) int {
+// 	if len(s) == 0 {
+// 		return 0
+// 	}
+// 	s = strings.Trim(s, " \n\r")
+// 	n, err := strconv.Atoi(s)
+// 	if err != nil {
+// 		fmt.Printf("Error converting %s to a number: %v\n", s, err)
+// 		return 0
+// 	}
+// 	return n
+// }
 
 func main() {
 	readCommandLineArgs()
 
-	if "" == App.username {
+	if App.username == "" {
 		fmt.Printf("You must supply the username using the -n option\n")
 		os.Exit(2)
 	}
-	if 0 == App.UID {
+	if App.UID == 0 {
 		fmt.Printf("You must supply the uid of the user for whom you wish to change the username using the -u option\n")
 		os.Exit(2)
 	}

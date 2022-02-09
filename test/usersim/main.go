@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "mysql"
 )
 
 // Role defines a collection of FieldPerms that can be assigned to a person

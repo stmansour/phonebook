@@ -5,7 +5,7 @@ THISDIR="ws"
 ws: *.go
 	@touch fail
 	go vet
-	golint
+	if [[ -f "${GOPATH}/bin/golint" ]]; then golint; else staticcheck; fi
 	go build
 	go test
 	go install

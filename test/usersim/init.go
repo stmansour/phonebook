@@ -12,8 +12,7 @@ import (
 )
 
 func readCommandLineArgs() {
-	var sd int64
-	sd = time.Now().UnixNano()
+	var sd = time.Now().UnixNano()
 
 	dbuPtr := flag.String("B", "ec2-user", "database user name")
 	pcoPtr := flag.Int("c", 75, "number of companies to create with -f")

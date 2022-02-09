@@ -9,7 +9,7 @@ import (
 	"phonebook/lib"
 	"strings"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "mysql"
 )
 
 // App is the global data structure for this app
@@ -37,12 +37,12 @@ func CreateJobTitlesTable(db *sql.DB) {
 	errcheck(err)
 	jobtitles := "jobtitles.csv"
 	f, err := os.Open(jobtitles)
+	errcheck(err)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
 		s := strings.Trim(line, " \n\r")
 		_, err := InsertJT.Exec(s)
-
 		errcheck(err)
 	}
 }

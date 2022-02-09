@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/db"
-	"phonebook/lib"
 	"strconv"
 )
 
@@ -30,12 +29,12 @@ func companyInit(c *db.Company) {
 
 // MapKey is Accord's key for using google maps
 
-func mapURL(addr, city, state, zip, country string) string {
-	s := fmt.Sprintf("https://www.google.com/maps/embed/v1/place?key=%s&q=%s,%s+%s+%s+%s",
-		db.DB.Config.MapKey, addr, city, state, zip, country)
-	lib.Console("MAP URL:    %s\n", s)
-	return s
-}
+// func mapURL(addr, city, state, zip, country string) string {
+// 	s := fmt.Sprintf("https://www.google.com/maps/embed/v1/place?key=%s&q=%s,%s+%s+%s+%s",
+// 		db.DB.Config.MapKey, addr, city, state, zip, country)
+// 	lib.Console("MAP URL:    %s\n", s)
+// 	return s
+// }
 
 // func (c *db.Company) mapURL() string {
 // 	return mapURL(c.Address, c.City, c.State, c.PostalCode, c.Country)

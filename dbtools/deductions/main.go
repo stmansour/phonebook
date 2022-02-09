@@ -5,10 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 )
 
-import _ "github.com/go-sql-driver/mysql"
+import _ "mysql"
 
 // App is the global data structure for this app
 var App struct {
@@ -43,39 +42,39 @@ const (
 	DDEND                 // end of deduction list
 )
 
-func deductionStringToInt(s string) int {
-	var i int
-	s = strings.ToUpper(s)
-	s = strings.Replace(s, " ", "", -1)
-	switch {
-	case s == "401K":
-		i = DD401K
-	case s == "401KLOAN":
-		i = DD401KLOAN
-	case s == "CHILDSUPPORT":
-		i = DDCHILDSUPPORT
-	case s == "DENTAL":
-		i = DDDENTAL
-	case s == "FSA":
-		i = DDFSA
-	case s == "GARN":
-		i = DDGARN
-	case s == "GROUPLIFE":
-		i = DDGROUPLIFE
-	case s == "HOUSING":
-		i = DDHOUSING
-	case s == "MEDICAL":
-		i = DDMEDICAL
-	case s == "MISCDED":
-		i = DDMISCDED
-	case s == "TAXES":
-		i = DDTAXES
-	default:
-		fmt.Printf("Unknown compensation type: %s\n", s)
-		i = DDUNKNOWN
-	}
-	return i
-}
+// func deductionStringToInt(s string) int {
+// 	var i int
+// 	s = strings.ToUpper(s)
+// 	s = strings.Replace(s, " ", "", -1)
+// 	switch {
+// 	case s == "401K":
+// 		i = DD401K
+// 	case s == "401KLOAN":
+// 		i = DD401KLOAN
+// 	case s == "CHILDSUPPORT":
+// 		i = DDCHILDSUPPORT
+// 	case s == "DENTAL":
+// 		i = DDDENTAL
+// 	case s == "FSA":
+// 		i = DDFSA
+// 	case s == "GARN":
+// 		i = DDGARN
+// 	case s == "GROUPLIFE":
+// 		i = DDGROUPLIFE
+// 	case s == "HOUSING":
+// 		i = DDHOUSING
+// 	case s == "MEDICAL":
+// 		i = DDMEDICAL
+// 	case s == "MISCDED":
+// 		i = DDMISCDED
+// 	case s == "TAXES":
+// 		i = DDTAXES
+// 	default:
+// 		fmt.Printf("Unknown compensation type: %s\n", s)
+// 		i = DDUNKNOWN
+// 	}
+// 	return i
+// }
 
 func deductionToString(i int) string {
 	var s string

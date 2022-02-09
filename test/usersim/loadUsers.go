@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
-	"phonebook/db"
 )
 
 func getCompanyInfo(cocode int64, c *company) {
@@ -71,43 +69,43 @@ func getReports(uid int64, d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func getImageFilename(uid int64) string {
-	pat := fmt.Sprintf("pictures/%d.*", uid)
-	matches, err := filepath.Glob(pat)
-	if err != nil {
-		fmt.Printf("filepath.Glob(%s) returned error: %v\n", pat, err)
-		return "/images/anon.png"
-	}
-	if len(matches) > 0 {
-		return "/" + matches[0]
-	}
-	return "/images/anon.png"
-}
+// func getImageFilename(uid int64) string {
+// 	pat := fmt.Sprintf("pictures/%d.*", uid)
+// 	matches, err := filepath.Glob(pat)
+// 	if err != nil {
+// 		fmt.Printf("filepath.Glob(%s) returned error: %v\n", pat, err)
+// 		return "/images/anon.png"
+// 	}
+// 	if len(matches) > 0 {
+// 		return "/" + matches[0]
+// 	}
+// 	return "/images/anon.png"
+// }
 
 //===========================================================
 //  getPersonDetail can be used by external callers
 //  to get detailed person information on a particular user
 //  returns 0 if success, err number otherwise
 //===========================================================
-func getPersonDetail(d *personDetail, uid int64) int64 {
-	//d.Image = getImageFilename(uid)
-	d.Image = db.GetImageLocation(uid)
-	err := App.db.QueryRow("select lastname,firstname,preferredname,jobcode,primaryemail,"+
-		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
-		"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
-		"from people where uid=?", uid).Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
-		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
-		&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
-		&d.HomeState, &d.HomePostalCode, &d.HomeCountry)
-	if nil != err {
-		return 1
-	}
-	d.MgrName = getNameFromUID(d.MgrUID)
-	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
-	d.JobTitle = getJobTitle(d.JobCode)
-	getCompanyInfo(d.CoCode, &d.Company)
-	return 0
-}
+// func getPersonDetail(d *personDetail, uid int64) int64 {
+// 	//d.Image = getImageFilename(uid)
+// 	d.Image = db.GetImageLocation(uid)
+// 	err := App.db.QueryRow("select lastname,firstname,preferredname,jobcode,primaryemail,"+
+// 		"officephone,cellphone,deptcode,cocode,mgruid,ClassCode,"+
+// 		"HomeStreetAddress,HomeStreetAddress2,HomeCity,HomeState,HomePostalCode,HomeCountry "+
+// 		"from people where uid=?", uid).Scan(&d.LastName, &d.FirstName, &d.PreferredName, &d.JobCode, &d.PrimaryEmail,
+// 		&d.OfficePhone, &d.CellPhone, &d.DeptCode, &d.CoCode, &d.MgrUID, &d.ClassCode,
+// 		&d.HomeStreetAddress, &d.HomeStreetAddress2, &d.HomeCity,
+// 		&d.HomeState, &d.HomePostalCode, &d.HomeCountry)
+// 	if nil != err {
+// 		return 1
+// 	}
+// 	d.MgrName = getNameFromUID(d.MgrUID)
+// 	d.DeptName = getDepartmentFromDeptCode(d.DeptCode)
+// 	d.JobTitle = getJobTitle(d.JobCode)
+// 	getCompanyInfo(d.CoCode, &d.Company)
+// 	return 0
+// }
 
 func getCompensations(d *personDetail) {
 	rows, err := App.db.Query("select type from compensation where uid=?", d.UID)
@@ -121,16 +119,16 @@ func getCompensations(d *personDetail) {
 	errcheck(rows.Err())
 }
 
-func getCompensationStr(d *personDetail) {
-	getCompensations(d)
-	d.CompensationStr = ""
-	for i := 0; i < len(d.Comps); i++ {
-		d.CompensationStr += fmt.Sprintf("%d", d.Comps[i])
-		if i+1 < len(d.Comps) {
-			d.CompensationStr += ", "
-		}
-	}
-}
+// func getCompensationStr(d *personDetail) {
+// 	getCompensations(d)
+// 	d.CompensationStr = ""
+// 	for i := 0; i < len(d.Comps); i++ {
+// 		d.CompensationStr += fmt.Sprintf("%d", d.Comps[i])
+// 		if i+1 < len(d.Comps) {
+// 			d.CompensationStr += ", "
+// 		}
+// 	}
+// }
 
 func initMyComps(d *personDetail) {
 	d.MyComps = make([]myComp, 0)

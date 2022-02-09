@@ -70,6 +70,7 @@ func viewCompany(d *personDetail, atr *TestResults) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body
@@ -105,8 +106,8 @@ func viewCompany(d *personDetail, atr *TestResults) bool {
 			/* 06 */ {pageName + ": validate Phone", &s, `>PHONE<`, `>FAX<`, true, c.Phone},
 			/* 07 */ {pageName + ": validate Fax", &s, `>FAX<`, `>EMAIL<`, true, c.Fax},
 			/* 08 */ {pageName + ": validate email", &s, `>EMAIL<`, `>ACTIVE<`, true, c.Email},
-			/* 09 */ {pageName + ": validate Status", &s, `>ACTIVE<`, `>EMPLOYS PEOPLE<`, true, fmt.Sprintf("%s", yesnoToString(c.Active))},
-			/* 10 */ {pageName + ": validate EmploysPersonnel", &s, `>EMPLOYS PEOPLE<`, `/adminViewBtn/`, true, fmt.Sprintf("%s", yesnoToString(c.EmploysPersonnel))},
+			/* 09 */ {pageName + ": validate Status", &s, `>ACTIVE<`, `>EMPLOYS PEOPLE<`, true, yesnoToString(c.Active)},
+			/* 10 */ {pageName + ": validate EmploysPersonnel", &s, `>EMPLOYS PEOPLE<`, `/adminViewBtn/`, true, yesnoToString(c.EmploysPersonnel)},
 		}
 
 		var tc testContext
@@ -185,6 +186,7 @@ func adminEditCompany(d *personDetail, atr *TestResults) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body

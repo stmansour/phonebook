@@ -63,7 +63,7 @@ func StringToDate(s string) (time.Time, error) {
 			return Dt, nil
 		}
 	}
-	return Dt, fmt.Errorf("Date could not be decoded: %s", s)
+	return Dt, fmt.Errorf("date could not be decoded: %s", s)
 }
 
 // EqualDtToJSONDate compares a time.time to a JSONDate

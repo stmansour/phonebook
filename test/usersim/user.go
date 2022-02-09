@@ -110,6 +110,7 @@ func logoff(d *personDetail) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body
@@ -213,6 +214,7 @@ func login(d *personDetail) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body
@@ -384,16 +386,24 @@ func executeSimulation() {
 
 	var totTR TestResults                                                    // net results
 	for i := App.FirstUserIndex; i < App.FirstUserIndex+App.TestUsers; i++ { // i is the number of usersims completed
-		select {
-		case tr := <-TestResChan: // get the data the usersim collected
-			totTR.Fail += tr.Fail // update cumulative totals
-			totTR.Pass += tr.Pass // update cumulative totals
-			// lib.Ulog("executeSimulation: received tr results.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
-			for j := 0; j < len(tr.Failures); j++ {
-				totTR.Failures = append(totTR.Failures, tr.Failures[j])
-			}
-			TestResChanAck <- 1 // acknowledge receipt
+		// select {
+		// case tr := <-TestResChan: // get the data the usersim collected
+		// 	totTR.Fail += tr.Fail // update cumulative totals
+		// 	totTR.Pass += tr.Pass // update cumulative totals
+		// 	// lib.Ulog("executeSimulation: received tr results.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+		// 	for j := 0; j < len(tr.Failures); j++ {
+		// 		totTR.Failures = append(totTR.Failures, tr.Failures[j])
+		// 	}
+		// 	TestResChanAck <- 1 // acknowledge receipt
+		// }
+		tr := <-TestResChan // get the data the usersim collected
+		totTR.Fail += tr.Fail // update cumulative totals
+		totTR.Pass += tr.Pass // update cumulative totals
+		// lib.Ulog("executeSimulation: received tr results.  SimUserID = %d, Pass = %d, Fail = %d\n", tr.SimUserID, tr.Pass, tr.Fail)
+		for j := 0; j < len(tr.Failures); j++ {
+			totTR.Failures = append(totTR.Failures, tr.Failures[j])
 		}
+		TestResChanAck <- 1 // acknowledge receipt
 	}
 	if len(totTR.Failures) > 0 {
 		dumpTestErrors(&totTR)

@@ -47,8 +47,6 @@ var assignmap = []struct {
 	{a: "int", b: "XJSONYesNo", mapper: MigrateInt64ToString, valmap: &YesNoMap},
 }
 
-var xjson = string("XJSON")
-
 // XJSONprocess attempts to map a to b. If no converter can befound
 // a message will be printed, then it will panic!
 func XJSONprocess(a, b *reflect.Value) error {
@@ -105,7 +103,7 @@ var YesNoMap = Str2Int64Map{
 // a must point to an int
 // b must point to a bool
 func Int2Bool(a, b *reflect.Value, m *Str2Int64Map) error {
-	(*b).Set(reflect.ValueOf(0 != (*a).Interface().(int)))
+	(*b).Set(reflect.ValueOf((*a).Interface().(int) != 0))
 	return nil
 }
 
@@ -127,7 +125,7 @@ func Bool2Int(a, b *reflect.Value, m *Str2Int64Map) error {
 // a must point to an int
 // b must point to a bool
 func Int642Bool(a, b *reflect.Value, m *Str2Int64Map) error {
-	(*b).Set(reflect.ValueOf(0 != (*a).Interface().(int64)))
+	(*b).Set(reflect.ValueOf((*a).Interface().(int64) != 0))
 	return nil
 }
 

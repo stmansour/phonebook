@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/gomail.v2"
+	"github.com/teamnsrg/gomail.v2"
 )
 
 func handlerInitUIDate(ui *uiSupport) {

@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"phonebook/db"
 	"phonebook/lib"
-	"rentroll/rlib"
 	"strings"
 	"time"
 )
@@ -62,8 +61,8 @@ type WebGridSearchRequestJSON struct {
 	SearchLogic   string        `json:"searchLogic"`   // OR | AND
 	Search        []GenSearch   `json:"search"`        // what fields and what values
 	Sort          []ColSort     `json:"sort"`          // sort criteria
-	SearchDtStart rlib.JSONDate `json:"searchDtStart"` // for time-sensitive searches
-	SearchDtStop  rlib.JSONDate `json:"searchDtStop"`  // for time-sensitive searches
+	SearchDtStart lib.JSONDate `json:"searchDtStart"` // for time-sensitive searches
+	SearchDtStop  lib.JSONDate `json:"searchDtStop"`  // for time-sensitive searches
 	Bool1         bool          `json:"Bool1"`         // a general purpose bool flag for postData from client
 	Client        string        `json:"client"`        // name of requesting client
 	RentableName  string        `json:"RentableName"`  // RECEIPT-ONLY CLIENT EXTENSION - to be removed when Receipt-Only client goes away
@@ -301,13 +300,13 @@ func getBIDfromBUI(s string) (int64, error) {
 	if len(s) == 0 {
 		return int64(0), nil
 	}
-	d, err := rlib.IntFromString(s, "bad request integer value") // assume it's a BID
+	d, err := lib.IntFromString(s, "bad request integer value") // assume it's a BID
 	if err != nil {
 		err = nil // clear the slate
 
 		// need to do a db lookup for the BUD to determine the BID
 		// var ok bool // OK, let's see if it's a BUD
-		// d, ok = rlib.RRdb.BUDlist[s]
+		// d, ok = lib.RRdb.BUDlist[s]
 		// if !ok {
 		// 	d = 0
 		// 	err = fmt.Errorf("Could not find Business for %q", s)
@@ -389,8 +388,8 @@ func getPOSTdata(w http.ResponseWriter, r *http.Request, d *ServiceData) error {
 		SvcErrorReturn(w, e, funcname)
 		return e
 	}
-	rlib.MigrateStructVals(&wjs, &d.wsSearchReq)
-	rlib.Console("Client = %s\n", d.wsSearchReq.Client)
+	lib.MigrateStructVals(&wjs, &d.wsSearchReq)
+	lib.Console("Client = %s\n", d.wsSearchReq.Client)
 
 	return err
 }

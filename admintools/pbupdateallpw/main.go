@@ -11,7 +11,7 @@ import (
 	"os"
 	"phonebook/lib"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "mysql"
 )
 
 // App is the global data structure for this app

@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"gopkg.in/gomail.v2"
+	"github.com/teamnsrg/gomail.v2"
 )
 
 //==================================================================

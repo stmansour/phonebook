@@ -47,7 +47,7 @@ func validateSubstring(ps *string, s1 string, s2 string, isHTML bool, target str
 	}
 	m := (*ps)[m1[1]:m2[0]]
 	b := strings.Contains(m, target)
-	if false == b {
+	if !b {
 		// fmt.Printf("validateSubstring: %s  <==>  %s\n", m, target)
 		if isHTML {
 			// the HTML that is placed in the templates has been unclear
@@ -56,7 +56,7 @@ func validateSubstring(ps *string, s1 string, s2 string, isHTML bool, target str
 			// fmt.Printf("target: %s\nmatch: %s\nencoded target: %s\n", target, m, escapeString(target))
 			b = strings.Contains(m, escapeString(target))
 		}
-		if false == b {
+		if !b {
 			*reason = fmt.Sprintf("s1=%s  s2=%s  target=%s\nsubstring = \"%s\"\ncould not find = \"%s\"\n",
 				s1, s2, target, m, target)
 			if App.ShowTestMatching {
@@ -133,6 +133,7 @@ func viewPersonDetail(d *personDetail, tr *TestResults) bool {
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body
@@ -245,6 +246,7 @@ func viewAdminPerson(d *personDetail, URL string, pageName string, tr *TestResul
 	case "gzip":
 		fmt.Printf("gzip response\n")
 		reader, err = gzip.NewReader(resp.Body)
+		errcheck(err)
 		defer reader.Close()
 	default:
 		reader = resp.Body

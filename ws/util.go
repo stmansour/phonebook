@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"phonebook/lib"
-	"rentroll/rlib"
 	"strings"
 )
 
@@ -43,7 +42,7 @@ func SvcExtractIDFromURI(uri, errmsg string, pos int, w http.ResponseWriter) (in
 // int64 and returns nil
 //-----------------------------------------------------------------------------
 func SvcGetInt64(s, errmsg string, w http.ResponseWriter) (int64, error) {
-	i, err := rlib.IntFromString(s, "not an integer number")
+	i, err := lib.IntFromString(s, "not an integer number")
 	if err != nil {
 		err = fmt.Errorf("%s: %s", errmsg, err.Error())
 		SvcErrorReturn(w, err, "SvcGetInt64")

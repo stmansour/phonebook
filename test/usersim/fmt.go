@@ -25,7 +25,7 @@ func dumpTestErrors(tr *TestResults) {
 
 func stripchars(str string, chr string) string {
 	return strings.Map(func(r rune) rune {
-		if strings.IndexRune(chr, r) < 0 {
+		if !strings.ContainsRune(chr, r) {
 			return r
 		}
 		return -1
@@ -40,18 +40,18 @@ func errcheck(err error) {
 	}
 }
 
-func yesnoToInt(s string) int64 {
-	s = strings.ToUpper(s)
-	switch {
-	case s == "Y" || s == "YES":
-		return YES
-	case s == "N" || s == "NO":
-		return NO
-	default:
-		fmt.Printf("Unrecognized yes/no response: %s. Returning default = No\n", s)
-		return NO
-	}
-}
+// func yesnoToInt(s string) int64 {
+// 	s = strings.ToUpper(s)
+// 	switch {
+// 	case s == "Y" || s == "YES":
+// 		return YES
+// 	case s == "N" || s == "NO":
+// 		return NO
+// 	default:
+// 		fmt.Printf("Unrecognized yes/no response: %s. Returning default = No\n", s)
+// 		return NO
+// 	}
+// }
 
 func yesnoToString(i int64) string {
 	switch {
@@ -65,18 +65,18 @@ func yesnoToString(i int64) string {
 	}
 }
 
-func activeToInt(s string) int64 {
-	s = strings.ToUpper(s)
-	switch {
-	case s == "ACTIVE":
-		return ACTIVE
-	case s == "INACTIVE" || s == "IN-ACTIVE" || s == "NOTACTIVE" || s == "NOT-ACTIVE":
-		return INACTIVE
-	default:
-		fmt.Printf("Unrecognized yes/no response: %s. Returning default = Inactive\n", s)
-		return NO
-	}
-}
+// func activeToInt(s string) int64 {
+// 	s = strings.ToUpper(s)
+// 	switch {
+// 	case s == "ACTIVE":
+// 		return ACTIVE
+// 	case s == "INACTIVE" || s == "IN-ACTIVE" || s == "NOTACTIVE" || s == "NOT-ACTIVE":
+// 		return INACTIVE
+// 	default:
+// 		fmt.Printf("Unrecognized yes/no response: %s. Returning default = Inactive\n", s)
+// 		return NO
+// 	}
+// }
 
 func activeToString(i int64) string {
 	switch {
@@ -111,25 +111,25 @@ var fmtMonths = []string{
 	"September", "October", "November", "December",
 }
 
-func monthStringToInt(s string) int64 {
-	for i := int64(0); i < int64(len(fmtMonths)); i++ {
-		if fmtMonths[i][0:3] == s[0:3] {
-			return i + 1
-		}
-	}
-	return 0
-}
+// func monthStringToInt(s string) int64 {
+// 	for i := int64(0); i < int64(len(fmtMonths)); i++ {
+// 		if fmtMonths[i][0:3] == s[0:3] {
+// 			return i + 1
+// 		}
+// 	}
+// 	return 0
+// }
 
-func dateToDBStr(d time.Time) string {
-	if d.Year() < 1970 {
-		return "0000-00-00"
-	}
-	return d.Format(PBDateSaveFmt)
-}
+// func dateToDBStr(d time.Time) string {
+// 	if d.Year() < 1970 {
+// 		return "0000-00-00"
+// 	}
+// 	return d.Format(PBDateSaveFmt)
+// }
 
-func dateYear(d time.Time) int64 {
-	return int64(d.Year())
-}
+// func dateYear(d time.Time) int64 {
+// 	return int64(d.Year())
+// }
 
 func stringToDate(s string) time.Time {
 	var d time.Time
@@ -156,25 +156,25 @@ const (
 	ACPTLAST    = ACPTNOTAPPL // loops go from ACPTUNKNOWN to ACPTLAST
 )
 
-func acceptTypeToInt(s string) int64 {
-	var i int64
-	s = strings.ToUpper(s)
-	s = strings.Replace(s, " ", "", -1)
-	switch {
-	case s == "UNKNOWN":
-		i = ACPTUNKNOWN
-	case s == "YES" || s == "Y":
-		i = ACPTYES
-	case s == "NO" || s == "N":
-		i = ACPTNO
-	case s == "N/A" || s == "NA" || s == "NOTAPPLICABLE":
-		i = ACPTNOTAPPL
-	default:
-		fmt.Printf("Unknown acceptance type: %s\n", s)
-		i = ACPTUNKNOWN
-	}
-	return i
-}
+// func acceptTypeToInt(s string) int64 {
+// 	var i int64
+// 	s = strings.ToUpper(s)
+// 	s = strings.Replace(s, " ", "", -1)
+// 	switch {
+// 	case s == "UNKNOWN":
+// 		i = ACPTUNKNOWN
+// 	case s == "YES" || s == "Y":
+// 		i = ACPTYES
+// 	case s == "NO" || s == "N":
+// 		i = ACPTNO
+// 	case s == "N/A" || s == "NA" || s == "NOTAPPLICABLE":
+// 		i = ACPTNOTAPPL
+// 	default:
+// 		fmt.Printf("Unknown acceptance type: %s\n", s)
+// 		i = ACPTUNKNOWN
+// 	}
+// 	return i
+// }
 
 func acceptIntToString(i int64) string {
 	var s string
@@ -211,72 +211,72 @@ const (
 	DDTAXES               // taxes
 )
 
-func deductionStringToInt(s string) int64 {
-	var i int64
-	s = strings.ToUpper(s)
-	s = strings.Replace(s, " ", "", -1)
-	switch {
-	case s == "401K":
-		i = DD401K
-	case s == "401KLOAN":
-		i = DD401KLOAN
-	case s == "CHILDSUPPORT":
-		i = DDCHILDSUPPORT
-	case s == "DENTAL":
-		i = DDDENTAL
-	case s == "FSA":
-		i = DDFSA
-	case s == "GARN":
-		i = DDGARN
-	case s == "GROUPLIFE":
-		i = DDGROUPLIFE
-	case s == "HOUSING":
-		i = DDHOUSING
-	case s == "MEDICAL":
-		i = DDMEDICAL
-	case s == "MISCDED":
-		i = DDMISCDED
-	case s == "TAXES":
-		i = DDTAXES
-	default:
-		fmt.Printf("Unknown compensation type: %s\n", s)
-		i = DDUNKNOWN
-	}
-	return i
-}
+// func deductionStringToInt(s string) int64 {
+// 	var i int64
+// 	s = strings.ToUpper(s)
+// 	s = strings.Replace(s, " ", "", -1)
+// 	switch {
+// 	case s == "401K":
+// 		i = DD401K
+// 	case s == "401KLOAN":
+// 		i = DD401KLOAN
+// 	case s == "CHILDSUPPORT":
+// 		i = DDCHILDSUPPORT
+// 	case s == "DENTAL":
+// 		i = DDDENTAL
+// 	case s == "FSA":
+// 		i = DDFSA
+// 	case s == "GARN":
+// 		i = DDGARN
+// 	case s == "GROUPLIFE":
+// 		i = DDGROUPLIFE
+// 	case s == "HOUSING":
+// 		i = DDHOUSING
+// 	case s == "MEDICAL":
+// 		i = DDMEDICAL
+// 	case s == "MISCDED":
+// 		i = DDMISCDED
+// 	case s == "TAXES":
+// 		i = DDTAXES
+// 	default:
+// 		fmt.Printf("Unknown compensation type: %s\n", s)
+// 		i = DDUNKNOWN
+// 	}
+// 	return i
+// }
 
-func deductionIntToString(i int64) string {
-	var s string
-	switch {
-	case i == DD401K:
-		s = "40"
-	case i == DD401KLOAN:
-		s = "401KLOAN"
-	case i == DDCHILDSUPPORT:
-		s = "CHILDSUPPORT"
-	case i == DDDENTAL:
-		s = "DENTAL"
-	case i == DDFSA:
-		s = "FSA"
-	case i == DDGARN:
-		s = "GARN"
-	case i == DDGROUPLIFE:
-		s = "GROUPLIFE"
-	case i == DDHOUSING:
-		s = "HOUSING"
-	case i == DDDENTAL:
-		s = "DENTAL"
-	case i == DDMEDICAL:
-		s = "MEDICAL"
-	case i == DDMISCDED:
-		s = "MISCDED"
-	case i == DDTAXES:
-		s = "TAXES"
-	default:
-		s = "UKNOWN COMPENSATION TYPE"
-	}
-	return s
-}
+// func deductionIntToString(i int64) string {
+// 	var s string
+// 	switch {
+// 	case i == DD401K:
+// 		s = "40"
+// 	case i == DD401KLOAN:
+// 		s = "401KLOAN"
+// 	case i == DDCHILDSUPPORT:
+// 		s = "CHILDSUPPORT"
+// 	case i == DDDENTAL:
+// 		s = "DENTAL"
+// 	case i == DDFSA:
+// 		s = "FSA"
+// 	case i == DDGARN:
+// 		s = "GARN"
+// 	case i == DDGROUPLIFE:
+// 		s = "GROUPLIFE"
+// 	case i == DDHOUSING:
+// 		s = "HOUSING"
+// 	case i == DDDENTAL:
+// 		s = "DENTAL"
+// 	case i == DDMEDICAL:
+// 		s = "MEDICAL"
+// 	case i == DDMISCDED:
+// 		s = "MISCDED"
+// 	case i == DDTAXES:
+// 		s = "TAXES"
+// 	default:
+// 		s = "UKNOWN COMPENSATION TYPE"
+// 	}
+// 	return s
+// }
 
 // CTUNSET through CTBYPRODUCTION are constants that
 // represent the compensation type. A person will have one or more
@@ -290,27 +290,27 @@ const (
 	CTEND                 // all compensation ids are less than this
 )
 
-func compensationTypeToInt(s string) int64 {
-	var i int64
-	s = strings.ToUpper(s)
-	s = strings.Replace(s, " ", "", -1)
-	switch {
-	case s == "UNSET":
-		i = CTUNSET
-	case s == "SALARY":
-		i = CTSALARY
-	case s == "HOURLY":
-		i = CTHOURLY
-	case s == "COMMISSION":
-		i = CTCOMMISSION
-	case s == "BYPRODUCTION" || s == "PIECEWORK":
-		i = CTBYPRODUCTION
-	default:
-		fmt.Printf("Unknown compensation type: %s\n", s)
-		i = CTUNSET
-	}
-	return i
-}
+// func compensationTypeToInt(s string) int64 {
+// 	var i int64
+// 	s = strings.ToUpper(s)
+// 	s = strings.Replace(s, " ", "", -1)
+// 	switch {
+// 	case s == "UNSET":
+// 		i = CTUNSET
+// 	case s == "SALARY":
+// 		i = CTSALARY
+// 	case s == "HOURLY":
+// 		i = CTHOURLY
+// 	case s == "COMMISSION":
+// 		i = CTCOMMISSION
+// 	case s == "BYPRODUCTION" || s == "PIECEWORK":
+// 		i = CTBYPRODUCTION
+// 	default:
+// 		fmt.Printf("Unknown compensation type: %s\n", s)
+// 		i = CTUNSET
+// 	}
+// 	return i
+// }
 
 func compensationTypeToString(i int64) string {
 	var s string

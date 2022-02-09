@@ -17,7 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	_ "github.com/go-sql-driver/mysql"
+	_ "mysql"
 )
 
 // Role defines a collection of FieldPerms that can be assigned to a person
@@ -58,13 +58,13 @@ func setDefaultImage() error {
 	defer file.Close()
 	creds := credentials.NewStaticCredentials(lib.AppConfig.S3BucketKeyID, lib.AppConfig.S3BucketKey, "")
 	if _, err = creds.Get(); err != nil {
-		return fmt.Errorf("Bad credentials: %s", err)
+		return fmt.Errorf("bad credentials: %s", err)
 	}
 
 	cfg := aws.NewConfig().WithRegion(lib.AppConfig.S3Region).WithCredentials(creds)
 	sess, err := session.NewSession(cfg)
 	if err != nil {
-		return fmt.Errorf("Error creating session: %s", err.Error())
+		return fmt.Errorf("error creating session: %s", err.Error())
 	}
 	svc := s3.New(sess)
 	imagePath := "defaultProfileImage.png"
@@ -88,7 +88,7 @@ func setDefaultImage() error {
 
 	// Upload image to s3 bucket
 	if _, err = svc.PutObject(params); err != nil {
-		return fmt.Errorf("Error with PutObject: %s", err.Error())
+		return fmt.Errorf("error with PutObject: %s", err.Error())
 	}
 
 	return nil
@@ -196,7 +196,7 @@ func main() {
 		}
 	}
 
-	if 0 == App.RID {
+	if App.RID == 0{
 		fmt.Printf("Could not find role named: %s\n", App.rname)
 		os.Exit(0)
 	}

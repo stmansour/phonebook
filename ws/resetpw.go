@@ -8,7 +8,7 @@ import (
 	"phonebook/lib"
 	"strings"
 
-	"gopkg.in/gomail.v2"
+	"github.com/teamnsrg/gomail.v2"
 )
 
 // ResetPWDomains is the list of domains supported by the

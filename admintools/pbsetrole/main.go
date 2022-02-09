@@ -10,7 +10,7 @@ import (
 	"os"
 	"phonebook/lib"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "mysql"
 )
 
 // Role defines a collection of FieldPerms that can be assigned to a person
@@ -91,14 +91,17 @@ func main() {
 		}
 	}
 
-	if 0 == App.RID {
-		fmt.Printf("Could not find role named: %s\n", App.rname)
+	if App.RID == 0 {
+		fmt.Printf("could not find role named: %s\n", App.rname)
 		os.Exit(0)
 	}
 
 	uid := 0
-	err = App.db.QueryRow("select uid from people where username=?", App.username).Scan(&uid)
-	if 0 == uid {
+	if err = App.db.QueryRow("select uid from people where username=?", App.username).Scan(&uid); nil != err {
+		fmt.Printf("error = %v\n", err)
+		os.Exit(1)
+	}
+	if uid == 0{
 		fmt.Printf("Database %s does not have a user with username = %s\n", App.DBName, App.username)
 		os.Exit(1)
 	}

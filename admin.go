@@ -94,5 +94,4 @@ func extAdminShutdown(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Duration(5 * time.Second))
 		os.Exit(0)
 	}()
-	return
 }
