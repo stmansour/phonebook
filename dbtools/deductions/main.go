@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-import _ "mysql"
+import _ "github.com/go-sql-driver/mysql"
 
 // App is the global data structure for this app
 var App struct {

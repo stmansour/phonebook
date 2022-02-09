@@ -17,7 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	_ "mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // Role defines a collection of FieldPerms that can be assigned to a person

@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	_ "mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // dataFields lists all the field names and other information

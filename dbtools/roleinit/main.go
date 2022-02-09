@@ -8,7 +8,7 @@ import (
 	"os"
 	"phonebook/lib"
 
-	_ "mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // type company struct {

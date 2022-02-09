@@ -10,7 +10,7 @@ import (
 	"os"
 	"phonebook/lib"
 
-	_ "mysql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // Role defines a collection of FieldPerms that can be assigned to a person
