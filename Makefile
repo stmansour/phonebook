@@ -23,7 +23,7 @@ test: package
 	@echo "*** TESTING COMPLETE, ALL TESTS PASSED ***"
 
 try:	clean phonebook package
-	mysql --no-defaults accord < accord.sql
+	@mysql --no-defaults accord < accord.sql
 
 
 all: clean phonebook test

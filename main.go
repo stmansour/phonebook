@@ -24,8 +24,8 @@ import (
 
 // dataFields lists all the field names and other information
 // about the field:
-// 		- its description
-//		- whether the field is only accessible via an Administration screen
+//   - its description
+//   - whether the field is only accessible via an Administration screen
 type dataFields struct {
 	Elem        int
 	FieldName   string
@@ -125,10 +125,10 @@ type signin struct {
 	ErrMsg string // err message string for user
 }
 
-//--------------------------------------------------------------------
+// --------------------------------------------------------------------
 // uiSupport is an umbrella structure in which we can pass many useful
 // data objects to the UI
-//--------------------------------------------------------------------
+// --------------------------------------------------------------------
 type uiSupport struct {
 	CoCodeToName     map[int64]string  // map from company code to company name
 	NameToCoCode     map[string]int64  // map from company name to company code
@@ -667,7 +667,7 @@ func main() {
 	//==============================================
 	// On with the show...
 	//==============================================
-	initUI()
+	// initUI()
 	db.InitSessionManager(Phonebook.SessionCleanupTime, Phonebook.SessionTimeout, pbdb, Phonebook.SecurityDebug)
 	go Dispatcher()
 	go CounterDispatcher()

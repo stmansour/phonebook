@@ -16,6 +16,7 @@ PHONEBOOKDIR="../../tmp/phonebook"
 STARTPHONEBOOKCMD="./phonebook"
 STOPPHONEBOOKCMD="./activate.sh stop"
 LOGFILE="log"
+PYTHON="python3"
 
 #############################################################################
 # Set default values
@@ -843,7 +844,7 @@ dojsonPOST () {
 		COOK="${COOKIES}"
 	fi
 	CMD="curl ${COOK} -s -X POST ${1} -H \"Content-Type: application/json\" -d @${2}"
-	${CMD} | tee serverreply | python -m json.tool >${3} 2>>${LOGFILE}
+	${CMD} | tee serverreply | ${PYTHON} -m json.tool >${3} 2>>${LOGFILE}
 
 	incStep
 	checkPause
@@ -950,7 +951,7 @@ dobinPOST () {
 		echo ""
 		echo "CMD =  ${CMD}"
 	fi
-	${CMD} | tee serverreply | python -m json.tool >${3} 2>>${LOGFILE}
+	${CMD} | tee serverreply | ${PYTHON} -m json.tool >${3} 2>>${LOGFILE}
 
 	incStep
 	checkPause
@@ -1041,7 +1042,7 @@ dojsonGET () {
 	if [ ${SHOWCOMMAND} = "1" ]; then
 		@echo "dojsonGET: Executing command:  ${CMD}"
 	fi
-	${CMD} | python -m json.tool >${2} 2>>${LOGFILE}
+	${CMD} | ${PYTHON} -m json.tool >${2} 2>>${LOGFILE}
 
 	checkPause
 

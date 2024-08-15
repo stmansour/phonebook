@@ -135,7 +135,7 @@ if [ "${SINGLETEST}${TFILES}" = "${TFILES}" -o "${SINGLETEST}${TFILES}" = "${TFI
 	#-----------------------------------------------
 	# validate the cookie that was returned...
 	#-----------------------------------------------
-	C=$(curl -s -X POST http://localhost:8250/v1/authenticate -H "Content-Type: application/json" -d @request | python -m json.tool | grep "Token" | awk '{print $2}' | sed 's/[,"]//g')
+	C=$(curl -s -X POST http://localhost:8250/v1/authenticate -H "Content-Type: application/json" -d @request | python3 -m json.tool | grep "Token" | awk '{print $2}' | sed 's/[,"]//g')
 	echo "%7B%22cookieval%22%3A%22${C}%22%2C%22flags%22%3A0%2C%22useragent%22%3A%22curl%22%2C%22ip%22%3A%221.2.3.4%22%7D" > request
 	doPlainPOST "http://localhost:8250/v1/validatecookie" "request" "${TFILES}1"  "WebService--ValidateCookie-FLAGS=0"
 

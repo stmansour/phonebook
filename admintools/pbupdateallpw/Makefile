@@ -1,6 +1,6 @@
 pbupdateallpw: *.go config.json
 	go vet
-	if [[ -f "${GOPATH}/bin/golint" ]]; then golint; else staticcheck; fi
+	@if [[ -f "${GOPATH}/bin/golint" ]]; then golint; else staticcheck; fi
 	go build
 
 clean:
